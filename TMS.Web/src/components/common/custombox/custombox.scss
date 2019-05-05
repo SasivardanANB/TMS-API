@@ -1,0 +1,17 @@
+.custom-box{
+    align-items: center;
+    cursor: pointer;
+
+    .circle{
+        width: 75px;
+        height: 75px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .txt-clr{
+        color: #194d96;
+    }
+
+}

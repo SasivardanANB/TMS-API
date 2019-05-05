@@ -1,0 +1,22 @@
+.custom-modal{
+
+    .modal-content{
+        background-color: transparent;
+        overflow: hidden;
+        border: none;
+
+        .modal-header{
+            padding: 8px 16px;
+            border-bottom-color: #f6f6f6;
+            max-width: 100%;
+
+            .modal-title{
+                color: #00539F;
+                font-weight: 700;
+            }
+
+        }
+
+    }
+
+}

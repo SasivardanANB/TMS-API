@@ -1,0 +1,366 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="DataBaseException" xml:space="preserve">
+    <value>Some exception occrued in database</value>
+  </data>
+  <data name="DriverActivated" xml:space="preserve">
+    <value>Driver activated successfully</value>
+  </data>
+  <data name="DriverDeactivated" xml:space="preserve">
+    <value>Driver deactivated successfully</value>
+  </data>
+  <data name="DriversCreated" xml:space="preserve">
+    <value>Driver(s) created successfully</value>
+  </data>
+  <data name="DriversUpdated" xml:space="preserve">
+    <value>Driver(s) updated successfully</value>
+  </data>
+  <data name="ExpeditorEmailCheck" xml:space="preserve">
+    <value>Invalid Expeditor Email</value>
+  </data>
+  <data name="Failure" xml:space="preserve">
+    <value>Failure</value>
+  </data>
+  <data name="InvalidAddress" xml:space="preserve">
+    <value>Provide valid address</value>
+  </data>
+  <data name="InvalidApplication" xml:space="preserve">
+    <value>Invalid Application ID</value>
+  </data>
+  <data name="InvalidCityID" xml:space="preserve">
+    <value>Select valid city</value>
+  </data>
+  <data name="InvalidDriver" xml:space="preserve">
+    <value>Invalid Driver</value>
+  </data>
+  <data name="InvalidDriverNo" xml:space="preserve">
+    <value>Provide valid driver number</value>
+  </data>
+  <data name="InvalidDrivingLicenseImage" xml:space="preserve">
+    <value>Provide valid driving license image</value>
+  </data>
+  <data name="InvalidDrivingLicenseNo" xml:space="preserve">
+    <value>Provide valid driving license number</value>
+  </data>
+  <data name="InvalidEmail" xml:space="preserve">
+    <value>Provide valid email</value>
+  </data>
+  <data name="InvalidExpireDate" xml:space="preserve">
+    <value>Provide valid expire date</value>
+  </data>
+  <data name="InvalidExpeditorEmail" xml:space="preserve">
+    <value>Invalid Expeditor Email</value>
+  </data>
+  <data name="InvalidExpeditorName" xml:space="preserve">
+    <value>Invalid Expeditor Name</value>
+  </data>
+  <data name="InvalidExpeditorTypeID" xml:space="preserve">
+    <value>Invalid Expeditor TypeID</value>
+  </data>
+  <data name="InvalidFirstName" xml:space="preserve">
+    <value>Invalid First Name</value>
+  </data>
+  <data name="InvalidIdentityImage" xml:space="preserve">
+    <value>Provide valid identity image</value>
+  </data>
+  <data name="InvalidIdentityNo" xml:space="preserve">
+    <value>Provide valid identity number</value>
+  </data>
+  <data name="InvalidImage" xml:space="preserve">
+    <value>Provide valid image</value>
+  </data>
+  <data name="InvalidKIRNo" xml:space="preserve">
+    <value>Provide valid KIR number</value>
+  </data>
+  <data name="InvalidLastName" xml:space="preserve">
+    <value>Invalid Last Name</value>
+  </data>
+  <data name="InvalidMaxDimension" xml:space="preserve">
+    <value>Provide valid max dimension</value>
+  </data>
+  <data name="InvalidMaxWeight" xml:space="preserve">
+    <value>Provide valid max weight</value>
+  </data>
+  <data name="InvalidMenuCode" xml:space="preserve">
+    <value>Invalid Menu Code</value>
+  </data>
+  <data name="InvalidPhone" xml:space="preserve">
+    <value>Provide valid phone</value>
+  </data>
+  <data name="InvalidPlateNumber" xml:space="preserve">
+    <value>Provide valid plate number</value>
+  </data>
+  <data name="InvalidPoliceNo" xml:space="preserve">
+    <value>Provide valid police number</value>
+  </data>
+  <data name="InvalidPool" xml:space="preserve">
+    <value>Invalid Pool</value>
+  </data>
+  <data name="InvalidPoolCode" xml:space="preserve">
+    <value>Provide valid pool code</value>
+  </data>
+  <data name="InvalidPoolID" xml:space="preserve">
+    <value>Select valid pool</value>
+  </data>
+  <data name="InvalidPoolName" xml:space="preserve">
+    <value>Provide valid pool name</value>
+  </data>
+  <data name="InvalidPICID" xml:space="preserve">
+    <value>Invalid PICID</value>
+  </data>
+  <data name="InvalidPostalCodeID" xml:space="preserve">
+    <value>Invalid Postalcode ID</value>
+  </data>
+  <data name="InvalidRegion" xml:space="preserve">
+    <value>Select Valid Region</value>
+  </data>
+  <data name="InvalidRole" xml:space="preserve">
+    <value>Select Valid Role</value>
+  </data>
+  <data name="InvalidRoleCode" xml:space="preserve">
+    <value>Invalid Role Code</value>
+  </data>
+  <data name="InvalidShipperID" xml:space="preserve">
+    <value>Select valid shipper</value>
+  </data>
+  <data name="InvalidUser" xml:space="preserve">
+    <value>Invalid User</value>
+  </data>
+  <data name="InvalidUserID" xml:space="preserve">
+    <value>Select Valid User</value>
+  </data>
+  <data name="InvalidUserName" xml:space="preserve">
+    <value>Invalid User Name</value>
+  </data>
+  <data name="InvalidUserPassword" xml:space="preserve">
+    <value>Invalid User Password</value>
+  </data>
+  <data name="InvalidVehicle" xml:space="preserve">
+    <value>Invalid Vehicle</value>
+  </data>
+  <data name="InvalidVehicleTypeID" xml:space="preserve">
+    <value>Select valid vehicle type</value>
+  </data>
+  <data name="InvalidVehicleTypeName" xml:space="preserve">
+    <value>Provide valid vehicle type name</value>
+  </data>
+  <data name="LoginFail" xml:space="preserve">
+    <value>User Login Failed</value>
+  </data>
+  <data name="LoginSuccess" xml:space="preserve">
+    <value>User Logged In Successfully</value>
+  </data>
+  <data name="OrdersCreated" xml:space="preserve">
+    <value>Order(s) created successfully</value>
+  </data>
+  <data name="OrdersUpdated" xml:space="preserve">
+    <value>Order(s) updated successfully</value>
+  </data>
+  <data name="PoolActivated" xml:space="preserve">
+    <value>Pool activated successfully</value>
+  </data>
+  <data name="PoolDeactivated" xml:space="preserve">
+    <value>Pool deactivated successfully</value>
+  </data>
+  <data name="PoolsCreated" xml:space="preserve">
+    <value>Pool(s) created successfully</value>
+  </data>
+  <data name="PoolsUpdated" xml:space="preserve">
+    <value>Pools(s) updated successfully</value>
+  </data>
+  <data name="RolesCreated" xml:space="preserve">
+    <value>Role(s) created successfully</value>
+  </data>
+  <data name="RolesDeleted" xml:space="preserve">
+    <value>Role(s) deleted successfully</value>
+  </data>
+  <data name="RolesUpdated" xml:space="preserve">
+    <value>Role(s) updated successfully</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>Success</value>
+  </data>
+  <data name="UserInActive" xml:space="preserve">
+    <value>User is In-Active</value>
+  </data>
+  <data name="UserRoleCreated" xml:space="preserve">
+    <value>UserRole(s) created successfully</value>
+  </data>
+  <data name="UserRoleDeleted" xml:space="preserve">
+    <value>UserRole(s) deleted successfully</value>
+  </data>
+  <data name="UserRoleUpdated" xml:space="preserve">
+    <value>UserRole(s) updated successfully</value>
+  </data>
+  <data name="UsersCreated" xml:space="preserve">
+    <value>User(s) created successfully</value>
+  </data>
+  <data name="UsersDeleted" xml:space="preserve">
+    <value>User(s) deleted successfully</value>
+  </data>
+  <data name="UsersUpdated" xml:space="preserve">
+    <value>User(s) updated successfully</value>
+  </data>
+  <data name="VehicleActivated" xml:space="preserve">
+    <value>Vehicle activated successfully</value>
+  </data>
+  <data name="VehicleDeactivated" xml:space="preserve">
+    <value>Vehicle deactivated successfully</value>
+  </data>
+  <data name="PartnerCreated" xml:space="preserve">
+    <value>Partner(s) created successfully</value>
+  </data>
+  <data name="PartnerUpdated" xml:space="preserve">
+    <value>Partner(s) updated successfully</value>
+  </data>
+  <data name="UserRoleAlreadyAssigned" xml:space="preserve">
+    <value>User already assigned with this role and region</value>
+  </data>
+  <data name="PicCreated" xml:space="preserve">
+    <value>Pic(s) created successfully</value>
+  </data>
+  <data name="PicUpdated" xml:space="preserve">
+    <value>Pic(s) updated successfully</value>
+  </data>
+  <data name="InvalidConfirmPassword" xml:space="preserve">
+    <value>Provide valid confirm password</value>
+  </data>
+  <data name="InvalidPassword" xml:space="preserve">
+    <value>Provide valid password</value>
+  </data>
+  <data name="DriverDeleted" xml:space="preserve">
+    <value>Driver deleted successfully</value>
+  </data>
+  <data name="PoolDeleted" xml:space="preserve">
+    <value>Pool deleted successfully</value>
+  </data>
+  <data name="VehicleDeleted" xml:space="preserve">
+    <value>Vehicle deleted succesfully</value>
+  </data>
+  <data name="FileUploadError" xml:space="preserve">
+    <value>An error occured while uploading the file</value>
+  </data>
+  <data name="FileUploadSuccess" xml:space="preserve">
+    <value>File uploaded successfully</value>
+  </data>
+  <data name="InvalidFileFormat" xml:space="preserve">
+    <value>Only jpeg and png are supported</value>
+  </data>
+</root>

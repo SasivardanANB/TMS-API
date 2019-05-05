@@ -1,0 +1,19 @@
+.pagination-wrap {
+    .page-item {
+        margin: 0 3px;
+
+        span {
+            border-radius: 0;
+            color        : #414c52;
+            cursor       : pointer;
+        }
+
+        &.active {
+            span {
+                background-color: #00539f;
+                border-color    : #00539f;
+                color           : white;
+            }
+        }
+    }
+}

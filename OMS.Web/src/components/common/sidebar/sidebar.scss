@@ -1,0 +1,112 @@
+%animateOpacity {
+    opacity   : 1;
+    transition: all 0.4s;
+}
+
+.sidebar {
+    background-color: #00214b;
+    box-shadow      : 1px 0 20px rgba(0, 0, 0, 0.08);
+    color           : #a1afc2;
+
+    .sidebar-profile {
+        padding: 20px;
+
+        .avatar {
+            width : 50px;
+            height: auto;
+        }
+
+        .profile-primary {
+            font-size  : 13px;
+            font-weight: 600;
+            @extend %animateOpacity;
+        }
+
+        .profile-secondary {
+            font-size: 11px;
+            @extend %animateOpacity;
+        }
+    }
+
+    .sidebar-links {
+        list-style: none;
+
+        li {
+            padding   : 10px 15px;
+            cursor    : pointer;
+            height    : 42px;
+            display   : flex;
+            transition: all 0.4s;
+
+            &:hover {
+                color: #03a9f3;
+            }
+
+            &.active {
+                background: #255088;
+                color     : white;
+                cursor    : default;
+            }
+
+            i {
+                width     : 40px;
+                text-align: center;
+                font-size : 14px;
+                transition: all 0.4s;
+            }
+
+            span {
+                font-size   : 14px;
+                padding-left: 10px;
+                white-space : nowrap;
+                @extend %animateOpacity;
+            }
+
+        }
+    }
+
+    @media (min-width: 768px) {
+
+        // Desktop Collapse
+        &.sidebarCollapse {
+
+            .sidebar-profile {
+                padding: 20px;
+
+                .profile-primary {
+                    font-size: 0px;
+                    opacity  : 0;
+                }
+
+                .profile-secondary {
+                    font-size: 0px;
+                    opacity  : 0;
+                }
+            }
+
+            .sidebar-links {
+
+                li {
+                    padding: 10px 25px;
+
+                    i {
+                        font-size: 20px;
+                    }
+
+                    span {
+                        font-size   : 0px;
+                        padding-left: 0px;
+                        opacity     : 0;
+                    }
+
+                }
+            }
+        }
+
+    }
+
+    @media (max-width: 767.9px) {
+
+    }
+
+}

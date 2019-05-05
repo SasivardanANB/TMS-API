@@ -1,0 +1,130 @@
+{
+    "routes": [
+        {
+            "name": "Dashboard",
+            "component": "dashboard",
+            "path": "/",
+            "exact": true,
+            "icon": "fas fa-chart-bar",
+            "showInSidebar": true,
+            "sidebarLink": "/"
+        },
+        {
+            "name": "Order",
+            "component": "order",
+            "path": "/order",
+            "exact": true,
+            "icon": "fas fa-box",
+            "showInSidebar": true,
+            "sidebarLink": "/order"
+        },
+        {
+            "name": "Maintain Order",
+            "component": "maintainorder",
+            "path": "/order/maintainorder",
+            "exact": true,
+            "icon": "fas fa-box",
+            "showInSidebar": false,
+            "sidebarLink": "/order/maintainorder"
+        },
+        {
+            "name": "Master Data",
+            "component": "masterdata",
+            "path": "/masterdata",
+            "exact": true,
+            "icon": "fas fa-folder-open",
+            "showInSidebar": true,
+            "sidebarLink": "/masterdata"
+        },
+        {
+            "name": "Maintain Expeditor",
+            "component": "maintainexpeditor",
+            "path": "/masterdata/maintainexpeditor",
+            "exact": true,
+            "icon": "fas fa-folder-open",
+            "showInSidebar": false,
+            "sidebarLink": "/masterdata/maintainexpeditor"
+        },
+        {
+            "name": "Maintain Vehicle",
+            "component": "maintainvehicle",
+            "path": "/masterdata/maintainvehicle",
+            "exact": true,
+            "icon": "fas fa-folder-open",
+            "showInSidebar": false,
+            "sidebarLink": "/masterdata/maintainvehicle"
+        },
+        {
+            "name": "Maintain Admin Trasporter",
+            "component": "maintainadmintransporter",
+            "path": "/masterdata/maintainadmintransporter",
+            "exact": true,
+            "icon": "fas fa-folder-open",
+            "showInSidebar": false,
+            "sidebarLink": "/masterdata/maintainadmintransporter"
+        },
+        {
+            "name": "Maintain Driver Trasporter",
+            "component": "maintaindrivertransporter",
+            "path": "/masterdata/maintaindrivertransporter",
+            "exact": true,
+            "icon": "fas fa-folder-open",
+            "showInSidebar": false,
+            "sidebarLink": "/masterdata/maintaindrivertransporter"
+        },
+        {
+            "name": "Maintain Pools",
+            "component": "maintainpools",
+            "path": "/masterdata/maintainpools",
+            "exact": true,
+            "icon": "fas fa-folder-open",
+            "showInSidebar": false,
+            "sidebarLink": "/masterdata/maintainpools"
+        },
+        {
+            "name": "Trip Management",
+            "component": "tripmanagement",
+            "path": "/tripmanagement",
+            "exact": true,
+            "icon": "fas fa-map-marked-alt",
+            "showInSidebar": true,
+            "sidebarLink": "/tripmanagement"
+        },
+        {
+            "name": "Gate to Gate",
+            "component": "gatetogate",
+            "path": "/gatetogate",
+            "exact": true,
+            "icon": "fas fa-hashtag",
+            "showInSidebar": true,
+            "sidebarLink": "/gatetogate"
+        },
+        {
+            "name": "Report",
+            "component": "report",
+            "path": "/report",
+            "exact": true,
+            "icon": "fas fa-file-alt",
+            "showInSidebar": true,
+            "sidebarLink": "/report"
+        },
+        {
+            "name": "Authorisation",
+            "component": "authorisation",
+            "path": "/authorisation/:tab",
+            "exact": true,
+            "icon": "fas fa-users",
+            "showInSidebar": true,
+            "sidebarLink": "/authorisation/userrole"
+        },
+        {
+            "name": "Notifications",
+            "component": "notifications",
+            "path": "/notifications",
+            "exact": true,
+            "icon": "fas fa-bell",
+            "showInSidebar": true,
+            "sidebarLink": "/notifications"
+        }
+    ]
+}

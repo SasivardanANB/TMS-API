@@ -1,0 +1,162 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A68B12ED-0AEF-4213-BC8C-650BF674F6FE}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>OMS.DataGateway</RootNamespace>
+    <AssemblyName>OMS.DataGateway</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AutoMapper, Version=8.0.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.8.0.0\lib\net461\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="CsvHelper, Version=12.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
+      <HintPath>..\packages\CsvHelper.12.1.2\lib\net45\CsvHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.Seeder.EF6, Version=0.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.Seeder.EF6.0.4.0\lib\EntityFramework.Seeder.EF6.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.6.2\lib\net45\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="Security.Cryptography, Version=1.7.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Security.Cryptography.1.7.2\lib\net35\Security.Cryptography.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DataModels\ShipmentSAP.cs" />
+    <Compile Include="DataModels\PackingSheet.cs" />
+    <Compile Include="DataModels\OrderPartnerDetail.cs" />
+    <Compile Include="DataModels\OrderDetail.cs" />
+    <Compile Include="DataModels\OrderHeader.cs" />
+    <Compile Include="DataModels\MenuActivity.cs" />
+    <Compile Include="DataModels\OrderStatus.cs" />
+    <Compile Include="DataModels\Partner.cs" />
+    <Compile Include="DataModels\PartnerType.cs" />
+    <Compile Include="DataModels\TokensManager.cs" />
+    <Compile Include="DataModels\UserApplication.cs" />
+    <Compile Include="DataModels\Application.cs" />
+    <Compile Include="DataModels\User.cs" />
+    <Compile Include="DataModels\Activity.cs" />
+    <Compile Include="DataModels\BusinessArea.cs" />
+    <Compile Include="DataModels\City.cs" />
+    <Compile Include="DataModels\CompanyCode.cs" />
+    <Compile Include="DataModels\FieldLabelMenu.cs" />
+    <Compile Include="DataModels\Menu.cs" />
+    <Compile Include="DataModels\OMSDBContext.cs" />
+    <Compile Include="DataModels\PostalCode.cs" />
+    <Compile Include="DataModels\Province.cs" />
+    <Compile Include="DataModels\Role.cs" />
+    <Compile Include="DataModels\RoleMenuActivity.cs" />
+    <Compile Include="DataModels\RoleMenu.cs" />
+    <Compile Include="DataModels\SubDistrict.cs" />
+    <Compile Include="DataModels\UserRoles.cs" />
+    <Compile Include="Encryption\EncryptionLibrary.cs" />
+    <Compile Include="Migrations\201904260626019_OMS_v1.0_AllInitial.cs" />
+    <Compile Include="Migrations\201904260626019_OMS_v1.0_AllInitial.Designer.cs">
+      <DependentUpon>201904260626019_OMS_v1.0_AllInitial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201904260842134_OMS_V2.0.cs" />
+    <Compile Include="Migrations\201904260842134_OMS_V2.0.Designer.cs">
+      <DependentUpon>201904260842134_OMS_V2.0.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201905020648345_oms_v1.2_New.cs" />
+    <Compile Include="Migrations\201905020648345_oms_v1.2_New.Designer.cs">
+      <DependentUpon>201905020648345_oms_v1.2_New.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\Interfaces\IAuthenticate.cs" />
+    <Compile Include="Repositories\Interfaces\IOrder.cs" />
+    <Compile Include="Repositories\Interfaces\IUser.cs" />
+    <Compile Include="Repositories\Order.cs" />
+    <Compile Include="Repositories\Authenticate.cs" />
+    <Compile Include="Repositories\User.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OMS.DomainObjects\OMS.DomainObjects.csproj">
+      <Project>{b05f54e6-23ec-4161-b7f2-597919464a0f}</Project>
+      <Name>OMS.DomainObjects</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+    <EmbeddedResource Include="Migrations\201904260626019_OMS_v1.0_AllInitial.resx">
+      <DependentUpon>201904260626019_OMS_v1.0_AllInitial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201904260842134_OMS_V2.0.resx">
+      <DependentUpon>201904260842134_OMS_V2.0.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905020648345_oms_v1.2_New.resx">
+      <DependentUpon>201905020648345_oms_v1.2_New.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SeedData\applications.csv" />
+    <EmbeddedResource Include="SeedData\Activities.csv" />
+    <EmbeddedResource Include="SeedData\BusinessAreas.csv" />
+    <EmbeddedResource Include="SeedData\Cities.csv" />
+    <EmbeddedResource Include="SeedData\Companies.csv" />
+    <EmbeddedResource Include="SeedData\MenuActivities.csv" />
+    <EmbeddedResource Include="SeedData\Menus.csv" />
+    <EmbeddedResource Include="SeedData\PostalCodes.csv" />
+    <EmbeddedResource Include="SeedData\Provinces.csv" />
+    <EmbeddedResource Include="SeedData\SubDistricts.csv" />
+    <EmbeddedResource Include="SeedData\OrderStatus.csv" />
+    <EmbeddedResource Include="SeedData\PartnerType.csv" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

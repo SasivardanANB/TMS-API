@@ -1,0 +1,96 @@
+.search-form {
+    .form-group {
+        label {
+            font-weight: 700;
+        }
+    }
+
+    .submit-button {
+        background-color: #1790ff;
+        border-radius   : 50px;
+        border-width    : 0;
+        font-weight     : 600;
+        height          : 36px;
+
+        @media (min-width: 768px) {
+            margin-top: 32px !important;
+        }
+    }
+}
+table{
+    font-size: 14px;
+}
+.circular-icon{
+    width: 40px;
+    height: 40px;
+    background-color: #eee;
+}
+
+.table-header-block {
+    .table-heading {
+        color: #00539f;
+    }
+
+    .add-button {
+        border-radius: 50%;
+        line-height  : 0;
+        border-color : #00539f;
+        background   : white;
+
+        i {
+            width : 16px;
+            height: 16px;
+            color : #00539f;
+        }
+    }
+}
+
+.table-cover {
+    overflow-x: auto;
+
+    .row-actions {
+
+        .role-delete,
+        .role-edit {
+            cursor          : pointer;
+            width           : 30px;
+            height          : 30px;
+            line-height     : 30px;
+            border-radius   : 50%;
+            text-align      : center;
+            background-color: #eceff1;
+        }
+    }
+
+    .pagination-wrap {
+        .page-item {
+            margin: 0 3px;
+            a {
+                border-radius: 0;
+                color: #414c52;
+                cursor: pointer;
+            }
+            &.active{
+                a{
+                    background-color: #00539f;
+                    border-color: #00539f;
+                    color: white;
+                }
+            }
+        }
+    }
+}
+
+.modal-form-footer {
+    .save-button {
+        background-color: #69af02;
+        border-width    : 0;
+        border-radius   : 50px;
+    }
+
+    .cancel-button {
+        background-color: #e60f00;
+        border-width    : 0;
+        border-radius   : 50px;
+    }
+}

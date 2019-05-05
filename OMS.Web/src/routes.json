@@ -1,0 +1,40 @@
+{
+    "routes": [
+        {
+            "name": "Dashboard",
+            "component": "dashboard",
+            "path": "/",
+            "exact": true,
+            "icon": "fas fa-chart-bar",
+            "showInSidebar": true,
+            "sidebarLink": "/"
+        },
+        {
+            "name": "Upload Order",
+            "component": "uploadorder",
+            "path": "/uploadorder",
+            "exact": true,
+            "icon": "far fa-arrow-alt-circle-up",
+            "showInSidebar": true,
+            "sidebarLink": "/uploadorder"
+        },
+        {
+            "name": "Download Order",
+            "component": "downloadorder",
+            "path": "/downloadorder",
+            "exact": true,
+            "icon": "far fa-arrow-alt-circle-down",
+            "showInSidebar": true,
+            "sidebarLink": "/downloadorder"
+        },
+        {
+            "name": "Authorisation",
+            "component": "authorisation",
+            "path": "/authorisation/:tab",
+            "exact": true,
+            "icon": "fas fa-users",
+            "showInSidebar": true,
+            "sidebarLink": "/authorisation/userrole"
+        }
+    ]
+}
