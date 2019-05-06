@@ -98,5 +98,16 @@ namespace OMS.API.Controllers
 
             return Ok(orderData);
         }
+
+        [Route("getallorderstatus")]
+        [HttpGet]
+        public IHttpActionResult GetAllOrderStatus()
+        {
+            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            OrderStatusResponse orderStatusData = orderTask.GetAllOrderStatus();
+
+            return Ok(orderStatusData);
+            
+        }
     }
 }

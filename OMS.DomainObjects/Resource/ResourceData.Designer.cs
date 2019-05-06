@@ -223,6 +223,15 @@ namespace OMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Order Status Retrieved.
+        /// </summary>
+        public static string OrderStatusRetrieved {
+            get {
+                return ResourceManager.GetString("OrderStatusRetrieved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Order updated successfully.
         /// </summary>
         public static string OrderUpdated {
