@@ -13,6 +13,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.ModelBinding;
 
 namespace OMS.API.Controllers
 {
@@ -74,7 +75,23 @@ namespace OMS.API.Controllers
                     ModelState.AddModelError($"{nameof(request)}.{nameof(request.Requests)}.[{i}].{nameof(Order.OrderType)}", "Invalid Order Type");
             }
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            {
+                ErrorResponse errorResponse = new ErrorResponse()
+                {
+                    Status = DomainObjects.Resource.ResourceData.Failure,
+                    Data = new List<Error>()
+                };
+                for (int i = 0; i < ModelState.Keys.Count; i++)
+                {
+                    Error errorData = new Error()
+                    {
+                        ErrorMessage = ModelState.Keys.ToList<string>()[i] + " : " + ModelState.Values.ToList<ModelState>()[i].Errors[0].ErrorMessage
+                    };
+
+                    errorResponse.Data.Add(errorData);
+                }
+                return Ok(errorResponse);
+            }
 
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
             OrderResponse orderData = orderTask.CreateUpdateOrders(request);
