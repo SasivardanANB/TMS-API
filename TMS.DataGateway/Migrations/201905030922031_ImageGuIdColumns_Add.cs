@@ -13,8 +13,8 @@ namespace TMS.DataGateway.Migrations
                     {
                         ID = c.Int(nullable: false, identity: true),
                         ImageGuIdValue = c.String(maxLength: 1000),
-                        CreatedBy = c.String(),
-                        CreatedTime = c.DateTime(nullable: false),
+                        CreatedBy = c.String(defaultValue: "SYSTEM"),
+                        CreatedTime = c.DateTime(nullable: false, defaultValueSql: "GETDATE()"),
                         LastModifiedBy = c.String(),
                         LastModifiedTime = c.DateTime(),
                     })

@@ -13,7 +13,6 @@ using TMS.DomainObjects.Response;
 using Domain = TMS.DomainObjects.Objects;
 using DataModel = TMS.DataGateway.DataModels;
 
-
 namespace TMS.DataGateway.Repositories
 {
     public class Driver : IDriver
@@ -34,6 +33,7 @@ namespace TMS.DataGateway.Repositories
 
                     IMapper mapper = config.CreateMapper();
                     var drivers = mapper.Map<List<Domain.Driver>, List<DataModel.Driver>>(driverRequest.Requests);
+                    int driverObjectCount = 0;
                     foreach (var driverData in drivers)
                     {
                         //For encrypt password
@@ -43,6 +43,9 @@ namespace TMS.DataGateway.Repositories
                         }
                         //For making IsDelete column false
                         driverData.IsDelete = false;
+                        driverData.IdentityImageId = InsertImageGuid(driverRequest.Requests[driverObjectCount].IdentityImageGuId, driverRequest.CreatedBy);
+                        driverData.DrivingLicenceImageId = InsertImageGuid(driverRequest.Requests[driverObjectCount].DrivingLicenceImageGuId, driverRequest.CreatedBy);
+                        driverData.DriverImageId = InsertImageGuid(driverRequest.Requests[driverObjectCount].DriverImageGuId, driverRequest.CreatedBy);
                         //For update driver
                         if (driverData.ID > 0)
                         {
@@ -57,6 +60,7 @@ namespace TMS.DataGateway.Repositories
                             tMSDBContext.SaveChanges();
                             driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.DriversCreated;
                         }
+                        driverObjectCount++;
                     }
                     driverRequest.Requests = mapper.Map<List<DataModel.Driver>, List<Domain.Driver>>(drivers);
                     driverResponse.Data = driverRequest.Requests;
@@ -123,10 +127,10 @@ namespace TMS.DataGateway.Repositories
                         IsActive = driver.IsActive,
                         IdentityNo = driver.IdentityNo,
                         DrivingLicenseExpiredDate = driver.DrivingLicenseExpiredDate,
-                        DriverImageId = driver.DriverImageId,
                         DrivingLicenseNo = driver.DrivingLicenseNo,
                         DrivingLicenceImageId = driver.DrivingLicenceImageId,
                         IdentityImageId = driver.IdentityImageId,
+                        DriverImageId = driver.DriverImageId,
                         DriverImageGuId = tMSDBContext.ImageGuids.Where(d => d.ID == driver.DriverImageId).Select(g => g.ImageGuIdValue).FirstOrDefault(),
                         DrivingLicenceImageGuId = tMSDBContext.ImageGuids.Where(d => d.ID == driver.DrivingLicenceImageId).Select(g => g.ImageGuIdValue).FirstOrDefault(),
                         IdentityImageGuId = tMSDBContext.ImageGuids.Where(d => d.ID == driver.IdentityImageId).Select(g => g.ImageGuIdValue).FirstOrDefault(),
@@ -188,15 +192,26 @@ namespace TMS.DataGateway.Repositories
                         driversList = driversList.Where(s => s.DrivingLicenseExpiredDate.ToString().Contains(driverFilter.DrivingLicenseExpiredDate.ToString())).ToList();
                     }
 
-                    if (driverFilter.IsActive != null)
+                    if (driverFilter.IsActive.Value)
                     {
                         driversList = driversList.Where(s => s.IsActive == driverFilter.IsActive).ToList();
+                    }
+
+                    if (driverFilter.IsDelete)
+                    {
+                        driversList = driversList.Where(s => s.IsDelete == driverFilter.IsDelete).ToList();
                     }
                 }
 
                 // Sorting
                 switch (driverRequest.SortOrder.ToLower())
                 {
+                    case "drivernumber":
+                        driversList = driversList.OrderBy(s => s.DriverNo).ToList();
+                        break;
+                    case "drivernumber_desc":
+                        driversList = driversList.OrderByDescending(s => s.DriverNo).ToList();
+                        break;
                     case "firstname":
                         driversList = driversList.OrderBy(s => s.FirstName).ToList();
                         break;
@@ -209,29 +224,17 @@ namespace TMS.DataGateway.Repositories
                     case "lastname_desc":
                         driversList = driversList.OrderByDescending(s => s.LastName).ToList();
                         break;
-                    case "phone":
-                        driversList = driversList.OrderBy(s => s.DriverPhone).ToList();
-                        break;
-                    case "phone_desc":
-                        driversList = driversList.OrderByDescending(s => s.DriverPhone).ToList();
-                        break;
                     case "email":
                         driversList = driversList.OrderBy(s => s.Email).ToList();
                         break;
                     case "email_desc":
                         driversList = driversList.OrderByDescending(s => s.Email).ToList();
                         break;
-                    case "isactive":
-                        driversList = driversList.OrderBy(s => s.IsActive).ToList();
+                    case "phone":
+                        driversList = driversList.OrderBy(s => s.DriverPhone).ToList();
                         break;
-                    case "isactive_desc":
-                        driversList = driversList.OrderByDescending(s => s.IsActive).ToList();
-                        break;
-                    case "drivernumber":
-                        driversList = driversList.OrderBy(s => s.DriverNo).ToList();
-                        break;
-                    case "drivernumber_desc":
-                        driversList = driversList.OrderByDescending(s => s.DriverNo).ToList();
+                    case "phone_desc":
+                        driversList = driversList.OrderByDescending(s => s.DriverPhone).ToList();
                         break;
                     case "address":
                         driversList = driversList.OrderBy(s => s.DriverAddress).ToList();
@@ -287,6 +290,28 @@ namespace TMS.DataGateway.Repositories
                 driverResponse.StatusMessage = ex.Message;
             }
             return driverResponse;
+        }
+        public int InsertImageGuid(string imageGuidValue,string createdBy)
+        {
+            try
+            {
+                using (var tMSDBContext = new TMSDBContext())
+                {
+                    ImageGuid imageGuidObject = new ImageGuid()
+                    {
+                        ImageGuIdValue = imageGuidValue,
+                        CreatedBy= createdBy
+                    };
+                    tMSDBContext.ImageGuids.Add(imageGuidObject);
+                    tMSDBContext.SaveChanges();
+                    return imageGuidObject.ID;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+            }
+            return 0;
         }
     }
 }
