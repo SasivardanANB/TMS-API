@@ -85,7 +85,7 @@ namespace OMS.API.Controllers
                 {
                     Error errorData = new Error()
                     {
-                        ErrorMessage = ModelState.Keys.ToList<string>()[i] + " : " + ModelState.Values.ToList<ModelState>()[i].Errors[0].ErrorMessage
+                        ErrorMessage = ModelState.Keys.ToList<string>()[i].Replace("request.Requests[", "Row Number[") + " : " + ModelState.Values.ToList<ModelState>()[i].Errors[0].ErrorMessage
                     };
 
                     errorResponse.Data.Add(errorData);
