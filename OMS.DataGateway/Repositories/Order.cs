@@ -74,7 +74,7 @@ namespace OMS.DataGateway.Repositories
                                       Instructions = details.Instruction,
                                       TotalCollie = details.TotalCollie,
                                       ShippingListNo = details.ShippingListNo
-                                      
+
                                   }).ToList();
                     }
                     else if (orderRequest.Requests.Count > 0)
@@ -156,7 +156,7 @@ namespace OMS.DataGateway.Repositories
                             order.ShipmentSAPNo = string.Join(",", shipmentSAPs);
                         }
                     }
-                    
+
                     // Sorting
                     switch (orderRequest.SortOrder.ToLower())
                     {
@@ -234,7 +234,6 @@ namespace OMS.DataGateway.Repositories
             using (var context = new Data.OMSDBContext())
             {
                 foreach (var order in request.Requests)
-
                 {
                     using (DbContextTransaction transaction = context.Database.BeginTransaction())
                     {
@@ -633,6 +632,46 @@ namespace OMS.DataGateway.Repositories
                 response.Status = DomainObjects.Resource.ResourceData.Success;
                 response.StatusCode = (int)HttpStatusCode.OK;
                 response.StatusMessage = DomainObjects.Resource.ResourceData.OrderCreated;
+            }
+            return response;
+        }
+
+        public OrderStatusResponse GetAllOrderStatus()
+        {
+            OrderStatusResponse response = new OrderStatusResponse()
+            {
+                Data = new List<Domain.Common>()
+            };
+
+            using (var context = new Data.OMSDBContext())
+            {
+                try
+                {
+                    var orderStatus = context.OrderStatuses.ToList();
+                    if (orderStatus != null)
+                    {
+                        foreach (var item in orderStatus)
+                        {
+                            Domain.Common common = new Common() {
+                                Id = Convert.ToInt32(item.OrderStatusCode),
+                                Value = item.OrderStatusValue
+                            };
+                            response.Data.Add(common);
+                        }
+                    }
+                    response.Data = response.Data.OrderBy(t => t.Id).ToList();
+                    response.Status = DomainObjects.Resource.ResourceData.Success;
+                    response.StatusCode = (int)HttpStatusCode.OK;
+                    response.StatusMessage = DomainObjects.Resource.ResourceData.OrderStatusRetrieved;
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log(LogLevel.Error, ex);
+                    response.Status = DomainObjects.Resource.ResourceData.Failure;
+                    response.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                    response.StatusMessage = ex.Message;
+                }
+                
             }
             return response;
         }

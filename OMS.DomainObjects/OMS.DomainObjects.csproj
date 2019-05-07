@@ -52,6 +52,7 @@
     <Compile Include="Enum\Status.cs" />
     <Compile Include="Objects\AssignUserRole.cs" />
     <Compile Include="Objects\Common.cs" />
+    <Compile Include="Objects\Error.cs" />
     <Compile Include="Objects\OrderFilter.cs" />
     <Compile Include="Objects\Partner.cs" />
     <Compile Include="Objects\BusinessArea.cs" />
@@ -87,10 +88,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ResourceData.resx</DependentUpon>
     </Compile>
+    <Compile Include="Response\ErrorResponse.cs" />
     <Compile Include="Response\OrderResponse.cs" />
     <Compile Include="Objects\OrderHeader.cs" />
     <Compile Include="Objects\User.cs" />
     <Compile Include="Response\AuthenticateResponse.cs" />
+    <Compile Include="Response\OrderStatusResponse.cs" />
     <Compile Include="Response\RegionResponse.cs" />
     <Compile Include="Response\CommonResponse.cs" />
     <Compile Include="Response\RoleResponse.cs" />
