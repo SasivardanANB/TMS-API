@@ -196,7 +196,7 @@ namespace TMS.DataGateway.Repositories
                     //    driversList = driversList.Where(s => s.DrivingLicenseExpiredDate.ToString().Contains(driverFilter.DrivingLicenseExpiredDate.ToString())).ToList();
                     //}
 
-                    if (driverFilter.IsActive!=null && driverFilter.IsActive.Value)
+                    if (driverFilter.IsActive != null && driverFilter.IsActive.Value)
                     {
                         driversList = driversList.Where(s => s.IsActive == driverFilter.IsActive).ToList();
                     }
@@ -206,6 +206,19 @@ namespace TMS.DataGateway.Repositories
                         driversList = driversList.Where(s => s.IsDelete == driverFilter.IsDelete).ToList();
                     }
                 }
+
+                // GLobal Search Filter
+                if (!string.IsNullOrEmpty(driverRequest.GlobalSearch))
+                {
+                    string globalSearch = driverRequest.GlobalSearch;
+                    driversList = driversList.Where(s => s.FirstName.Contains(globalSearch) 
+                    || s.LastName.Contains(globalSearch) 
+                    || s.DriverPhone.Contains(globalSearch)
+                    || s.Email.Contains(globalSearch)
+                    || s.DrivingLicenseNo.Contains(globalSearch)
+                    ).ToList();
+                }
+
 
                 // Sorting
                 if (driverRequest.SortOrder != null)
@@ -270,7 +283,7 @@ namespace TMS.DataGateway.Repositories
                             driversList = driversList.OrderByDescending(s => s.ID).ToList();
                             break;
                     }
-                }                
+                }
 
                 // Paging
                 int pageSize = driverRequest.PageSize.Value;
@@ -300,7 +313,7 @@ namespace TMS.DataGateway.Repositories
             }
             return driverResponse;
         }
-        public int InsertImageGuid(string imageGuidValue,string createdBy)
+        public int InsertImageGuid(string imageGuidValue, string createdBy)
         {
             try
             {
@@ -309,7 +322,7 @@ namespace TMS.DataGateway.Repositories
                     ImageGuid imageGuidObject = new ImageGuid()
                     {
                         ImageGuIdValue = imageGuidValue,
-                        CreatedBy=createdBy
+                        CreatedBy = createdBy
                     };
                     tMSDBContext.ImageGuids.Add(imageGuidObject);
                     tMSDBContext.SaveChanges();

@@ -332,30 +332,33 @@ namespace OMS.DataGateway.Repositories
                 }
 
                 // Sorting
-                switch (userReq.SortOrder.ToLower())
+                if (userReq.SortOrder != null)
                 {
-                    case "username":
-                        usersList = usersList.OrderBy(s => s.UserName).ToList();
-                        break;
-                    case "username_desc":
-                        usersList = usersList.OrderByDescending(s => s.UserName).ToList();
-                        break;
-                    case "firstname":
-                        usersList = usersList.OrderBy(s => s.FirstName).ToList();
-                        break;
-                    case "firstname_desc":
-                        usersList = usersList.OrderByDescending(s => s.FirstName).ToList();
-                        break;
-                    case "lastname":
-                        usersList = usersList.OrderBy(s => s.LastName).ToList();
-                        break;
-                    case "lastname_desc":
-                        usersList = usersList.OrderByDescending(s => s.LastName).ToList();
-                        break;
-                    default:  // ID Descending 
-                        usersList = usersList.OrderByDescending(s => s.ID).ToList();
-                        break;
-                }
+                    switch (userReq.SortOrder.ToLower())
+                    {
+                        case "username":
+                            usersList = usersList.OrderBy(s => s.UserName).ToList();
+                            break;
+                        case "username_desc":
+                            usersList = usersList.OrderByDescending(s => s.UserName).ToList();
+                            break;
+                        case "firstname":
+                            usersList = usersList.OrderBy(s => s.FirstName).ToList();
+                            break;
+                        case "firstname_desc":
+                            usersList = usersList.OrderByDescending(s => s.FirstName).ToList();
+                            break;
+                        case "lastname":
+                            usersList = usersList.OrderBy(s => s.LastName).ToList();
+                            break;
+                        case "lastname_desc":
+                            usersList = usersList.OrderByDescending(s => s.LastName).ToList();
+                            break;
+                        default:  // ID Descending 
+                            usersList = usersList.OrderByDescending(s => s.ID).ToList();
+                            break;
+                    }
+                }                
 
                 // Total NumberOfRecords
                 userResponse.NumberOfRecords = usersList.Count;

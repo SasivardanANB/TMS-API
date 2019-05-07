@@ -206,6 +206,18 @@ namespace TMS.DataGateway.Repositories
                     }
                 }
 
+                // GLobal Search Filter
+                if (!string.IsNullOrEmpty(vehicleRequest.GlobalSearch))
+                {
+                    string globalSearch = vehicleRequest.GlobalSearch;
+                    vehiclesList = vehiclesList.Where(s => s.PlateNumber.Contains(globalSearch)
+                    || s.MaxDimension.Contains(globalSearch)
+                    || s.MaxWeight.ToString().Contains(globalSearch)
+                    || s.PoolName.Contains(globalSearch)
+                    || s.VehicleTypeName.Contains(globalSearch)
+                    ).ToList();
+                }
+
                 // Sorting
                 if (vehicleRequest.SortOrder != null)
                 {

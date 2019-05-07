@@ -156,6 +156,18 @@ namespace TMS.DataGateway.Repositories
                     }
                 }
 
+                // GLobal Search Filter
+                if (!string.IsNullOrEmpty(poolRequest.GlobalSearch))
+                {
+                    string globalSearch = poolRequest.GlobalSearch;
+                    poolsList = poolsList.Where(s => s.PoolName.Contains(globalSearch)
+                    || s.PoolCode.Contains(globalSearch)
+                    || s.CityName.Contains(globalSearch)
+                    || s.ContactNumber.Contains(globalSearch)
+                    || s.Address.Contains(globalSearch)
+                    ).ToList();
+                }
+
                 if (poolsList.Count > 0 && poolRequest.SortOrder!=null)
                 {
                     // Sorting

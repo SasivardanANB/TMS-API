@@ -152,6 +152,17 @@ namespace TMS.DataGateway.Repositories
                     }
 
                 }
+
+                // GLobal Search Filter
+                if (!string.IsNullOrEmpty(picRequest.GlobalSearch))
+                {
+                    string globalSearch = picRequest.GlobalSearch;
+                    picList = picList.Where(s => s.PICName.Contains(globalSearch)
+                    || s.PICPhone.Contains(globalSearch)
+                    || s.PICEmail.ToString().Contains(globalSearch)
+                    ).ToList();
+                }
+
                 // Sorting
                 switch (picRequest.SortOrder.ToLower())
                 {
