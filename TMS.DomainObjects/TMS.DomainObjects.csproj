@@ -58,6 +58,7 @@
     <Compile Include="Objects\Error.cs" />
     <Compile Include="Objects\Message.cs" />
     <Compile Include="Objects\Order.cs" />
+    <Compile Include="Objects\PartnerSearch.cs" />
     <Compile Include="Objects\Pool.cs" />
     <Compile Include="Objects\Region.cs" />
     <Compile Include="Objects\RequestFilter.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Request\AssignUserRoleRequest.cs" />
     <Compile Include="Request\DriverRequest.cs" />
+    <Compile Include="Request\PartnerSearchRequest.cs" />
     <Compile Include="Request\PoolRequest.cs" />
     <Compile Include="Request\PICRequest.cs" />
     <Compile Include="Request\RegionRequest.cs" />
@@ -96,6 +98,7 @@
     <Compile Include="Response\DriverResponse.cs" />
     <Compile Include="Response\ErrorResponse.cs" />
     <Compile Include="Response\OrderResponse.cs" />
+    <Compile Include="Response\PartnerSearchResponse.cs" />
     <Compile Include="Response\PoolResponse.cs" />
     <Compile Include="Response\RegionResponse.cs" />
     <Compile Include="Response\RoleMenuResponse.cs" />

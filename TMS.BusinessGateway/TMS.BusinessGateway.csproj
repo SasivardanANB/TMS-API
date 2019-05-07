@@ -54,6 +54,7 @@
     <Compile Include="Task\Transporter.cs" />
     <Compile Include="Task\Driver.cs" />
     <Compile Include="Task\Order.cs" />
+    <Compile Include="Task\Master.cs" />
     <Compile Include="Task\User.cs" />
     <Compile Include="Task\Vehicle.cs" />
   </ItemGroup>

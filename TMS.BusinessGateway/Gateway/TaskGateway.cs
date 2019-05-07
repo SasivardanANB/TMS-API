@@ -48,5 +48,10 @@ namespace TMS.BusinessGateway.Gateway
         {
             get { return new BusinessPartnerTask(new Partner()); }
         }
+
+        public IMasterTask MasterTask
+        {
+            get { return new BusinessMasterTask(new Master()); }
+        }
     }
 }

@@ -27,6 +27,7 @@ namespace OMS.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+
             IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
             UserResponse userData = userTask.LoginUser(login);
             return Ok(userData);
