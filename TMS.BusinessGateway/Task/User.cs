@@ -29,6 +29,8 @@ namespace TMS.BusinessGateway.Task
             return userData;
         }
 
+        #region "User Application"
+
         public override UserResponse CreateUpdateUser(UserRequest user)
         {
             //If needed write business logic here for request.
@@ -46,21 +48,26 @@ namespace TMS.BusinessGateway.Task
             return userData;
         }
 
+        public override UserResponse GetUsers(UserRequest userReq)
+        {
+            UserResponse usersList = _userRepository.GetUsers(userReq);
+            return usersList;
+        }
+
+        #endregion
+
+        #region "Role Management"
+
         public override RoleResponse CreateUpdateRole(RoleRequest role)
         {
             RoleResponse roleResponse = _userRepository.CreateUpdateRole(role);
             return roleResponse;
         }
+
         public override RoleResponse DeleteRole(int Id)
         {
             RoleResponse roleResponse = _userRepository.DeleteRole(Id);
             return roleResponse;
-        }
-
-        public override UserResponse GetUsers(UserRequest userReq)
-        {
-            UserResponse usersList = _userRepository.GetUsers(userReq);
-            return usersList;
         }
 
         public override RoleResponse GetRoles(RoleRequest roles)
@@ -69,11 +76,15 @@ namespace TMS.BusinessGateway.Task
             return rolesList;
         }
 
-        public override RegionResponse GetRegions(RegionRequest regions)
+        public override RoleResponse GetRoleDetails(int roleId)
         {
-            RegionResponse regionsList = _userRepository.GetRegions(regions);
-            return regionsList;
+            RoleResponse roleResponse = _userRepository.GetRoleDetails(roleId);
+            return roleResponse;
         }
+
+        #endregion
+
+        #region "User Role"
 
         public override UserRoleResponse CreateUpdateUserRole(UserRoleRequest userRoleRequest)
         {
@@ -87,6 +98,22 @@ namespace TMS.BusinessGateway.Task
             return userData;
         }
 
+        public override UserRoleResponse GetUserRoles(UserRoleRequest userRoleRequest)
+        {
+            UserRoleResponse userRoleResponse = _userRepository.GetUserRoles(userRoleRequest);
+            return userRoleResponse;
+        }
+
+        #endregion
+
+        #region "Master Data Operations"
+
+        public override RegionResponse GetRegions(RegionRequest regions)
+        {
+            RegionResponse regionsList = _userRepository.GetRegions(regions);
+            return regionsList;
+        }
+
         public override RoleMenuResponse GetMenuWithActivities()
         {
             RoleMenuResponse roleMenuResponse = _userRepository.GetMenuWithActivities();
@@ -97,12 +124,6 @@ namespace TMS.BusinessGateway.Task
         {
             ApplicationResponse applicationResponse = _userRepository.GetApplications();
             return applicationResponse;
-        }
-
-        public override RoleResponse GetRoleDetails(int roleId)
-        {
-            RoleResponse roleResponse = _userRepository.GetRoleDetails(roleId);
-            return roleResponse;
         }
 
         public override CommonResponse GetUserNames()
@@ -122,6 +143,8 @@ namespace TMS.BusinessGateway.Task
             CommonResponse commonResponse = _userRepository.GetRegionCodes();
             return commonResponse;
         }
+
+        #endregion
 
         public override DashboardResponse GetUserDashboard(UserRequest user)
         {
