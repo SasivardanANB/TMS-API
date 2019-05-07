@@ -42,7 +42,7 @@ namespace TMS.DataGateway.Migrations
                 string postalCodes = "TMS.DataGateway.SeedData.PostalCodes.csv";
                 string subdistricts = "TMS.DataGateway.SeedData.SubDistricts.csv";
                 string businessAreas = "TMS.DataGateway.SeedData.BusinessAreas.csv";
-                string orderStatus = "OMS.DataGateway.SeedData.OrderStatus.csv";
+                string orderStatus = "TMS.DataGateway.SeedData.OrderStatus.csv";
 
                 using (Stream stream = assembly.GetManifestResourceStream(applications))
                 {

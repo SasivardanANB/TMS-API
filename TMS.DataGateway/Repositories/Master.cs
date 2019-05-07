@@ -64,5 +64,52 @@ namespace TMS.DataGateway.Repositories
             }
             return partnerSearchResponse;
         }
+
+
+        public CommonResponse GetDriverNames()
+        {
+            CommonResponse driverNames = new CommonResponse();
+            using (var context = new TMSDBContext())
+            {
+                var driversList = context.Drivers.Where(driver => !driver.IsDelete && driver.IsActive).Select(response => new Domain.Common()
+                {
+                    Id = response.ID,
+                    Value = response.DriverNo
+                }).ToList();
+                if (driversList != null)
+                {
+                    driverNames.NumberOfRecords = driverNames.Data.Count;
+                    driverNames.Data = driversList;
+                }
+                else
+                {
+                    driverNames.NumberOfRecords = 0;
+                }
+                return driverNames;
+            }
+        }
+
+        public CommonResponse GetVehicleTypeNames()
+        {
+            CommonResponse vehicleTypeNames = new CommonResponse();
+            using (var context = new TMSDBContext())
+            {
+                var vehicleTypeList = context.VehicleTypes.Select(response => new Domain.Common()
+                {
+                    Id = response.ID,
+                    Value = response.VehicleTypeDescription
+                }).ToList();
+                if (vehicleTypeList != null)
+                {
+                    vehicleTypeNames.NumberOfRecords = vehicleTypeNames.Data.Count;
+                    vehicleTypeNames.Data = vehicleTypeList;
+                }
+                else
+                {
+                    vehicleTypeNames.NumberOfRecords = 0;
+                }
+                return vehicleTypeNames;
+            }
+        }
     }
 }

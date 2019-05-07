@@ -7,7 +7,7 @@ namespace TMS.DataGateway.Migrations
     {
         public override void Up()
         {
-            AlterColumn("TMS.OrderStatus", "CreatedTime", c => c.DateTime(nullable: false));
+            AlterColumn("TMS.OrderStatus", "CreatedTime", c => c.DateTime(nullable: false, defaultValueSql: "GETDATE()"));
         }
         
         public override void Down()

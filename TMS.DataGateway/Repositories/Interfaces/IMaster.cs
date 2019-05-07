@@ -12,5 +12,7 @@ namespace TMS.DataGateway.Repositories.Iterfaces
     public interface IMaster
     {
         PartnerSearchResponse GetPartners(PartnerSearchRequest partnerSearchRequest);
+        CommonResponse GetDriverNames();
+        CommonResponse GetVehicleTypeNames();
     }
 }

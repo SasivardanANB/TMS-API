@@ -22,14 +22,12 @@ namespace TMS.DataGateway.DataModels
             get { return "SYSTEM"; }
             set { }
         }
-        //[DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        //public DateTime CreatedTime
-        //{
-        //    get { return DateTime.Now; }
-        //    set { }
-        //}
-
-        public DateTime CreatedTime { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public DateTime CreatedTime
+        {
+            get { return DateTime.Now; }
+            set { }
+        }
         public string LastModifiedBy { get; set; }
         public DateTime? LastModifiedTime { get; set; }
 

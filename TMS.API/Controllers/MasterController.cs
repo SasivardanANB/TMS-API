@@ -24,5 +24,23 @@ namespace TMS.API.Controllers
             PartnerSearchResponse partnerSearchResponse = masterTask.GetPartners(partnerSearchRequest);
             return Ok(partnerSearchResponse);
         }
+
+        [Route("getdrivernames")]
+        [HttpPost]
+        public IHttpActionResult GetDriverNames()
+        {
+            IMasterTask masterTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().MasterTask;
+            CommonResponse commonResponse = masterTask.GetDriverNames();
+            return Ok(commonResponse);
+        }
+
+        [Route("getvehicletypenames")]
+        [HttpPost]
+        public IHttpActionResult GetVehicleTypeNames()
+        {
+            IMasterTask masterTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().MasterTask;
+            CommonResponse commonResponse = masterTask.GetDriverNames();
+            return Ok(commonResponse);
+        }
     }
 }
