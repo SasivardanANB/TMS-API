@@ -226,6 +226,7 @@
     <Compile Include="Repositories\Authenticate.cs" />
     <Compile Include="Repositories\Interfaces\IPool.cs" />
     <Compile Include="Repositories\Interfaces\IPartner.cs" />
+    <Compile Include="Repositories\Interfaces\IMaster.cs" />
     <Compile Include="Repositories\Interfaces\IVechicle.cs" />
     <Compile Include="Repositories\Pool.cs" />
     <Compile Include="Repositories\Interfaces\IPIC.cs" />
@@ -238,6 +239,7 @@
     <Compile Include="Repositories\Interfaces\ITransporter.cs" />
     <Compile Include="Repositories\Interfaces\IUser.cs" />
     <Compile Include="Repositories\Order.cs" />
+    <Compile Include="Repositories\Master.cs" />
     <Compile Include="Repositories\User.cs" />
     <Compile Include="Repositories\Vehicle.cs" />
   </ItemGroup>
