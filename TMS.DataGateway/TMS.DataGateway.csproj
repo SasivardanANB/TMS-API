@@ -105,6 +105,7 @@
     <Compile Include="DataModels\CompanyCodeNumberingRange.cs" />
     <Compile Include="DataModels\Driver.cs" />
     <Compile Include="DataModels\FieldLabelMenu.cs" />
+    <Compile Include="DataModels\FleetType.cs" />
     <Compile Include="DataModels\Menu.cs" />
     <Compile Include="DataModels\MenuActivity.cs" />
     <Compile Include="DataModels\NumberingRange.cs" />
@@ -225,6 +226,10 @@
     <Compile Include="Migrations\201905071227105_PendingChanges.Designer.cs">
       <DependentUpon>201905071227105_PendingChanges.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201905071241321_Pendingchanges_v2.cs" />
+    <Compile Include="Migrations\201905071241321_Pendingchanges_v2.Designer.cs">
+      <DependentUpon>201905071241321_Pendingchanges_v2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\Authenticate.cs" />
@@ -304,6 +309,9 @@
     <EmbeddedResource Include="Migrations\201905071227105_PendingChanges.resx">
       <DependentUpon>201905071227105_PendingChanges.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905071241321_Pendingchanges_v2.resx">
+      <DependentUpon>201905071241321_Pendingchanges_v2.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SeedData\Activities.csv" />
     <EmbeddedResource Include="SeedData\applications.csv" />
     <EmbeddedResource Include="SeedData\BusinessAreas.csv" />
@@ -315,6 +323,7 @@
     <EmbeddedResource Include="SeedData\Provinces.csv" />
     <EmbeddedResource Include="SeedData\SubDistricts.csv" />
     <EmbeddedResource Include="SeedData\OrderStatus.csv" />
+    <EmbeddedResource Include="SeedData\FleetTypes.csv" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TMS.DomainObjects\TMS.DomainObjects.csproj">

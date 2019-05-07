@@ -65,5 +65,6 @@ namespace TMS.DataGateway.DataModels
         public virtual DbSet<OrderStatus> OrderStatuses { get; set; }
         public virtual DbSet<PackingSheet> PackingSheets { get; set; }
         public virtual DbSet<ShipmentSAP> ShipmentSAPs { get; set; }
+        public virtual DbSet<FleetType> FleetTypes { get; set; }
     }
 }

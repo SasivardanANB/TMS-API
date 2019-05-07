@@ -42,7 +42,8 @@ namespace TMS.DataGateway.Migrations
                 string postalCodes = "TMS.DataGateway.SeedData.PostalCodes.csv";
                 string subdistricts = "TMS.DataGateway.SeedData.SubDistricts.csv";
                 string businessAreas = "TMS.DataGateway.SeedData.BusinessAreas.csv";
-                string orderStatus = "TMS.DataGateway.SeedData.OrderStatus.csv";
+                string orderStatuses = "TMS.DataGateway.SeedData.OrderStatus.csv";
+                string fleetTypes = "TMS.DataGateway.SeedData.FleetTypes.csv";
 
                 using (Stream stream = assembly.GetManifestResourceStream(applications))
                 {
@@ -226,7 +227,7 @@ namespace TMS.DataGateway.Migrations
 
                 #endregion
 
-                using (Stream stream = assembly.GetManifestResourceStream(orderStatus))
+                using (Stream stream = assembly.GetManifestResourceStream(orderStatuses))
                 {
                     using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
                     {
@@ -235,6 +236,18 @@ namespace TMS.DataGateway.Migrations
                         csvReader.Configuration.MissingFieldFound = null;
                         var orderStatusData = csvReader.GetRecords<DataModel.OrderStatus>().ToArray();
                         context.OrderStatuses.AddOrUpdate(c => c.ID, orderStatusData);
+                    }
+                }
+
+                using (Stream stream = assembly.GetManifestResourceStream(fleetTypes))
+                {
+                    using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                    {
+                        CsvReader csvReader = new CsvReader(reader);
+                        csvReader.Configuration.HeaderValidated = null;
+                        csvReader.Configuration.MissingFieldFound = null;
+                        var fleetTypeData = csvReader.GetRecords<DataModel.FleetType>().ToArray();
+                        context.FleetTypes.AddOrUpdate(c => c.ID, fleetTypeData);
                     }
                 }
 

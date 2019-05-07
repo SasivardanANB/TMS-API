@@ -24,7 +24,9 @@ namespace TMS.DataGateway.DataModels
         public string LegecyOrderNo { get; set; }
         public DateTime OrderDate { get; set; }
         public int OrderType { get; set; }
-        public int FleetType { get; set; }
+        [ForeignKey("FleetType")]
+        public int FleetTypeID { get; set; }
+        public FleetType FleetType { get; set; }
         public string VehicleShipment { get; set; }
         public string DriverNo { get; set; }
         public string DriverName { get; set; }
