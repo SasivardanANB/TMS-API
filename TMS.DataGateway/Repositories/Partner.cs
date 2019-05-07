@@ -43,12 +43,16 @@ namespace TMS.DataGateway.Repositories
                         partnerData.IsDeleted = false;
                         if (partnerData.ID > 0) //Update User
                         {
+                            partnerData.LastModifiedBy = partnerRequest.LastModifiedBy;
+                            partnerData.LastModifiedTime = DateTime.Now;
                             context.Entry(partnerData).State = System.Data.Entity.EntityState.Modified;
                             context.SaveChanges();
                             partnerResponse.StatusMessage = DomainObjects.Resource.ResourceData.PartnerUpdated;
                         }
                         else //Create User
                         {
+                            partnerData.CreatedBy = partnerRequest.LastModifiedBy;
+                            partnerData.CreatedTime = DateTime.Now;
                             context.Partners.Add(partnerData);
                             context.SaveChanges();
                             partnerResponse.StatusMessage = DomainObjects.Resource.ResourceData.PartnerCreated;

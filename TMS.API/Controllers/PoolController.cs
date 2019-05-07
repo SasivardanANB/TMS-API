@@ -9,9 +9,11 @@ using TMS.DomainGateway.Task.Interfaces;
 using TMS.DomainObjects.Request;
 using TMS.DomainObjects.Response;
 using TMS.DomainGateway.Gateway.Interfaces;
+using TMS.API.Classes;
 
 namespace TMS.API.Controllers
 {
+    [CustomAuthorize]
     [RoutePrefix("api/v1/pool")]
     public class PoolController : ApiController
     {

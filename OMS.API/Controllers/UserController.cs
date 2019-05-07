@@ -54,7 +54,11 @@ namespace OMS.API.Controllers
                 {
                     ModelState.AddModelError($"{nameof(user)}.{nameof(user.Requests)}.[{i}].{nameof(OMS.DomainObjects.Objects.User.Applications)}", DomainObjects.Resource.ResourceData.InvalidApplication);
                 }
-
+                if (user.Requests[i].ID > 0)
+                {
+                    ModelState.Remove("user.Requests[" + i + "].Password");
+                    ModelState.Remove("user.Requests[" + i + "].ConfirmPassword");
+                }
             }
 
             if (!ModelState.IsValid)

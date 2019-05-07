@@ -172,7 +172,7 @@ namespace TMS.DataGateway.Migrations
                 "TMS.Driver",
                 c => new
                     {
-                        ID = c.String(nullable: false, maxLength: 128),
+                        ID = c.Int(nullable: false, identity: true),
                         DriverNo = c.String(maxLength: 12),
                         DriverName = c.String(maxLength: 30),
                         DriverAddress = c.String(maxLength: 255),

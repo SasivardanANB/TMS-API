@@ -104,8 +104,6 @@
     <Compile Include="DataModels\CompanyCode.cs" />
     <Compile Include="DataModels\CompanyCodeNumberingRange.cs" />
     <Compile Include="DataModels\Driver.cs" />
-    <Compile Include="DataModels\Expeditor.cs" />
-    <Compile Include="DataModels\ExpeditorType.cs" />
     <Compile Include="DataModels\FieldLabelMenu.cs" />
     <Compile Include="DataModels\Menu.cs" />
     <Compile Include="DataModels\MenuActivity.cs" />
@@ -195,6 +193,10 @@
     <Compile Include="Migrations\201905030945591_ImageGuIdColumns_Modified.Designer.cs">
       <DependentUpon>201905030945591_ImageGuIdColumns_Modified.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201905070511295_createdbymodifeidbydatetime.cs" />
+    <Compile Include="Migrations\201905070511295_createdbymodifeidbydatetime.Designer.cs">
+      <DependentUpon>201905070511295_createdbymodifeidbydatetime.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201905070720523_tms_v1.0_Orders.cs" />
     <Compile Include="Migrations\201905070720523_tms_v1.0_Orders.Designer.cs">
       <DependentUpon>201905070720523_tms_v1.0_Orders.cs</DependentUpon>
@@ -229,7 +231,6 @@
     <Compile Include="Repositories\Interfaces\IPIC.cs" />
     <Compile Include="Repositories\PIC.cs" />
     <Compile Include="Repositories\Partner.cs" />
-    <Compile Include="Repositories\Transporter.cs" />
     <Compile Include="Repositories\Driver.cs" />
     <Compile Include="Repositories\Interfaces\IAuthenticate.cs" />
     <Compile Include="Repositories\Interfaces\IDriver.cs" />
@@ -290,6 +291,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201905070854032_tms_v1.0_Partner_ShipmentSAP_PackingSheet.resx">
       <DependentUpon>201905070854032_tms_v1.0_Partner_ShipmentSAP_PackingSheet.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905070511295_createdbymodifeidbydatetime.resx">
+      <DependentUpon>201905070511295_createdbymodifeidbydatetime.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SeedData\Activities.csv" />
     <EmbeddedResource Include="SeedData\applications.csv" />

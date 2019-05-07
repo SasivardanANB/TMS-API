@@ -9,9 +9,11 @@ using TMS.DomainGateway.Task.Interfaces;
 using TMS.DomainObjects.Request;
 using TMS.DomainObjects.Response;
 using TMS.DomainGateway.Gateway.Interfaces;
+using TMS.API.Classes;
 
 namespace TMS.API.Controllers
 {
+    [CustomAuthorize]
     [RoutePrefix("api/v1/vehicle")]
     public class VehicleController : ApiController
     {
@@ -27,7 +29,7 @@ namespace TMS.API.Controllers
             return Ok(vehicleResponse);
         }
 
-        [Route("activateordeactivatevehicle")]
+        [Route("deletevehicle")]
         [HttpDelete]
         public IHttpActionResult DeleteVehicle(int vehicleID)
         {

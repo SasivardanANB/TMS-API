@@ -57,8 +57,6 @@ namespace TMS.DataGateway.DataModels
         public virtual DbSet<RoleMenu> RoleMenus { get; set; }
         public virtual DbSet<RoleMenuActivity> RoleMenuActivity { get; set; }
         public virtual DbSet<UserApplication> UserApplications { get; set; }
-        public virtual DbSet<Expeditor> Expeditors { get; set; }
-        public virtual DbSet<ExpeditorType> ExpeditorTypes  { get; set; }
         public virtual DbSet<Vehicle> Vehicles { get; set; }
         public virtual DbSet<Pool> Pools { get; set; }
         public virtual DbSet<PIC> Pics  { get; set; }

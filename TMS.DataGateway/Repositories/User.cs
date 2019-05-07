@@ -18,7 +18,6 @@ using System.Data.Common;
 
 namespace TMS.DataGateway.Repositories
 {
-
     public class User : IUser
     {
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
@@ -36,7 +35,7 @@ namespace TMS.DataGateway.Repositories
                     string encryptedPassword = Encryption.EncryptionLibrary.EncryptPassword(login.UserPassword);
                     var userData = (from user in context.Users
                                     where user.UserName == login.UserName
-                                    && user.Password == encryptedPassword
+                                    && user.Password == encryptedPassword && !user.IsDelete
                                     select new Domain.User()
                                     {
                                         ID = user.ID,
@@ -75,7 +74,8 @@ namespace TMS.DataGateway.Repositories
 
                             //Get Token and add to response
                             var tokenData = (from tokens in context.Tokens
-                                             where tokens.UserID == userData.ID // &&  tokens.TokenKey == token
+                                             where tokens.UserID == userData.ID
+                                             //&&  tokens.TokenKey == token 
                                              select new Domain.Authenticate()
                                              {
                                                  UserID = tokens.UserID,
@@ -120,6 +120,8 @@ namespace TMS.DataGateway.Repositories
             return userResponse;
         }
 
+        #region "User Application"
+
         public UserResponse CreateUpdateUser(UserRequest user)
         {
             UserResponse userResponse = new UserResponse();
@@ -127,53 +129,86 @@ namespace TMS.DataGateway.Repositories
             {
                 using (var context = new TMSDBContext())
                 {
+                    var userDataModelList = new List<DataModel.User>();
                     var config = new MapperConfiguration(cfg =>
                     {
                         cfg.CreateMap<Domain.User, DataModel.User>().ReverseMap()
-                        //.ForMember(x => x.RoleName, opt => opt.Ignore())
-                        //.ForMember(x => x.BusinessAreaName, opt => opt.Ignore())
                         .ForMember(x => x.ApplicationNames, opt => opt.Ignore());
                     });
 
                     IMapper mapper = config.CreateMapper();
-                    var users = mapper.Map<List<Domain.User>, List<DataModel.User>>(user.Requests);
 
                     //Encrypt Password
-                    foreach (var userData in users)
+                    foreach (var userData in user.Requests)
                     {
-                        if (!string.IsNullOrEmpty(userData.Password))
+
+                        var userDataModel = mapper.Map<Domain.User, DataModel.User>(userData);
+
+                        if (!string.IsNullOrEmpty(userDataModel.Password))
                         {
-                            userData.Password = Encryption.EncryptionLibrary.EncryptPassword(userData.Password);
+                            userDataModel.Password = Encryption.EncryptionLibrary.EncryptPassword(userDataModel.Password);
                         }
-                        //if (userData.BusinessAreaID == 0)
-                        //{
-                        //    userData.BusinessAreaID = null;
-                        //}
-                        //if (userData.RoleID == 0)
-                        //{
-                        //    userData.RoleID = null;
-                        //}
-                        if (userData.ID > 0) //Update User
+                        if (userDataModel.ID > 0) //Update User
                         {
-                            userData.LastModifiedBy = user.LastModifiedBy;
-                            userData.LastModifiedTime = DateTime.Now;
-                            context.Entry(userData).State = System.Data.Entity.EntityState.Modified;
+                            userDataModel.LastModifiedBy = user.LastModifiedBy;
+                            userDataModel.LastModifiedTime = DateTime.Now;
+                            context.Entry(userDataModel).State = System.Data.Entity.EntityState.Modified;
                             context.SaveChanges();
+                            var existedApplications = (from userApplication in context.UserApplications
+                                                       where userApplication.UserID == userDataModel.ID
+                                                       select userApplication).ToList();
+                            if (existedApplications != null)
+                            {
+                                context.UserApplications.RemoveRange(existedApplications);
+                                context.SaveChanges();
+                            }
+
+                            if (userData.Applications.Count > 0)
+                            {
+                                foreach (var applicationID in userData.Applications)
+                                {
+                                    var userApplication = new UserApplication();
+                                    userApplication.UserID = userData.ID;
+                                    userApplication.ApplicationID = applicationID;
+                                    userApplication.CreatedBy = user.CreatedBy;
+
+                                    context.UserApplications.Add(userApplication);
+                                    context.SaveChanges();
+                                }
+                            }
                             userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UsersUpdated;
                         }
                         else //Create User
                         {
-                            userData.CreatedBy = user.CreatedBy;
-                            userData.CreatedTime = DateTime.Now;
-                            userData.LastModifiedBy = "";
-                            userData.LastModifiedTime = null;
-                            context.Users.Add(userData);
+                            userDataModel.CreatedBy = user.CreatedBy;
+                            userDataModel.CreatedTime = DateTime.Now;
+                            userDataModel.IsActive = true;
+                            userDataModel.LastModifiedBy = "";
+                            userDataModel.LastModifiedTime = null;
+                            context.Users.Add(userDataModel);
                             context.SaveChanges();
+
+                            if (userData.Applications.Count > 0)
+                            {
+                                foreach (var applicationID in userData.Applications)
+                                {
+                                    var userApplication = new UserApplication();
+                                    userApplication.UserID = userDataModel.ID;
+                                    userApplication.ApplicationID = applicationID;
+                                    userApplication.CreatedBy = user.CreatedBy;
+
+                                    context.UserApplications.Add(userApplication);
+                                    context.SaveChanges();
+                                }
+                            }
+
                             userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UsersCreated;
                         }
+
+                        userDataModelList.Add(userDataModel);
                     }
 
-                    user.Requests = mapper.Map<List<DataModel.User>, List<Domain.User>>(users);
+                    user.Requests = mapper.Map<List<DataModel.User>, List<Domain.User>>(userDataModelList);
                     userResponse.Data = user.Requests;
                     userResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     userResponse.StatusCode = (int)HttpStatusCode.OK;
@@ -227,6 +262,136 @@ namespace TMS.DataGateway.Repositories
             }
             return userResponse;
         }
+
+        public UserResponse GetUsers(UserRequest userReq)
+        {
+            UserResponse userResponse = new UserResponse();
+            List<Domain.User> usersList = new List<Domain.User>();
+            List<DataModels.User> users = new List<DataModels.User>();
+            try
+            {
+                using (var context = new TMSDBContext())
+                {
+                    usersList =
+                        (from user in context.Users
+                         where !user.IsDelete
+                         select new Domain.User
+                         {
+                             ID = user.ID,
+                             UserName = user.UserName,
+                             FirstName = user.FirstName,
+                             LastName = user.LastName,
+                             IsActive = user.IsActive,
+                             Applications = context.UserApplications.Where(userApp => userApp.UserID == user.ID).Select(userApp => userApp.ApplicationID).ToList(),
+                             ApplicationNames = context.Applications.Where(a => (context.UserApplications.Where(userApp => userApp.UserID == user.ID).Select(userApp => userApp.ApplicationID).ToList()).Contains(a.ID)).Select(a => a.ApplicationName).ToList(),
+                             Roles = context.Roles.Where(r => (context.UserRoles.Where(ur => ur.UserID == user.ID).Select(l => l.ID).ToList()).Contains(r.ID)).Select(fe => new Domain.Role
+                             {
+                                 ID = fe.ID,
+                                 RoleCode = fe.RoleCode,
+                                 RoleDescription = fe.RoleDescription
+                             }).ToList(),
+                             Regions = context.BusinessAreas.Where(r => (context.UserRoles.Where(ur => ur.UserID == user.ID).Select(l => l.ID).ToList()).Contains(r.ID)).Select(fe => new Domain.Region
+                             {
+                                 ID = fe.ID,
+                                 BusinessAreaCode = fe.BusinessAreaCode,
+                                 BusinessAreaDescription = fe.BusinessAreaDescription
+                             }).ToList(),
+                         }).ToList();
+                }
+
+                // Filter
+                if (userReq.Requests.Count > 0)
+                {
+                    var userFilter = userReq.Requests[0];
+
+                    if (userFilter.ID > 0)
+                    {
+                        usersList = usersList.Where(s => s.ID == userFilter.ID).ToList();
+                    }
+
+                    if (!String.IsNullOrEmpty(userFilter.UserName))
+                    {
+                        usersList = usersList.Where(s => s.UserName.Contains(userFilter.UserName)).ToList();
+                    }
+
+                    if (!String.IsNullOrEmpty(userFilter.FirstName))
+                    {
+                        usersList = usersList.Where(s => s.FirstName.Contains(userFilter.FirstName)).ToList();
+                    }
+
+                    if (!String.IsNullOrEmpty(userFilter.LastName))
+                    {
+                        usersList = usersList.Where(s => s.LastName.Contains(userFilter.LastName)).ToList();
+                    }
+
+                    if (userFilter.IsActive != null)
+                    {
+                        usersList = usersList.Where(s => s.IsActive == userFilter.IsActive).ToList();
+                    }
+                }
+
+                // Sorting
+                switch (userReq.SortOrder.ToLower())
+                {
+                    case "username":
+                        usersList = usersList.OrderBy(s => s.UserName).ToList();
+                        break;
+                    case "username_desc":
+                        usersList = usersList.OrderByDescending(s => s.UserName).ToList();
+                        break;
+                    case "firstname":
+                        usersList = usersList.OrderBy(s => s.FirstName).ToList();
+                        break;
+                    case "firstname_desc":
+                        usersList = usersList.OrderByDescending(s => s.FirstName).ToList();
+                        break;
+                    case "lastname":
+                        usersList = usersList.OrderBy(s => s.LastName).ToList();
+                        break;
+                    case "lastname_desc":
+                        usersList = usersList.OrderByDescending(s => s.LastName).ToList();
+                        break;
+                    default:  // ID Descending 
+                        usersList = usersList.OrderByDescending(s => s.ID).ToList();
+                        break;
+                }
+
+                // Total NumberOfRecords
+                userResponse.NumberOfRecords = usersList.Count;
+
+                // Paging
+                int pageNumber = (userReq.PageNumber ?? 1);
+                int pageSize = Convert.ToInt32(userReq.PageSize);
+                if (pageSize > 0)
+                {
+                    usersList = usersList.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+                }
+                if (usersList.Count > 0)
+                {
+                    userResponse.Data = usersList;
+                    userResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                    userResponse.StatusCode = (int)HttpStatusCode.OK;
+                }
+                else
+                {
+                    userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                    userResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+
+                userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                userResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                userResponse.StatusMessage = DomainObjects.Resource.ResourceData.DataBaseException;
+            }
+            return userResponse;
+        }
+
+        #endregion
+
+        #region "Role Management"
 
         public RoleResponse CreateUpdateRole(RoleRequest role)
         {
@@ -443,144 +608,458 @@ namespace TMS.DataGateway.Repositories
             return roleResponse;
         }
 
-        public UserResponse GetUsers(UserRequest userReq)
+        public RoleResponse GetRoles(RoleRequest roles)
         {
-            UserResponse userResponse = new UserResponse();
-            List<Domain.User> usersList = new List<Domain.User>();
-            List<DataModels.User> users = new List<DataModels.User>();
+            RoleResponse roleResponse = new RoleResponse();
             try
             {
                 using (var context = new TMSDBContext())
                 {
-                    usersList =
-                        (from user in context.Users
-                         select new Domain.User
-                         {
-                             ID = user.ID,
-                             UserName = user.UserName,
-                             FirstName = user.FirstName,
-                             LastName = user.LastName,
-                             //RoleID = user.RoleID,
-                             //RoleName = context.Roles.Where(role => role.ID == user.RoleID).Select(role => role.RoleDescription).FirstOrDefault().ToString(),
-                             //BusinessAreaID = user.BusinessAreaID,
-                             //BusinessAreaName = context.BusinessAreas.Where(b => b.ID == user.BusinessAreaID).Select(b => b.BusinessAreaDescription).FirstOrDefault().ToString(),
-                             IsActive = user.IsActive,
-                             Applications = context.UserApplications.Where(userApp => userApp.UserID == user.ID).Select(userApp => userApp.ID).ToList(),
-                             ApplicationNames = context.Applications.Where(a => (context.UserApplications.Where(userApp => userApp.UserID == user.ID).Select(userApp => userApp.ID).ToList()).Contains(a.ID)).Select(a => a.ApplicationName).ToList(),
-                             Roles = context.Roles.Where(r => (context.UserRoles.Where(ur => ur.UserID == user.ID).Select(l => l.ID).ToList()).Contains(r.ID)).Select(fe => new Domain.Role
-                             {
-                                 ID = fe.ID,
-                                 RoleCode = fe.RoleCode,
-                                 RoleDescription = fe.RoleDescription
-                             }).ToList(),
-                             Regions = context.BusinessAreas.Where(r => (context.UserRoles.Where(ur => ur.UserID == user.ID).Select(l => l.ID).ToList()).Contains(r.ID)).Select(fe => new Domain.Region
-                             {
-                                 ID = fe.ID,
-                                 BusinessAreaCode = fe.BusinessAreaCode,
-                                 BusinessAreaDescription = fe.BusinessAreaDescription
-                             }).ToList(),
-                         }).ToList();
-                }
-
-                // Filter
-                if (userReq.Requests.Count > 0)
-                {
-                    var userFilter = userReq.Requests[0];
-
-                    if (userFilter.ID > 0)
+                    List<Domain.Role> rolesList = context.Roles.Where(r => !r.IsDelete).Select(role => new Domain.Role
                     {
-                        usersList = usersList.Where(s => s.ID == userFilter.ID).ToList();
+                        ID = role.ID,
+                        RoleCode = role.RoleCode,
+                        RoleDescription = role.RoleDescription,
+                        ValidFrom = role.ValidFrom,
+                        ValidTo = role.ValidTo,
+                        IsActive = role.IsActive
+                    }).ToList();
+
+                    // Filter
+                    if (roles.Requests.Count > 0)
+                    {
+                        var filter = roles.Requests[0];
+
+                        if (filter.ID > 0)
+                        {
+                            rolesList = rolesList.Where(s => s.ID == filter.ID).ToList();
+                        }
+
+                        if (!String.IsNullOrEmpty(filter.RoleCode))
+                        {
+                            rolesList = rolesList.Where(s => s.RoleCode.Contains(filter.RoleCode)).ToList();
+                        }
+
+                        if (!String.IsNullOrEmpty(filter.RoleDescription))
+                        {
+                            rolesList = rolesList.Where(s => s.RoleDescription.Contains(filter.RoleDescription)).ToList();
+                        }
+
+                        if (filter.ValidFrom != DateTime.MinValue)
+                        {
+                            rolesList = rolesList.Where(s => s.ValidFrom >= filter.ValidFrom).ToList();
+                        }
+
+                        if (filter.ValidTo != DateTime.MinValue)
+                        {
+                            rolesList = rolesList.Where(s => s.ValidTo <= filter.ValidTo).ToList();
+                        }
+                        if (!filter.IsActive)
+                        {
+                            rolesList = rolesList.Where(s => s.IsActive == false).ToList();
+                        }
+                        else
+                        {
+                            rolesList = rolesList.Where(s => s.IsActive).ToList();
+                        }
                     }
 
-                    if (!String.IsNullOrEmpty(userFilter.UserName))
+                    // Sorting
+                    if (!string.IsNullOrEmpty(roles.SortOrder))
                     {
-                        usersList = usersList.Where(s => s.UserName.Contains(userFilter.UserName)).ToList();
+                        switch (roles.SortOrder.ToLower())
+                        {
+                            case "isactive":
+                                rolesList = rolesList.OrderBy(s => s.IsActive).ToList();
+                                break;
+                            case "isactive_desc":
+                                rolesList = rolesList.OrderByDescending(s => s.IsActive).ToList();
+                                break;
+                            case "rolecode":
+                                rolesList = rolesList.OrderBy(s => s.RoleCode).ToList();
+                                break;
+                            case "rolecode_desc":
+                                rolesList = rolesList.OrderByDescending(s => s.RoleCode).ToList();
+                                break;
+                            case "roledescription":
+                                rolesList = rolesList.OrderBy(s => s.RoleDescription).ToList();
+                                break;
+                            case "roledescription_desc":
+                                rolesList = rolesList.OrderByDescending(s => s.RoleDescription).ToList();
+                                break;
+                            case "validfrom":
+                                rolesList = rolesList.OrderBy(s => s.ValidFrom).ToList();
+                                break;
+                            case "validfrom_desc":
+                                rolesList = rolesList.OrderByDescending(s => s.ValidFrom).ToList();
+                                break;
+                            case "validto":
+                                rolesList = rolesList.OrderBy(s => s.ValidTo).ToList();
+                                break;
+                            case "validto_desc":
+                                rolesList = rolesList.OrderByDescending(s => s.ValidTo).ToList();
+                                break;
+                            default:  // ID Descending 
+                                rolesList = rolesList.OrderByDescending(s => s.ID).ToList();
+                                break;
+                        }
                     }
 
-                    if (!String.IsNullOrEmpty(userFilter.FirstName))
+                    // Total NumberOfRecords
+                    roleResponse.NumberOfRecords = rolesList.Count;
+
+                    // Paging
+                    int pageNumber = (roles.PageNumber ?? 1);
+                    int pageSize = Convert.ToInt32(roles.PageSize);
+                    if (pageSize > 0)
                     {
-                        usersList = usersList.Where(s => s.FirstName.Contains(userFilter.FirstName)).ToList();
+                        rolesList = rolesList.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
                     }
-
-                    if (!String.IsNullOrEmpty(userFilter.LastName))
+                    if (rolesList.Count > 0)
                     {
-                        usersList = usersList.Where(s => s.LastName.Contains(userFilter.LastName)).ToList();
+                        roleResponse.Data = rolesList;
+                        roleResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        roleResponse.StatusCode = (int)HttpStatusCode.OK;
                     }
-
-                    //if (userFilter.RoleID != null && userFilter.RoleID > 0)
-                    //{
-                    //    usersList = usersList.Where(s => s.RoleID == userFilter.RoleID).ToList();
-                    //}
-
-                    //if (userFilter.BusinessAreaID != null && userFilter.BusinessAreaID > 0)
-                    //{
-                    //    usersList = usersList.Where(s => s.BusinessAreaID == userFilter.BusinessAreaID).ToList();
-                    //}
-
-                    if (userFilter.IsActive != null)
+                    else
                     {
-                        usersList = usersList.Where(s => s.IsActive == userFilter.IsActive).ToList();
+                        roleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                        roleResponse.StatusCode = (int)HttpStatusCode.NotFound;
                     }
-                }
-
-                // Sorting
-                switch (userReq.SortOrder)
-                {
-                    case "username":
-                        usersList = usersList.OrderBy(s => s.UserName).ToList();
-                        break;
-                    case "username_desc":
-                        usersList = usersList.OrderByDescending(s => s.UserName).ToList();
-                        break;
-                    //case "Role":
-                    //    usersList = usersList.OrderBy(s => s.RoleName).ToList();
-                    //    break;
-                    //case "Role_Desc":
-                    //    usersList = usersList.OrderByDescending(s => s.RoleName).ToList();
-                    //    break;
-                    //case "Region":
-                    //    usersList = usersList.OrderBy(s => s.BusinessAreaName).ToList();
-                    //    break;
-                    //case "Region_Desc":
-                    //    usersList = usersList.OrderByDescending(s => s.BusinessAreaName).ToList();
-                    //    break;
-                    default:  // ID Descending 
-                        usersList = usersList.OrderByDescending(s => s.ID).ToList();
-                        break;
-                }
-
-                // Total NumberOfRecords
-                userResponse.NumberOfRecords = usersList.Count;
-
-                // Paging
-                int pageNumber = (userReq.PageNumber ?? 1);
-                int pageSize = Convert.ToInt32(userReq.PageSize);
-                if (pageSize > 0)
-                {
-                    usersList = usersList.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
-                }
-                if (usersList.Count > 0)
-                {
-                    userResponse.Data = usersList;
-                    userResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                    userResponse.StatusCode = (int)HttpStatusCode.OK;
-                }
-                else
-                {
-                    userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
-                    userResponse.StatusCode = (int)HttpStatusCode.NotFound;
                 }
             }
             catch (Exception ex)
             {
+                roleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                roleResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                roleResponse.StatusMessage = DomainObjects.Resource.ResourceData.DataBaseException;
                 _logger.Log(LogLevel.Error, ex);
+            }
+            return roleResponse;
+        }
 
+        public RoleResponse GetRoleDetails(int roleId)
+        {
+            RoleResponse roleResponse = new RoleResponse();
+            List<Domain.Role> userRoles = new List<Domain.Role>();
+            try
+            {
+                using (var context = new TMSDBContext())
+                {
+                    var roles = (from role in context.Roles
+                                 where role.ID == roleId
+                                 select new Domain.Role()
+                                 {
+                                     ID = role.ID,
+                                     RoleCode = role.RoleCode,
+                                     RoleDescription = role.RoleDescription,
+                                     ValidFrom = role.ValidFrom,
+                                     ValidTo = role.ValidTo,
+                                     IsActive = role.IsActive
+                                 }).FirstOrDefault();
+
+                    if (roles != null)
+                    {
+                        List<Domain.RoleMenu> roleMenus = new List<Domain.RoleMenu>();
+                        Domain.Role userRole = new Domain.Role();
+                        userRole.ID = roles.ID;
+                        userRole.RoleCode = roles.RoleCode;
+                        userRole.RoleDescription = roles.RoleDescription;
+                        userRole.ValidFrom = roles.ValidFrom;
+                        userRole.ValidTo = roles.ValidTo;
+                        userRole.IsActive = roles.IsActive;
+                        var roleMenuData = (from roleMenu in context.RoleMenus
+                                            where roleMenu.RoleID == roleId
+                                            select new Domain.RoleMenu()
+                                            {
+                                                ID = roleMenu.ID,
+                                                MenuCode = roleMenu.Menu.MenuCode,
+                                                MenuDescription = roleMenu.Menu.MenuDescription,
+                                                MenuURL = roleMenu.Menu.MenuURL
+                                            }).ToList();
+                        if (roleMenuData != null)
+                        {
+                            foreach (var roleMenu in roleMenuData)
+                            {
+                                Domain.RoleMenu obj = new Domain.RoleMenu();
+                                obj.ID = roleMenu.ID;
+                                obj.MenuCode = roleMenu.MenuCode;
+                                obj.MenuDescription = roleMenu.MenuDescription;
+                                var roleMenuActivities = (from roleMenuActivity in context.RoleMenuActivity
+                                                          join roleMenud in context.RoleMenus on roleMenuActivity.RoleMenuID equals roleMenud.ID
+                                                          where roleMenuActivity.RoleMenuID == roleMenu.ID
+                                                          select new Domain.RoleMenuActivity()
+                                                          {
+                                                              ID = roleMenuActivity.Activity.ID,
+                                                              ActivityCode = roleMenuActivity.Activity.ActivityCode,
+                                                              ActivityDescription = roleMenuActivity.Activity.ActivityDescription
+                                                          }).ToList();
+                                if (roleMenuActivities != null)
+                                {
+                                    List<Domain.RoleMenuActivity> roleMenuActiviti = new List<Domain.RoleMenuActivity>();
+                                    foreach (var activ in roleMenuActivities)
+                                    {
+                                        Domain.RoleMenuActivity roleMenuActivity = new Domain.RoleMenuActivity();
+                                        roleMenuActivity.ActivityCode = activ.ActivityCode;
+                                        roleMenuActivity.ID = activ.ID;
+                                        roleMenuActivity.ActivityDescription = activ.ActivityDescription;
+                                        roleMenuActiviti.Add(roleMenuActivity);
+                                    }
+                                    obj.RoleMenuActivities = roleMenuActivities;
+                                }
+                                roleMenus.Add(obj);
+                            }
+                        }
+                        userRole.RoleMenus = roleMenus;
+                        userRoles.Add(userRole);
+                        roleResponse.Data = userRoles;
+                        roleResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        roleResponse.StatusCode = (int)HttpStatusCode.OK;
+                    }
+                    else
+                    {
+                        roleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                        roleResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                roleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                roleResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                roleResponse.StatusMessage = DomainObjects.Resource.ResourceData.DataBaseException;
+                _logger.Log(LogLevel.Error, ex);
+            }
+            return roleResponse;
+        }
+
+        #endregion
+
+        #region "User Role"
+
+        public UserRoleResponse CreateUpdateUserRole(UserRoleRequest userRoleRequest)
+        {
+            UserRoleResponse userRoleResponse = new UserRoleResponse();
+            try
+            {
+                using (var tMSDBContext = new TMSDBContext())
+                {
+                    foreach (var userRoleDetail in userRoleRequest.Requests)
+                    {
+                        if (userRoleDetail.UserID > 0)
+                        {
+                            var isUserRoleAlreadyAssigned = tMSDBContext.UserRoles.Any(userRole => userRole.UserID == userRoleDetail.UserID && userRole.RoleID == userRoleDetail.RoleID && userRole.BusinessAreaID == userRoleDetail.BusinessAreaID && userRole.ID != userRoleDetail.ID);
+                            if (!isUserRoleAlreadyAssigned)
+                            {
+                                if (userRoleDetail.ID == 0)
+                                {
+                                    DataModel.UserRoles userRoleObject = new UserRoles()
+                                    {
+                                        UserID = userRoleDetail.UserID,
+                                        RoleID = userRoleDetail.RoleID,
+                                        BusinessAreaID = userRoleDetail.BusinessAreaID,
+                                        CreatedBy = userRoleRequest.CreatedBy,
+                                        CreatedTime = DateTime.Now
+                                    };
+                                    tMSDBContext.UserRoles.Add(userRoleObject);
+                                    userRoleResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserRoleCreated;
+                                }
+                                else
+                                {
+                                    var userAssignedRoleDetails = tMSDBContext.UserRoles.Where(userRole => userRole.RoleID == userRoleDetail.RoleID && userRole.BusinessAreaID == userRoleDetail.BusinessAreaID).FirstOrDefault();
+                                    userAssignedRoleDetails.RoleID = userRoleDetail.RoleID;
+                                    userAssignedRoleDetails.BusinessAreaID = userRoleDetail.BusinessAreaID;
+                                    userAssignedRoleDetails.LastModifiedBy = userRoleRequest.LastModifiedBy;
+                                    userAssignedRoleDetails.LastModifiedTime = userRoleRequest.LastModifiedTime;
+                                    userRoleResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserRoleUpdated;
+                                }
+                                tMSDBContext.SaveChanges();
+                                userRoleResponse.StatusCode = (int)HttpStatusCode.OK;
+                            }
+                            else
+                            {
+                                userRoleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                                userRoleResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserRoleAlreadyAssigned;
+                                userRoleResponse.StatusCode = (int)HttpStatusCode.NotAcceptable;
+                            }
+                        }
+                        else
+                        {
+                            userRoleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                            userRoleResponse.StatusMessage = DomainObjects.Resource.ResourceData.InvalidUserID;
+                            userRoleResponse.StatusCode = (int)HttpStatusCode.NotAcceptable;
+                        }
+                        userRoleResponse.Data = userRoleRequest.Requests;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                userRoleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                userRoleResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                userRoleResponse.StatusMessage = DomainObjects.Resource.ResourceData.DataBaseException;
+                _logger.Log(LogLevel.Error, ex);
+            }
+            return userRoleResponse;
+        }
+
+        public UserResponse DeleteUserRole(int userRoleID)
+        {
+            UserResponse userResponse = new UserResponse();
+            try
+            {
+                using (var context = new TMSDBContext())
+                {
+                    if (userRoleID > 0)
+                    {
+                        var userRoleDetails = context.UserRoles.Where(i => i.ID == userRoleID).FirstOrDefault();
+                        if (userRoleDetails != null)
+                        {
+                            userRoleDetails.IsDelete = true;
+                            context.SaveChanges();
+                            userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserRoleDeleted;
+                            userResponse.StatusCode = (int)HttpStatusCode.OK;
+                        }
+                        else
+                        {
+                            userResponse.StatusMessage = DomainObjects.Resource.ResourceData.InvalidUserID;
+                            userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                            userResponse.StatusCode = (int)HttpStatusCode.NotAcceptable;
+                        }
+                    }
+                    else
+                    {
+                        userResponse.StatusMessage = DomainObjects.Resource.ResourceData.InvalidUserID;
+                        userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                        userResponse.StatusCode = (int)HttpStatusCode.NotAcceptable;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
                 userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                 userResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
                 userResponse.StatusMessage = DomainObjects.Resource.ResourceData.DataBaseException;
+                _logger.Log(LogLevel.Error, ex);
             }
             return userResponse;
         }
+
+        public UserRoleResponse GetUserRoles(UserRoleRequest userRoleRequest)
+        {
+
+            UserRoleResponse userRoleResponse = new UserRoleResponse();
+
+            try
+            {
+                using (var context = new TMSDBContext())
+                {
+                    List<Domain.UserRole> userRoleList = context.UserRoles.Where(userRole => !userRole.IsDelete).Select(userRole => new Domain.UserRole
+                    {
+                        ID = userRole.ID,
+                        RoleID = userRole.RoleID,
+                        RoleName = userRole.Role.RoleDescription,
+                        UserID = userRole.UserID,
+                        UserName = userRole.User.UserName,
+                        BusinessAreaID = userRole.BusinessAreaID,
+                        BusinessArea = userRole.BusinessArea.BusinessAreaDescription
+                    }).ToList();
+
+                    // Filter
+                    if (userRoleRequest.Requests.Count > 0)
+                    {
+                        var filter = userRoleRequest.Requests[0];
+
+                        if (filter.ID > 0)
+                        {
+                            userRoleList = userRoleList.Where(s => s.ID == filter.ID).ToList();
+                        }
+
+                        if (!String.IsNullOrEmpty(filter.BusinessArea))
+                        {
+                            userRoleList = userRoleList.Where(s => s.BusinessArea.Contains(filter.BusinessArea)).ToList();
+                        }
+
+                        if (!String.IsNullOrEmpty(filter.RoleName))
+                        {
+                            userRoleList = userRoleList.Where(s => s.RoleName.Contains(filter.RoleName)).ToList();
+                        }
+
+                        if (!String.IsNullOrEmpty(filter.UserName))
+                        {
+                            userRoleList = userRoleList.Where(s => s.UserName.Contains(filter.UserName)).ToList();
+                        }
+
+
+                    }
+
+                    // Sorting
+                    if (!string.IsNullOrEmpty(userRoleRequest.SortOrder))
+                    {
+                        switch (userRoleRequest.SortOrder.ToLower())
+                        {
+                            case "rolename":
+                                userRoleList = userRoleList.OrderBy(s => s.RoleName).ToList();
+                                break;
+                            case "rolename_desc":
+                                userRoleList = userRoleList.OrderByDescending(s => s.RoleName).ToList();
+                                break;
+                            case "username":
+                                userRoleList = userRoleList.OrderBy(s => s.UserName).ToList();
+                                break;
+                            case "username_desc":
+                                userRoleList = userRoleList.OrderByDescending(s => s.UserName).ToList();
+                                break;
+                            case "businessarea":
+                                userRoleList = userRoleList.OrderBy(s => s.BusinessArea).ToList();
+                                break;
+                            case "businessarea_desc":
+                                userRoleList = userRoleList.OrderByDescending(s => s.BusinessArea).ToList();
+                                break;
+                            default:  // ID Descending 
+                                userRoleList = userRoleList.OrderByDescending(s => s.ID).ToList();
+                                break;
+                        }
+                    }
+
+                    // Total NumberOfRecords
+                    userRoleResponse.NumberOfRecords = userRoleList.Count;
+
+                    // Paging
+                    int pageNumber = (userRoleRequest.PageNumber ?? 1);
+                    int pageSize = Convert.ToInt32(userRoleRequest.PageSize);
+                    if (pageSize > 0)
+                    {
+                        userRoleList = userRoleList.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+                    }
+                    if (userRoleList.Count > 0)
+                    {
+                        userRoleResponse.Data = userRoleList;
+                        userRoleResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        userRoleResponse.StatusCode = (int)HttpStatusCode.OK;
+                    }
+                    else
+                    {
+                        userRoleResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        userRoleResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                userRoleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                userRoleResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                userRoleResponse.StatusMessage = DomainObjects.Resource.ResourceData.DataBaseException;
+                _logger.Log(LogLevel.Error, ex);
+            }
+
+            return userRoleResponse;
+        }
+
+        #endregion
+
+        #region "Master Data Operations"
 
         public RegionResponse GetRegions(RegionRequest regions)
         {
@@ -709,243 +1188,6 @@ namespace TMS.DataGateway.Repositories
             return regionResponse;
         }
 
-        public RoleResponse GetRoles(RoleRequest roles)
-        {
-            RoleResponse roleResponse = new RoleResponse();
-            try
-            {
-                using (var context = new TMSDBContext())
-                {
-                    List<Domain.Role> rolesList = context.Roles.Select(role => new Domain.Role
-                    {
-                        ID = role.ID,
-                        RoleCode = role.RoleCode,
-                        RoleDescription = role.RoleDescription,
-                        ValidFrom = role.ValidFrom,
-                        ValidTo = role.ValidTo,
-                        IsActive = role.IsActive
-                    }).ToList();
-
-                    // Filter
-                    if (roles.Requests.Count > 0)
-                    {
-                        var filter = roles.Requests[0];
-
-                        if (filter.ID > 0)
-                        {
-                            rolesList = rolesList.Where(s => s.ID == filter.ID).ToList();
-                        }
-
-                        if (!String.IsNullOrEmpty(filter.RoleCode))
-                        {
-                            rolesList = rolesList.Where(s => s.RoleCode.Contains(filter.RoleCode)).ToList();
-                        }
-
-                        if (!String.IsNullOrEmpty(filter.RoleDescription))
-                        {
-                            rolesList = rolesList.Where(s => s.RoleDescription.Contains(filter.RoleDescription)).ToList();
-                        }
-
-                        if (filter.ValidFrom != DateTime.MinValue)
-                        {
-                            rolesList = rolesList.Where(s => s.ValidFrom >= filter.ValidFrom).ToList();
-                        }
-
-                        if (filter.ValidTo != DateTime.MinValue)
-                        {
-                            rolesList = rolesList.Where(s => s.ValidTo <= filter.ValidTo).ToList();
-                        }
-                        if (!filter.IsActive)
-                        {
-                            rolesList = rolesList.Where(s => s.IsActive == false).ToList();
-                        }
-                        else
-                        {
-                            rolesList = rolesList.Where(s => s.IsActive).ToList();
-                        }
-                    }
-
-                    // Sorting
-                    if (!string.IsNullOrEmpty(roles.SortOrder))
-                    {
-                        switch (roles.SortOrder.ToLower())
-                        {
-                            case "isactive":
-                                rolesList = rolesList.OrderBy(s => s.IsActive).ToList();
-                                break;
-                            case "isactive_desc":
-                                rolesList = rolesList.OrderByDescending(s => s.IsActive).ToList();
-                                break;
-                            case "rolecode":
-                                rolesList = rolesList.OrderBy(s => s.RoleCode).ToList();
-                                break;
-                            case "rolecode_desc":
-                                rolesList = rolesList.OrderByDescending(s => s.RoleCode).ToList();
-                                break;
-                            case "roledescription":
-                                rolesList = rolesList.OrderBy(s => s.RoleDescription).ToList();
-                                break;
-                            case "roledescription_desc":
-                                rolesList = rolesList.OrderByDescending(s => s.RoleDescription).ToList();
-                                break;
-                            case "validfrom":
-                                rolesList = rolesList.OrderBy(s => s.ValidFrom).ToList();
-                                break;
-                            case "validfrom_desc":
-                                rolesList = rolesList.OrderByDescending(s => s.ValidFrom).ToList();
-                                break;
-                            case "validto":
-                                rolesList = rolesList.OrderBy(s => s.ValidTo).ToList();
-                                break;
-                            case "validto_desc":
-                                rolesList = rolesList.OrderByDescending(s => s.ValidTo).ToList();
-                                break;
-                            default:  // ID Descending 
-                                rolesList = rolesList.OrderByDescending(s => s.ID).ToList();
-                                break;
-                        }
-                    }
-
-                    // Total NumberOfRecords
-                    roleResponse.NumberOfRecords = rolesList.Count;
-
-                    // Paging
-                    int pageNumber = (roles.PageNumber ?? 1);
-                    int pageSize = Convert.ToInt32(roles.PageSize);
-                    if (pageSize > 0)
-                    {
-                        rolesList = rolesList.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
-                    }
-                    if (rolesList.Count > 0)
-                    {
-                        roleResponse.Data = rolesList;
-                        roleResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                        roleResponse.StatusCode = (int)HttpStatusCode.OK;
-                    }
-                    else
-                    {
-                        roleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
-                        roleResponse.StatusCode = (int)HttpStatusCode.NotFound;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                roleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
-                roleResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                roleResponse.StatusMessage = DomainObjects.Resource.ResourceData.DataBaseException;
-                _logger.Log(LogLevel.Error, ex);
-            }
-            return roleResponse;
-        }
-
-        public UserRoleResponse CreateUpdateUserRole(UserRoleRequest userRoleRequest)
-        {
-            UserRoleResponse userRoleResponse = new UserRoleResponse();
-            try
-            {
-                using (var tMSDBContext = new TMSDBContext())
-                {
-                    foreach (var userRoleDetail in userRoleRequest.Requests)
-                    {
-                        if (userRoleDetail.UserID > 0)
-                        {
-                            var isUserRoleAlreadyAssigned = tMSDBContext.UserRoles.Any(userRole => userRole.RoleID == userRoleDetail.RoleID && userRole.BusinessAreaID == userRoleDetail.BusinessAreaID && userRole.ID != userRoleDetail.ID);
-                            if (!isUserRoleAlreadyAssigned)
-                            {
-                                if (userRoleDetail.ID == 0)
-                                {
-                                    DataModel.UserRoles userRoleObject = new UserRoles()
-                                    {
-                                        UserID = userRoleDetail.UserID,
-                                        RoleID = userRoleDetail.RoleID,
-                                        BusinessAreaID = userRoleDetail.BusinessAreaID,
-                                        CreatedBy = userRoleRequest.CreatedBy,
-                                        CreatedTime = DateTime.Now
-                                    };
-                                    tMSDBContext.UserRoles.Add(userRoleObject);
-                                }
-                                else
-                                {
-                                    var userAssignedRoleDetails = tMSDBContext.UserRoles.Where(userRole => userRole.RoleID == userRoleDetail.RoleID && userRole.BusinessAreaID == userRoleDetail.BusinessAreaID).FirstOrDefault();
-                                    userAssignedRoleDetails.RoleID = userRoleDetail.RoleID;
-                                    userAssignedRoleDetails.BusinessAreaID = userRoleDetail.BusinessAreaID;
-                                    userAssignedRoleDetails.LastModifiedBy = userRoleRequest.LastModifiedBy;
-                                    userAssignedRoleDetails.LastModifiedTime = userRoleRequest.LastModifiedTime;
-                                }
-                                tMSDBContext.SaveChanges();
-                                userRoleResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserRoleUpdated;
-                                userRoleResponse.StatusCode = (int)HttpStatusCode.OK;
-                            }
-                            else
-                            {
-                                userRoleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
-                                userRoleResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserRoleAlreadyAssigned;
-                                userRoleResponse.StatusCode = (int)HttpStatusCode.NotAcceptable;
-                            }
-                        }
-                        else
-                        {
-                            userRoleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
-                            userRoleResponse.StatusMessage = DomainObjects.Resource.ResourceData.InvalidUserID;
-                            userRoleResponse.StatusCode = (int)HttpStatusCode.NotAcceptable;
-                        }
-                        userRoleResponse.Data = userRoleRequest.Requests;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                userRoleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
-                userRoleResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                userRoleResponse.StatusMessage = DomainObjects.Resource.ResourceData.DataBaseException;
-                _logger.Log(LogLevel.Error, ex);
-            }
-            return userRoleResponse;
-        }
-
-        public UserResponse DeleteUserRole(int userRoleID)
-        {
-            UserResponse userResponse = new UserResponse();
-            try
-            {
-                using (var context = new TMSDBContext())
-                {
-                    if (userRoleID > 0)
-                    {
-                        var userRoleDetails = context.UserRoles.Where(i => i.ID == userRoleID).FirstOrDefault();
-                        if (userRoleDetails != null)
-                        {
-                            userRoleDetails.IsDelete = true;
-                            context.SaveChanges();
-                            userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserRoleDeleted;
-                            userResponse.StatusCode = (int)HttpStatusCode.OK;
-                        }
-                        else
-                        {
-                            userResponse.StatusMessage = DomainObjects.Resource.ResourceData.InvalidUserID;
-                            userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
-                            userResponse.StatusCode = (int)HttpStatusCode.NotAcceptable;
-                        }
-                    }
-                    else
-                    {
-                        userResponse.StatusMessage = DomainObjects.Resource.ResourceData.InvalidUserID;
-                        userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
-                        userResponse.StatusCode = (int)HttpStatusCode.NotAcceptable;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
-                userResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                userResponse.StatusMessage = DomainObjects.Resource.ResourceData.DataBaseException;
-                _logger.Log(LogLevel.Error, ex);
-            }
-            return userResponse;
-        }
-
         public RoleMenuResponse GetMenuWithActivities()
         {
             RoleMenuResponse roleMenuResponse = new RoleMenuResponse();
@@ -1033,102 +1275,6 @@ namespace TMS.DataGateway.Repositories
             return applicationResponse;
         }
 
-        public RoleResponse GetRoleDetails(int roleId)
-        {
-            RoleResponse roleResponse = new RoleResponse();
-            List<Domain.Role> userRoles = new List<Domain.Role>();
-            try
-            {
-                using (var context = new TMSDBContext())
-                {
-                    var roles = (from role in context.Roles
-                                 where role.ID == roleId
-                                 select new Domain.Role()
-                                 {
-                                     ID = role.ID,
-                                     RoleCode = role.RoleCode,
-                                     RoleDescription = role.RoleDescription,
-                                     ValidFrom = role.ValidFrom,
-                                     ValidTo = role.ValidTo,
-                                     IsActive = role.IsActive
-                                 }).FirstOrDefault();
-
-                    if (roles != null)
-                    {
-                        List<Domain.RoleMenu> roleMenus = new List<Domain.RoleMenu>();
-                        Domain.Role userRole = new Domain.Role();
-                        userRole.ID = roles.ID;
-                        userRole.RoleCode = roles.RoleCode;
-                        userRole.RoleDescription = roles.RoleDescription;
-                        userRole.ValidFrom = roles.ValidFrom;
-                        userRole.ValidTo = roles.ValidTo;
-                        userRole.IsActive = roles.IsActive;
-                        var roleMenuData = (from roleMenu in context.RoleMenus
-                                            where roleMenu.RoleID == roleId
-                                            select new Domain.RoleMenu()
-                                            {
-                                                ID = roleMenu.ID,
-                                                MenuCode = roleMenu.Menu.MenuCode,
-                                                MenuDescription = roleMenu.Menu.MenuDescription,
-                                                MenuURL = roleMenu.Menu.MenuURL
-                                            }).ToList();
-                        if (roleMenuData != null)
-                        {
-                            foreach (var roleMenu in roleMenuData)
-                            {
-                                Domain.RoleMenu obj = new Domain.RoleMenu();
-                                obj.ID = roleMenu.ID;
-                                obj.MenuCode = roleMenu.MenuCode;
-                                obj.MenuDescription = roleMenu.MenuDescription;
-                                var roleMenuActivities = (from roleMenuActivity in context.RoleMenuActivity
-                                                          join roleMenud in context.RoleMenus on roleMenuActivity.RoleMenuID equals roleMenud.ID
-                                                          where roleMenuActivity.RoleMenuID == roleMenu.ID
-                                                          select new Domain.RoleMenuActivity()
-                                                          {
-                                                              ID = roleMenuActivity.Activity.ID,
-                                                              ActivityCode = roleMenuActivity.Activity.ActivityCode,
-                                                              ActivityDescription = roleMenuActivity.Activity.ActivityDescription
-                                                          }).ToList();
-                                if (roleMenuActivities != null)
-                                {
-                                    List<Domain.RoleMenuActivity> roleMenuActiviti = new List<Domain.RoleMenuActivity>();
-                                    foreach (var activ in roleMenuActivities)
-                                    {
-                                        Domain.RoleMenuActivity roleMenuActivity = new Domain.RoleMenuActivity();
-                                        roleMenuActivity.ActivityCode = activ.ActivityCode;
-                                        roleMenuActivity.ID = activ.ID;
-                                        roleMenuActivity.ActivityDescription = activ.ActivityDescription;
-                                        roleMenuActiviti.Add(roleMenuActivity);
-                                    }
-                                    obj.RoleMenuActivities = roleMenuActivities;
-                                }
-                                roleMenus.Add(obj);
-                            }
-                        }
-                        userRole.RoleMenus = roleMenus;
-                        userRoles.Add(userRole);
-                        roleResponse.Data = userRoles;
-                        roleResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                        roleResponse.StatusCode = (int)HttpStatusCode.OK;
-                    }
-                    else
-                    {
-                        roleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
-                        roleResponse.StatusCode = (int)HttpStatusCode.NotFound;
-                    }
-
-                }
-            }
-            catch (Exception ex)
-            {
-                roleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
-                roleResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                roleResponse.StatusMessage = DomainObjects.Resource.ResourceData.DataBaseException;
-                _logger.Log(LogLevel.Error, ex);
-            }
-            return roleResponse;
-        }
-
         public CommonResponse GetUserNames()
         {
             CommonResponse commonResponse = new CommonResponse();
@@ -1139,6 +1285,7 @@ namespace TMS.DataGateway.Repositories
                 {
                     commons =
                         (from user in context.Users
+                         where !user.IsDelete
                          orderby user.UserName
                          select new Domain.Common
                          {
@@ -1181,6 +1328,7 @@ namespace TMS.DataGateway.Repositories
                 {
                     commons =
                         (from role in context.Roles
+                         where !role.IsDelete
                          orderby role.RoleCode
                          select new Domain.Common
                          {
@@ -1254,6 +1402,8 @@ namespace TMS.DataGateway.Repositories
             }
             return commonResponse;
         }
+
+        #endregion
 
         public DashboardResponse GetUserDashboard(UserRequest user)
         {

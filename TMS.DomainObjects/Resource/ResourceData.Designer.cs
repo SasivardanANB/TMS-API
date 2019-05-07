@@ -187,6 +187,15 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid User Confirm Password.
+        /// </summary>
+        public static string InvalidConfirmUserPassword {
+            get {
+                return ResourceManager.GetString("InvalidConfirmUserPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid Driver.
         /// </summary>
         public static string InvalidDriver {
@@ -615,6 +624,15 @@ namespace TMS.DomainObjects.Resource {
         public static string PartnerUpdated {
             get {
                 return ResourceManager.GetString("PartnerUpdated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password and confirm password must be same.
+        /// </summary>
+        public static string PasswordMismatch {
+            get {
+                return ResourceManager.GetString("PasswordMismatch", resourceCulture);
             }
         }
         

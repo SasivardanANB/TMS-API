@@ -54,7 +54,11 @@ namespace TMS.API.Controllers
                 {
                     ModelState.AddModelError($"{nameof(user)}.{nameof(user.Requests)}.[{i}].{nameof(TMS.DomainObjects.Objects.User.Applications)}", DomainObjects.Resource.ResourceData.InvalidApplication);
                 }
-
+                if (user.Requests[i].ID > 0)
+                {
+                    ModelState.Remove("user.Requests[" + i + "].Password");
+                    ModelState.Remove("user.Requests[" + i + "].ConfirmPassword");
+                }
             }
 
             if (!ModelState.IsValid)
@@ -67,17 +71,17 @@ namespace TMS.API.Controllers
 
         [Route("deleteuser")]
         [HttpDelete]
-        public IHttpActionResult DeleteUser(int userId)
+        public IHttpActionResult DeleteUser(int userID)
         {
-            if (userId == 0)
+            if (userID == 0)
             {
-                ModelState.AddModelError($"{nameof(userId)}.{nameof(userId)}.[{userId}].{nameof(TMS.DomainObjects.Objects.User.ID)}", DomainObjects.Resource.ResourceData.InvalidUserID);
+                ModelState.AddModelError($"{nameof(userID)}.{nameof(userID)}.[{userID}].{nameof(TMS.DomainObjects.Objects.User.ID)}", DomainObjects.Resource.ResourceData.InvalidUserID);
             }
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
-            UserResponse userResponse = userTask.DeleteUser(userId);
+            UserResponse userResponse = userTask.DeleteUser(userID);
             return Ok(userResponse);
         }
 
@@ -142,22 +146,22 @@ namespace TMS.API.Controllers
 
         [Route("deleterole")]
         [HttpDelete]
-        public IHttpActionResult DeleteRole(int id)
+        public IHttpActionResult DeleteRole(int roleID)
         {
-            if (id == 0)
+            if (roleID == 0)
             {
-                ModelState.AddModelError($"{nameof(id)}.{nameof(id)}.[{id}].{nameof(TMS.DomainObjects.Objects.User.ID)}", DomainObjects.Resource.ResourceData.InvalidUserID);
+                ModelState.AddModelError($"{nameof(roleID)}.{nameof(roleID)}.[{roleID}].{nameof(TMS.DomainObjects.Objects.User.ID)}", DomainObjects.Resource.ResourceData.InvalidUserID);
             }
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
-            RoleResponse roleResponse = userTask.DeleteRole(id);
+            RoleResponse roleResponse = userTask.DeleteRole(roleID);
             return Ok(roleResponse);
         }
 
         [Route("getroles")]
-        [HttpPost]
+        [AllowAnonymous, HttpPost]
         public IHttpActionResult GetRoles(RoleRequest roles)
         {
             ModelState.Remove("roles.Requests[0].RoleCode");
@@ -171,6 +175,14 @@ namespace TMS.API.Controllers
             return Ok(rolesList);
         }
 
+        [Route("getroledetails")]
+        [HttpGet]
+        public IHttpActionResult GetRoleDetails(int roleId)
+        {
+            IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
+            RoleResponse roleResponse = userTask.GetRoleDetails(roleId);
+            return Ok(roleResponse);
+        }
         #endregion
 
         #region "User Role"
@@ -199,12 +211,12 @@ namespace TMS.API.Controllers
         }
 
         [Route("getuserroles")]
-        [HttpGet]
-        public IHttpActionResult GetUserRoles(int roleId)
+        [HttpPost]
+        public IHttpActionResult GetUserRoles(UserRoleRequest userRoleRequest)
         {
             IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
-            RoleResponse roleResponse = userTask.GetRoleDetails(roleId);
-            return Ok(roleResponse);
+            UserRoleResponse userRoleResponse = userTask.GetUserRoles(userRoleRequest);
+            return Ok(userRoleResponse);
         }
 
         #endregion

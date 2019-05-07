@@ -213,4 +213,10 @@
   <data name="OrderStatusRetrieved" xml:space="preserve">
     <value>Order Status Retrieved</value>
   </data>
+  <data name="InvalidConfirmUserPassword" xml:space="preserve">
+    <value>Invalid Confirm Password</value>
+  </data>
+  <data name="PasswordMismatch" xml:space="preserve">
+    <value>Password and confirm password must be same</value>
+  </data>
 </root>
