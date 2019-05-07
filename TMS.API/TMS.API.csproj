@@ -211,7 +211,6 @@
     <Compile Include="Controllers\PICController.cs" />
     <Compile Include="Controllers\PoolController.cs" />
     <Compile Include="Controllers\PartnerController.cs" />
-    <Compile Include="Controllers\TransporterController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\VehicleController.cs" />
     <Compile Include="Global.asax.cs">

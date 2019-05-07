@@ -19,7 +19,14 @@ namespace TMS.API.Controllers
         [HttpPost]
         public IHttpActionResult CreateUpdateDriver(DriverRequest driverRequest)
         {
-            driverRequest.Requests.ForEach(driverObject => { if (driverObject.ID > 0) { ModelState.Remove(driverObject.Password); } });
+            for (int i = 0; i < driverRequest.Requests.Count; i++)
+            {
+                if (driverRequest.Requests[i].ID > 0)
+                {
+                    ModelState.Remove("driverRequest.Requests[" + i + "].Password");
+                    ModelState.Remove("driverRequest.Requests[" + i + "].ConfirmPassword");
+                }
+            }
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

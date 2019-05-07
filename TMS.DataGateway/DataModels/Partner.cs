@@ -27,13 +27,29 @@ namespace TMS.DataGateway.DataModels
         [ForeignKey("PostalCode")]
         public int PostalCodeID { get; set; }
         public virtual PostalCode PostalCode { get; set; }
+        [ForeignKey("PartnerType")]
         public int PartnerTypeID { get; set; }
+        public virtual PartnerType PartnerType { get; set; }
         public string PartnerInitial { get; set; }
         public string PartnerEmail { get; set; }
         [ForeignKey("PIC")]
         public int PICID { get; set; }
         public virtual PIC PIC { get; set; }
         public bool IsDeleted { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public string CreatedBy
+        {
+            get { return "SYSTEM"; }
+            set { }
+        }
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public DateTime CreatedTime
+        {
+            get { return DateTime.Now; }
+            set { }
+        }
+        public string LastModifiedBy { get; set; }
+        public DateTime? LastModifiedTime { get; set; }
 
     }
 }

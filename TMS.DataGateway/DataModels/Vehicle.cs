@@ -34,9 +34,23 @@ namespace TMS.DataGateway.DataModels
         public int PoolID { get; set; }
         public virtual Pool Pool { get; set; }
         public bool IsDedicated { get; set; }
-        [ForeignKey("Expeditor")]
+        [ForeignKey("Partner")]
         public int ShipperID { get; set; }
-        public virtual Expeditor Expeditor { get; set; }
+        public virtual Partner Partner { get; set; }
         public bool IsDelete { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public string CreatedBy
+        {
+            get { return "SYSTEM"; }
+            set { }
+        }
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public DateTime CreatedTime
+        {
+            get { return DateTime.Now; }
+            set { }
+        }
+        public string LastModifiedBy { get; set; }
+        public DateTime? LastModifiedTime { get; set; }
     }
 }

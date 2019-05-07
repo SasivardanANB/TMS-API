@@ -34,13 +34,17 @@ namespace TMS.DataGateway.Repositories
 
                     IMapper mapper = config.CreateMapper();
                     var pools = mapper.Map<List<Domain.Pool>, List<DataModel.Pool>>(poolRequest.Requests);
+                    int poolObjectCount = 0;
                     foreach (var poolData in pools)
                     {
                         //For making ISDelete initially false
                         poolData.IsDelete = false;
+                        poolData.PhotoId = InsertImageGuid(poolRequest.Requests[poolObjectCount].PhotoGuId, poolRequest.CreatedBy);
                         //For update pool
                         if (poolData.ID > 0)
                         {
+                            poolData.LastModifiedBy = poolRequest.LastModifiedBy;
+                            poolData.LastModifiedTime = DateTime.Now;
                             tMSDBContext.Entry(poolData).State = System.Data.Entity.EntityState.Modified;
                             tMSDBContext.SaveChanges();
                             poolResponse.StatusMessage = DomainObjects.Resource.ResourceData.PoolsUpdated;
@@ -48,10 +52,13 @@ namespace TMS.DataGateway.Repositories
                         //For create pool
                         else
                         {
+                            poolData.CreatedBy = poolRequest.CreatedBy;
+                            poolData.CreatedTime = DateTime.Now;
                             tMSDBContext.Pools.Add(poolData);
                             tMSDBContext.SaveChanges();
                             poolResponse.StatusMessage = DomainObjects.Resource.ResourceData.PoolsCreated;
                         }
+                        poolObjectCount++;
                     }
                     poolRequest.Requests = mapper.Map<List<DataModel.Pool>, List<Domain.Pool>>(pools);
                     poolResponse.Data = poolRequest.Requests;
@@ -119,7 +126,8 @@ namespace TMS.DataGateway.Repositories
                             ContactNumber = pool.ContactNumber,
                             Address = pool.Address,
                             PhotoId = pool.PhotoId,
-                            PhotoGuId = pool.ImageGuid.ImageGuIdValue
+                            PhotoGuId = pool.ImageGuid.ImageGuIdValue,
+                            PoolNo=pool.PoolNo
                         }).ToList();
                     }
                     else if (poolRequest.Requests.Count > 0)
@@ -148,11 +156,17 @@ namespace TMS.DataGateway.Repositories
                     }
                 }
 
-                if (poolsList.Count > 0)
+                if (poolsList.Count > 0 && poolRequest.SortOrder!=null)
                 {
                     // Sorting
                     switch (poolRequest.SortOrder.ToLower())
                     {
+                        case "poolno":
+                            poolsList = poolsList.OrderBy(s => s.PoolNo).ToList();
+                            break;
+                        case "poolno_desc":
+                            poolsList = poolsList.OrderByDescending(s => s.PoolNo).ToList();
+                            break;
                         case "poolname":
                             poolsList = poolsList.OrderBy(s => s.PoolName).ToList();
                             break;
@@ -192,7 +206,10 @@ namespace TMS.DataGateway.Repositories
                 // Paging
                 int pageSize = poolRequest.PageSize.Value;
                 int pageNumber = (poolRequest.PageNumber ?? 1);
-                poolsList = poolsList.Skip(pageNumber - 1 * pageSize).Take(pageSize).ToList();
+                if (pageSize > 0)
+                {
+                    poolsList = poolsList.Skip(pageNumber - 1 * pageSize).Take(pageSize).ToList();
+                }
 
                 if (poolsList.Count > 0)
                 {
@@ -214,6 +231,28 @@ namespace TMS.DataGateway.Repositories
                 poolResponse.StatusMessage = ex.Message;
             }
             return poolResponse;
+        }
+        public int InsertImageGuid(string imageGuidValue, string createdBy)
+        {
+            try
+            {
+                using (var tMSDBContext = new TMSDBContext())
+                {
+                    ImageGuid imageGuidObject = new ImageGuid()
+                    {
+                        ImageGuIdValue = imageGuidValue,
+                        CreatedBy = createdBy
+                    };
+                    tMSDBContext.ImageGuids.Add(imageGuidObject);
+                    tMSDBContext.SaveChanges();
+                    return imageGuidObject.ID;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+            }
+            return 0;
         }
     }
 }

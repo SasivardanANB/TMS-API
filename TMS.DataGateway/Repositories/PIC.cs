@@ -43,12 +43,16 @@ namespace TMS.DataGateway.Repositories
                         picData.IsDeleted = false;
                         if (picData.ID > 0) //Update User
                         {
+                            picData.LastModifiedBy = picRequest.LastModifiedBy;
+                            picData.LastModifiedTime = DateTime.Now;
                             context.Entry(picData).State = System.Data.Entity.EntityState.Modified;
                             context.SaveChanges();
                             picResponse.StatusMessage = DomainObjects.Resource.ResourceData.PicUpdated;
                         }
                         else //Create User
                         {
+                            picData.CreatedBy = picRequest.CreatedBy;
+                            picData.CreatedTime = DateTime.Now;
                             context.Pics.Add(picData);
                             context.SaveChanges();
                             picResponse.StatusMessage = DomainObjects.Resource.ResourceData.PicCreated;

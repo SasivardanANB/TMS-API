@@ -13,7 +13,6 @@ namespace TMS.DomainGateway.Gateway
         public abstract IDriverTask DriverTask { get; set; }
         public abstract IUserTask UserTask { get; set; }
         public abstract IAuthenticateTask AuthenticateTask { get; set; }
-        public abstract ITransporterTask TransporterTask { get; set; }
         public abstract IVehicleTask VehicleTask { get; }
         public abstract IPoolTask PoolTask { get; }
         public abstract IPICTask PICTask { get; set; }

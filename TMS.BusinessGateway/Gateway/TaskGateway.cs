@@ -29,11 +29,6 @@ namespace TMS.BusinessGateway.Gateway
             get { return new BusinessOrderTask(new Order()); }
         }
 
-        public ITransporterTask TransporterTask
-        {
-            get { return new BusinessTransporterTask(new Transporter()); }
-        }
-
         public IVehicleTask VehicleTask
         {
             get { return new BusinessVehicleTask(new Vehicle()); }

@@ -49,6 +49,8 @@ namespace TMS.DataGateway.Repositories
                         //For update driver
                         if (driverData.ID > 0)
                         {
+                            driverData.LastModifiedBy = driverRequest.LastModifiedBy;
+                            driverData.LastModifiedTime = DateTime.Now;
                             tMSDBContext.Entry(driverData).State = System.Data.Entity.EntityState.Modified;
                             tMSDBContext.SaveChanges();
                             driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.DriversUpdated;
@@ -56,6 +58,8 @@ namespace TMS.DataGateway.Repositories
                         //For create driver
                         else
                         {
+                            driverData.CreatedBy = driverRequest.CreatedBy;
+                            driverData.CreatedTime = DateTime.Now;
                             tMSDBContext.Drivers.Add(driverData);
                             tMSDBContext.SaveChanges();
                             driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.DriversCreated;
@@ -187,12 +191,12 @@ namespace TMS.DataGateway.Repositories
                         driversList = driversList.Where(s => s.DrivingLicenseNo.Contains(driverFilter.DrivingLicenseNo)).ToList();
                     }
 
-                    if (!String.IsNullOrEmpty(driverFilter.DrivingLicenseExpiredDate.ToString()))
-                    {
-                        driversList = driversList.Where(s => s.DrivingLicenseExpiredDate.ToString().Contains(driverFilter.DrivingLicenseExpiredDate.ToString())).ToList();
-                    }
+                    //if (!String.IsNullOrEmpty(driverFilter.DrivingLicenseExpiredDate.ToString()))
+                    //{
+                    //    driversList = driversList.Where(s => s.DrivingLicenseExpiredDate.ToString().Contains(driverFilter.DrivingLicenseExpiredDate.ToString())).ToList();
+                    //}
 
-                    if (driverFilter.IsActive.Value)
+                    if (driverFilter.IsActive!=null && driverFilter.IsActive.Value)
                     {
                         driversList = driversList.Where(s => s.IsActive == driverFilter.IsActive).ToList();
                     }
@@ -204,72 +208,77 @@ namespace TMS.DataGateway.Repositories
                 }
 
                 // Sorting
-                switch (driverRequest.SortOrder.ToLower())
+                if (driverRequest.SortOrder != null)
                 {
-                    case "drivernumber":
-                        driversList = driversList.OrderBy(s => s.DriverNo).ToList();
-                        break;
-                    case "drivernumber_desc":
-                        driversList = driversList.OrderByDescending(s => s.DriverNo).ToList();
-                        break;
-                    case "firstname":
-                        driversList = driversList.OrderBy(s => s.FirstName).ToList();
-                        break;
-                    case "firstname_desc":
-                        driversList = driversList.OrderByDescending(s => s.FirstName).ToList();
-                        break;
-                    case "lastname":
-                        driversList = driversList.OrderBy(s => s.LastName).ToList();
-                        break;
-                    case "lastname_desc":
-                        driversList = driversList.OrderByDescending(s => s.LastName).ToList();
-                        break;
-                    case "email":
-                        driversList = driversList.OrderBy(s => s.Email).ToList();
-                        break;
-                    case "email_desc":
-                        driversList = driversList.OrderByDescending(s => s.Email).ToList();
-                        break;
-                    case "phone":
-                        driversList = driversList.OrderBy(s => s.DriverPhone).ToList();
-                        break;
-                    case "phone_desc":
-                        driversList = driversList.OrderByDescending(s => s.DriverPhone).ToList();
-                        break;
-                    case "address":
-                        driversList = driversList.OrderBy(s => s.DriverAddress).ToList();
-                        break;
-                    case "address_desc":
-                        driversList = driversList.OrderByDescending(s => s.DriverAddress).ToList();
-                        break;
-                    case "identitynumber":
-                        driversList = driversList.OrderBy(s => s.IdentityNo).ToList();
-                        break;
-                    case "identitynumber_desc":
-                        driversList = driversList.OrderByDescending(s => s.IdentityNo).ToList();
-                        break;
-                    case "drivinglicensenumber":
-                        driversList = driversList.OrderBy(s => s.DrivingLicenseNo).ToList();
-                        break;
-                    case "drivinglicensenumber_desc":
-                        driversList = driversList.OrderByDescending(s => s.DrivingLicenseNo).ToList();
-                        break;
-                    case "drivinglicenseexpiredate":
-                        driversList = driversList.OrderBy(s => s.DrivingLicenseExpiredDate).ToList();
-                        break;
-                    case "drivinglicenseexpiredate_desc":
-                        driversList = driversList.OrderByDescending(s => s.DrivingLicenseExpiredDate).ToList();
-                        break;
-                    default:  // ID Descending 
-                        driversList = driversList.OrderByDescending(s => s.ID).ToList();
-                        break;
-                }
+                    switch (driverRequest.SortOrder.ToLower())
+                    {
+                        case "drivernumber":
+                            driversList = driversList.OrderBy(s => s.DriverNo).ToList();
+                            break;
+                        case "drivernumber_desc":
+                            driversList = driversList.OrderByDescending(s => s.DriverNo).ToList();
+                            break;
+                        case "firstname":
+                            driversList = driversList.OrderBy(s => s.FirstName).ToList();
+                            break;
+                        case "firstname_desc":
+                            driversList = driversList.OrderByDescending(s => s.FirstName).ToList();
+                            break;
+                        case "lastname":
+                            driversList = driversList.OrderBy(s => s.LastName).ToList();
+                            break;
+                        case "lastname_desc":
+                            driversList = driversList.OrderByDescending(s => s.LastName).ToList();
+                            break;
+                        case "email":
+                            driversList = driversList.OrderBy(s => s.Email).ToList();
+                            break;
+                        case "email_desc":
+                            driversList = driversList.OrderByDescending(s => s.Email).ToList();
+                            break;
+                        case "phone":
+                            driversList = driversList.OrderBy(s => s.DriverPhone).ToList();
+                            break;
+                        case "phone_desc":
+                            driversList = driversList.OrderByDescending(s => s.DriverPhone).ToList();
+                            break;
+                        case "address":
+                            driversList = driversList.OrderBy(s => s.DriverAddress).ToList();
+                            break;
+                        case "address_desc":
+                            driversList = driversList.OrderByDescending(s => s.DriverAddress).ToList();
+                            break;
+                        case "identitynumber":
+                            driversList = driversList.OrderBy(s => s.IdentityNo).ToList();
+                            break;
+                        case "identitynumber_desc":
+                            driversList = driversList.OrderByDescending(s => s.IdentityNo).ToList();
+                            break;
+                        case "drivinglicensenumber":
+                            driversList = driversList.OrderBy(s => s.DrivingLicenseNo).ToList();
+                            break;
+                        case "drivinglicensenumber_desc":
+                            driversList = driversList.OrderByDescending(s => s.DrivingLicenseNo).ToList();
+                            break;
+                        case "drivinglicenseexpiredate":
+                            driversList = driversList.OrderBy(s => s.DrivingLicenseExpiredDate).ToList();
+                            break;
+                        case "drivinglicenseexpiredate_desc":
+                            driversList = driversList.OrderByDescending(s => s.DrivingLicenseExpiredDate).ToList();
+                            break;
+                        default:  // ID Descending 
+                            driversList = driversList.OrderByDescending(s => s.ID).ToList();
+                            break;
+                    }
+                }                
 
                 // Paging
                 int pageSize = driverRequest.PageSize.Value;
                 int pageNumber = (driverRequest.PageNumber ?? 1);
-                driversList = driversList.Skip(pageNumber - 1 * pageSize).Take(pageSize).ToList();
-
+                if (pageSize > 0)
+                {
+                    driversList = driversList.Skip(pageNumber - 1 * pageSize).Take(pageSize).ToList();
+                }
                 if (driversList.Count > 0)
                 {
                     driverResponse.Data = driversList;
@@ -300,7 +309,7 @@ namespace TMS.DataGateway.Repositories
                     ImageGuid imageGuidObject = new ImageGuid()
                     {
                         ImageGuIdValue = imageGuidValue,
-                        CreatedBy= createdBy
+                        CreatedBy=createdBy
                     };
                     tMSDBContext.ImageGuids.Add(imageGuidObject);
                     tMSDBContext.SaveChanges();

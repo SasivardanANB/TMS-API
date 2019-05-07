@@ -27,7 +27,7 @@ namespace TMS.API.Controllers
             return Ok(vehicleResponse);
         }
 
-        [Route("activateordeactivatevehicle")]
+        [Route("deletevehicle")]
         [HttpDelete]
         public IHttpActionResult DeleteVehicle(int vehicleID)
         {

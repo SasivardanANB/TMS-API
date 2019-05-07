@@ -15,6 +15,7 @@ namespace TMS.DomainObjects.Objects
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidVehicleTypeID")]
         [Range(minimum: 1, maximum: int.MaxValue, ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidVehicleTypeID")]
         public int VehicleTypeID { get; set; }
+        public string VehicleTypeDescription { get; set; }
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidVehicleTypeName")]
         public string VehicleTypeName { get; set; }
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidPoliceNo")]
@@ -36,6 +37,7 @@ namespace TMS.DomainObjects.Objects
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidShipperID")]
         [Range(minimum: 1, maximum: int.MaxValue, ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidShipperID")]
         public int ShipperID { get; set; }
+        public string ShipperName { get; set; }
         public bool IsActive { get; set; }
         public bool IsDelete { get; set; }
     }

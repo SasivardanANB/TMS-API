@@ -12,7 +12,6 @@ namespace TMS.DomainGateway.Gateway.Interfaces
         IDriverTask DriverTask { get; }
         IUserTask UserTask { get; }
         IAuthenticateTask AuthenticateTask { get; }
-        ITransporterTask TransporterTask { get; }
         IVehicleTask VehicleTask { get; }
         IPoolTask PoolTask { get; }
         IPICTask PICTask { get; }
