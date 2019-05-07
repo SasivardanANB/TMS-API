@@ -88,6 +88,15 @@ namespace OMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid Confirm Password.
+        /// </summary>
+        public static string InvalidConfirmUserPassword {
+            get {
+                return ResourceManager.GetString("InvalidConfirmUserPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid First Name.
         /// </summary>
         public static string InvalidFirstName {
@@ -237,6 +246,15 @@ namespace OMS.DomainObjects.Resource {
         public static string OrderUpdated {
             get {
                 return ResourceManager.GetString("OrderUpdated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password and confirm password must be same.
+        /// </summary>
+        public static string PasswordMismatch {
+            get {
+                return ResourceManager.GetString("PasswordMismatch", resourceCulture);
             }
         }
         

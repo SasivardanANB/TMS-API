@@ -363,4 +363,10 @@
   <data name="InvalidFileFormat" xml:space="preserve">
     <value>Only jpeg and png are supported</value>
   </data>
+  <data name="InvalidConfirmUserPassword" xml:space="preserve">
+    <value>Invalid User Confirm Password</value>
+  </data>
+  <data name="PasswordMismatch" xml:space="preserve">
+    <value>Password and confirm password must be same</value>
+  </data>
 </root>
