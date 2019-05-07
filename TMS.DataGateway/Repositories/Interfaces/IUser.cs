@@ -13,21 +13,30 @@ namespace TMS.DataGateway.Repositories.Iterfaces
     {
         UserResponse LoginUser(LoginRequest login);
 
+        // User Application
+        UserResponse CreateUpdateUser(UserRequest user);
         UserResponse DeleteUser(int userId);
+        UserResponse GetUsers(UserRequest userReq);
+
+        // Role Management
         RoleResponse CreateUpdateRole(RoleRequest role);
         RoleResponse DeleteRole(int id);
-        UserResponse GetUsers(UserRequest userReq);
-        RegionResponse GetRegions(RegionRequest regions);
         RoleResponse GetRoles(RoleRequest roles);
+        RoleResponse GetRoleDetails(int roleId);
+
+        // User Role
         UserRoleResponse CreateUpdateUserRole(UserRoleRequest userRoleRequest);
         UserResponse DeleteUserRole(int userRoleID);
+        UserRoleResponse GetUserRoles(UserRoleRequest userRoleRequest);
+
+        // Master Data Operations
+        RegionResponse GetRegions(RegionRequest regions);
         RoleMenuResponse GetMenuWithActivities();
-        UserResponse CreateUpdateUser(UserRequest user);
         ApplicationResponse GetApplications();
-        RoleResponse GetRoleDetails(int roleId);
         CommonResponse GetUserNames();
         CommonResponse GetRoleCodes();
         CommonResponse GetRegionCodes();
+
         DashboardResponse GetUserDashboard(UserRequest user);
     }
 }

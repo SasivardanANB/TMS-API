@@ -210,4 +210,7 @@
   <data name="OrdersDownloaded" xml:space="preserve">
     <value>Orders Downloaded</value>
   </data>
+  <data name="OrderStatusRetrieved" xml:space="preserve">
+    <value>Order Status Retrieved</value>
+  </data>
 </root>
