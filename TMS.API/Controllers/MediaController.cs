@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace TMS.API.Controllers
 {
+    [CustomAuthorize]
     public class MediaController : ApiController
     {
         [RoutePrefix("api/v1/media")]
@@ -22,7 +23,7 @@ namespace TMS.API.Controllers
             [HttpPost, Route("uploadfile")]
             public async Task<IHttpActionResult> UploadFile()
             {
-                ResponseDataForFileUpload responseDataForFileUpload=new ResponseDataForFileUpload();
+                ResponseDataForFileUpload responseDataForFileUpload = new ResponseDataForFileUpload();
                 if (!Request.Content.IsMimeMultipartContent("form-data"))
                 {
                     throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
