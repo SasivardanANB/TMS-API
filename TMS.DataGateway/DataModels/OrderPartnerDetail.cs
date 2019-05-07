@@ -14,20 +14,27 @@ namespace TMS.DataGateway.DataModels
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
-        [Index("OrderPartnerDetail_OrderDetailID", IsUnique = true)]
+        [ForeignKey("OrderDetail")]
         public int OrderDetailID { get; set; }
-        [Index("OrderPartnerDetail_PartnerTypeID", IsUnique = true)]
-        public int PartnerTypeID { get; set; }
-        [Index("OrderPartnerDetail_PartnerID", IsUnique = true)]
+        public OrderDetail OrderDetail { get; set; }
+        [ForeignKey("Partner")]
         public int PartnerID { get; set; }
-        public int ParentID { get; set; }
-        public int IsParent { get; set; }
-        public int IsOriginal { get; set; }
-        public string CustomerName { get; set; }
-        public string CustomerPhone { get; set; }
-        [MaxLength(200)]
-        public string CustomerAddress { get; set; }
-        public string Longitude { get; set; }
-        public string Lattitude { get; set; }
+        public Partner Partner { get; set; }
+        public bool IsParent { get; set; }
+        public bool IsOriginal { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public string CreatedBy
+        {
+            get { return "SYSTEM"; }
+            set { }
+        }
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public DateTime CreatedTime
+        {
+            get { return DateTime.Now; }
+            set { }
+        }
+        public string LastModifiedBy { get; set; }
+        public DateTime? LastModifiedTime { get; set; }
     }
 }

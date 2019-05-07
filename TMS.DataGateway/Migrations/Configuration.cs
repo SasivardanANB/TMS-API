@@ -42,6 +42,7 @@ namespace TMS.DataGateway.Migrations
                 string postalCodes = "TMS.DataGateway.SeedData.PostalCodes.csv";
                 string subdistricts = "TMS.DataGateway.SeedData.SubDistricts.csv";
                 string businessAreas = "TMS.DataGateway.SeedData.BusinessAreas.csv";
+                string orderStatus = "OMS.DataGateway.SeedData.OrderStatus.csv";
 
                 using (Stream stream = assembly.GetManifestResourceStream(applications))
                 {
@@ -224,6 +225,18 @@ namespace TMS.DataGateway.Migrations
                 }
 
                 #endregion
+
+                using (Stream stream = assembly.GetManifestResourceStream(orderStatus))
+                {
+                    using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                    {
+                        CsvReader csvReader = new CsvReader(reader);
+                        csvReader.Configuration.HeaderValidated = null;
+                        csvReader.Configuration.MissingFieldFound = null;
+                        var orderStatusData = csvReader.GetRecords<DataModel.OrderStatus>().ToArray();
+                        context.OrderStatuses.AddOrUpdate(c => c.ID, orderStatusData);
+                    }
+                }
 
                 // Uncomment below line while debugging seed method
                 context.SaveChanges();

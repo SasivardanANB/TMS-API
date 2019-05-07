@@ -14,14 +14,30 @@ namespace TMS.DataGateway.DataModels
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
-        [Index("OrderDetail_OrderHeaderID", IsUnique = true)]
+        [ForeignKey("OrderHeader")]
         public int OrderHeaderID { get; set; }
-        [Index("OrderDetail_ItemNo", IsUnique = true)]
-        public int ItemNo { get; set; }
-        public string Pengirim { get; set; }
-        public string Penerima { get; set; }
-        public string Instruksi { get; set; }
-        public DateTime EstimatedArrivalTime { get; set; }
-        public DateTime ActualArrivalTime { get; set; }
+        public OrderHeader OrderHeader { get; set; }
+        public int SequenceNo { get; set; }
+        public string Sender { get; set; }
+        public string Receiver { get; set; }
+        public string Dimension { get; set; }
+        public int TotalPallet { get; set; }
+        public string Instruction { get; set; }
+        public string ShippingListNo { get; set; }
+        public int TotalCollie { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public string CreatedBy
+        {
+            get { return "SYSTEM"; }
+            set { }
+        }
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public DateTime CreatedTime
+        {
+            get { return DateTime.Now; }
+            set { }
+        }
+        public string LastModifiedBy { get; set; }
+        public DateTime? LastModifiedTime { get; set; }
     }
 }

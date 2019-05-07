@@ -18,5 +18,6 @@ namespace TMS.DomainGateway.Gateway
         public abstract IPoolTask PoolTask { get; }
         public abstract IPICTask PICTask { get; set; }
         public abstract IPartnerTask PartnerTask { get; set; }
+        public abstract IOrderTask OrderTask { get; set; }
     }
 }

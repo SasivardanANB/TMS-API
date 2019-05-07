@@ -565,6 +565,15 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Order Created.
+        /// </summary>
+        public static string OrderCreated {
+            get {
+                return ResourceManager.GetString("OrderCreated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Order(s) created successfully.
         /// </summary>
         public static string OrdersCreated {
@@ -579,6 +588,15 @@ namespace TMS.DomainObjects.Resource {
         public static string OrdersUpdated {
             get {
                 return ResourceManager.GetString("OrdersUpdated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Order Updated.
+        /// </summary>
+        public static string OrderUpdated {
+            get {
+                return ResourceManager.GetString("OrderUpdated", resourceCulture);
             }
         }
         

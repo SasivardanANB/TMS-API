@@ -14,27 +14,42 @@ namespace TMS.DataGateway.DataModels
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
-        [MaxLength(4)]
-        public string CompanyCodeID { get; set; }
-        public string BusinessAreaID { get; set; }
-        [MaxLength(10)]
-        [Index("OrderHeader_TipeOrder", IsUnique = true)]
-        public string TipeOrder { get; set; }
-        [MaxLength(10)]
+        [ForeignKey("BusinessArea")]
+        public int BusinessAreaId { get; set; }
+        public BusinessArea BusinessArea { get; set; }
         [Index("OrderHeader_OrderNo", IsUnique = true)]
+        [Required]
+        [MaxLength(20)]
         public string OrderNo { get; set; }
+        public string LegecyOrderNo { get; set; }
         public DateTime OrderDate { get; set; }
-        public DateTime EstimatedPickupTime { get; set; }
-        public DateTime ActualPickupTime { get; set; }
-        public DateTime EstimatedArrivalTime { get; set; }
-        public DateTime ActualArrivalTime { get; set; }
-        public decimal TotalPrice { get; set; }
+        public int OrderType { get; set; }
+        public int FleetType { get; set; }
+        public string VehicleShipment { get; set; }
+        public string DriverNo { get; set; }
+        public string DriverName { get; set; }
+        public string VehicleNo { get; set; }
+        public decimal OrderWeight { get; set; }
+        public string OrderWeightUM { get; set; }
+        public DateTime EstimationShipmentDate { get; set; }
+        public DateTime ActualShipmentDate { get; set; }
+        //[ForeignKey("OrderStatus")]
         public int OrderStatusID { get; set; }
-        public string Sender { get; set; }
-        public string Receiver { get; set; }
-        public string Instruction { get; set; }
-        public string VehicleType { get; set; }
-        public string PoliceNo { get; set; }
-        public int TotalOfWeight { get; set; }
+        //public OrderStatus OrderStatus { get; set; }
+        public bool IsActive { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public string CreatedBy
+        {
+            get { return "SYSTEM"; }
+            set { }
+        }
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public DateTime CreatedTime
+        {
+            get { return DateTime.Now; }
+            set { }
+        }
+        public string LastModifiedBy { get; set; }
+        public DateTime? LastModifiedTime { get; set; }
     }
 }

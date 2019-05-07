@@ -1,0 +1,11 @@
+OrderStatusCode,OrderStatusValue
+1,Booked
+2,Confirmed
+3,Accepted
+4,Rejected
+5,FinishLaoding
+6,Finish Unloading
+7,Completed
+8,Cancelled
+9,PartialBilled
+10,FinalBilled

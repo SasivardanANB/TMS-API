@@ -17,5 +17,6 @@ namespace TMS.DomainGateway.Gateway.Interfaces
         IPoolTask PoolTask { get; }
         IPICTask PICTask { get; }
         IPartnerTask PartnerTask { get; }
+        IOrderTask OrderTask { get; }
     }
 }

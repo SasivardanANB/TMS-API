@@ -363,4 +363,10 @@
   <data name="InvalidFileFormat" xml:space="preserve">
     <value>Only jpeg and png are supported</value>
   </data>
+  <data name="OrderUpdated" xml:space="preserve">
+    <value>Order Updated</value>
+  </data>
+  <data name="OrderCreated" xml:space="preserve">
+    <value>Order Created</value>
+  </data>
 </root>

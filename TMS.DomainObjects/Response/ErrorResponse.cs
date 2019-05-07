@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using TMS.DomainObjects.Objects;
 
-namespace TMS.DomainObjects.Request
+namespace TMS.DomainObjects.Response
 {
-    public class OrderRequest : RequestFilter
+    public class ErrorResponse : Message
     {
-        public List<Order> Requests { get; set; }
+        public List<Error> Data { get; set; }
     }
 }

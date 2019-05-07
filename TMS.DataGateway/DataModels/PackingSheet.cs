@@ -8,29 +8,29 @@ using System.Threading.Tasks;
 
 namespace TMS.DataGateway.DataModels
 {
-    [Table("PartnerType", Schema = "TMS")]
-    public class PartnerType
+    [Table("PackingSheet", Schema = "TMS")]
+    public class PackingSheet
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
-        [Required(ErrorMessage = "")]
-        [MaxLength(10)]
-        [Index("PartnerType_PartnerTypeCode", IsUnique = true)]
-        public string PartnerTypeCode { get; set; }
-        public string PartnerTypeDescription { get; set; }
+        [ForeignKey("OrderDetail")]
+        public int OrderDetailID { get; set; }
+        public OrderDetail OrderDetail { get; set; }
+        public string PackingSheetNo { get; set; }
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public string CreatedBy
         {
             get { return "SYSTEM"; }
             set { }
         }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime CreatedTime
-        {
-            get { return DateTime.Now; }
-            set { }
-        }
+        //[DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        //public DateTime CreatedTime
+        //{
+        //    get { return DateTime.Now; }
+        //    set { }
+        //}
+        public DateTime CreatedTime { get; set; }
         public string LastModifiedBy { get; set; }
         public DateTime? LastModifiedTime { get; set; }
     }

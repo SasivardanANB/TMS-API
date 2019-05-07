@@ -64,5 +64,8 @@ namespace TMS.DataGateway.DataModels
         public virtual DbSet<PIC> Pics  { get; set; }
         public virtual DbSet<UserRoles> UserRoles { get; set; }
         public virtual DbSet<ImageGuid> ImageGuids { get; set; }
+        public virtual DbSet<OrderStatus> OrderStatuses { get; set; }
+        public virtual DbSet<PackingSheet> PackingSheets { get; set; }
+        public virtual DbSet<ShipmentSAP> ShipmentSAPs { get; set; }
     }
 }

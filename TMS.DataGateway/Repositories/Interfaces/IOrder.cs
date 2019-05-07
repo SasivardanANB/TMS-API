@@ -10,7 +10,7 @@ namespace TMS.DataGateway.Repositories.Interfaces
 {
     public interface IOrder
     {
-        OrderResponse CreateUpdateOrder(OrderRequest orderRequest);
+        OrderResponse CreateUpdateOrder(OrderRequest request);
         OrderResponse GetOrders(OrderRequest orderRequest);
     }
 }

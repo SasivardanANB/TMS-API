@@ -52,8 +52,10 @@
     <Compile Include="Objects\Application.cs" />
     <Compile Include="Objects\AssignUserRole.cs" />
     <Compile Include="Objects\Authenticate.cs" />
+    <Compile Include="Objects\BusinessArea.cs" />
     <Compile Include="Objects\Common.cs" />
     <Compile Include="Objects\Driver.cs" />
+    <Compile Include="Objects\Error.cs" />
     <Compile Include="Objects\Message.cs" />
     <Compile Include="Objects\Order.cs" />
     <Compile Include="Objects\Pool.cs" />
@@ -92,6 +94,7 @@
     <Compile Include="Response\CommonResponse.cs" />
     <Compile Include="Response\DashboardResponse.cs" />
     <Compile Include="Response\DriverResponse.cs" />
+    <Compile Include="Response\ErrorResponse.cs" />
     <Compile Include="Response\OrderResponse.cs" />
     <Compile Include="Response\PoolResponse.cs" />
     <Compile Include="Response\RegionResponse.cs" />
