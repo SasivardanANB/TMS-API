@@ -8,7 +8,7 @@ namespace TMS.DataGateway.Migrations
         public override void Up()
         {
             AddColumn("TMS.PartnerType", "CreatedBy", c => c.String());
-            AddColumn("TMS.PartnerType", "CreatedTime", c => c.DateTime(nullable: false));
+            AddColumn("TMS.PartnerType", "CreatedTime", c => c.DateTime(nullable: false, defaultValueSql: "GETDATE()"));
             AddColumn("TMS.PartnerType", "LastModifiedBy", c => c.String());
             AddColumn("TMS.PartnerType", "LastModifiedTime", c => c.DateTime());
         }

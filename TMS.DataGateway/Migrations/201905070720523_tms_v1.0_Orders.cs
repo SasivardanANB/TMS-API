@@ -66,7 +66,7 @@ namespace TMS.DataGateway.Migrations
                         OrderDetailID = c.Int(nullable: false),
                         PackingSheetNo = c.String(),
                         CreatedBy = c.String(),
-                        CreatedTime = c.DateTime(nullable: false),
+                        CreatedTime = c.DateTime(nullable: false, defaultValueSql: "GETDATE()"),
                         LastModifiedBy = c.String(),
                         LastModifiedTime = c.DateTime(),
                     })
@@ -82,7 +82,7 @@ namespace TMS.DataGateway.Migrations
                         OrderDetailID = c.Int(nullable: false),
                         ShipmentSAPNo = c.String(),
                         CreatedBy = c.String(),
-                        CreatedTime = c.DateTime(nullable: false),
+                        CreatedTime = c.DateTime(nullable: false, defaultValueSql: "GETDATE()"),
                         LastModifiedBy = c.String(),
                         LastModifiedTime = c.DateTime(),
                     })
@@ -99,7 +99,7 @@ namespace TMS.DataGateway.Migrations
             AddColumn("TMS.OrderDetail", "ShippingListNo", c => c.String());
             AddColumn("TMS.OrderDetail", "TotalCollie", c => c.Int(nullable: false));
             AddColumn("TMS.OrderDetail", "CreatedBy", c => c.String());
-            AddColumn("TMS.OrderDetail", "CreatedTime", c => c.DateTime(nullable: false));
+            AddColumn("TMS.OrderDetail", "CreatedTime", c => c.DateTime(nullable: false, defaultValueSql: "GETDATE()"));
             AddColumn("TMS.OrderDetail", "LastModifiedBy", c => c.String());
             AddColumn("TMS.OrderDetail", "LastModifiedTime", c => c.DateTime());
             AddColumn("TMS.OrderHeader", "LegecyOrderNo", c => c.String());
@@ -115,11 +115,11 @@ namespace TMS.DataGateway.Migrations
             AddColumn("TMS.OrderHeader", "ActualShipmentDate", c => c.DateTime(nullable: false));
             AddColumn("TMS.OrderHeader", "IsActive", c => c.Boolean(nullable: false));
             AddColumn("TMS.OrderHeader", "CreatedBy", c => c.String());
-            AddColumn("TMS.OrderHeader", "CreatedTime", c => c.DateTime(nullable: false));
+            AddColumn("TMS.OrderHeader", "CreatedTime", c => c.DateTime(nullable: false, defaultValueSql: "GETDATE()"));
             AddColumn("TMS.OrderHeader", "LastModifiedBy", c => c.String());
             AddColumn("TMS.OrderHeader", "LastModifiedTime", c => c.DateTime());
             AddColumn("TMS.OrderPartnerDetail", "CreatedBy", c => c.String());
-            AddColumn("TMS.OrderPartnerDetail", "CreatedTime", c => c.DateTime(nullable: false));
+            AddColumn("TMS.OrderPartnerDetail", "CreatedTime", c => c.DateTime(nullable: false, defaultValueSql: "GETDATE()"));
             AddColumn("TMS.OrderPartnerDetail", "LastModifiedBy", c => c.String());
             AddColumn("TMS.OrderPartnerDetail", "LastModifiedTime", c => c.DateTime());
             AddColumn("TMS.Partner", "IsActive", c => c.Boolean(nullable: false));
