@@ -654,14 +654,14 @@ namespace TMS.DataGateway.Repositories
                         {
                             rolesList = rolesList.Where(s => s.ValidTo <= filter.ValidTo).ToList();
                         }
-                        if (!filter.IsActive)
-                        {
-                            rolesList = rolesList.Where(s => s.IsActive == false).ToList();
-                        }
-                        else
-                        {
-                            rolesList = rolesList.Where(s => s.IsActive).ToList();
-                        }
+                        //if (!filter.IsActive)
+                        //{
+                        //    rolesList = rolesList.Where(s => s.IsActive == false).ToList();
+                        //}
+                        //else
+                        //{
+                        //    rolesList = rolesList.Where(s => s.IsActive).ToList();
+                        //}
                     }
 
                     // Sorting

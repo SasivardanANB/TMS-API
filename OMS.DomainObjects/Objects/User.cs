@@ -22,7 +22,7 @@ namespace OMS.DomainObjects.Objects
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidLastName")]
         public string LastName { get; set; }
         public List<int> Applications { get; set; }
-        public bool? IsActive { get; set; }
+        public bool IsActive { get; set; }
         public List<string> ApplicationNames { get; set; }
         public List<Role> Roles { get; set; }
         public List<Region> Regions { get; set; }

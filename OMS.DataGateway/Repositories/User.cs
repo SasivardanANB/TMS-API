@@ -48,7 +48,7 @@ namespace OMS.DataGateway.Repositories
 
                     if (userData != null)
                     {
-                        if (!userData.IsActive.Value)
+                        if (!userData.IsActive)
                         {
                             userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                             userResponse.StatusCode = (int)HttpStatusCode.BadRequest;
@@ -325,10 +325,10 @@ namespace OMS.DataGateway.Repositories
                         usersList = usersList.Where(s => s.LastName.Contains(userFilter.LastName)).ToList();
                     }
 
-                    if (userFilter.IsActive != null)
-                    {
-                        usersList = usersList.Where(s => s.IsActive == userFilter.IsActive).ToList();
-                    }
+                    //if (userFilter.IsActive != null)
+                    //{
+                    //    usersList = usersList.Where(s => s.IsActive == userFilter.IsActive).ToList();
+                    //}
                 }
 
                 // Sorting
@@ -661,14 +661,14 @@ namespace OMS.DataGateway.Repositories
                         {
                             rolesList = rolesList.Where(s => s.ValidTo <= filter.ValidTo).ToList();
                         }
-                        if (!filter.IsActive)
-                        {
-                            rolesList = rolesList.Where(s => s.IsActive == false).ToList();
-                        }
-                        else
-                        {
-                            rolesList = rolesList.Where(s => s.IsActive).ToList();
-                        }
+                        //if (!filter.IsActive)
+                        //{
+                        //    rolesList = rolesList.Where(s => s.IsActive == false).ToList();
+                        //}
+                        //else
+                        //{
+                        //    rolesList = rolesList.Where(s => s.IsActive).ToList();
+                        //}
                     }
 
                     // Sorting
