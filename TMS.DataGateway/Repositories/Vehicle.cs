@@ -197,10 +197,10 @@ namespace TMS.DataGateway.Repositories
                         vehiclesList = vehiclesList.Where(s => s.IsDedicated == vehicleFilter.IsDedicated).ToList();
                     }
 
-                    if (vehicleFilter.IsActive)
-                    {
-                        vehiclesList = vehiclesList.Where(s => s.IsActive == vehicleFilter.IsActive).ToList();
-                    }
+                    //if (vehicleFilter.IsActive)
+                    //{
+                    //    vehiclesList = vehiclesList.Where(s => s.IsActive == vehicleFilter.IsActive).ToList();
+                    //}
 
                     if (vehicleFilter.IsDelete)
                     {

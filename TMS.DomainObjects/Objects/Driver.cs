@@ -20,7 +20,7 @@ namespace TMS.DomainObjects.Objects
         public string DriverAddress { get; set; }
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidPhone")]
         public string DriverPhone { get; set; }
-        public bool? IsActive { get; set; }
+        public bool IsActive { get; set; }
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidEmail")]
         public string Email { get; set; }
         [DataType(DataType.Password)]

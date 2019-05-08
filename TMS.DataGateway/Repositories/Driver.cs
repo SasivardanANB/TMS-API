@@ -69,6 +69,7 @@ namespace TMS.DataGateway.Repositories
                         {
                             driverData.LastModifiedBy = driverRequest.LastModifiedBy;
                             driverData.LastModifiedTime = DateTime.Now;
+                            driverData.Password= tMSDBContext.Drivers.Where(d => d.ID == driverData.ID).Select(p=>p.Password).FirstOrDefault();
                             tMSDBContext.Entry(driverData).State = System.Data.Entity.EntityState.Modified;
                             tMSDBContext.Entry(driverData).Property(p => p.Password).IsModified = false;
                             tMSDBContext.SaveChanges();
@@ -216,10 +217,10 @@ namespace TMS.DataGateway.Repositories
                     //    driversList = driversList.Where(s => s.DrivingLicenseExpiredDate.ToString().Contains(driverFilter.DrivingLicenseExpiredDate.ToString())).ToList();
                     //}
 
-                    if (driverFilter.IsActive != null && driverFilter.IsActive.Value)
-                    {
-                        driversList = driversList.Where(s => s.IsActive == driverFilter.IsActive).ToList();
-                    }
+                    //if (driverFilter.IsActive != null && driverFilter.IsActive.Value)
+                    //{
+                    //    driversList = driversList.Where(s => s.IsActive == driverFilter.IsActive).ToList();
+                    //}
 
                     if (driverFilter.IsDelete)
                     {
