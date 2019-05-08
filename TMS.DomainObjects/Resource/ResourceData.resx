@@ -375,4 +375,7 @@
   <data name="OrderCreated" xml:space="preserve">
     <value>Order Created</value>
   </data>
+  <data name="NoRecords" xml:space="preserve">
+    <value>No Record(s) found</value>
+  </data>
 </root>

@@ -36,25 +36,45 @@ namespace TMS.DataGateway.Repositories
                     int driverObjectCount = 0;
                     foreach (var driverData in drivers)
                     {
+
                         //For encrypt password
                         if (!string.IsNullOrEmpty(driverData.Password))
                         {
                             driverData.Password = Encryption.EncryptionLibrary.EncryptPassword(driverData.Password);
                         }
+
                         //For making IsDelete column false
                         driverData.IsDelete = false;
-                        driverData.IdentityImageId = InsertImageGuid(driverRequest.Requests[driverObjectCount].IdentityImageGuId, driverRequest.CreatedBy);
-                        driverData.DrivingLicenceImageId = InsertImageGuid(driverRequest.Requests[driverObjectCount].DrivingLicenceImageGuId, driverRequest.CreatedBy);
-                        driverData.DriverImageId = InsertImageGuid(driverRequest.Requests[driverObjectCount].DriverImageGuId, driverRequest.CreatedBy);
+
+                        //For getting new IdentityImageGuId (Allows in case of new record creation and modification of already existing record imageGuId)
+                        if ((driverData.ID == 0 && !String.IsNullOrEmpty(driverRequest.Requests[driverObjectCount].IdentityImageGuId)) || (driverData.ID > 0 && driverRequest.Requests[driverObjectCount].IdentityImageGuId != tMSDBContext.ImageGuids.Where(d => d.ID == driverData.IdentityImageId && d.IsActive).Select(g => g.ImageGuIdValue).FirstOrDefault()))
+                        {
+                            driverData.IdentityImageId = InsertImageGuid(driverRequest.Requests[driverObjectCount].IdentityImageGuId, driverRequest.CreatedBy, driverData.IdentityImageId);
+                        }
+
+                        //For getting new DrivingLicenceImageGuId (Allows in case of new record creation and modification of already existing record imageGuId)
+                        if ((driverData.ID == 0 && !String.IsNullOrEmpty(driverRequest.Requests[driverObjectCount].DrivingLicenceImageGuId)) || (driverData.ID > 0 && driverRequest.Requests[driverObjectCount].DrivingLicenceImageGuId != tMSDBContext.ImageGuids.Where(d => d.ID == driverData.DrivingLicenceImageId && d.IsActive).Select(g => g.ImageGuIdValue).FirstOrDefault()))
+                        {
+                            driverData.DrivingLicenceImageId = InsertImageGuid(driverRequest.Requests[driverObjectCount].DrivingLicenceImageGuId, driverRequest.CreatedBy, driverData.DrivingLicenceImageId);
+                        }
+
+                        //For getting new DriverImageGuId (Allows in case of new record creation and modification of already existing record imageGuId)
+                        if (driverData.ID == 0 && !String.IsNullOrEmpty(driverRequest.Requests[driverObjectCount].DriverImageGuId) || (driverData.ID > 0 && driverRequest.Requests[driverObjectCount].DriverImageGuId != tMSDBContext.ImageGuids.Where(d => d.ID == driverData.DriverImageId && d.IsActive).Select(g => g.ImageGuIdValue).FirstOrDefault()))
+                        {
+                            driverData.DriverImageId = InsertImageGuid(driverRequest.Requests[driverObjectCount].DriverImageGuId, driverRequest.CreatedBy, driverData.DriverImageId);
+                        }
+
                         //For update driver
                         if (driverData.ID > 0)
                         {
                             driverData.LastModifiedBy = driverRequest.LastModifiedBy;
                             driverData.LastModifiedTime = DateTime.Now;
                             tMSDBContext.Entry(driverData).State = System.Data.Entity.EntityState.Modified;
+                            tMSDBContext.Entry(driverData).Property(p => p.Password).IsModified = false;
                             tMSDBContext.SaveChanges();
                             driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.DriversUpdated;
                         }
+
                         //For create driver
                         else
                         {
@@ -211,8 +231,8 @@ namespace TMS.DataGateway.Repositories
                 if (!string.IsNullOrEmpty(driverRequest.GlobalSearch))
                 {
                     string globalSearch = driverRequest.GlobalSearch;
-                    driversList = driversList.Where(s => s.FirstName.Contains(globalSearch) 
-                    || s.LastName.Contains(globalSearch) 
+                    driversList = driversList.Where(s => s.FirstName.Contains(globalSearch)
+                    || s.LastName.Contains(globalSearch)
                     || s.DriverPhone.Contains(globalSearch)
                     || s.Email.Contains(globalSearch)
                     || s.DrivingLicenseNo.Contains(globalSearch)
@@ -221,7 +241,7 @@ namespace TMS.DataGateway.Repositories
 
 
                 // Sorting
-                if (driverRequest.SortOrder != null)
+                if (!string.IsNullOrEmpty(driverRequest.SortOrder) && driversList.Count > 0)
                 {
                     switch (driverRequest.SortOrder.ToLower())
                     {
@@ -285,6 +305,9 @@ namespace TMS.DataGateway.Repositories
                     }
                 }
 
+                // Total NumberOfRecords
+                driverResponse.NumberOfRecords = driversList.Count;
+
                 // Paging
                 int pageSize = driverRequest.PageSize.Value;
                 int pageNumber = (driverRequest.PageNumber ?? 1);
@@ -292,16 +315,19 @@ namespace TMS.DataGateway.Repositories
                 {
                     driversList = driversList.Skip(pageNumber - 1 * pageSize).Take(pageSize).ToList();
                 }
+
                 if (driversList.Count > 0)
                 {
                     driverResponse.Data = driversList;
                     driverResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     driverResponse.StatusCode = (int)HttpStatusCode.OK;
+                    driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
                 }
                 else
                 {
-                    driverResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                    driverResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     driverResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                    driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                 }
             }
             catch (Exception ex)
@@ -313,17 +339,30 @@ namespace TMS.DataGateway.Repositories
             }
             return driverResponse;
         }
-        public int InsertImageGuid(string imageGuidValue, string createdBy)
+
+        //For inserting new record into ImageGuid table also makes IsActive false for previously inserted records
+        public int InsertImageGuid(string imageGuidValue, string createdBy, int? existingImageGuID)
         {
             try
             {
                 using (var tMSDBContext = new TMSDBContext())
                 {
+
+                    // Making IsActive false for existed record 
+                    if (existingImageGuID > 0)
+                    {
+                        var existingImageGuidDetails = tMSDBContext.ImageGuids.Where(i => i.ID == existingImageGuID).FirstOrDefault();
+                        existingImageGuidDetails.IsActive = false;
+                    }
+
+                    //Inserting new record along with IsActive true
                     ImageGuid imageGuidObject = new ImageGuid()
                     {
                         ImageGuIdValue = imageGuidValue,
-                        CreatedBy = createdBy
+                        CreatedBy = createdBy,
+                        IsActive = true
                     };
+
                     tMSDBContext.ImageGuids.Add(imageGuidObject);
                     tMSDBContext.SaveChanges();
                     return imageGuidObject.ID;

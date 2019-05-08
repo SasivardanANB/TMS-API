@@ -38,9 +38,17 @@ namespace TMS.DataGateway.Repositories
 
                     IMapper mapper = config.CreateMapper();
                     var pics = mapper.Map<List<Domain.PIC>, List<DataModel.PIC>>(picRequest.Requests);
+                    int picObjectCount = 0;
                     foreach (var picData in pics)
                     {
                         picData.IsDeleted = false;
+
+                        //For getting new PhotoGuId (Allows in case of new record creation and modification of already existing record imageGuId)
+                        if ((picData.ID == 0 && !String.IsNullOrEmpty(picRequest.Requests[picObjectCount].PhotoGuId)) || (picData.ID > 0 && picRequest.Requests[picObjectCount].PhotoGuId != context.ImageGuids.Where(d => d.ID == picData.PhotoId && d.IsActive).Select(g => g.ImageGuIdValue).FirstOrDefault()))
+                        {
+                            picData.PhotoId = InsertImageGuid(picRequest.Requests[picObjectCount].PhotoGuId, picRequest.CreatedBy, picData.PhotoId);
+                        }
+
                         if (picData.ID > 0) //Update User
                         {
                             picData.LastModifiedBy = picRequest.LastModifiedBy;
@@ -164,26 +172,31 @@ namespace TMS.DataGateway.Repositories
                 }
 
                 // Sorting
-                switch (picRequest.SortOrder.ToLower())
+                if(picList.Count>0 && !string.IsNullOrEmpty(picRequest.SortOrder))
                 {
-                    case "picname":
-                        picList = picList.OrderBy(s => s.PICName).ToList();
-                        break;
-                    case "picname_desc":
-                        picList = picList.OrderByDescending(s => s.PICName).ToList();
-                        break;
-                    case "picemail":
-                        picList = picList.OrderBy(s => s.PICEmail).ToList();
-                        break;
-                    case "picemail_Desc":
-                        picList = picList.OrderByDescending(s => s.PICEmail).ToList();
-                        break;
-                    default:  // ID Descending 
-                        picList = picList.OrderByDescending(s => s.ID).ToList();
-                        break;
+                    switch (picRequest.SortOrder.ToLower())
+                    {
+                        case "picname":
+                            picList = picList.OrderBy(s => s.PICName).ToList();
+                            break;
+                        case "picname_desc":
+                            picList = picList.OrderByDescending(s => s.PICName).ToList();
+                            break;
+                        case "picemail":
+                            picList = picList.OrderBy(s => s.PICEmail).ToList();
+                            break;
+                        case "picemail_Desc":
+                            picList = picList.OrderByDescending(s => s.PICEmail).ToList();
+                            break;
+                        default:  // ID Descending 
+                            picList = picList.OrderByDescending(s => s.ID).ToList();
+                            break;
+                    }
                 }
+
                 // Total NumberOfRecords
                 picResponse.NumberOfRecords = picList.Count;
+
                 // Paging
                 int pageNumber = (picRequest.PageNumber ?? 1);
                 int pageSize = Convert.ToInt32(picRequest.PageSize);
@@ -196,22 +209,58 @@ namespace TMS.DataGateway.Repositories
                     picResponse.Data = picList;
                     picResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     picResponse.StatusCode = (int)HttpStatusCode.OK;
+                    picResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
                 }
                 else
                 {
-                    picResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                    picResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     picResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                    picResponse.StatusMessage= DomainObjects.Resource.ResourceData.NoRecords;
                 }
             }
             catch (Exception ex)
             {
                 _logger.Log(LogLevel.Error, ex);
-
                 picResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                 picResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                picResponse.StatusMessage = DomainObjects.Resource.ResourceData.DataBaseException;
+                picResponse.StatusMessage = ex.Message;
             }
             return picResponse;
+        }
+
+        //For inserting new record into ImageGuid table also makes IsActive false for previously inserted records
+        public int InsertImageGuid(string imageGuidValue, string createdBy, int? existingImageGuID)
+        {
+            try
+            {
+                using (var tMSDBContext = new TMSDBContext())
+                {
+
+                    // Making IsActive false for existed record 
+                    if (existingImageGuID > 0)
+                    {
+                        var existingImageGuidDetails = tMSDBContext.ImageGuids.Where(i => i.ID == existingImageGuID).FirstOrDefault();
+                        existingImageGuidDetails.IsActive = false;
+                    }
+
+                    //Inserting new record along with IsActive true
+                    ImageGuid imageGuidObject = new ImageGuid()
+                    {
+                        ImageGuIdValue = imageGuidValue,
+                        CreatedBy = createdBy,
+                        IsActive = true
+                    };
+
+                    tMSDBContext.ImageGuids.Add(imageGuidObject);
+                    tMSDBContext.SaveChanges();
+                    return imageGuidObject.ID;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+            }
+            return 0;
         }
     }
 }

@@ -42,16 +42,21 @@ namespace TMS.DataGateway.Repositories
                          }).ToList();
                 }
 
+                // Total NumberOfRecords
+                partnerSearchResponse.NumberOfRecords = partnerList.Count;
+
                 if (partnerList.Count > 0)
                 {
                     partnerSearchResponse.Data = partnerList;
                     partnerSearchResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     partnerSearchResponse.StatusCode = (int)HttpStatusCode.OK;
+                    partnerSearchResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
                 }
                 else
                 {
-                    partnerSearchResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                    partnerSearchResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     partnerSearchResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                    partnerSearchResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                 }
             }
             catch (Exception ex)
@@ -60,7 +65,7 @@ namespace TMS.DataGateway.Repositories
 
                 partnerSearchResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                 partnerSearchResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                partnerSearchResponse.StatusMessage = DomainObjects.Resource.ResourceData.DataBaseException;
+                partnerSearchResponse.StatusMessage = ex.Message;
             }
             return partnerSearchResponse;
         }
@@ -68,7 +73,7 @@ namespace TMS.DataGateway.Repositories
 
         public CommonResponse GetDriverNames()
         {
-            CommonResponse driverNames = new CommonResponse();
+            CommonResponse commonResponse = new CommonResponse();
             using (var context = new TMSDBContext())
             {
                 var driversList = context.Drivers.Where(driver => !driver.IsDelete && driver.IsActive).Select(response => new Domain.Common()
@@ -76,22 +81,30 @@ namespace TMS.DataGateway.Repositories
                     Id = response.ID,
                     Value = response.DriverNo
                 }).ToList();
-                if (driversList != null)
-                {
-                    driverNames.NumberOfRecords = driverNames.Data.Count;
-                    driverNames.Data = driversList;
+
+                // Total NumberOfRecords
+                commonResponse.NumberOfRecords = driversList.Count;
+
+                if (driversList.Count > 0)
+                {                    
+                    commonResponse.Data = driversList;
+                    commonResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                    commonResponse.StatusCode = (int)HttpStatusCode.OK;
+                    commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
                 }
                 else
                 {
-                    driverNames.NumberOfRecords = 0;
+                    commonResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                    commonResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                    commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                 }
-                return driverNames;
+                return commonResponse;
             }
         }
 
         public CommonResponse GetVehicleTypeNames()
         {
-            CommonResponse vehicleTypeNames = new CommonResponse();
+            CommonResponse commonResponse = new CommonResponse();
             using (var context = new TMSDBContext())
             {
                 var vehicleTypeList = context.VehicleTypes.Select(response => new Domain.Common()
@@ -99,22 +112,30 @@ namespace TMS.DataGateway.Repositories
                     Id = response.ID,
                     Value = response.VehicleTypeDescription
                 }).ToList();
-                if (vehicleTypeList != null)
+
+                // Total NumberOfRecords
+                commonResponse.NumberOfRecords = vehicleTypeList.Count;
+
+                if (vehicleTypeList.Count>0)
                 {
-                    vehicleTypeNames.NumberOfRecords = vehicleTypeNames.Data.Count;
-                    vehicleTypeNames.Data = vehicleTypeList;
+                    commonResponse.Data = vehicleTypeList;
+                    commonResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                    commonResponse.StatusCode = (int)HttpStatusCode.OK;
+                    commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
                 }
                 else
                 {
-                    vehicleTypeNames.NumberOfRecords = 0;
+                    commonResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                    commonResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                    commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                 }
-                return vehicleTypeNames;
+                return commonResponse;
             }
         }
 
         public CommonResponse GetFleetTypeNames()
         {
-            CommonResponse fleetTypeNames = new CommonResponse();
+            CommonResponse commonResponse = new CommonResponse();
             using (var context = new TMSDBContext())
             {
                 var fleetTypeList = context.FleetTypes.Select(response => new Domain.Common()
@@ -122,16 +143,24 @@ namespace TMS.DataGateway.Repositories
                     Id = response.ID,
                     Value = response.FleetTypeDescription
                 }).ToList();
-                if (fleetTypeList != null)
+
+                // Total NumberOfRecords
+                commonResponse.NumberOfRecords = fleetTypeList.Count;
+
+                if (fleetTypeList.Count > 0)
                 {
-                    fleetTypeNames.NumberOfRecords = fleetTypeNames.Data.Count;
-                    fleetTypeNames.Data = fleetTypeList;
+                    commonResponse.Data = fleetTypeList;
+                    commonResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                    commonResponse.StatusCode = (int)HttpStatusCode.OK;
+                    commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
                 }
                 else
                 {
-                    fleetTypeNames.NumberOfRecords = 0;
+                    commonResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                    commonResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                    commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                 }
-                return fleetTypeNames;
+                return commonResponse;
             }
         }
     }

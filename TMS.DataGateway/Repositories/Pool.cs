@@ -39,7 +39,13 @@ namespace TMS.DataGateway.Repositories
                     {
                         //For making ISDelete initially false
                         poolData.IsDelete = false;
-                        poolData.PhotoId = InsertImageGuid(poolRequest.Requests[poolObjectCount].PhotoGuId, poolRequest.CreatedBy);
+
+                        //For getting new PhotoGuId (Allows in case of new record creation and modification of already existing record imageGuId)
+                        if ((poolData.ID == 0 && !String.IsNullOrEmpty(poolRequest.Requests[poolObjectCount].PhotoGuId)) || (poolData.ID > 0 && poolRequest.Requests[poolObjectCount].PhotoGuId != tMSDBContext.ImageGuids.Where(d => d.ID == poolData.PhotoId && d.IsActive).Select(g => g.ImageGuIdValue).FirstOrDefault()))
+                        {
+                            poolData.PhotoId = InsertImageGuid(poolRequest.Requests[poolObjectCount].PhotoGuId, poolRequest.CreatedBy, poolData.PhotoId);
+                        }
+
                         //For update pool
                         if (poolData.ID > 0)
                         {
@@ -49,6 +55,7 @@ namespace TMS.DataGateway.Repositories
                             tMSDBContext.SaveChanges();
                             poolResponse.StatusMessage = DomainObjects.Resource.ResourceData.PoolsUpdated;
                         }
+
                         //For create pool
                         else
                         {
@@ -168,7 +175,7 @@ namespace TMS.DataGateway.Repositories
                     ).ToList();
                 }
 
-                if (poolsList.Count > 0 && poolRequest.SortOrder!=null)
+                if (poolsList.Count > 0 && !string.IsNullOrEmpty(poolRequest.SortOrder))
                 {
                     // Sorting
                     switch (poolRequest.SortOrder.ToLower())
@@ -215,6 +222,9 @@ namespace TMS.DataGateway.Repositories
                     }
                 }
 
+                // Total NumberOfRecords
+                poolResponse.NumberOfRecords = poolsList.Count;
+
                 // Paging
                 int pageSize = poolRequest.PageSize.Value;
                 int pageNumber = (poolRequest.PageNumber ?? 1);
@@ -228,11 +238,13 @@ namespace TMS.DataGateway.Repositories
                     poolResponse.Data = poolsList;
                     poolResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     poolResponse.StatusCode = (int)HttpStatusCode.OK;
+                    poolResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
                 }
                 else
                 {
-                    poolResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                    poolResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     poolResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                    poolResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                 }
             }
             catch (Exception ex)
@@ -244,17 +256,30 @@ namespace TMS.DataGateway.Repositories
             }
             return poolResponse;
         }
-        public int InsertImageGuid(string imageGuidValue, string createdBy)
+
+        //For inserting new record into ImageGuid table also makes IsActive false for previously inserted records
+        public int InsertImageGuid(string imageGuidValue, string createdBy, int? existingImageGuID)
         {
             try
             {
                 using (var tMSDBContext = new TMSDBContext())
                 {
+
+                    // Making IsActive false for existed record 
+                    if (existingImageGuID > 0)
+                    {
+                        var existingImageGuidDetails = tMSDBContext.ImageGuids.Where(i => i.ID == existingImageGuID).FirstOrDefault();
+                        existingImageGuidDetails.IsActive = false;
+                    }
+
+                    //Inserting new record along with IsActive true
                     ImageGuid imageGuidObject = new ImageGuid()
                     {
                         ImageGuIdValue = imageGuidValue,
-                        CreatedBy = createdBy
+                        CreatedBy = createdBy,
+                        IsActive = true
                     };
+
                     tMSDBContext.ImageGuids.Add(imageGuidObject);
                     tMSDBContext.SaveChanges();
                     return imageGuidObject.ID;

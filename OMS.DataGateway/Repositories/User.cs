@@ -154,6 +154,7 @@ namespace OMS.DataGateway.Repositories
                             userDataModel.LastModifiedBy = user.LastModifiedBy;
                             userDataModel.LastModifiedTime = DateTime.Now;
                             context.Entry(userDataModel).State = System.Data.Entity.EntityState.Modified;
+                            context.Entry(userDataModel).Property(p => p.Password).IsModified = false;
                             context.SaveChanges();
                             var existedApplications = (from userApplication in context.UserApplications
                                                        where userApplication.UserID == userDataModel.ID

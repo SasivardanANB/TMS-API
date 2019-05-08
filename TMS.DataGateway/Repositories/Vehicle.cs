@@ -38,6 +38,7 @@ namespace TMS.DataGateway.Repositories
                     {
                         //For making IsDelete initially false
                         vehicleData.IsDelete = false;
+
                         //For update vehicle
                         if (vehicleData.ID > 0)
                         {
@@ -47,6 +48,7 @@ namespace TMS.DataGateway.Repositories
                             tMSDBContext.SaveChanges();
                             vehicleResponse.StatusMessage = DomainObjects.Resource.ResourceData.DriversUpdated;
                         }
+
                         //For create vehicle
                         else
                         {
@@ -219,7 +221,7 @@ namespace TMS.DataGateway.Repositories
                 }
 
                 // Sorting
-                if (vehicleRequest.SortOrder != null)
+                if (vehiclesList.Count>0 &&!string.IsNullOrEmpty(vehicleRequest.SortOrder))
                 {
                     switch (vehicleRequest.SortOrder.ToLower())
                     {
@@ -287,7 +289,10 @@ namespace TMS.DataGateway.Repositories
                             vehiclesList = vehiclesList.OrderByDescending(s => s.ID).ToList();
                             break;
                     }
-                }                
+                }
+
+                // Total NumberOfRecords
+                vehicleResponse.NumberOfRecords = vehiclesList.Count;
 
                 // Paging
                 int pageSize = vehicleRequest.PageSize.Value;
@@ -302,11 +307,13 @@ namespace TMS.DataGateway.Repositories
                     vehicleResponse.Data = vehiclesList;
                     vehicleResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     vehicleResponse.StatusCode = (int)HttpStatusCode.OK;
+                    vehicleResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
                 }
                 else
                 {
-                    vehicleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                    vehicleResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     vehicleResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                    vehicleResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                 }
             }
             catch (Exception ex)

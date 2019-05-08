@@ -89,10 +89,14 @@ namespace TMS.API.Controllers
         [HttpPost]
         public IHttpActionResult GetUsers(UserRequest user)
         {
-            ModelState.Remove("user.Requests[0].UserName");
-            ModelState.Remove("user.Requests[0].Password");
-            ModelState.Remove("user.Requests[0].FirstName");
-            ModelState.Remove("user.Requests[0].LastName");
+            for (int i = 0; i < user.Requests.Count; i++)
+            {
+                ModelState.Remove("user.Requests[" + i + "].UserName");
+                ModelState.Remove("user.Requests[" + i + "].Password");
+                ModelState.Remove("user.Requests[" + i + "].ConfirmPassword");
+                ModelState.Remove("user.Requests[" + i + "].FirstName");
+                ModelState.Remove("user.Requests[" + i + "].LastName");
+            }
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

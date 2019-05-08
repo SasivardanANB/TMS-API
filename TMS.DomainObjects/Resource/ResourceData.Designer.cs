@@ -574,6 +574,15 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No Record(s) found.
+        /// </summary>
+        public static string NoRecords {
+            get {
+                return ResourceManager.GetString("NoRecords", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Order Created.
         /// </summary>
         public static string OrderCreated {

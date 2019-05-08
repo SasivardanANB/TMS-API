@@ -231,11 +231,13 @@ namespace TMS.DataGateway.Repositories
                     partnerResponse.Data = partnerList;
                     partnerResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     partnerResponse.StatusCode = (int)HttpStatusCode.OK;
+                    partnerResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
                 }
                 else
                 {
                     partnerResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                     partnerResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                    partnerResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                 }
             }
             catch (Exception ex)

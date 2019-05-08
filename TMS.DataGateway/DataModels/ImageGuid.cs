@@ -30,6 +30,6 @@ namespace TMS.DataGateway.DataModels
         }
         public string LastModifiedBy { get; set; }
         public DateTime? LastModifiedTime { get; set; }
-
+        public bool IsActive { get; set; }
     }
 }

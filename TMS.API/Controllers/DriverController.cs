@@ -21,6 +21,7 @@ namespace TMS.API.Controllers
         [HttpPost]
         public IHttpActionResult CreateUpdateDriver(DriverRequest driverRequest)
         {
+            //For removing validation errors for password, confirmpassword in case of update
             for (int i = 0; i < driverRequest.Requests.Count; i++)
             {
                 if (driverRequest.Requests[i].ID > 0)
