@@ -393,4 +393,7 @@
   <data name="IdentityNoExisted" xml:space="preserve">
     <value>Identity no alredy exist</value>
   </data>
+  <data name="MenuActivityRetrived" xml:space="preserve">
+    <value>Menu Activity Retrived</value>
+  </data>
 </root>

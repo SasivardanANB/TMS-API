@@ -1237,7 +1237,7 @@ namespace TMS.DataGateway.Repositories
                     if (menus != null)
                     {
                         List<Domain.RoleMenu> roleMenus = new List<Domain.RoleMenu>();
-                        foreach (var item in menus)
+                        foreach (var item in menus.ToList())
                         {
                             Domain.RoleMenu obj = new Domain.RoleMenu();
                             obj.ID = item.ID;
@@ -1267,9 +1267,11 @@ namespace TMS.DataGateway.Repositories
                             }
                             roleMenus.Add(obj);
                         }
+
                         roleMenuResponse.Data = roleMenus;
                         roleMenuResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         roleMenuResponse.StatusCode = (int)HttpStatusCode.OK;
+                        roleMenuResponse.StatusMessage = DomainObjects.Resource.ResourceData.MenuActivityRetrived;
                     }
                 }
             }
