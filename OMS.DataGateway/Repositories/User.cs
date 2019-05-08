@@ -48,9 +48,9 @@ namespace OMS.DataGateway.Repositories
 
                     if (userData != null)
                     {
-                        if (!userData.IsActive.Value)
+                        if (!userData.IsActive)
                         {
-                            userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                            userResponse.Status = DomainObjects.Resource.ResourceData.Success;
                             userResponse.StatusCode = (int)HttpStatusCode.BadRequest;
                             userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserInActive;
                         }
@@ -98,7 +98,7 @@ namespace OMS.DataGateway.Repositories
                     }
                     else
                     {
-                        userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                        userResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         userResponse.StatusCode = (int)HttpStatusCode.BadRequest;
                         userResponse.StatusMessage = DomainObjects.Resource.ResourceData.LoginFail;
                     }
@@ -326,10 +326,10 @@ namespace OMS.DataGateway.Repositories
                         usersList = usersList.Where(s => s.LastName.Contains(userFilter.LastName)).ToList();
                     }
 
-                    if (userFilter.IsActive != null)
-                    {
-                        usersList = usersList.Where(s => s.IsActive == userFilter.IsActive).ToList();
-                    }
+                    //if (userFilter.IsActive != null)
+                    //{
+                    //    usersList = usersList.Where(s => s.IsActive == userFilter.IsActive).ToList();
+                    //}
                 }
 
                 // Sorting
@@ -662,14 +662,14 @@ namespace OMS.DataGateway.Repositories
                         {
                             rolesList = rolesList.Where(s => s.ValidTo <= filter.ValidTo).ToList();
                         }
-                        if (!filter.IsActive)
-                        {
-                            rolesList = rolesList.Where(s => s.IsActive == false).ToList();
-                        }
-                        else
-                        {
-                            rolesList = rolesList.Where(s => s.IsActive).ToList();
-                        }
+                        //if (!filter.IsActive)
+                        //{
+                        //    rolesList = rolesList.Where(s => s.IsActive == false).ToList();
+                        //}
+                        //else
+                        //{
+                        //    rolesList = rolesList.Where(s => s.IsActive).ToList();
+                        //}
                     }
 
                     // Sorting
@@ -728,11 +728,13 @@ namespace OMS.DataGateway.Repositories
                         roleResponse.Data = rolesList;
                         roleResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         roleResponse.StatusCode = (int)HttpStatusCode.OK;
+                        roleResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
                     }
                     else
                     {
-                        roleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                        roleResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         roleResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                        roleResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                     }
                 }
             }
@@ -1047,11 +1049,13 @@ namespace OMS.DataGateway.Repositories
                         userRoleResponse.Data = userRoleList;
                         userRoleResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         userRoleResponse.StatusCode = (int)HttpStatusCode.OK;
+                        userRoleResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
                     }
                     else
                     {
                         userRoleResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         userRoleResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                        userRoleResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                     }
                 }
             }
@@ -1314,8 +1318,9 @@ namespace OMS.DataGateway.Repositories
                 }
                 else
                 {
-                    commonResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                    commonResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     commonResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                    commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
                 }
             }
             catch (Exception ex)
