@@ -226,7 +226,7 @@ namespace TMS.DataGateway.Repositories
                 poolResponse.NumberOfRecords = poolsList.Count;
 
                 // Paging
-                int pageSize = poolRequest.PageSize.Value;
+                int pageSize = Convert.ToInt32(poolRequest.PageSize);
                 int pageNumber = (poolRequest.PageNumber ?? 1);
                 if (pageSize > 0)
                 {

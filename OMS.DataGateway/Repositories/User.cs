@@ -879,7 +879,7 @@ namespace OMS.DataGateway.Repositories
                                 }
                                 else
                                 {
-                                    var userAssignedRoleDetails = tMSDBContext.UserRoles.Where(userRole => userRole.RoleID == userRoleDetail.RoleID && userRole.BusinessAreaID == userRoleDetail.BusinessAreaID).FirstOrDefault();
+                                    var userAssignedRoleDetails = tMSDBContext.UserRoles.Where(userRole => userRole.ID == userRoleDetail.ID).FirstOrDefault();
                                     userAssignedRoleDetails.RoleID = userRoleDetail.RoleID;
                                     userAssignedRoleDetails.BusinessAreaID = userRoleDetail.BusinessAreaID;
                                     userAssignedRoleDetails.LastModifiedBy = userRoleRequest.LastModifiedBy;
@@ -887,6 +887,7 @@ namespace OMS.DataGateway.Repositories
                                     userRoleResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserRoleUpdated;
                                 }
                                 tMSDBContext.SaveChanges();
+                                userRoleResponse.Status = DomainObjects.Resource.ResourceData.Success;
                                 userRoleResponse.StatusCode = (int)HttpStatusCode.OK;
                             }
                             else
@@ -932,6 +933,7 @@ namespace OMS.DataGateway.Repositories
                             context.SaveChanges();
                             userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserRoleDeleted;
                             userResponse.StatusCode = (int)HttpStatusCode.OK;
+                            userResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         }
                         else
                         {

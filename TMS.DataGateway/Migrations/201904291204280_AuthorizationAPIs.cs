@@ -21,8 +21,8 @@ namespace TMS.DataGateway.Migrations
                         RoleID = c.Int(nullable: false),
                         BusinessAreaID = c.Int(nullable: false),
                         IsDelete = c.Boolean(nullable: false),
-                        CreatedBy = c.String(),
-                        CreatedTime = c.DateTime(nullable: false),
+                        CreatedBy = c.String(defaultValue: "SYSTEM"),
+                        CreatedTime = c.DateTime(nullable: false, defaultValueSql: "GETDATE()"),
                         LastModifiedBy = c.String(),
                         LastModifiedTime = c.DateTime(),
                     })

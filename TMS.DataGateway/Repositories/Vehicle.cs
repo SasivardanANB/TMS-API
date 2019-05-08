@@ -295,7 +295,7 @@ namespace TMS.DataGateway.Repositories
                 vehicleResponse.NumberOfRecords = vehiclesList.Count;
 
                 // Paging
-                int pageSize = vehicleRequest.PageSize.Value;
+                int pageSize = Convert.ToInt32(vehicleRequest.PageSize);
                 int pageNumber = (vehicleRequest.PageNumber ?? 1);
                 if (pageSize > 0)
                 {

@@ -310,7 +310,7 @@ namespace TMS.DataGateway.Repositories
                 driverResponse.NumberOfRecords = driversList.Count;
 
                 // Paging
-                int pageSize = driverRequest.PageSize.Value;
+                int pageSize = Convert.ToInt32(driverRequest.PageSize);
                 int pageNumber = (driverRequest.PageNumber ?? 1);
                 if (pageSize > 0)
                 {
