@@ -12,6 +12,7 @@ namespace TMS.DomainGateway.Task
     public abstract class MasterTask : IMasterTask
     {
         public abstract PartnerSearchResponse GetPartners(PartnerSearchRequest partnerSearchRequest);
+        public abstract PartnerResponse GetPartnersDetails(int partnerId);
         public abstract CommonResponse GetDriverNames();
         public abstract CommonResponse GetVehicleTypeNames();
         public abstract CommonResponse GetFleetTypeNames();

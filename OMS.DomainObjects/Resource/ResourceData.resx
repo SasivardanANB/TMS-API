@@ -222,4 +222,7 @@
   <data name="NoRecords" xml:space="preserve">
     <value>No record(s) found</value>
   </data>
+  <data name="UserNameExisted" xml:space="preserve">
+    <value>User name alredy exist</value>
+  </data>
 </root>

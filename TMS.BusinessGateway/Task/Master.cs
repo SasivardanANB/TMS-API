@@ -42,5 +42,10 @@ namespace TMS.BusinessGateway.Task
             CommonResponse commonResponse = _masterRepository.GetFleetTypeNames();
             return commonResponse;
         }
+        public override PartnerResponse GetPartnersDetails(int partnerId)
+        {
+            PartnerResponse partnerResponse = _masterRepository.GetPartnersDetails(partnerId);
+            return partnerResponse;
+        }
     }
 }

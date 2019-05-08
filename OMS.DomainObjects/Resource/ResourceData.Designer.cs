@@ -313,6 +313,15 @@ namespace OMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to User name alredy exist.
+        /// </summary>
+        public static string UserNameExisted {
+            get {
+                return ResourceManager.GetString("UserNameExisted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to User already assigned with this role and region.
         /// </summary>
         public static string UserRoleAlreadyAssigned {

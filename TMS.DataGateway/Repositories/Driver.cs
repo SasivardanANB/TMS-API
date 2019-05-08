@@ -79,11 +79,33 @@ namespace TMS.DataGateway.Repositories
                         //For create driver
                         else
                         {
-                            driverData.CreatedBy = driverRequest.CreatedBy;
-                            driverData.CreatedTime = DateTime.Now;
-                            tMSDBContext.Drivers.Add(driverData);
-                            tMSDBContext.SaveChanges();
-                            driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.DriversCreated;
+                            var checkDriverNo = tMSDBContext.Drivers.Where(d => d.DriverNo == driverData.DriverNo).FirstOrDefault();
+                            var checkDrivingLicenseNo = tMSDBContext.Drivers.Where(d => d.DrivingLicenseNo == driverData.DrivingLicenseNo).FirstOrDefault();
+                            var checkDriverIdentityNo = tMSDBContext.Drivers.Where(d => d.IdentityNo == driverData.IdentityNo).FirstOrDefault();
+
+                            if (checkDriverNo != null && checkDrivingLicenseNo != null && checkDriverIdentityNo != null )
+                            {
+                                driverData.CreatedBy = driverRequest.CreatedBy;
+                                driverData.CreatedTime = DateTime.Now;
+                                tMSDBContext.Drivers.Add(driverData);
+                                tMSDBContext.SaveChanges();
+                                driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.DriversCreated;
+                            }
+                            else
+                            {
+                                if(checkDriverNo != null) {
+                                    driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.DriverNoExisted;
+                                }
+                                if (checkDrivingLicenseNo != null)
+                                {
+                                    driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.DrivingLicenseNoExisted;
+                                }
+                                if (checkDriverIdentityNo != null)
+                                {
+                                    driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.IdentityNoExisted;
+                                }
+
+                            }
                         }
                         driverObjectCount++;
                     }

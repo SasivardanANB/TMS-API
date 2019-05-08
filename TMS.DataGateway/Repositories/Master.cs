@@ -163,5 +163,12 @@ namespace TMS.DataGateway.Repositories
                 return commonResponse;
             }
         }
+
+       public PartnerResponse GetPartnersDetails(int partnerId)
+        {
+            PartnerResponse partnerResponse = new PartnerResponse();
+            partnerResponse.Data = new List<Domain.Partner>();
+            return partnerResponse;
+        }
     }
 }

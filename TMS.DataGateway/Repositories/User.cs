@@ -182,29 +182,37 @@ namespace TMS.DataGateway.Repositories
                         }
                         else //Create User
                         {
-                            userDataModel.CreatedBy = user.CreatedBy;
-                            userDataModel.CreatedTime = DateTime.Now;
-                            userDataModel.IsActive = true;
-                            userDataModel.LastModifiedBy = "";
-                            userDataModel.LastModifiedTime = null;
-                            context.Users.Add(userDataModel);
-                            context.SaveChanges();
-
-                            if (userData.Applications.Count > 0)
+                            var checkUserName = context.Users.Where(u => u.UserName == userDataModel.UserName).FirstOrDefault();
+                            if (checkUserName != null)
                             {
-                                foreach (var applicationID in userData.Applications)
+                                userDataModel.CreatedBy = user.CreatedBy;
+                                userDataModel.CreatedTime = DateTime.Now;
+                                userDataModel.IsActive = true;
+                                userDataModel.LastModifiedBy = "";
+                                userDataModel.LastModifiedTime = null;
+                                context.Users.Add(userDataModel);
+                                context.SaveChanges();
+
+                                if (userData.Applications.Count > 0)
                                 {
-                                    var userApplication = new UserApplication();
-                                    userApplication.UserID = userDataModel.ID;
-                                    userApplication.ApplicationID = applicationID;
-                                    userApplication.CreatedBy = user.CreatedBy;
+                                    foreach (var applicationID in userData.Applications)
+                                    {
+                                        var userApplication = new UserApplication();
+                                        userApplication.UserID = userDataModel.ID;
+                                        userApplication.ApplicationID = applicationID;
+                                        userApplication.CreatedBy = user.CreatedBy;
 
-                                    context.UserApplications.Add(userApplication);
-                                    context.SaveChanges();
+                                        context.UserApplications.Add(userApplication);
+                                        context.SaveChanges();
+                                    }
                                 }
-                            }
 
-                            userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UsersCreated;
+                                userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UsersCreated;
+                            }
+                            else
+                            {
+                                userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserNameExisted;
+                            }
                         }
 
                         userDataModelList.Add(userDataModel);
@@ -875,18 +883,30 @@ namespace TMS.DataGateway.Repositories
                                     };
                                     tMSDBContext.UserRoles.Add(userRoleObject);
                                     userRoleResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserRoleCreated;
+                                    userRoleResponse.StatusCode = (int)HttpStatusCode.OK;
                                 }
                                 else
                                 {
                                     var userAssignedRoleDetails = tMSDBContext.UserRoles.Where(userRole => userRole.RoleID == userRoleDetail.RoleID && userRole.BusinessAreaID == userRoleDetail.BusinessAreaID).FirstOrDefault();
-                                    userAssignedRoleDetails.RoleID = userRoleDetail.RoleID;
-                                    userAssignedRoleDetails.BusinessAreaID = userRoleDetail.BusinessAreaID;
-                                    userAssignedRoleDetails.LastModifiedBy = userRoleRequest.LastModifiedBy;
-                                    userAssignedRoleDetails.LastModifiedTime = userRoleRequest.LastModifiedTime;
-                                    userRoleResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserRoleUpdated;
+                                    if (userAssignedRoleDetails != null)
+                                    {
+
+                                        userAssignedRoleDetails.RoleID = userRoleDetail.RoleID;
+                                        userAssignedRoleDetails.BusinessAreaID = userRoleDetail.BusinessAreaID;
+                                        userAssignedRoleDetails.LastModifiedBy = userRoleRequest.LastModifiedBy;
+                                        userAssignedRoleDetails.LastModifiedTime = userRoleRequest.LastModifiedTime;
+                                        userRoleResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserRoleUpdated;
+                                        userRoleResponse.StatusCode = (int)HttpStatusCode.OK;
+                                    }
+                                    else
+                                    {
+                                        userRoleResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                                        userRoleResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
+                                    }
                                 }
                                 tMSDBContext.SaveChanges();
-                                userRoleResponse.StatusCode = (int)HttpStatusCode.OK;
+                                
+                                userRoleResponse.Status = DomainObjects.Resource.ResourceData.Success;
                             }
                             else
                             {

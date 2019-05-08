@@ -97,6 +97,15 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Driver no alredy exist.
+        /// </summary>
+        public static string DriverNoExisted {
+            get {
+                return ResourceManager.GetString("DriverNoExisted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Driver(s) created successfully.
         /// </summary>
         public static string DriversCreated {
@@ -111,6 +120,15 @@ namespace TMS.DomainObjects.Resource {
         public static string DriversUpdated {
             get {
                 return ResourceManager.GetString("DriversUpdated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to License no alredy exist.
+        /// </summary>
+        public static string DrivingLicenseNoExisted {
+            get {
+                return ResourceManager.GetString("DrivingLicenseNoExisted", resourceCulture);
             }
         }
         
@@ -147,6 +165,15 @@ namespace TMS.DomainObjects.Resource {
         public static string FileUploadSuccess {
             get {
                 return ResourceManager.GetString("FileUploadSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Identity no alredy exist.
+        /// </summary>
+        public static string IdentityNoExisted {
+            get {
+                return ResourceManager.GetString("IdentityNoExisted", resourceCulture);
             }
         }
         
@@ -736,6 +763,15 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        public static string String1 {
+            get {
+                return ResourceManager.GetString("String1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Success.
         /// </summary>
         public static string Success {
@@ -750,6 +786,15 @@ namespace TMS.DomainObjects.Resource {
         public static string UserInActive {
             get {
                 return ResourceManager.GetString("UserInActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User name alredy exist.
+        /// </summary>
+        public static string UserNameExisted {
+            get {
+                return ResourceManager.GetString("UserNameExisted", resourceCulture);
             }
         }
         

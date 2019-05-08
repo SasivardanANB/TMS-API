@@ -11,6 +11,7 @@ namespace TMS.DomainGateway.Task.Interfaces
     public interface IMasterTask
     {
         PartnerSearchResponse GetPartners(PartnerSearchRequest partnerSearchRequest);
+        PartnerResponse GetPartnersDetails(int partnerId);
         CommonResponse GetDriverNames();
         CommonResponse GetVehicleTypeNames();
         CommonResponse GetFleetTypeNames();
