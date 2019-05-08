@@ -950,6 +950,7 @@ namespace TMS.DataGateway.Repositories
                             userRoleDetails.IsDelete = true;
                             context.SaveChanges();
                             userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserRoleDeleted;
+                            userResponse.Status = DomainObjects.Resource.ResourceData.Success;
                             userResponse.StatusCode = (int)HttpStatusCode.OK;
                         }
                         else

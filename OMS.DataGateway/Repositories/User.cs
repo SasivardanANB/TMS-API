@@ -954,7 +954,7 @@ namespace OMS.DataGateway.Repositories
                             context.SaveChanges();
                             userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserRoleDeleted;
                             userResponse.StatusCode = (int)HttpStatusCode.OK;
-
+                            userResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         }
                         else
                         {

@@ -120,6 +120,7 @@ namespace TMS.DataGateway.Repositories
                 {
                     partnerList =
                         (from partner in context.Partners
+                         where !partner.IsDeleted
                          select new Domain.Partner
                          {
                              ID = partner.ID,

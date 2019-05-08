@@ -129,6 +129,7 @@ namespace TMS.DataGateway.Repositories
                 {
                     picList =
                         (from pic in context.Pics
+                         where !pic.IsDeleted
                          select new Domain.PIC
                          {
                              ID = pic.ID,
