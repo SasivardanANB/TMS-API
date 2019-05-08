@@ -331,6 +331,7 @@
     <EmbeddedResource Include="SeedData\SubDistricts.csv" />
     <EmbeddedResource Include="SeedData\OrderStatus.csv" />
     <EmbeddedResource Include="SeedData\FleetTypes.csv" />
+    <EmbeddedResource Include="SeedData\PartnerTypes.csv" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TMS.DomainObjects\TMS.DomainObjects.csproj">
