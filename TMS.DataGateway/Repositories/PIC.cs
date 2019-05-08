@@ -53,7 +53,9 @@ namespace TMS.DataGateway.Repositories
                         {
                             picData.LastModifiedBy = picRequest.LastModifiedBy;
                             picData.LastModifiedTime = DateTime.Now;
+                            picData.PICPassword= context.Pics.Where(i => i.ID == picData.ID).Select(p => p.PICPassword).FirstOrDefault();
                             context.Entry(picData).State = System.Data.Entity.EntityState.Modified;
+                            context.Entry(picData).Property(p => p.PICPassword).IsModified = false;
                             context.SaveChanges();
                             picResponse.StatusMessage = DomainObjects.Resource.ResourceData.PicUpdated;
                         }

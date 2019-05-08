@@ -153,6 +153,7 @@ namespace OMS.DataGateway.Repositories
                         {
                             userDataModel.LastModifiedBy = user.LastModifiedBy;
                             userDataModel.LastModifiedTime = DateTime.Now;
+                            userDataModel.Password = context.Users.Where(d => d.ID == userDataModel.ID).Select(p => p.Password).FirstOrDefault();
                             context.Entry(userDataModel).State = System.Data.Entity.EntityState.Modified;
                             context.Entry(userDataModel).Property(p => p.Password).IsModified = false;
                             context.SaveChanges();
