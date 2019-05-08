@@ -184,7 +184,7 @@ namespace TMS.DataGateway.Repositories
                         else //Create User
                         {
                             var checkUserName = context.Users.Where(u => u.UserName == userDataModel.UserName).FirstOrDefault();
-                            if (checkUserName != null)
+                            if (checkUserName == null)
                             {
                                 userDataModel.CreatedBy = user.CreatedBy;
                                 userDataModel.CreatedTime = DateTime.Now;

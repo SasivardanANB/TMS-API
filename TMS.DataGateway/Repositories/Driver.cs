@@ -84,7 +84,7 @@ namespace TMS.DataGateway.Repositories
                             var checkDrivingLicenseNo = tMSDBContext.Drivers.Where(d => d.DrivingLicenseNo == driverData.DrivingLicenseNo).FirstOrDefault();
                             var checkDriverIdentityNo = tMSDBContext.Drivers.Where(d => d.IdentityNo == driverData.IdentityNo).FirstOrDefault();
 
-                            if (checkDriverNo != null && checkDrivingLicenseNo != null && checkDriverIdentityNo != null )
+                            if (checkDriverNo == null && checkDrivingLicenseNo == null && checkDriverIdentityNo == null )
                             {
                                 driverData.CreatedBy = driverRequest.CreatedBy;
                                 driverData.CreatedTime = DateTime.Now;
