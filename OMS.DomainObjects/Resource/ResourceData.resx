@@ -219,4 +219,7 @@
   <data name="PasswordMismatch" xml:space="preserve">
     <value>Password and confirm password must be same</value>
   </data>
+  <data name="NoRecords" xml:space="preserve">
+    <value>No record(s) found</value>
+  </data>
 </root>
