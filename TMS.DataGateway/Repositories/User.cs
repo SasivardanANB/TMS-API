@@ -1419,7 +1419,7 @@ namespace TMS.DataGateway.Repositories
                 }
                 else
                 {
-                    commonResponse.Status = DomainObjects.Resource.ResourceData.Success; ;
+                    commonResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     commonResponse.StatusCode = (int)HttpStatusCode.NotFound;
                     commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                 }

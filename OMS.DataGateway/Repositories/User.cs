@@ -142,7 +142,7 @@ namespace OMS.DataGateway.Repositories
                     //Encrypt Password
                     foreach (var userData in user.Requests)
                     {
-                       
+
                         var userDataModel = mapper.Map<Domain.User, DataModel.User>(userData);
 
                         if (!string.IsNullOrEmpty(userDataModel.Password))
@@ -223,7 +223,7 @@ namespace OMS.DataGateway.Repositories
                 _logger.Log(LogLevel.Error, ex);
                 userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                 userResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                userResponse.StatusMessage = DomainObjects.Resource.ResourceData.DataBaseException;
+                userResponse.StatusMessage = ex.Message;
             }
             return userResponse;
         }
@@ -261,7 +261,7 @@ namespace OMS.DataGateway.Repositories
 
                 userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                 userResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                userResponse.StatusMessage = DomainObjects.Resource.ResourceData.DataBaseException;
+                userResponse.StatusMessage = ex.Message;
             }
             return userResponse;
         }
@@ -360,7 +360,7 @@ namespace OMS.DataGateway.Repositories
                             usersList = usersList.OrderByDescending(s => s.ID).ToList();
                             break;
                     }
-                }                
+                }
 
                 // Total NumberOfRecords
                 userResponse.NumberOfRecords = usersList.Count;
@@ -392,7 +392,7 @@ namespace OMS.DataGateway.Repositories
 
                 userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                 userResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                userResponse.StatusMessage = DomainObjects.Resource.ResourceData.DataBaseException;
+                userResponse.StatusMessage = ex.Message;
             }
             return userResponse;
         }
@@ -574,7 +574,7 @@ namespace OMS.DataGateway.Repositories
 
                 roleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                 roleResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                roleResponse.StatusMessage = DomainObjects.Resource.ResourceData.DataBaseException;
+                roleResponse.StatusMessage = ex.Message;
             }
             return roleResponse;
         }
@@ -612,7 +612,7 @@ namespace OMS.DataGateway.Repositories
 
                 roleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                 roleResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                roleResponse.StatusMessage = DomainObjects.Resource.ResourceData.DataBaseException;
+                roleResponse.StatusMessage = ex.Message;
             }
             return roleResponse;
         }
@@ -743,7 +743,7 @@ namespace OMS.DataGateway.Repositories
             {
                 roleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                 roleResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                roleResponse.StatusMessage = DomainObjects.Resource.ResourceData.DataBaseException;
+                roleResponse.StatusMessage = ex.Message;
                 _logger.Log(LogLevel.Error, ex);
             }
             return roleResponse;
@@ -840,7 +840,7 @@ namespace OMS.DataGateway.Repositories
             {
                 roleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                 roleResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                roleResponse.StatusMessage = DomainObjects.Resource.ResourceData.DataBaseException;
+                roleResponse.StatusMessage = ex.Message;
                 _logger.Log(LogLevel.Error, ex);
             }
             return roleResponse;
@@ -861,7 +861,7 @@ namespace OMS.DataGateway.Repositories
                     {
                         if (userRoleDetail.UserID > 0)
                         {
-                            var isUserRoleAlreadyAssigned = tMSDBContext.UserRoles.Any(userRole => userRole.UserID==userRoleDetail.UserID && userRole.RoleID == userRoleDetail.RoleID && userRole.BusinessAreaID == userRoleDetail.BusinessAreaID && userRole.ID!=userRoleDetail.ID);
+                            var isUserRoleAlreadyAssigned = tMSDBContext.UserRoles.Any(userRole => userRole.UserID == userRoleDetail.UserID && userRole.RoleID == userRoleDetail.RoleID && userRole.BusinessAreaID == userRoleDetail.BusinessAreaID && userRole.ID != userRoleDetail.ID);
                             if (!isUserRoleAlreadyAssigned)
                             {
                                 if (userRoleDetail.ID == 0)
@@ -910,7 +910,7 @@ namespace OMS.DataGateway.Repositories
             {
                 userRoleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                 userRoleResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                userRoleResponse.StatusMessage = DomainObjects.Resource.ResourceData.DataBaseException;
+                userRoleResponse.StatusMessage = ex.Message;
                 _logger.Log(LogLevel.Error, ex);
             }
             return userRoleResponse;
@@ -952,7 +952,7 @@ namespace OMS.DataGateway.Repositories
             {
                 userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                 userResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                userResponse.StatusMessage = DomainObjects.Resource.ResourceData.DataBaseException;
+                userResponse.StatusMessage = ex.Message;
                 _logger.Log(LogLevel.Error, ex);
             }
             return userResponse;
@@ -1064,7 +1064,7 @@ namespace OMS.DataGateway.Repositories
             {
                 userRoleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                 userRoleResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                userRoleResponse.StatusMessage = DomainObjects.Resource.ResourceData.DataBaseException;
+                userRoleResponse.StatusMessage = ex.Message;
                 _logger.Log(LogLevel.Error, ex);
             }
 
@@ -1198,7 +1198,7 @@ namespace OMS.DataGateway.Repositories
             {
                 regionResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                 regionResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                regionResponse.StatusMessage = DomainObjects.Resource.ResourceData.DataBaseException;
+                regionResponse.StatusMessage = ex.Message;
                 _logger.Log(LogLevel.Error, ex);
             }
             return regionResponse;
@@ -1258,7 +1258,7 @@ namespace OMS.DataGateway.Repositories
 
                 roleMenuResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                 roleMenuResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                roleMenuResponse.StatusMessage = DomainObjects.Resource.ResourceData.DataBaseException;
+                roleMenuResponse.StatusMessage = ex.Message;
             }
             return roleMenuResponse;
         }
@@ -1279,13 +1279,19 @@ namespace OMS.DataGateway.Repositories
                     applicationResponse.Data = applications;
                     applicationResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     applicationResponse.StatusCode = (int)HttpStatusCode.OK;
+                    applicationResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                    applicationResponse.NumberOfRecords = applications.Count;
+                    if (applications.Count == 0)
+                    {
+                        applicationResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
+                    }
                 }
             }
             catch (Exception ex)
             {
                 applicationResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                 applicationResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                applicationResponse.StatusMessage = DomainObjects.Resource.ResourceData.DataBaseException;
+                applicationResponse.StatusMessage = ex.Message;
                 _logger.Log(LogLevel.Error, ex);
             }
             return applicationResponse;
@@ -1310,18 +1316,21 @@ namespace OMS.DataGateway.Repositories
                          }).ToList();
                 }
 
+                //Number of records
+                commonResponse.NumberOfRecords = commons.Count;
 
                 if (commons.Count > 0)
                 {
                     commonResponse.Data = commons;
                     commonResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     commonResponse.StatusCode = (int)HttpStatusCode.OK;
+                    commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
                 }
                 else
                 {
                     commonResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     commonResponse.StatusCode = (int)HttpStatusCode.NotFound;
-                    commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                    commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                 }
             }
             catch (Exception ex)
@@ -1330,7 +1339,7 @@ namespace OMS.DataGateway.Repositories
 
                 commonResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                 commonResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.DataBaseException;
+                commonResponse.StatusMessage = ex.Message;
             }
             return commonResponse;
         }
@@ -1354,6 +1363,8 @@ namespace OMS.DataGateway.Repositories
                          }).ToList();
                 }
 
+                //Number of records
+                commonResponse.NumberOfRecords = commons.Count;
 
                 if (commons.Count > 0)
                 {
@@ -1375,7 +1386,7 @@ namespace OMS.DataGateway.Repositories
 
                 commonResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                 commonResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.DataBaseException;
+                commonResponse.StatusMessage = ex.Message;
             }
             return commonResponse;
         }
@@ -1398,12 +1409,15 @@ namespace OMS.DataGateway.Repositories
                          }).ToList();
                 }
 
+                //Number of records
+                commonResponse.NumberOfRecords = commons.Count;
 
                 if (commons.Count > 0)
                 {
                     commonResponse.Data = commons;
                     commonResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     commonResponse.StatusCode = (int)HttpStatusCode.OK;
+                    commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
                 }
                 else
                 {
@@ -1418,7 +1432,7 @@ namespace OMS.DataGateway.Repositories
 
                 commonResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                 commonResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.DataBaseException;
+                commonResponse.StatusMessage = ex.Message;
             }
             return commonResponse;
         }
