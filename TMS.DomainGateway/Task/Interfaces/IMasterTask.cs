@@ -13,5 +13,6 @@ namespace TMS.DomainGateway.Task.Interfaces
         PartnerSearchResponse GetPartners(PartnerSearchRequest partnerSearchRequest);
         CommonResponse GetDriverNames();
         CommonResponse GetVehicleTypeNames();
+        CommonResponse GetFleetTypeNames();
     }
 }

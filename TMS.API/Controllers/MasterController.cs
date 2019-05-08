@@ -26,7 +26,7 @@ namespace TMS.API.Controllers
         }
 
         [Route("getdrivernames")]
-        [HttpPost]
+        [HttpGet]
         public IHttpActionResult GetDriverNames()
         {
             IMasterTask masterTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().MasterTask;
@@ -35,11 +35,20 @@ namespace TMS.API.Controllers
         }
 
         [Route("getvehicletypenames")]
-        [HttpPost]
+        [HttpGet]
         public IHttpActionResult GetVehicleTypeNames()
         {
             IMasterTask masterTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().MasterTask;
-            CommonResponse commonResponse = masterTask.GetDriverNames();
+            CommonResponse commonResponse = masterTask.GetVehicleTypeNames();
+            return Ok(commonResponse);
+        }
+
+        [Route("getfleettypenames")]
+        [HttpGet]
+        public IHttpActionResult GetFleetTypeNames()
+        {
+            IMasterTask masterTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().MasterTask;
+            CommonResponse commonResponse = masterTask.GetFleetTypeNames();
             return Ok(commonResponse);
         }
     }

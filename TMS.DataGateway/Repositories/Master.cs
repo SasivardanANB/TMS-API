@@ -111,5 +111,28 @@ namespace TMS.DataGateway.Repositories
                 return vehicleTypeNames;
             }
         }
+
+        public CommonResponse GetFleetTypeNames()
+        {
+            CommonResponse fleetTypeNames = new CommonResponse();
+            using (var context = new TMSDBContext())
+            {
+                var fleetTypeList = context.FleetTypes.Select(response => new Domain.Common()
+                {
+                    Id = response.ID,
+                    Value = response.FleetTypeDescription
+                }).ToList();
+                if (fleetTypeList != null)
+                {
+                    fleetTypeNames.NumberOfRecords = fleetTypeNames.Data.Count;
+                    fleetTypeNames.Data = fleetTypeList;
+                }
+                else
+                {
+                    fleetTypeNames.NumberOfRecords = 0;
+                }
+                return fleetTypeNames;
+            }
+        }
     }
 }

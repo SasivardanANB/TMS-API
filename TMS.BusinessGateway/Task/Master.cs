@@ -37,5 +37,10 @@ namespace TMS.BusinessGateway.Task
             return commonResponse;
         }
 
+        public override CommonResponse GetFleetTypeNames()
+        {
+            CommonResponse commonResponse = _masterRepository.GetFleetTypeNames();
+            return commonResponse;
+        }
     }
 }

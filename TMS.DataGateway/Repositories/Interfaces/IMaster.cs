@@ -14,5 +14,6 @@ namespace TMS.DataGateway.Repositories.Iterfaces
         PartnerSearchResponse GetPartners(PartnerSearchRequest partnerSearchRequest);
         CommonResponse GetDriverNames();
         CommonResponse GetVehicleTypeNames();
+        CommonResponse GetFleetTypeNames();
     }
 }
