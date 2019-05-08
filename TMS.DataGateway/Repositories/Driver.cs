@@ -74,6 +74,7 @@ namespace TMS.DataGateway.Repositories
                             tMSDBContext.Entry(driverData).Property(p => p.Password).IsModified = false;
                             tMSDBContext.SaveChanges();
                             driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.DriversUpdated;
+                            driverResponse.StatusCode = (int)HttpStatusCode.OK;
                         }
 
                         //For create driver
@@ -90,6 +91,7 @@ namespace TMS.DataGateway.Repositories
                                 tMSDBContext.Drivers.Add(driverData);
                                 tMSDBContext.SaveChanges();
                                 driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.DriversCreated;
+                                driverResponse.StatusCode = (int)HttpStatusCode.OK;
                             }
                             else
                             {
@@ -104,6 +106,7 @@ namespace TMS.DataGateway.Repositories
                                 {
                                     driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.IdentityNoExisted;
                                 }
+                                driverResponse.StatusCode = (int)HttpStatusCode.BadRequest;
 
                             }
                         }
@@ -112,7 +115,6 @@ namespace TMS.DataGateway.Repositories
                     driverRequest.Requests = mapper.Map<List<DataModel.Driver>, List<Domain.Driver>>(drivers);
                     driverResponse.Data = driverRequest.Requests;
                     driverResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                    driverResponse.StatusCode = (int)HttpStatusCode.OK;
                 }
             }
             catch (Exception ex)

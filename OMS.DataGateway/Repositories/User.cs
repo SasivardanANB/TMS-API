@@ -183,6 +183,7 @@ namespace OMS.DataGateway.Repositories
                                 }
                             }
                             userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UsersUpdated;
+                            userResponse.StatusCode = (int)HttpStatusCode.OK;
                         }
                         else //Create User
                         {
@@ -212,10 +213,12 @@ namespace OMS.DataGateway.Repositories
                                 }
 
                                 userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UsersCreated;
+                                userResponse.StatusCode = (int)HttpStatusCode.OK;
                             }
                             else
                             {
                                 userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserNameExisted;
+                                userResponse.StatusCode = (int)HttpStatusCode.BadRequest;
                             }
                         }
 
@@ -225,8 +228,6 @@ namespace OMS.DataGateway.Repositories
                     user.Requests = mapper.Map<List<DataModel.User>, List<Domain.User>>(userDataModelList);
                     userResponse.Data = user.Requests;
                     userResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                    userResponse.StatusCode = (int)HttpStatusCode.OK;
-
                 }
             }
             catch (Exception ex)
