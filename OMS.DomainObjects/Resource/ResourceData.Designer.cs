@@ -205,6 +205,15 @@ namespace OMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Menu Activities Retrieved.
+        /// </summary>
+        public static string MenuActivityRetrieved {
+            get {
+                return ResourceManager.GetString("MenuActivityRetrieved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No Orders.
         /// </summary>
         public static string NoOrders {

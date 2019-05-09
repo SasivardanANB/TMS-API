@@ -225,4 +225,7 @@
   <data name="UserNameExisted" xml:space="preserve">
     <value>User name alredy exist</value>
   </data>
+  <data name="MenuActivityRetrieved" xml:space="preserve">
+    <value>Menu Activities Retrieved</value>
+  </data>
 </root>

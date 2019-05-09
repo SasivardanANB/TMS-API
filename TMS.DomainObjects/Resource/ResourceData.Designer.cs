@@ -124,7 +124,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to License no alredy exist.
+        ///   Looks up a localized string similar to License number already exists.
         /// </summary>
         public static string DrivingLicenseNoExisted {
             get {
@@ -169,7 +169,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Identity no alredy exist.
+        ///   Looks up a localized string similar to Identity number already exists.
         /// </summary>
         public static string IdentityNoExisted {
             get {
@@ -799,7 +799,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to User name alredy exist.
+        ///   Looks up a localized string similar to User name already exists.
         /// </summary>
         public static string UserNameExisted {
             get {

@@ -1,5 +1,8 @@
 MenuCode,MenuDescription,MenuURL
 M0001,Dashboard,
-M0002,Upload Order,
-M0003,Download Order,
-M0004,Authorization
+M0002,Order,
+M0003,Master Data,
+M0004,Trip Management,
+M0005,Gate to Gate,
+M0006,Report,
+M0007,Authorization

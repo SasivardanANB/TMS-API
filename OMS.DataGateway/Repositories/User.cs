@@ -1273,6 +1273,8 @@ namespace OMS.DataGateway.Repositories
                         roleMenuResponse.Data = roleMenus;
                         roleMenuResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         roleMenuResponse.StatusCode = (int)HttpStatusCode.OK;
+                        roleMenuResponse.StatusMessage = DomainObjects.Resource.ResourceData.MenuActivityRetrived;
+                        roleMenuResponse.NumberOfRecords = roleMenus.Count;
                     }
                 }
             }

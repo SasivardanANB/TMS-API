@@ -379,7 +379,7 @@
     <value>No Record(s) found</value>
   </data>
   <data name="UserNameExisted" xml:space="preserve">
-    <value>User name alredy exist</value>
+    <value>User name already exists</value>
   </data>
   <data name="String1" xml:space="preserve">
     <value />
@@ -388,10 +388,10 @@
     <value>Driver no alredy exist</value>
   </data>
   <data name="DrivingLicenseNoExisted" xml:space="preserve">
-    <value>License no alredy exist</value>
+    <value>License number already exists</value>
   </data>
   <data name="IdentityNoExisted" xml:space="preserve">
-    <value>Identity no alredy exist</value>
+    <value>Identity number already exists</value>
   </data>
   <data name="MenuActivityRetrived" xml:space="preserve">
     <value>Menu Activity Retrived</value>
