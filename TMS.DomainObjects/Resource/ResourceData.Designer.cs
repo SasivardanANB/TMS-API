@@ -601,6 +601,15 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Menu Activity Retrived.
+        /// </summary>
+        public static string MenuActivityRetrived {
+            get {
+                return ResourceManager.GetString("MenuActivityRetrived", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No Record(s) found.
         /// </summary>
         public static string NoRecords {
