@@ -888,10 +888,9 @@ namespace TMS.DataGateway.Repositories
                                 }
                                 else
                                 {
-                                    var userAssignedRoleDetails = tMSDBContext.UserRoles.Where(userRole => userRole.RoleID == userRoleDetail.RoleID && userRole.BusinessAreaID == userRoleDetail.BusinessAreaID).FirstOrDefault();
+                                    var userAssignedRoleDetails = tMSDBContext.UserRoles.Where(userRole => userRole.ID == userRoleDetail.ID).FirstOrDefault();
                                     if (userAssignedRoleDetails != null)
                                     {
-
                                         userAssignedRoleDetails.RoleID = userRoleDetail.RoleID;
                                         userAssignedRoleDetails.BusinessAreaID = userRoleDetail.BusinessAreaID;
                                         userAssignedRoleDetails.LastModifiedBy = userRoleRequest.LastModifiedBy;
