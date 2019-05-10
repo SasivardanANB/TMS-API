@@ -47,5 +47,11 @@ namespace TMS.BusinessGateway.Task
             PartnerResponse partnerResponse = _masterRepository.GetPartnersDetails(partnerId);
             return partnerResponse;
         }
+
+        public override SubDistrictDetailsResponse GetSubDistrictDetails(string searchText)
+        {
+            SubDistrictDetailsResponse subDistrictDetailsResponse = _masterRepository.GetSubDistrictDetails(searchText);
+            return subDistrictDetailsResponse;
+        }
     }
 }

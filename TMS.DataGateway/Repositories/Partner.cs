@@ -41,28 +41,41 @@ namespace TMS.DataGateway.Repositories
                     foreach (var partnerData in partners)
                     {
                         partnerData.IsDeleted = false;
-                        if (partnerData.ID > 0) //Update User
+                        if (partnerData.ID > 0) //Update partner
                         {
                             partnerData.LastModifiedBy = partnerRequest.LastModifiedBy;
                             partnerData.LastModifiedTime = DateTime.Now;
                             context.Entry(partnerData).State = System.Data.Entity.EntityState.Modified;
                             context.SaveChanges();
                             partnerResponse.StatusMessage = DomainObjects.Resource.ResourceData.PartnerUpdated;
+                            partnerResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                            partnerResponse.StatusCode = (int)HttpStatusCode.OK;
                         }
-                        else //Create User
+                        else //Create partner
                         {
-                            partnerData.CreatedBy = partnerRequest.LastModifiedBy;
-                            partnerData.CreatedTime = DateTime.Now;
-                            context.Partners.Add(partnerData);
-                            context.SaveChanges();
-                            partnerResponse.StatusMessage = DomainObjects.Resource.ResourceData.PartnerCreated;
+                            var existPartner = context.Partners.Where(p => p.PartnerNo == partnerData.PartnerNo).FirstOrDefault();
+                            if (existPartner == null)
+                            {
+                                partnerData.CreatedBy = partnerRequest.LastModifiedBy;
+                                partnerData.CreatedTime = DateTime.Now;
+                                context.Partners.Add(partnerData);
+                                context.SaveChanges();
+                                partnerResponse.StatusMessage = DomainObjects.Resource.ResourceData.PartnerCreated;
+                                partnerResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                                partnerResponse.StatusCode = (int)HttpStatusCode.OK;
+                            }
+                            else
+                            {
+                                partnerResponse.StatusMessage = DomainObjects.Resource.ResourceData.PartnerNoExisted;
+                                partnerResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                                partnerResponse.StatusCode = (int)HttpStatusCode.BadRequest;
+                            }
                         }
                     }
 
                     partnerRequest.Requests = mapper.Map<List<DataModel.Partner>, List<Domain.Partner>>(partners);
                     partnerResponse.Data = partnerRequest.Requests;
-                    partnerResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                    partnerResponse.StatusCode = (int)HttpStatusCode.OK;
+                   
                 }
             }
             catch (Exception ex)
