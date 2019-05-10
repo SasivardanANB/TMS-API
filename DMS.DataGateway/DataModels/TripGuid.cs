@@ -8,23 +8,23 @@ using System.Threading.Tasks;
 
 namespace DMS.DataGateway.DataModels
 {
-    [Table("User", Schema = "DMS")]
-    public class User
+    [Table("TripGuid", Schema = "DMS")]
+    public class TripGuid
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
-        [Required(ErrorMessage = "")]
-        [MaxLength(50)]
-        [Index("User_UserName", IsUnique = true)]
-        public string UserName { get; set; }
-        [MinLength(8)]
-        public string Password { get; set; }
-        public bool IsActive { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
-        public string PhoneNumber { get; set; }
+        [ForeignKey("TripStatusEventLog")]
+        public int TripEventLogID { get; set; }
+        public virtual TripStatusEventLog TripStatusEventLog { get; set; }
+        [ForeignKey("ImageGuid")]
+        public int ImageID { get; set; }
+        public virtual ImageGuid ImageGuid { get; set; }
+        public string CreatedBy
+        {
+            get { return "SYSTEM"; }
+            set { }
+        }
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime CreatedTime
         {

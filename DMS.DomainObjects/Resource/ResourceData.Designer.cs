@@ -79,6 +79,33 @@ namespace DMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An error occured while uploading the file.
+        /// </summary>
+        public static string FileUploadError {
+            get {
+                return ResourceManager.GetString("FileUploadError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File uploaded successfully.
+        /// </summary>
+        public static string FileUploadSuccess {
+            get {
+                return ResourceManager.GetString("FileUploadSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only jpeg and png are supported.
+        /// </summary>
+        public static string InvalidFileFormat {
+            get {
+                return ResourceManager.GetString("InvalidFileFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Login Fail.
         /// </summary>
         public static string LoginFail {

@@ -198,9 +198,22 @@ namespace DMS.DataGateway.Repositories
                         TripStatusId = tripStatusEventLogFilter.TripStatusId,
                         StopPointId = tripStatusEventLogFilter.StopPointId,
                         Remarks = tripStatusEventLogFilter.Remarks,
-                        StatusDate = DateTime.Now
+                        StatusDate = DateTime.Now,
+
                     };
                     context.TripStatusEventLogs.Add(dataTripStatusEventLog);
+                    context.SaveChanges();
+                    int guidCountValue = 0;
+                    foreach(var imageGuid in request.Requests[0].ShipmentImageGuIds)
+                    {
+                        TripGuid tripGuid = new TripGuid()
+                        {
+                            TripEventLogID = dataTripStatusEventLog.ID,
+                            ImageID = InsertImageGuid(request.Requests[0].ShipmentImageGuIds[guidCountValue], request.CreatedBy)
+                        };
+                        context.TripGuids.Add(tripGuid);
+                        guidCountValue++;
+                    }
                     context.SaveChanges();
 
                     var tripCurrentStopPoint = context.StopPoints.Where(t => t.ID == tripStatusEventLogFilter.StopPointId).FirstOrDefault();
@@ -229,7 +242,9 @@ namespace DMS.DataGateway.Repositories
                                                     Remarks = tsEventLog.Remarks,
                                                     StatusDate = tsEventLog.StatusDate,
                                                     TripStatusId = tsEventLog.TripStatusId,
-                                                    LocationName = location.Name
+                                                    LocationName = location.Name,
+                                                    ShipmentImageIds=context.TripGuids.Where(i=>i.TripEventLogID==tsEventLog.ID).Select(i=>i.ID).ToList(),
+                                                    //ShipmentImageGuIds=context.ImageGuids.
                                                 };
                                 lstEventLogs.AddRange(eventLog.ToList());
                             }
@@ -252,6 +267,33 @@ namespace DMS.DataGateway.Repositories
             }
 
             return response;
+        }
+
+        //For inserting new record into ImageGuid table
+        public int InsertImageGuid(string imageGuidValue, string createdBy)
+        {
+            try
+            {
+                using (var dMSDBContext = new DMSDBContext())
+                {
+                    //Inserting new record along with IsActive true
+                    ImageGuid imageGuidObject = new ImageGuid()
+                    {
+                        ImageGuIdValue = imageGuidValue,
+                        CreatedBy = createdBy,
+                        IsActive = true
+                    };
+
+                    dMSDBContext.ImageGuids.Add(imageGuidObject);
+                    dMSDBContext.SaveChanges();
+                    return imageGuidObject.ID;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+            }
+            return 0;
         }
     }
 }

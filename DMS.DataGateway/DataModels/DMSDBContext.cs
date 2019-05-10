@@ -23,5 +23,8 @@ namespace DMS.DataGateway.DataModels
         public virtual DbSet<TripStatus> TripStatuses { get; set; }
         public virtual DbSet<TripStatusEventLog> TripStatusEventLogs { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<ImageGuid> ImageGuids { get; set; }
+        public virtual DbSet<TripGuid> TripGuids { get; set; }
+        public virtual DbSet<Pod> Pods { get; set; }
     }
 }

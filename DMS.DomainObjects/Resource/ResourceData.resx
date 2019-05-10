@@ -123,6 +123,15 @@
   <data name="Failure" xml:space="preserve">
     <value>Failure</value>
   </data>
+  <data name="FileUploadError" xml:space="preserve">
+    <value>An error occured while uploading the file</value>
+  </data>
+  <data name="FileUploadSuccess" xml:space="preserve">
+    <value>File uploaded successfully</value>
+  </data>
+  <data name="InvalidFileFormat" xml:space="preserve">
+    <value>Only jpeg and png are supported</value>
+  </data>
   <data name="LoginFail" xml:space="preserve">
     <value>Login Fail</value>
   </data>

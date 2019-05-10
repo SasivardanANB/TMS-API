@@ -70,6 +70,9 @@
   <ItemGroup>
     <Compile Include="DataModels\City.cs" />
     <Compile Include="DataModels\DMSDBContext.cs" />
+    <Compile Include="DataModels\TripGuid.cs" />
+    <Compile Include="DataModels\ImageGuid.cs" />
+    <Compile Include="DataModels\POD.cs" />
     <Compile Include="DataModels\Location.cs" />
     <Compile Include="DataModels\PostalCode.cs" />
     <Compile Include="DataModels\Province.cs" />
@@ -87,6 +90,10 @@
     <Compile Include="Migrations\201904261052310_DMS_V1.0.Designer.cs">
       <DependentUpon>201904261052310_DMS_V1.0.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201905100633323_ImageGuidAdded.cs" />
+    <Compile Include="Migrations\201905100633323_ImageGuidAdded.Designer.cs">
+      <DependentUpon>201905100633323_ImageGuidAdded.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\Authenticate.cs" />
@@ -101,6 +108,9 @@
     <None Include="packages.config" />
     <EmbeddedResource Include="Migrations\201904261052310_DMS_V1.0.resx">
       <DependentUpon>201904261052310_DMS_V1.0.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905100633323_ImageGuidAdded.resx">
+      <DependentUpon>201905100633323_ImageGuidAdded.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SeedData\Cities.csv" />
     <EmbeddedResource Include="SeedData\PostalCodes.csv" />

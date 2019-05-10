@@ -16,12 +16,11 @@ namespace DMS.DataGateway.DataModels
         public int ID { get; set; }
         [ForeignKey("StopPoints")]
         public int StopPointId { get; set; }
+        public virtual StopPoints StopPoints { get; set; }
         public DateTime StatusDate { get; set; }
         public string Remarks { get; set; }
         [ForeignKey("TripStatus")]
         public int TripStatusId { get; set; }
-
-        public StopPoints StopPoints { get; set; }
-        public TripStatus TripStatus { get; set; }
+        public virtual TripStatus TripStatus { get; set; }
     }
 }

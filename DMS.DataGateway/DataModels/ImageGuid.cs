@@ -8,23 +8,20 @@ using System.Threading.Tasks;
 
 namespace DMS.DataGateway.DataModels
 {
-    [Table("User", Schema = "DMS")]
-    public class User
+    [Table("ImageGuid", Schema = "DMS")]
+    public class ImageGuid
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
-        [Required(ErrorMessage = "")]
-        [MaxLength(50)]
-        [Index("User_UserName", IsUnique = true)]
-        public string UserName { get; set; }
-        [MinLength(8)]
-        public string Password { get; set; }
-        public bool IsActive { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
-        public string PhoneNumber { get; set; }
+        [MaxLength(1000)]
+        public string ImageGuIdValue { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public string CreatedBy
+        {
+            get { return "SYSTEM"; }
+            set { }
+        }
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime CreatedTime
         {
@@ -33,5 +30,6 @@ namespace DMS.DataGateway.DataModels
         }
         public string LastModifiedBy { get; set; }
         public DateTime? LastModifiedTime { get; set; }
+        public bool IsActive { get; set; }
     }
 }

@@ -14,5 +14,7 @@ namespace DMS.DomainObjects.Objects
         public string Remarks { get; set; }
         public int TripStatusId { get; set; }
         public string LocationName { get; set; }
+        public List<string> ShipmentImageGuIds { get; set; }
+        public List<int> ShipmentImageIds { get; set; }
     }
 }
