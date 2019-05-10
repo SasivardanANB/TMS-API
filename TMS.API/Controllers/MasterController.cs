@@ -61,5 +61,14 @@ namespace TMS.API.Controllers
             CommonResponse commonResponse = masterTask.GetFleetTypeNames();
             return Ok(commonResponse);
         }
+
+        [Route("getsubdistrictdetails")]
+        [HttpGet]
+        public IHttpActionResult GetSubDistrictDetails(string searchText)
+        {
+            IMasterTask masterTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().MasterTask;
+            SubDistrictDetailsResponse subDistrictDetailsResponse = masterTask.GetSubDistrictDetails(searchText);
+            return Ok(subDistrictDetailsResponse);
+        }
     }
 }

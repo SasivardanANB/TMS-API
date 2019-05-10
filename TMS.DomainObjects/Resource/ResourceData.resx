@@ -396,4 +396,7 @@
   <data name="MenuActivityRetrived" xml:space="preserve">
     <value>Menu Activity Retrived</value>
   </data>
+  <data name="PartnerNoExisted" xml:space="preserve">
+    <value>Partner number already exists</value>
+  </data>
 </root>

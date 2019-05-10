@@ -86,7 +86,7 @@ namespace TMS.DataGateway.Repositories
                 commonResponse.NumberOfRecords = driversList.Count;
 
                 if (driversList.Count > 0)
-                {                    
+                {
                     commonResponse.Data = driversList;
                     commonResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     commonResponse.StatusCode = (int)HttpStatusCode.OK;
@@ -116,7 +116,7 @@ namespace TMS.DataGateway.Repositories
                 // Total NumberOfRecords
                 commonResponse.NumberOfRecords = vehicleTypeList.Count;
 
-                if (vehicleTypeList.Count>0)
+                if (vehicleTypeList.Count > 0)
                 {
                     commonResponse.Data = vehicleTypeList;
                     commonResponse.Status = DomainObjects.Resource.ResourceData.Success;
@@ -164,11 +164,59 @@ namespace TMS.DataGateway.Repositories
             }
         }
 
-       public PartnerResponse GetPartnersDetails(int partnerId)
+        public PartnerResponse GetPartnersDetails(int partnerId)
         {
             PartnerResponse partnerResponse = new PartnerResponse();
             partnerResponse.Data = new List<Domain.Partner>();
             return partnerResponse;
+        }
+
+        public SubDistrictDetailsResponse GetSubDistrictDetails(string searchText)
+        {
+            SubDistrictDetailsResponse subDistrictDetailsResponse = new SubDistrictDetailsResponse();
+
+            try
+            {
+                using (var context = new TMSDBContext())
+                {
+                    var subDistrictDateils = (from subDistrict in context.SubDistricts
+                                              join postlCode in context.PostalCodes on subDistrict.ID equals postlCode.SubDistrictID
+                                              where subDistrict.SubdistrictName.Contains(searchText)
+                                              select new Domain.SubDistrictDeatils
+                                              {
+                                                  SubDistrictName = subDistrict.SubdistrictName,
+                                                  CityName = subDistrict.City.CityDescription,
+                                                  ProvinceName = subDistrict.City.Province.ProvinceDescription,
+                                                  PostalCodeId = postlCode.ID,
+                                                  PostalCode = postlCode.PostalCodeNo
+                                              }).ToList();
+                    if (subDistrictDateils.Count>0 )
+                    {
+                        subDistrictDetailsResponse.Data = subDistrictDateils;
+                        subDistrictDetailsResponse.NumberOfRecords = subDistrictDateils.Count;
+                        subDistrictDetailsResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        subDistrictDetailsResponse.StatusCode = (int)HttpStatusCode.OK;
+                        subDistrictDetailsResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                    }
+                    else
+                    {
+                        subDistrictDetailsResponse.NumberOfRecords = 0;
+                        subDistrictDetailsResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        subDistrictDetailsResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                        subDistrictDetailsResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+
+                subDistrictDetailsResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                subDistrictDetailsResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                subDistrictDetailsResponse.StatusMessage = ex.Message;
+            }
+            return subDistrictDetailsResponse;
+
         }
     }
 }

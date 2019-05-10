@@ -16,5 +16,6 @@ namespace TMS.DomainGateway.Task
         public abstract CommonResponse GetDriverNames();
         public abstract CommonResponse GetVehicleTypeNames();
         public abstract CommonResponse GetFleetTypeNames();
+        public abstract SubDistrictDetailsResponse GetSubDistrictDetails(string searchText);
     }
 }

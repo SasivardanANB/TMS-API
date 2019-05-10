@@ -16,5 +16,6 @@ namespace TMS.DataGateway.Repositories.Iterfaces
         CommonResponse GetDriverNames();
         CommonResponse GetVehicleTypeNames();
         CommonResponse GetFleetTypeNames();
+        SubDistrictDetailsResponse GetSubDistrictDetails(string searchText);
     }
 }
