@@ -186,84 +186,93 @@ namespace DMS.DataGateway.Repositories
                 Data = new List<Domain.TripStatusEventLog>()
             };
 
-            try
+            using (var context = new DMSDBContext())
             {
-                using (var context = new DMSDBContext())
+                using (var beginDBTransaction = context.Database.BeginTransaction())
                 {
-                    //Step 1 : Get Request from 0 index
-                    var tripStatusEventLogFilter = request.Requests[0];
-
-                    DataModel.TripStatusEventLog dataTripStatusEventLog = new DataModel.TripStatusEventLog()
+                    try
                     {
-                        TripStatusId = tripStatusEventLogFilter.TripStatusId,
-                        StopPointId = tripStatusEventLogFilter.StopPointId,
-                        Remarks = tripStatusEventLogFilter.Remarks,
-                        StatusDate = DateTime.Now,
+                        //Step 1 : Get Request from 0 index
+                        var tripStatusEventLogFilter = request.Requests[0];
 
-                    };
-                    context.TripStatusEventLogs.Add(dataTripStatusEventLog);
-                    context.SaveChanges();
-                    int guidCountValue = 0;
-                    foreach(var imageGuid in request.Requests[0].ShipmentImageGuIds)
-                    {
-                        TripGuid tripGuid = new TripGuid()
+                        DataModel.TripStatusEventLog dataTripStatusEventLog = new DataModel.TripStatusEventLog()
                         {
-                            TripEventLogID = dataTripStatusEventLog.ID,
-                            ImageID = InsertImageGuid(request.Requests[0].ShipmentImageGuIds[guidCountValue], request.CreatedBy)
+                            TripStatusId = tripStatusEventLogFilter.TripStatusId,
+                            StopPointId = tripStatusEventLogFilter.StopPointId,
+                            Remarks = tripStatusEventLogFilter.Remarks,
+                            StatusDate = DateTime.Now,
+
                         };
-                        context.TripGuids.Add(tripGuid);
-                        guidCountValue++;
-                    }
-                    context.SaveChanges();
-
-                    var tripCurrentStopPoint = context.StopPoints.Where(t => t.ID == tripStatusEventLogFilter.StopPointId).FirstOrDefault();
-                    if (tripCurrentStopPoint != null)
-                    {
-                        int tripId = tripCurrentStopPoint.TripID;
-                        var lstCurrentTripStopPoints = (from sp in context.StopPoints
-                                                        where sp.TripID == tripId
-                                                        select sp).ToList();   
-                        
-                        if (lstCurrentTripStopPoints != null && lstCurrentTripStopPoints.Any())
+                        context.TripStatusEventLogs.Add(dataTripStatusEventLog);
+                        context.SaveChanges();
+                        int guidCountValue = 0;
+                        if (request.Requests[0].ShipmentImageGuIds.Count > 0 && request.Requests[0].ShipmentImageGuIds != null)
                         {
-                            var lstEventLogs = new List<Domain.TripStatusEventLog>();
-                            foreach(var sp in lstCurrentTripStopPoints)
+                            foreach (var imageGuid in request.Requests[0].ShipmentImageGuIds)
                             {
-                                var location = (from loc in context.Locations
+                                if (string.IsNullOrEmpty(request.Requests[0].ShipmentImageGuIds[guidCountValue]))
+                                {
+                                    TripGuid tripGuid = new TripGuid()
+                                    {
+                                        TripEventLogID = dataTripStatusEventLog.ID,
+                                        ImageID = InsertImageGuid(request.Requests[0].ShipmentImageGuIds[guidCountValue], request.CreatedBy)
+                                    };
+                                    context.TripGuids.Add(tripGuid);
+                                }
+                                guidCountValue++;
+                            }
+                        }
+                        context.SaveChanges();
+
+                        var tripCurrentStopPoint = context.StopPoints.Where(t => t.ID == tripStatusEventLogFilter.StopPointId).FirstOrDefault();
+                        if (tripCurrentStopPoint != null)
+                        {
+                            int tripId = tripCurrentStopPoint.TripID;
+                            var lstCurrentTripStopPoints = (from sp in context.StopPoints
+                                                            where sp.TripID == tripId
+                                                            select sp).ToList();
+
+                            if (lstCurrentTripStopPoints != null && lstCurrentTripStopPoints.Any())
+                            {
+                                var lstEventLogs = new List<Domain.TripStatusEventLog>();
+                                foreach (var sp in lstCurrentTripStopPoints)
+                                {
+                                    var location = (from loc in context.Locations
                                                     where loc.ID == sp.LocationID
                                                     select loc).FirstOrDefault();
 
-                                var eventLog = from tsEventLog in context.TripStatusEventLogs
-                                                where sp.ID == tsEventLog.StopPointId
-                                                select new Domain.TripStatusEventLog
-                                                {
-                                                    ID = tsEventLog.ID,
-                                                    StopPointId = tsEventLog.StopPointId,
-                                                    Remarks = tsEventLog.Remarks,
-                                                    StatusDate = tsEventLog.StatusDate,
-                                                    TripStatusId = tsEventLog.TripStatusId,
-                                                    LocationName = location.Name,
-                                                    ShipmentImageIds=context.TripGuids.Where(i=>i.TripEventLogID==tsEventLog.ID).Select(i=>i.ID).ToList(),
-                                                    //ShipmentImageGuIds=context.ImageGuids.
-                                                };
-                                lstEventLogs.AddRange(eventLog.ToList());
+                                    var eventLog = from tsEventLog in context.TripStatusEventLogs
+                                                   where sp.ID == tsEventLog.StopPointId
+                                                   select new Domain.TripStatusEventLog
+                                                   {
+                                                       ID = tsEventLog.ID,
+                                                       StopPointId = tsEventLog.StopPointId,
+                                                       Remarks = tsEventLog.Remarks,
+                                                       StatusDate = tsEventLog.StatusDate,
+                                                       TripStatusId = tsEventLog.TripStatusId,
+                                                       LocationName = location.Name,
+                                                       ShipmentImageIds = context.TripGuids.Where(i => i.TripEventLogID == tsEventLog.ID).Select(i => i.ID).ToList()
+                                                   };
+                                    lstEventLogs.AddRange(eventLog.ToList());
+                                }
+                                // Order By status date
+                                response.Data.AddRange(lstEventLogs.OrderByDescending(t => t.StatusDate));
                             }
-                            // Order By status date
-                            response.Data.AddRange(lstEventLogs.OrderByDescending(t => t.StatusDate));
                         }
-                    }                    
-
-                    response.Status = DomainObjects.Resource.ResourceData.Success;
-                    response.StatusCode = (int)HttpStatusCode.OK;
-                    response.StatusMessage = DomainObjects.Resource.ResourceData.TripStatusUpdated;
+                        beginDBTransaction.Commit();
+                        response.Status = DomainObjects.Resource.ResourceData.Success;
+                        response.StatusCode = (int)HttpStatusCode.OK;
+                        response.StatusMessage = DomainObjects.Resource.ResourceData.TripStatusUpdated;
+                    }
+                    catch (Exception ex)
+                    {
+                        beginDBTransaction.Rollback();
+                        _logger.Log(LogLevel.Error, ex);
+                        response.Status = DomainObjects.Resource.ResourceData.Failure;
+                        response.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                        response.StatusMessage = ex.Message;
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.Log(LogLevel.Error, ex);
-                response.Status = DomainObjects.Resource.ResourceData.Failure;
-                response.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                response.StatusMessage = ex.Message;
             }
 
             return response;
