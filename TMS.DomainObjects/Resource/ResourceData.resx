@@ -396,4 +396,7 @@
   <data name="MenuActivityRetrived" xml:space="preserve">
     <value>Menu Activity Retrived</value>
   </data>
+  <data name="PicDeleted" xml:space="preserve">
+    <value>Pic deleted successfully</value>
+  </data>
 </root>
