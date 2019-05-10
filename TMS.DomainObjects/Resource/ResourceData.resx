@@ -399,4 +399,7 @@
   <data name="PartnerNoExisted" xml:space="preserve">
     <value>Partner number already exists</value>
   </data>
+  <data name="PicDeleted" xml:space="preserve">
+    <value>Pic deleted successfully</value>
+  </data>
 </root>

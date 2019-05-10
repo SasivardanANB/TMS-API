@@ -700,6 +700,15 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Pic deleted successfully.
+        /// </summary>
+        public static string PicDeleted {
+            get {
+                return ResourceManager.GetString("PicDeleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Pic(s) updated successfully.
         /// </summary>
         public static string PicUpdated {
