@@ -11,6 +11,6 @@ namespace TMS.DataGateway.Repositories.Interfaces
     public interface IOrder
     {
         OrderResponse CreateUpdateOrder(OrderRequest request);
-        OrderResponse GetOrders(OrderRequest orderRequest);
+        OrderSearchResponse GetOrders(OrderSearchRequest orderSearchRequest);
     }
 }

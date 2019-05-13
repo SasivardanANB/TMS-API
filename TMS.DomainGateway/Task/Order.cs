@@ -12,6 +12,6 @@ namespace TMS.DomainGateway.Task
     public abstract class OrderTask : IOrderTask
     {
         public abstract OrderResponse CreateUpdateOrder(OrderRequest order);
-        public abstract OrderResponse GetOrders(OrderRequest order);
+        public abstract OrderSearchResponse GetOrders(OrderSearchRequest orderSearchRequest);
     }
 }

@@ -433,9 +433,145 @@ namespace TMS.DataGateway.Repositories
             return response;
         }
 
-        public OrderResponse GetOrders(OrderRequest orderRequest)
+        public OrderSearchResponse GetOrders(OrderSearchRequest orderSearchRequest)
         {
-            throw new NotImplementedException();
+            OrderSearchResponse orderSearchResponse = new OrderSearchResponse();
+            List<Domain.OrderSearch> orderList = new List<Domain.OrderSearch>();
+            try
+            {
+                using (var context =  new Data.TMSDBContext())
+                {
+                    orderList =
+                        (from order in context.OrderHeaders
+                             // where !order.IsActive
+                         select new Domain.OrderSearch
+                         {
+                             OrderId=order.ID,
+                             OrderNumber = order.OrderNo,
+                             OrderStatus = order.OrderStatusID.ToString(),
+                             VehicleType = order.VehicleNo,
+
+
+                         }).ToList();
+                }
+                // Filter
+                if (orderList.Count > 0)
+                {
+                    var orderFilter = orderSearchRequest.Requests[0];
+
+                    if (!string.IsNullOrEmpty(orderFilter.OrderNumber))
+                    {
+                        orderList = orderList.Where(o => o.OrderNumber.Contains(orderFilter.OrderNumber)).ToList();
+                    }
+
+                    if (!String.IsNullOrEmpty(orderFilter.PackingSheetNumber))
+                    {
+                        orderList = orderList.Where(o => o.PackingSheetNumber.Contains(orderFilter.PackingSheetNumber)).ToList();
+                    }
+
+                    if (!String.IsNullOrEmpty(orderFilter.PoliceNumber))
+                    {
+                        orderList = orderList.Where(o => o.PoliceNumber.Contains(orderFilter.PoliceNumber)).ToList();
+                    }
+
+                }
+
+                // GLobal Search Filter
+                //if (!string.IsNullOrEmpty(picRequest.GlobalSearch))
+                //{
+                //    string globalSearch = picRequest.GlobalSearch;
+                //    picList = picList.Where(s => !s.IsDeleted && s.PICName.Contains(globalSearch)
+                //    || s.PICPhone.Contains(globalSearch)
+                //    || s.PICEmail.ToString().Contains(globalSearch)
+                //    ).ToList();
+                //}
+
+                // Sorting
+                if (orderList.Count > 0 && !string.IsNullOrEmpty(orderSearchRequest.SortOrder))
+                {
+                    switch (orderSearchRequest.SortOrder.ToLower())
+                    {
+                        case "ordernumber":
+                            orderList = orderList.OrderBy(o=>o.OrderNumber).ToList();
+                            break;
+                        case "ordernumber_desc":
+                            orderList = orderList.OrderByDescending(o => o.OrderNumber).ToList();
+                            break;
+                        case "source":
+                            orderList = orderList.OrderBy(o=>o.Source).ToList();
+                            break;
+                        case "source_desc":
+                            orderList = orderList.OrderByDescending(o=>o.Source).ToList();
+                            break;
+                        case "destination":
+                            orderList = orderList.OrderBy(o=>o.Destination).ToList();
+                            break;
+                        case "destination_desc":
+                            orderList = orderList.OrderByDescending(o=>o.Destination).ToList();
+                            break;
+                        case "vehicletype":
+                            orderList = orderList.OrderBy(o => o.VehicleType).ToList();
+                            break;
+                        case "vehicletype_desc":
+                            orderList = orderList.OrderByDescending(o => o.VehicleType).ToList();
+                            break;
+                        case "expiditionname":
+                            orderList = orderList.OrderBy(o => o.ExpeditionName).ToList();
+                            break;
+                        case "expiditionname_desc":
+                            orderList = orderList.OrderByDescending(o => o.ExpeditionName).ToList();
+                            break;
+                        case "policenumber":
+                            orderList = orderList.OrderBy(o => o.PoliceNumber).ToList();
+                            break;
+                        case "policenumber_desc":
+                            orderList = orderList.OrderByDescending(o => o.PoliceNumber).ToList();
+                            break;
+                        case "orderstatus":
+                            orderList = orderList.OrderBy(o => o.OrderStatus).ToList();
+                            break;
+                        case "orderstatus_desc":
+                            orderList = orderList.OrderByDescending(o => o.OrderStatus).ToList();
+                            break;
+
+                        default:  // ID Descending 
+                            orderList = orderList.OrderByDescending(o=>o.OrderId).ToList();
+                            break;
+                    }
+                }
+
+                // Total NumberOfRecords
+                orderSearchResponse.NumberOfRecords = orderList.Count;
+
+                // Paging
+                int pageNumber = (orderSearchRequest.PageNumber ?? 1);
+                int pageSize = Convert.ToInt32(orderSearchRequest.PageSize);
+                if (pageSize > 0)
+                {
+                    orderList = orderList.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+                }
+                if (orderList.Count > 0)
+                {
+                    orderSearchResponse.Data = orderList;
+                    orderSearchResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                    orderSearchResponse.StatusCode = (int)HttpStatusCode.OK;
+                    orderSearchResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                }
+                else
+                {
+                    orderSearchResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                    orderSearchResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                    orderSearchResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+                orderSearchResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                orderSearchResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                orderSearchResponse.StatusMessage = ex.Message;
+            }
+            return orderSearchResponse;
         }
 
         private string GetOrderNumber(int businessAreaId, string businessArea, string applicationCode, int year)

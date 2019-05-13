@@ -28,14 +28,14 @@ namespace TMS.BusinessGateway.Task
             return orderData;
         }
 
-        public override OrderResponse GetOrders(OrderRequest order)
+        public override OrderSearchResponse GetOrders(OrderSearchRequest orderSearchRequest)
         {
             //If needed write business logic here for request.
 
-            OrderResponse orderData = _orderRepository.GetOrders(order);
+            OrderSearchResponse orderSearchResponse = _orderRepository.GetOrders(orderSearchRequest);
 
             //If needed write business logic here for response.
-            return orderData;
+            return orderSearchResponse;
         }
     }
 }

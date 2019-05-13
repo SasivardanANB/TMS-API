@@ -88,9 +88,11 @@ namespace TMS.API.Controllers
 
         [Route("getorders")]
         [HttpPost]
-        public IHttpActionResult GetOrders(OrderRequest order)
+        public IHttpActionResult GetOrders(OrderSearchRequest orderSearchRequest)
         {
-            throw new NotImplementedException();
+            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            OrderSearchResponse orderSearchResponse = orderTask.GetOrders(orderSearchRequest);
+            return Ok(orderSearchResponse);
         }
     }
 }

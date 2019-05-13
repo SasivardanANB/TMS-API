@@ -11,6 +11,6 @@ namespace TMS.DomainGateway.Task.Interfaces
     public interface IOrderTask
     {
         OrderResponse CreateUpdateOrder(OrderRequest order);
-        OrderResponse GetOrders(OrderRequest order);
+        OrderSearchResponse GetOrders(OrderSearchRequest orderSearchRequest);
     }
 }
