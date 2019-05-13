@@ -164,10 +164,56 @@ namespace TMS.DataGateway.Repositories
             }
         }
 
-        public PartnerResponse GetPartnersDetails(int partnerId)
+        public PartnerDetilasResponse GetPartnersDetails(int partnerId)
         {
-            PartnerResponse partnerResponse = new PartnerResponse();
-            partnerResponse.Data = new List<Domain.Partner>();
+            PartnerDetilasResponse partnerResponse = new PartnerDetilasResponse();
+
+            try
+            {
+                using (var context = new TMSDBContext())
+                {
+                    var partnerDetails = (from partner in context.Partners
+                                              join postalcode in context.PostalCodes on partner.PostalCodeID equals postalcode.ID
+                                              join subDistrict in context.SubDistricts on postalcode.SubDistrictID equals subDistrict.ID
+                                              where partner.ID == partnerId
+                                              select new Domain.PartnerDeatils
+                                              {
+                                                  Address=partner.PartnerAddress,
+                                                  CityId = subDistrict.City.ID,
+                                                  CityName=subDistrict.City.CityDescription,
+                                                  SubDistrictName=subDistrict.SubdistrictName,
+                                                  SubDistrictId=subDistrict.ID,
+                                                  ProvinceId=subDistrict.City.Province.ID,
+                                                  ProvinceName=subDistrict.City.Province.ProvinceDescription,
+                                                  PostalCode=postalcode.PostalCodeNo,
+                                                  PostalCodeId=postalcode.ID
+                                              }).ToList();
+                    
+                    if (partnerDetails.Count > 0)
+                    {
+                        partnerResponse.Data = partnerDetails;
+                        partnerResponse.NumberOfRecords = partnerDetails.Count;
+                        partnerResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        partnerResponse.StatusCode = (int)HttpStatusCode.OK;
+                        partnerResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                    }
+                    else
+                    {
+                        partnerResponse.NumberOfRecords = 0;
+                        partnerResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        partnerResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                        partnerResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+
+                partnerResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                partnerResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                partnerResponse.StatusMessage = ex.Message;
+            }
             return partnerResponse;
         }
 

@@ -206,7 +206,7 @@ namespace Helper.Model.Common
             catch (Exception ex)
             {
 
-                throw;
+                throw ;
             }
 
         }
