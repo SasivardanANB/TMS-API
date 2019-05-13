@@ -93,6 +93,8 @@ namespace TMS.DataGateway.Repositories
                     var poolDetails = tMSDBContext.Pools.Where(i => i.ID == poolID).FirstOrDefault();
                     if (poolDetails != null)
                     {
+                        //Need to assign lastmodifiedby using session userid
+                        poolDetails.LastModifiedTime = DateTime.Now;
                         poolDetails.IsDelete = true;
                         tMSDBContext.SaveChanges();
                     }
@@ -167,7 +169,7 @@ namespace TMS.DataGateway.Repositories
                 if (!string.IsNullOrEmpty(poolRequest.GlobalSearch))
                 {
                     string globalSearch = poolRequest.GlobalSearch;
-                    poolsList = poolsList.Where(s => s.PoolName.Contains(globalSearch)
+                    poolsList = poolsList.Where(s => !s.IsDelete && s.PoolName.Contains(globalSearch)
                     || s.PoolCode.Contains(globalSearch)
                     || s.CityName.Contains(globalSearch)
                     || s.ContactNumber.Contains(globalSearch)
@@ -230,7 +232,7 @@ namespace TMS.DataGateway.Repositories
                 int pageNumber = (poolRequest.PageNumber ?? 1);
                 if (pageSize > 0)
                 {
-                    poolsList = poolsList.Skip(pageNumber - 1 * pageSize).Take(pageSize).ToList();
+                    poolsList = poolsList.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
                 }
 
                 if (poolsList.Count > 0)

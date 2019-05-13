@@ -56,7 +56,7 @@ namespace TMS.DataGateway.Repositories
                             var existPartner = context.Partners.Where(p => p.PartnerNo == partnerData.PartnerNo).FirstOrDefault();
                             if (existPartner == null)
                             {
-                                partnerData.CreatedBy = partnerRequest.LastModifiedBy;
+                                partnerData.CreatedBy = partnerRequest.CreatedBy;
                                 partnerData.CreatedTime = DateTime.Now;
                                 context.Partners.Add(partnerData);
                                 context.SaveChanges();
@@ -98,6 +98,8 @@ namespace TMS.DataGateway.Repositories
                     var partnerData = context.Partners.Where(partner => partner.ID == partnerId).FirstOrDefault();
                     if (partnerData != null)
                     {
+                        //Need to assign lastmodifiedby using session userid
+                        partnerData.LastModifiedTime = DateTime.Now;
                         partnerData.IsDeleted = true;
                         context.SaveChanges();
                         partnerResponse.Status = DomainObjects.Resource.ResourceData.Success;
@@ -185,7 +187,7 @@ namespace TMS.DataGateway.Repositories
                 if (!string.IsNullOrEmpty(partnerRequest.GlobalSearch))
                 {
                     string globalSearch = partnerRequest.GlobalSearch;
-                    partnerList = partnerList.Where(s => s.PartnerName.Contains(globalSearch)
+                    partnerList = partnerList.Where(s => !s.IsDeleted && s.PartnerName.Contains(globalSearch)
                     || s.PartnerAddress.Contains(globalSearch)
                     || s.PartnerInitial.Contains(globalSearch)
                     || s.PICName.Contains(globalSearch)
@@ -249,7 +251,7 @@ namespace TMS.DataGateway.Repositories
                 }
                 else
                 {
-                    partnerResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                    partnerResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     partnerResponse.StatusCode = (int)HttpStatusCode.NotFound;
                     partnerResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                 }

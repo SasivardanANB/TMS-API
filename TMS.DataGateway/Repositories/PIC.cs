@@ -94,6 +94,8 @@ namespace TMS.DataGateway.Repositories
                     var picData = context.Pics.Where(pic => pic.ID == picId).FirstOrDefault();
                     if (picData != null)
                     {
+                        //Need to assign lastmodifiedby using session userid
+                        picData.LastModifiedTime = DateTime.Now;
                         picData.IsDeleted = true;
                         context.SaveChanges();
                         picResponse.Status = DomainObjects.Resource.ResourceData.Success;
@@ -170,7 +172,7 @@ namespace TMS.DataGateway.Repositories
                 if (!string.IsNullOrEmpty(picRequest.GlobalSearch))
                 {
                     string globalSearch = picRequest.GlobalSearch;
-                    picList = picList.Where(s => s.PICName.Contains(globalSearch)
+                    picList = picList.Where(s => !s.IsDeleted && s.PICName.Contains(globalSearch)
                     || s.PICPhone.Contains(globalSearch)
                     || s.PICEmail.ToString().Contains(globalSearch)
                     ).ToList();

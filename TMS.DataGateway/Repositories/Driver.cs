@@ -138,6 +138,8 @@ namespace TMS.DataGateway.Repositories
                     if (driverDetails != null)
                     {
                         //For deleting driver (soft delete)
+                        //Need to assign lastmodifiedby using session userid
+                        driverDetails.LastModifiedTime = DateTime.Now;
                         driverDetails.IsDelete = true;
                         tMSDBContext.SaveChanges();
                     }
@@ -256,7 +258,7 @@ namespace TMS.DataGateway.Repositories
                 if (!string.IsNullOrEmpty(driverRequest.GlobalSearch))
                 {
                     string globalSearch = driverRequest.GlobalSearch;
-                    driversList = driversList.Where(s => s.FirstName.Contains(globalSearch)
+                    driversList = driversList.Where(s => !s.IsDelete && s.FirstName.Contains(globalSearch)
                     || s.LastName.Contains(globalSearch)
                     || s.DriverPhone.Contains(globalSearch)
                     || s.Email.Contains(globalSearch)
@@ -338,7 +340,7 @@ namespace TMS.DataGateway.Repositories
                 int pageNumber = (driverRequest.PageNumber ?? 1);
                 if (pageSize > 0)
                 {
-                    driversList = driversList.Skip(pageNumber - 1 * pageSize).Take(pageSize).ToList();
+                    driversList = driversList.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
                 }
 
                 if (driversList.Count > 0)

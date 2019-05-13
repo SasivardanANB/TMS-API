@@ -86,6 +86,8 @@ namespace TMS.DataGateway.Repositories
                     if (vehicleDetails != null)
                     {
                         //For delete vehicle (soft delete)
+                        //Need to assign lastmodifiedby using session userid
+                        vehicleDetails.LastModifiedTime = DateTime.Now;
                         vehicleDetails.IsDelete = true;
                         tMSDBContext.SaveChanges();
                     }
@@ -212,7 +214,7 @@ namespace TMS.DataGateway.Repositories
                 if (!string.IsNullOrEmpty(vehicleRequest.GlobalSearch))
                 {
                     string globalSearch = vehicleRequest.GlobalSearch;
-                    vehiclesList = vehiclesList.Where(s => s.PlateNumber.Contains(globalSearch)
+                    vehiclesList = vehiclesList.Where(s => !s.IsDelete && s.PlateNumber.Contains(globalSearch)
                     || s.MaxDimension.Contains(globalSearch)
                     || s.MaxWeight.ToString().Contains(globalSearch)
                     || s.PoolName.Contains(globalSearch)
@@ -299,7 +301,7 @@ namespace TMS.DataGateway.Repositories
                 int pageNumber = (vehicleRequest.PageNumber ?? 1);
                 if (pageSize > 0)
                 {
-                    vehiclesList = vehiclesList.Skip(pageNumber - 1 * pageSize).Take(pageSize).ToList();
+                    vehiclesList = vehiclesList.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
                 }
 
                 if (vehiclesList.Count > 0)
