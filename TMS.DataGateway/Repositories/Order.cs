@@ -40,33 +40,44 @@ namespace TMS.DataGateway.Repositories
                             DateTime estimationShipmentDate = DateTime.ParseExact(order.EstimationShipmentDate, "dd/MM/yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(order.EstimationShipmentTime);
                             DateTime actualShipmentDate = DateTime.ParseExact(order.ActualShipmentDate, "dd/MM/yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(order.ActualShipmentTime);
 
-                            #region Step 1: Check if We have Business Area master data
-                            int businessAreaId;
-                            var businessArea = (from ba in context.BusinessAreas
-                                                where ba.BusinessAreaCode == order.BusinessArea
-                                                select new Domain.BusinessArea()
-                                                {
-                                                    ID = ba.ID
-                                                }).FirstOrDefault();
-                            if (businessArea != null)
-                                businessAreaId = businessArea.ID;
-                            else
-                            {
-                                Data.BusinessArea businessAreaRequest = new Data.BusinessArea()
-                                {
-                                    BusinessAreaCode = order.BusinessArea,
-                                    BusinessAreaDescription = order.BusinessArea,
-                                    CreatedBy = "SYSTEM",
-                                    CreatedTime = DateTime.Now
-                                };
+                            #region Step 1: Business Area
 
-                                context.BusinessAreas.Add(businessAreaRequest);
-                                context.SaveChanges();
-                                businessAreaId = businessAreaRequest.ID;
+                            int businessAreaId = 0;
+                            if (request.UploadType == 1) // Upload via Excel
+                            {
+                                // Check if We have Business Area in Master data
+                                var businessArea = (from ba in context.BusinessAreas
+                                                    where ba.BusinessAreaCode == order.BusinessArea
+                                                    select new Domain.BusinessArea()
+                                                    {
+                                                        ID = ba.ID
+                                                    }).FirstOrDefault();
+                                if (businessArea != null)
+                                    businessAreaId = businessArea.ID;
+                                else
+                                {
+                                    Data.BusinessArea businessAreaRequest = new Data.BusinessArea()
+                                    {
+                                        BusinessAreaCode = order.BusinessArea,
+                                        BusinessAreaDescription = order.BusinessArea,
+                                        CreatedBy = "SYSTEM",
+                                        CreatedTime = DateTime.Now
+                                    };
+
+                                    context.BusinessAreas.Add(businessAreaRequest);
+                                    context.SaveChanges();
+                                    businessAreaId = businessAreaRequest.ID;
+                                }
                             }
+                            else if (request.UploadType == 2) // Upload via UI
+                            {
+                                businessAreaId = order.BusinessAreaId;
+                            }
+
                             #endregion
 
                             #region Step 1: Check if We have Order Status in Master data
+
                             int orderStatusId;
                             string orderStatusValue = "";
                             var orderStatus = (from os in context.OrderStatuses
@@ -126,76 +137,100 @@ namespace TMS.DataGateway.Repositories
                                 context.SaveChanges();
                                 orderStatusId = orderStatusRequest.ID;
                             }
+
                             #endregion
 
                             #region Step 2: Check if Order already existing then update/create accordingly
-                            var orderData = (from o in context.OrderHeaders
-                                             where o.LegecyOrderNo == order.OrderNo
-                                             select new Domain.Order()
-                                             {
-                                                 ID = o.ID,
-                                                 BusinessAreaId = o.BusinessAreaId,
-                                                 OrderNo = o.LegecyOrderNo,
-                                                 LegecyOrderNo = o.LegecyOrderNo,
-                                                 OrderDate = o.OrderDate,
-                                                 OrderType = o.OrderType,
-                                                 FleetType = o.FleetTypeID,
-                                                 VehicleShipmentType = o.VehicleShipment,
-                                                 DriverNo = o.DriverNo,
-                                                 DriverName = o.DriverName,
-                                                 VehicleNo = o.VehicleNo,
-                                                 OrderWeight = o.OrderWeight,
-                                                 OrderWeightUM = o.OrderWeightUM,
-                                                 EstimationShipment = o.EstimationShipmentDate,
-                                                 ActualShipment = o.ActualShipmentDate,
-                                                 IsActive = o.IsActive,
-                                                 OrderCreatedBy = o.CreatedBy,
-                                                 OrderCreatedTime = o.CreatedTime,
-                                                 OrderLastModifiedBy = o.LastModifiedBy,
-                                                 OrderLastModifiedTime = o.LastModifiedTime,
-                                                 OrderShipmentStatus = o.OrderStatusID,
-                                             }).FirstOrDefault();
-                            if (orderData != null) // Update Order
+
+                            var persistedOrderDataID = (from o in context.OrderHeaders
+                                                      where o.LegecyOrderNo == order.OrderNo 
+                                                      select o.ID
+                                                      ).FirstOrDefault();
+
+                            if (persistedOrderDataID > 0) // Update Order
                             {
-                                //Check if Order Status exists or not
+                                var updatedOrderHeader = context.OrderHeaders.Find(persistedOrderDataID);
+                                updatedOrderHeader.BusinessAreaId = businessAreaId;
+                                updatedOrderHeader.OrderType = order.OrderType;
+                                updatedOrderHeader.FleetTypeID = order.FleetType;
+                                updatedOrderHeader.VehicleShipment = order.VehicleShipmentType;
+                                updatedOrderHeader.DriverNo = order.DriverNo;
+                                updatedOrderHeader.DriverName = order.DriverName;
+                                updatedOrderHeader.VehicleNo = order.VehicleNo;
+                                updatedOrderHeader.OrderWeight = order.OrderWeight;
+                                updatedOrderHeader.OrderWeightUM = order.OrderWeightUM;
+                                updatedOrderHeader.EstimationShipmentDate = estimationShipmentDate;
+                                updatedOrderHeader.ActualShipmentDate = actualShipmentDate;
+                                updatedOrderHeader.IsActive = true;
+                                updatedOrderHeader.LastModifiedBy = request.LastModifiedBy;
+                                updatedOrderHeader.LastModifiedTime = DateTime.Now;
+                                updatedOrderHeader.OrderStatusID = orderStatusId;
+                                updatedOrderHeader.Harga = order.Harga;
 
-                                Data.OrderHeader orderHeaderData = new Data.OrderHeader()
+                                Data.ImageGuid existingImageGuidDetails = null;
+                                string existingImageGUIDValue = string.Empty;
+                                int? shipmentScheduleImageID = null;
+
+                                // check if shipmentScheduleImage is changed
+                                if (updatedOrderHeader.ShipmentScheduleImageID > 0)
                                 {
-                                    ID = orderData.ID,
-                                    BusinessAreaId = businessAreaId,
-                                    OrderNo = orderData.OrderNo,
-                                    LegecyOrderNo = orderData.LegecyOrderNo,
-                                    OrderDate = orderData.OrderDate,
-                                    OrderType = order.OrderType,
-                                    FleetTypeID = order.FleetType,
-                                    VehicleShipment = order.VehicleShipmentType,
-                                    DriverNo = order.DriverNo,
-                                    DriverName = order.DriverName,
-                                    VehicleNo = order.VehicleNo,
-                                    OrderWeight = order.OrderWeight,
-                                    OrderWeightUM = order.OrderWeightUM,
-                                    EstimationShipmentDate = estimationShipmentDate,
-                                    ActualShipmentDate = actualShipmentDate,
-                                    IsActive = true,
-                                    CreatedBy = orderData.OrderCreatedBy,
-                                    CreatedTime = orderData.OrderCreatedTime,
-                                    LastModifiedBy = request.LastModifiedBy,
-                                    LastModifiedTime = DateTime.Now,
-                                    OrderStatusID = orderStatusId,
-                                };
+                                    existingImageGuidDetails = context.ImageGuids.Where(i => i.ID == updatedOrderHeader.ShipmentScheduleImageID).FirstOrDefault();
+                                    existingImageGUIDValue = existingImageGuidDetails.ImageGuIdValue;
+                                }
+                                if (existingImageGUIDValue != order.ShipmentScheduleImageGUID)
+                                {
+                                    // Making IsActive false for existed record 
+                                    if (updatedOrderHeader.ShipmentScheduleImageID > 0 && existingImageGuidDetails != null)
+                                    {
+                                        existingImageGuidDetails.IsActive = false;
+                                    }
 
-                                context.Entry(orderHeaderData).State = System.Data.Entity.EntityState.Modified;
+                                    //Inserting new record with IsActive true
+                                    Data.ImageGuid imageGuid = new Data.ImageGuid()
+                                    {
+                                        ImageGuIdValue = order.ShipmentScheduleImageGUID,
+                                        IsActive = true,
+                                        CreatedBy = order.OrderLastModifiedBy,
+                                        CreatedTime = DateTime.Now
+                                    };
+
+                                    context.ImageGuids.Add(imageGuid);
+                                    context.SaveChanges();
+                                    shipmentScheduleImageID = imageGuid.ID;
+                                }
+
+                                updatedOrderHeader.ShipmentScheduleImageID = shipmentScheduleImageID;
+
+                                context.Entry(updatedOrderHeader).State = System.Data.Entity.EntityState.Modified;
                                 context.SaveChanges();
-                                order.ID = orderData.ID;
+                                order.ID = updatedOrderHeader.ID;
                                 response.StatusMessage = DomainObjects.Resource.ResourceData.OrderUpdated;
-                                context.Entry(orderHeaderData).State = System.Data.Entity.EntityState.Detached;
+                                context.Entry(updatedOrderHeader).State = System.Data.Entity.EntityState.Detached;
                             }
                             else // Create New Order Header
                             {
+                                int? shipmentScheduleImageID = null;
+
+                                if (!String.IsNullOrEmpty(order.ShipmentScheduleImageGUID))
+                                {
+                                    //Inserting new record with IsActive true
+                                    Data.ImageGuid imageGuid = new Data.ImageGuid()
+                                    {
+                                        ImageGuIdValue = order.ShipmentScheduleImageGUID,
+                                        IsActive = true,
+                                        CreatedBy = order.OrderLastModifiedBy,
+                                        CreatedTime = DateTime.Now
+                                    };
+
+                                    context.ImageGuids.Add(imageGuid);
+                                    context.SaveChanges();
+                                    shipmentScheduleImageID = imageGuid.ID;
+                                }
+
                                 Data.OrderHeader orderHeader = new Data.OrderHeader()
                                 {
                                     LegecyOrderNo = order.OrderNo,
-                                    OrderNo = GetOrderNumber(businessAreaId, order.BusinessArea, "OMS", DateTime.Now.Year),
+                                    OrderNo = GetOrderNumber(businessAreaId, order.BusinessArea, "TMS", DateTime.Now.Year),
                                     OrderType = order.OrderType,
                                     FleetTypeID = order.FleetType,
                                     VehicleShipment = order.VehicleShipmentType,
@@ -210,18 +245,22 @@ namespace TMS.DataGateway.Repositories
                                     IsActive = true,
                                     OrderDate = DateTime.Now,
                                     OrderStatusID = orderStatusId,
+                                    Harga = order.Harga,
+                                    ShipmentScheduleImageID = shipmentScheduleImageID,
                                     CreatedBy = request.CreatedBy,
                                     CreatedTime = DateTime.Now,
                                     LastModifiedBy = "",
-                                    LastModifiedTime = null
+                                    LastModifiedTime = null,
                                 };
                                 context.OrderHeaders.Add(orderHeader);
                                 context.SaveChanges();
                                 order.ID = orderHeader.ID;
                             }
+
                             #endregion
 
                             #region Step 3 : Create Order Detail
+
                             Data.OrderDetail orderDetail = new Data.OrderDetail()
                             {
                                 OrderHeaderID = order.ID,
@@ -240,9 +279,11 @@ namespace TMS.DataGateway.Repositories
                             };
                             context.OrderDetails.Add(orderDetail);
                             context.SaveChanges();
+
                             #endregion
 
                             #region Step 4: Check if Partners exists or not
+
                             int partner1Id;
                             int partner2Id;
                             int partner3Id;
@@ -323,9 +364,11 @@ namespace TMS.DataGateway.Repositories
                                 context.SaveChanges();
                                 partner3Id = partner3Request.ID;
                             }
+
                             #endregion
 
                             #region Step 5: Insert Order Partner Detail
+
                             Data.OrderPartnerDetail orderPartner1Detail = new Data.OrderPartnerDetail()
                             {
                                 OrderDetailID = orderDetail.ID,
@@ -367,9 +410,11 @@ namespace TMS.DataGateway.Repositories
                             };
                             context.OrderPartnerDetails.Add(orderPartner3Detail);
                             context.SaveChanges();
+
                             #endregion
 
                             #region Step 6: Insert Packing Sheet
+
                             if (!string.IsNullOrEmpty(order.PackingSheetNo))
                             {
                                 string[] packingSheets = order.PackingSheetNo.Split(',');
@@ -389,9 +434,11 @@ namespace TMS.DataGateway.Repositories
                                     context.SaveChanges();
                                 }
                             }
+
                             #endregion
 
                             #region Step 7: Insert Shipment SAP
+
                             if (!string.IsNullOrEmpty(order.ShipmentSAPNo))
                             {
                                 string[] shipmentSAPs = order.ShipmentSAPNo.Split(',');
@@ -411,7 +458,9 @@ namespace TMS.DataGateway.Repositories
                                     context.SaveChanges();
                                 }
                             }
+
                             #endregion
+
                             transaction.Commit();
                             response.Status = DomainObjects.Resource.ResourceData.Success;
                             response.StatusCode = (int)HttpStatusCode.OK;
@@ -426,9 +475,7 @@ namespace TMS.DataGateway.Repositories
                             response.StatusMessage = ex.Message;
                         }
                     }
-
                 }
-                
             }
             return response;
         }

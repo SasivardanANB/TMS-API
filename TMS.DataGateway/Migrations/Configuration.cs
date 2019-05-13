@@ -45,6 +45,7 @@ namespace TMS.DataGateway.Migrations
                 string orderStatuses = "TMS.DataGateway.SeedData.OrderStatus.csv";
                 string fleetTypes = "TMS.DataGateway.SeedData.FleetTypes.csv";
                 string partnerTypes = "TMS.DataGateway.SeedData.PartnerTypes.csv";
+                string vehicleTypes = "TMS.DataGateway.SeedData.VehicleTypes.csv";
 
                 using (Stream stream = assembly.GetManifestResourceStream(applications))
                 {
@@ -261,6 +262,18 @@ namespace TMS.DataGateway.Migrations
                         csvReader.Configuration.MissingFieldFound = null;
                         var partnerTypeData = csvReader.GetRecords<DataModel.PartnerType>().ToArray();
                         context.PartnerTypes.AddOrUpdate(c => c.ID, partnerTypeData);
+                    }
+                }
+
+                using (Stream stream = assembly.GetManifestResourceStream(vehicleTypes))
+                {
+                    using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                    {
+                        CsvReader csvReader = new CsvReader(reader);
+                        csvReader.Configuration.HeaderValidated = null;
+                        csvReader.Configuration.MissingFieldFound = null;
+                        var vehicleTypeData = csvReader.GetRecords<DataModel.VehicleType>().ToArray();
+                        context.VehicleTypes.AddOrUpdate(c => c.ID, vehicleTypeData);
                     }
                 }
 

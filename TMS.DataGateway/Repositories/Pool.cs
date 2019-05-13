@@ -260,7 +260,7 @@ namespace TMS.DataGateway.Repositories
         }
 
         //For inserting new record into ImageGuid table also makes IsActive false for previously inserted records
-        public int InsertImageGuid(string imageGuidValue, string createdBy, int? existingImageGuID)
+        public int InsertImageGuid(string imageGuidValue, string createdBy, int? existingImageID)
         {
             try
             {
@@ -268,9 +268,9 @@ namespace TMS.DataGateway.Repositories
                 {
 
                     // Making IsActive false for existed record 
-                    if (existingImageGuID > 0)
+                    if (existingImageID > 0)
                     {
-                        var existingImageGuidDetails = tMSDBContext.ImageGuids.Where(i => i.ID == existingImageGuID).FirstOrDefault();
+                        var existingImageGuidDetails = tMSDBContext.ImageGuids.Where(i => i.ID == existingImageID).FirstOrDefault();
                         existingImageGuidDetails.IsActive = false;
                     }
 

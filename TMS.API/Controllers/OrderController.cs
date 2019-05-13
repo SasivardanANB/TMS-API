@@ -23,56 +23,75 @@ namespace TMS.API.Controllers
 
         [Route("createupdateorder")]
         [HttpPost]
-        public IHttpActionResult CreateUpdateOrder(OrderRequest request)
+        public IHttpActionResult CreateUpdateOrder(OrderRequest order)
         {
-            for (int i = 0; i < request.Requests.Count; i++)
+            for (int i = 0; i < order.Requests.Count; i++)
             {
-                if (request.Requests[i].OrderType == 1) //For Inbound
+                if (order.Requests[i].OrderType == 1) //For Inbound
                 {
-                    if (request.Requests[i].OrderWeight == 0)
+                    if (order.Requests[i].OrderWeight == 0)
                     {
-                        ModelState.AddModelError($"{nameof(request)}.{nameof(request.Requests)}.[{i}].{nameof(Order.OrderWeight)}", "Invalid Order Weight");
+                        ModelState.AddModelError($"{nameof(order)}.{nameof(order.Requests)}.[{i}].{nameof(Order.OrderWeight)}", "Invalid Order Weight");
                     }
                     else
                     {
-                        if (string.IsNullOrEmpty(request.Requests[i].OrderWeightUM))
+                        if (string.IsNullOrEmpty(order.Requests[i].OrderWeightUM))
                         {
-                            ModelState.AddModelError($"{nameof(request)}.{nameof(request.Requests)}.[{i}].{nameof(Order.OrderWeightUM)}", "Invalid Order Weight UM");
+                            ModelState.AddModelError($"{nameof(order)}.{nameof(order.Requests)}.[{i}].{nameof(Order.OrderWeightUM)}", "Invalid Order Weight UM");
                         }
                     }
-                    if (string.IsNullOrEmpty(request.Requests[i].ShippingListNo))
+                    if (order.UploadType == 1) // Upload Order
                     {
-                        ModelState.AddModelError($"{nameof(request)}.{nameof(request.Requests)}.[{i}].{nameof(Order.ShippingListNo)}", "Invalid Shipping List Number");
+                        ModelState.Remove("order.Requests[" + i + "].BusinessAreaID");
+
+                        if (string.IsNullOrEmpty(order.Requests[i].ShippingListNo))
+                        {
+                            ModelState.AddModelError($"{nameof(order)}.{nameof(order.Requests)}.[{i}].{nameof(Order.ShippingListNo)}", "Invalid Shipping List Number");
+                        }
+                        if (string.IsNullOrEmpty(order.Requests[i].PackingSheetNo))
+                        {
+                            ModelState.AddModelError($"{nameof(order)}.{nameof(order.Requests)}.[{i}].{nameof(Order.PackingSheetNo)}", "Invalid Packing Sheet Number");
+                        }
+                        if (order.Requests[i].TotalCollie == 0)
+                        {
+                            ModelState.AddModelError($"{nameof(order)}.{nameof(order.Requests)}.[{i}].{nameof(Order.TotalCollie)}", "Invalid Total Collie");
+                        }
                     }
-                    if (string.IsNullOrEmpty(request.Requests[i].PackingSheetNo))
+                    else if (order.UploadType == 2) // Create Order
                     {
-                        ModelState.AddModelError($"{nameof(request)}.{nameof(request.Requests)}.[{i}].{nameof(Order.PackingSheetNo)}", "Invalid Packing Sheet Number");
+                        ModelState.Remove("order.Requests[" + i + "].BusinessArea");
+                        ModelState.Remove("order.Requests[" + i + "].ShippingListNo");
+                        ModelState.Remove("order.Requests[" + i + "].PackingSheetNo");
+                        ModelState.Remove("order.Requests[" + i + "].TotalCollie");
                     }
-                    if (request.Requests[i].TotalCollie == 0)
+                    else
                     {
-                        ModelState.AddModelError($"{nameof(request)}.{nameof(request.Requests)}.[{i}].{nameof(Order.TotalCollie)}", "Invalid Total Collie");
+                        ModelState.AddModelError($"{nameof(order)}.{nameof(order.Requests)}.[{i}].{nameof(Order.OrderType)}", "Invalid Upload Type");
                     }
                 }
-                else if (request.Requests[i].OrderType == 2)//For Outbound
+                else if (order.Requests[i].OrderType == 2)//For Outbound
                 {
-                    if (string.IsNullOrEmpty(request.Requests[i].ShipmentSAPNo))
-                        ModelState.AddModelError($"{nameof(request)}.{nameof(request.Requests)}.[{i}].{nameof(Order.ShipmentSAPNo)}", "Invalid Shipment SAP Number");
+                    if (string.IsNullOrEmpty(order.Requests[i].ShipmentSAPNo))
+                        ModelState.AddModelError($"{nameof(order)}.{nameof(order.Requests)}.[{i}].{nameof(Order.ShipmentSAPNo)}", "Invalid Shipment SAP Number");
                 }
                 else
-                    ModelState.AddModelError($"{nameof(request)}.{nameof(request.Requests)}.[{i}].{nameof(Order.OrderType)}", "Invalid Order Type");
+                {
+                    ModelState.AddModelError($"{nameof(order)}.{nameof(order.Requests)}.[{i}].{nameof(Order.OrderType)}", "Invalid Order Type");
+                }
             }
             if (!ModelState.IsValid)
             {
                 ErrorResponse errorResponse = new ErrorResponse()
                 {
                     Status = DomainObjects.Resource.ResourceData.Failure,
+                    StatusCode = (int)HttpStatusCode.BadRequest,
                     Data = new List<Error>()
                 };
                 for (int i = 0; i < ModelState.Keys.Count; i++)
                 {
                     Error errorData = new Error()
                     {
-                        ErrorMessage = ModelState.Keys.ToList<string>()[i].Replace("request.Requests[", "Row Number[") + " : " + ModelState.Values.ToList<ModelState>()[i].Errors[0].ErrorMessage
+                        ErrorMessage = ModelState.Keys.ToList<string>()[i].Replace("order.Requests[", "Row Number[") + " : " + ModelState.Values.ToList<ModelState>()[i].Errors[0].ErrorMessage + " : " + ModelState.Values.ToList<ModelState>()[i].Errors[0].Exception.Message
                     };
 
                     errorResponse.Data.Add(errorData);
@@ -81,7 +100,7 @@ namespace TMS.API.Controllers
             }
 
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
-            OrderResponse orderData = orderTask.CreateUpdateOrder(request);
+            OrderResponse orderData = orderTask.CreateUpdateOrder(order);
 
             return Ok(orderData);
         }

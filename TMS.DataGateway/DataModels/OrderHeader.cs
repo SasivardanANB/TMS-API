@@ -39,6 +39,10 @@ namespace TMS.DataGateway.DataModels
         public int OrderStatusID { get; set; }
         //public OrderStatus OrderStatus { get; set; }
         public bool IsActive { get; set; }
+        public decimal Harga { get; set; }
+        [ForeignKey("ImageGuid")]
+        public int? ShipmentScheduleImageID { get; set; }
+        public ImageGuid ImageGuid { get; set; }
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public string CreatedBy
         {
