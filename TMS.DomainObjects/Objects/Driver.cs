@@ -12,6 +12,8 @@ namespace TMS.DomainObjects.Objects
         public int ID { get; set; }
         //[Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidDriverNo")]
         public string DriverNo { get; set; }
+        [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidUserName")]
+        public string UserName { get; set; }
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidFirstName")]
         public string FirstName { get; set; }
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidLastName")]
@@ -35,7 +37,7 @@ namespace TMS.DomainObjects.Objects
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidDrivingLicenseNo")]
         public string DrivingLicenseNo { get; set; }
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidExpireDate")]
-        public DateTime DrivingLicenseExpiredDate { get; set; }
+        public DateTime? DrivingLicenseExpiredDate { get; set; }
         public bool IsDelete { get; set; }
         public int IdentityImageId { get; set; }
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidIdentityImage")]

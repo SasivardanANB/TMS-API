@@ -129,7 +129,7 @@ namespace TMS.DataGateway.Repositories
                         {
                             ID = pool.ID,
                             PoolName = pool.PoolName,
-                            PoolCode = pool.PoolCode,
+                            PoolDescription = pool.PoolDescritpion,
                             CityID = pool.CityID,
                             CityName = pool.City.CityDescription,
                             ContactNumber = pool.ContactNumber,
@@ -147,14 +147,14 @@ namespace TMS.DataGateway.Repositories
                         .Where(p => !p.IsDelete)
                         .Where(p => poolFilter.ID == 0 || p.ID == poolFilter.ID)
                         .Where(p => String.IsNullOrEmpty(poolFilter.PoolName) || p.PoolName.Contains(poolFilter.PoolName))
-                        .Where(p => String.IsNullOrEmpty(poolFilter.PoolCode) || p.PoolCode.Contains(poolFilter.PoolCode))
+                        .Where(p => String.IsNullOrEmpty(poolFilter.PoolDescription) || p.PoolDescritpion.Contains(poolFilter.PoolDescription))
                         .Where(p => String.IsNullOrEmpty(poolFilter.ContactNumber) || p.ContactNumber.Contains(poolFilter.ContactNumber))
                         .Where(p => String.IsNullOrEmpty(poolFilter.Address) || p.Address.Contains(poolFilter.Address))
                         .Select(pool => new Domain.Pool
                         {
                             ID = pool.ID,
                             PoolName = pool.PoolName,
-                            PoolCode = pool.PoolCode,
+                            PoolDescription = pool.PoolDescritpion,
                             CityID = pool.CityID,
                             CityName = pool.City.CityDescription,
                             ContactNumber = pool.ContactNumber,
@@ -170,7 +170,7 @@ namespace TMS.DataGateway.Repositories
                 {
                     string globalSearch = poolRequest.GlobalSearch;
                     poolsList = poolsList.Where(s => !s.IsDelete && s.PoolName.Contains(globalSearch)
-                    || s.PoolCode.Contains(globalSearch)
+                    || s.PoolDescription.Contains(globalSearch)
                     || s.CityName.Contains(globalSearch)
                     || s.ContactNumber.Contains(globalSearch)
                     || s.Address.Contains(globalSearch)
@@ -194,11 +194,11 @@ namespace TMS.DataGateway.Repositories
                         case "poolname_desc":
                             poolsList = poolsList.OrderByDescending(s => s.PoolName).ToList();
                             break;
-                        case "poolcode":
-                            poolsList = poolsList.OrderBy(s => s.PoolCode).ToList();
+                        case "pooldescription":
+                            poolsList = poolsList.OrderBy(s => s.PoolDescription).ToList();
                             break;
-                        case "poolcode_desc":
-                            poolsList = poolsList.OrderByDescending(s => s.PoolCode).ToList();
+                        case "pooldescription_desc":
+                            poolsList = poolsList.OrderByDescending(s => s.PoolDescription).ToList();
                             break;
                         case "contactnumber":
                             poolsList = poolsList.OrderBy(s => s.ContactNumber).ToList();

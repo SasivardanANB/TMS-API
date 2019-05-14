@@ -119,7 +119,7 @@ namespace TMS.DataGateway.Repositories
                         ID = vehicle.ID,
                         VehicleTypeID = vehicle.VehicleTypeID,
                         VehicleTypeDescription= vehicle.VehicleType.VehicleTypeDescription,
-                        VehicleTypeName = vehicle.VehicleTypeName,
+                        //VehicleTypeName = vehicle.VehicleTypeName,
                         KIRNo = vehicle.KIRNo,
                         KIRExpiryDate = vehicle.KIRExpiryDate,
                         MaxDimension = vehicle.MaxDimension,
