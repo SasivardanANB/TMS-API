@@ -16,5 +16,8 @@ namespace TMS.DomainGateway.Task.Interfaces
         CommonResponse GetVehicleTypeNames();
         CommonResponse GetFleetTypeNames();
         SubDistrictDetailsResponse GetSubDistrictDetails(string searchText);
+        CommonResponse GetPoolNames(string searchText);
+        CommonResponse GetShipperNames(string searchText);
+        CommonResponse GetCityNames(string searchText);
     }
 }
