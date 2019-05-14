@@ -53,5 +53,21 @@ namespace TMS.BusinessGateway.Task
             SubDistrictDetailsResponse subDistrictDetailsResponse = _masterRepository.GetSubDistrictDetails(searchText);
             return subDistrictDetailsResponse;
         }
+
+        public override CommonResponse GetPoolNames(string searchText)
+        {
+            CommonResponse commonResponse = _masterRepository.GetPoolNames(searchText);
+            return commonResponse;
+        }
+        public override CommonResponse GetShipperNames(string searchText)
+        {
+            CommonResponse commonResponse = _masterRepository.GetShipperNames(searchText);
+            return commonResponse;
+        }
+        public override CommonResponse GetCityNames(string searchText)
+        {
+            CommonResponse commonResponse = _masterRepository.GetCityNames(searchText);
+            return commonResponse;
+        }
     }
 }

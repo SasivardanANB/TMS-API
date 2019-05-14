@@ -203,7 +203,7 @@ namespace Helper.Model.Common
                 _mailMessage.Dispose();
                 _smtpClient.Dispose();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
                 throw ;

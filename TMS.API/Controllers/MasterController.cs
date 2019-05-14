@@ -70,5 +70,31 @@ namespace TMS.API.Controllers
             SubDistrictDetailsResponse subDistrictDetailsResponse = masterTask.GetSubDistrictDetails(searchText);
             return Ok(subDistrictDetailsResponse);
         }
+
+        [Route("getpoolnames")]
+        [HttpGet]
+        public IHttpActionResult GetPoolNames(string searchText)
+        {
+            IMasterTask masterTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().MasterTask;
+            CommonResponse commonResponse = masterTask.GetPoolNames(searchText);
+            return Ok(commonResponse);
+        }
+
+        [Route("getshippernames")]
+        [HttpGet]
+        public IHttpActionResult GetShipperNames(string searchText)
+        {
+            IMasterTask masterTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().MasterTask;
+            CommonResponse commonResponse = masterTask.GetShipperNames(searchText);
+            return Ok(commonResponse);
+        }
+        [Route("getcitynames")]
+        [HttpGet]
+        public IHttpActionResult GetCityNames(string searchText)
+        {
+            IMasterTask masterTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().MasterTask;
+            CommonResponse commonResponse = masterTask.GetCityNames(searchText);
+            return Ok(commonResponse);
+        }
     }
 }

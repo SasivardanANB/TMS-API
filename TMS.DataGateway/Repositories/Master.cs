@@ -173,22 +173,22 @@ namespace TMS.DataGateway.Repositories
                 using (var context = new TMSDBContext())
                 {
                     var partnerDetails = (from partner in context.Partners
-                                              join postalcode in context.PostalCodes on partner.PostalCodeID equals postalcode.ID
-                                              join subDistrict in context.SubDistricts on postalcode.SubDistrictID equals subDistrict.ID
-                                              where partner.ID == partnerId
-                                              select new Domain.PartnerDeatils
-                                              {
-                                                  Address=partner.PartnerAddress,
-                                                  CityId = subDistrict.City.ID,
-                                                  CityName=subDistrict.City.CityDescription,
-                                                  SubDistrictName=subDistrict.SubdistrictName,
-                                                  SubDistrictId=subDistrict.ID,
-                                                  ProvinceId=subDistrict.City.Province.ID,
-                                                  ProvinceName=subDistrict.City.Province.ProvinceDescription,
-                                                  PostalCode=postalcode.PostalCodeNo,
-                                                  PostalCodeId=postalcode.ID
-                                              }).ToList();
-                    
+                                          join postalcode in context.PostalCodes on partner.PostalCodeID equals postalcode.ID
+                                          join subDistrict in context.SubDistricts on postalcode.SubDistrictID equals subDistrict.ID
+                                          where partner.ID == partnerId
+                                          select new Domain.PartnerDeatils
+                                          {
+                                              Address = partner.PartnerAddress,
+                                              CityId = subDistrict.City.ID,
+                                              CityName = subDistrict.City.CityDescription,
+                                              SubDistrictName = subDistrict.SubdistrictName,
+                                              SubDistrictId = subDistrict.ID,
+                                              ProvinceId = subDistrict.City.Province.ID,
+                                              ProvinceName = subDistrict.City.Province.ProvinceDescription,
+                                              PostalCode = postalcode.PostalCodeNo,
+                                              PostalCodeId = postalcode.ID
+                                          }).ToList();
+
                     if (partnerDetails.Count > 0)
                     {
                         partnerResponse.Data = partnerDetails;
@@ -236,7 +236,7 @@ namespace TMS.DataGateway.Repositories
                                                   PostalCodeId = postlCode.ID,
                                                   PostalCode = postlCode.PostalCodeNo
                                               }).ToList();
-                    if (subDistrictDateils.Count>0 )
+                    if (subDistrictDateils.Count > 0)
                     {
                         subDistrictDetailsResponse.Data = subDistrictDateils;
                         subDistrictDetailsResponse.NumberOfRecords = subDistrictDateils.Count;
@@ -263,6 +263,134 @@ namespace TMS.DataGateway.Repositories
             }
             return subDistrictDetailsResponse;
 
+        }
+
+        public CommonResponse GetPoolNames(string searchText)
+        {
+            CommonResponse commonResponse = new CommonResponse();
+            try
+            {
+                using (var context = new TMSDBContext())
+                {
+                    var poolData = (from pool in context.Pools
+                                    where pool.PoolName.Contains(searchText)
+                                    select new Domain.Common
+                                    {
+                                        Id = pool.ID,
+                                        Value = pool.PoolName
+                                    }).ToList();
+
+                    if (poolData.Count > 0)
+                    {
+                        commonResponse.Data = poolData;
+                        commonResponse.NumberOfRecords = poolData.Count;
+                        commonResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        commonResponse.StatusCode = (int)HttpStatusCode.OK;
+                        commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                    }
+                    else
+                    {
+                        commonResponse.NumberOfRecords = 0;
+                        commonResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        commonResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                        commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+
+                commonResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                commonResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                commonResponse.StatusMessage = ex.Message;
+            }
+            return commonResponse;
+        }
+
+        public CommonResponse GetShipperNames(string searchText)
+        {
+            CommonResponse commonResponse = new CommonResponse();
+            try
+            {
+                using (var context = new TMSDBContext())
+                {
+                    var shipperData = (from partner in context.Partners
+                                    where partner.PartnerName.Contains(searchText) && partner.PartnerTypeID == 1
+                                    select new Domain.Common
+                                    {
+                                        Id = partner.ID,
+                                        Value = partner.PartnerName
+                                    }).ToList();
+
+                    if (shipperData.Count > 0)
+                    {
+                        commonResponse.Data = shipperData;
+                        commonResponse.NumberOfRecords = shipperData.Count;
+                        commonResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        commonResponse.StatusCode = (int)HttpStatusCode.OK;
+                        commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                    }
+                    else
+                    {
+                        commonResponse.NumberOfRecords = 0;
+                        commonResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        commonResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                        commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+
+                commonResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                commonResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                commonResponse.StatusMessage = ex.Message;
+            }
+            return commonResponse;
+        }
+        public CommonResponse GetCityNames(string searchText)
+        {
+            CommonResponse commonResponse = new CommonResponse();
+            try
+            {
+                using (var context = new TMSDBContext())
+                {
+                    var cityData = (from city in context.Cities
+                                    where city.CityDescription.Contains(searchText)
+                                    select new Domain.Common
+                                    {
+                                        Id = city.ID,
+                                        Value = city.CityDescription
+                                    }).ToList();
+
+                    if (cityData.Count > 0)
+                    {
+                        commonResponse.Data = cityData;
+                        commonResponse.NumberOfRecords = cityData.Count;
+                        commonResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        commonResponse.StatusCode = (int)HttpStatusCode.OK;
+                        commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                    }
+                    else
+                    {
+                        commonResponse.NumberOfRecords = 0;
+                        commonResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        commonResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                        commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+
+                commonResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                commonResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                commonResponse.StatusMessage = ex.Message;
+            }
+            return commonResponse;
         }
     }
 }
