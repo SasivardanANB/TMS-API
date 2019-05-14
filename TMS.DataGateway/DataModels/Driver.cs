@@ -18,6 +18,9 @@ namespace TMS.DataGateway.DataModels
         [MaxLength(12)]
         public string DriverNo { get; set; }
         [MaxLength(15)]
+        [Required()]
+        public string UserName { get; set; }
+        [MaxLength(15)]
         [Required(ErrorMessage = "Enter first name")]
         public string FirstName { get; set; }
         [MaxLength(15)]
@@ -40,7 +43,7 @@ namespace TMS.DataGateway.DataModels
         [MaxLength(25)]
         [Index("Driver_DrivingLicenseNo", IsUnique = true)]
         public string DrivingLicenseNo { get; set; }
-        public DateTime DrivingLicenseExpiredDate { get; set; }
+        public DateTime? DrivingLicenseExpiredDate { get; set; }
         [ForeignKey("ImageGuid")]
         public int IdentityImageId { get; set; }
         public int DrivingLicenceImageId { get; set; }
