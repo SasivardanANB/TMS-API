@@ -14,6 +14,8 @@ namespace TMS.DomainObjects.Objects
         [Required, MaxLength(5)]
         public string BusinessArea { get; set; }
         [Required]
+        public int BusinessAreaId { get; set; }
+        [Required]
         public string OrderNo { get; set; }
         [Required]
         public int SequenceNo { get; set; }
@@ -73,10 +75,8 @@ namespace TMS.DomainObjects.Objects
         public string PackingSheetNo { get; set; }
         public int TotalCollie { get; set; }
         public string ShipmentSAPNo { get; set; }
-        public int BusinessAreaId { get; set; }
         public bool IsActive { get; set; }
         public DateTime OrderDate { get; set; }
-
         public DateTime ActualShipment { get; set; }
         public DateTime EstimationShipment { get; set; }
         public string OrderCreatedBy { get; set; }
@@ -84,5 +84,8 @@ namespace TMS.DomainObjects.Objects
         public string OrderLastModifiedBy { get; set; }
         public DateTime? OrderLastModifiedTime { get; set; }
         public int OrderDetailID { get; set; }
+        public decimal Harga { get; set; }
+        public int? ShipmentScheduleImageID { get; set; }
+        public string ShipmentScheduleImageGUID { get; set; }
     }
 }
