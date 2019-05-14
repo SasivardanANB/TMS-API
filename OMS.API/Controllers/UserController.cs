@@ -13,6 +13,9 @@ using Helper.Model.DependencyResolver;
 using OMS.DomainGateway.Task.Interfaces;
 using OMS.DomainGateway.Gateway.Interfaces;
 using OMS.API.Classes;
+using RestSharp;
+using System.Configuration;
+using Newtonsoft.Json;
 
 namespace OMS.API.Controllers
 {
@@ -20,6 +23,24 @@ namespace OMS.API.Controllers
     [RoutePrefix("api/v1/user")]
     public class UserController : ApiController
     {
+        #region Private Methods
+        private static string GetApiResponse(string apiRoute, Method method, object requestQueryParameter, string token)
+        {
+            var client = new RestClient(ConfigurationManager.AppSettings["ApiGatewayBaseURL"]);
+            client.AddDefaultHeader("Content-Type", "application/json");
+            if (token != null)
+                client.AddDefaultHeader("Token", token);
+            var request = new RestRequest(apiRoute, method) { RequestFormat = DataFormat.Json };
+            request.Timeout = 500000;
+            if (requestQueryParameter != null)
+            {
+                request.AddJsonBody(requestQueryParameter);
+            }
+            var result = client.Execute(request);
+            return result.Content;
+        }
+        #endregion
+
         [Route("login")]
         [AllowAnonymous, HttpPost]
         public IHttpActionResult LoginUser(LoginRequest login)
@@ -65,8 +86,51 @@ namespace OMS.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
-            UserResponse userResponse = userTask.CreateUpdateUser(user);
+            UserResponse userResponse = new UserResponse();
+
+            foreach (var application in user.Requests[0].Applications)
+            {
+                if (application == 1)
+                {
+                    IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
+                    userResponse = userTask.CreateUpdateUser(user);
+                }
+
+                LoginRequest loginRequest = new LoginRequest();
+                string token = "";
+                if (application == 2) //For TMS Application - Integrate Azure API Gateway
+                {
+                    //Login to TMS and get Token
+                    loginRequest.UserName = ConfigurationManager.AppSettings["TMSLogin"];
+                    loginRequest.UserPassword = ConfigurationManager.AppSettings["TMSPassword"];
+                    var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                        + "/v1/user/login", Method.POST, loginRequest, null));
+                    if (tmsLoginResponse != null && tmsLoginResponse.Data.Count > 0)
+                    {
+                        token = tmsLoginResponse.TokenKey;
+                    }
+
+                    userResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                        + "/v1/user/createupdateuser", Method.POST, user, token));
+                }
+
+                if (application == 3) //For DMS Application - Integrate Azure API Gateway
+                {
+                    //Login to DMS and get Token
+                    loginRequest.UserName = ConfigurationManager.AppSettings["DMSLogin"];
+                    loginRequest.UserPassword = ConfigurationManager.AppSettings["DMSPassword"];
+                    var dmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
+                        + "/v1/user/login", Method.POST, loginRequest, null));
+                    if (dmsLoginResponse != null && dmsLoginResponse.Data.Count > 0)
+                    {
+                        token = dmsLoginResponse.TokenKey;
+                    }
+
+                    userResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
+                        + "/v1/user/createupdateuser", Method.POST, user, token));
+                }
+            }
+
             return Ok(userResponse);
         }
 
@@ -90,14 +154,14 @@ namespace OMS.API.Controllers
         [HttpPost]
         public IHttpActionResult GetUsers(UserRequest user)
         {
-            for(int i=0;i< user.Requests.Count; i++)
+            for (int i = 0; i < user.Requests.Count; i++)
             {
                 ModelState.Remove("user.Requests[" + i + "].UserName");
                 ModelState.Remove("user.Requests[" + i + "].Password");
                 ModelState.Remove("user.Requests[" + i + "].ConfirmPassword");
                 ModelState.Remove("user.Requests[" + i + "].FirstName");
                 ModelState.Remove("user.Requests[" + i + "].LastName");
-            }           
+            }
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

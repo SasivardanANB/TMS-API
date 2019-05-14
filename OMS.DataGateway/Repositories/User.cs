@@ -220,6 +220,8 @@ namespace OMS.DataGateway.Repositories
                                 userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserNameExisted;
                                 userResponse.StatusCode = (int)HttpStatusCode.BadRequest;
                             }
+
+                            
                         }
 
                         userDataModelList.Add(userDataModel);
