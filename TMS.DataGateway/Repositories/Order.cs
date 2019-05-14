@@ -490,15 +490,15 @@ namespace TMS.DataGateway.Repositories
                 {
                     orderList =
                         (from order in context.OrderHeaders
+                         join orderStatus in context.OrderStatuses on order.OrderStatusID equals orderStatus.ID
                              // where !order.IsActive
                          select new Domain.OrderSearch
                          {
                              OrderId=order.ID,
-                             OrderNumber = order.OrderNo,
-                             OrderStatus = order.OrderStatusID.ToString(),
-                             VehicleType = order.VehicleNo,
-
-
+                             OrderNumber = order.LegecyOrderNo,
+                             OrderStatus = orderStatus.OrderStatusValue,
+                             VehicleType = order.VehicleShipment,
+                             PoliceNumber=order.VehicleNo
                          }).ToList();
                 }
                 // Filter
