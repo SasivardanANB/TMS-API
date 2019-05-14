@@ -111,7 +111,7 @@ namespace OMS.API.Controllers
                     }
 
                     userResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
-                        + "/v1/user/createupdateuser", Method.POST, user, token));
+                        + "/v1/user/createupdateuser", Method.POST, user, null));
                 }
 
                 if (application == 3) //For DMS Application - Integrate Azure API Gateway
