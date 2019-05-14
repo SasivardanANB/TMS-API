@@ -23,8 +23,8 @@ namespace TMS.DomainObjects.Objects
         [Range(minimum: 1, maximum: int.MaxValue, ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidCityID")]
         public int CityID { get; set; }
         public string CityName { get; set; }
-        [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidImage")]
         public int PhotoId { get; set; }
+        [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidImage")]
         public string PhotoGuId { get; set; }
         public bool IsDelete { get; set; }
     }

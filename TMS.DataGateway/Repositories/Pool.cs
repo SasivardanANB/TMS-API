@@ -129,7 +129,7 @@ namespace TMS.DataGateway.Repositories
                         {
                             ID = pool.ID,
                             PoolName = pool.PoolName,
-                            PoolDescription = pool.PoolDescritpion,
+                            PoolDescription = pool.PoolDescription,
                             CityID = pool.CityID,
                             CityName = pool.City.CityDescription,
                             ContactNumber = pool.ContactNumber,
@@ -147,14 +147,14 @@ namespace TMS.DataGateway.Repositories
                         .Where(p => !p.IsDelete)
                         .Where(p => poolFilter.ID == 0 || p.ID == poolFilter.ID)
                         .Where(p => String.IsNullOrEmpty(poolFilter.PoolName) || p.PoolName.Contains(poolFilter.PoolName))
-                        .Where(p => String.IsNullOrEmpty(poolFilter.PoolDescription) || p.PoolDescritpion.Contains(poolFilter.PoolDescription))
+                        .Where(p => String.IsNullOrEmpty(poolFilter.PoolDescription) || p.PoolDescription.Contains(poolFilter.PoolDescription))
                         .Where(p => String.IsNullOrEmpty(poolFilter.ContactNumber) || p.ContactNumber.Contains(poolFilter.ContactNumber))
                         .Where(p => String.IsNullOrEmpty(poolFilter.Address) || p.Address.Contains(poolFilter.Address))
                         .Select(pool => new Domain.Pool
                         {
                             ID = pool.ID,
                             PoolName = pool.PoolName,
-                            PoolDescription = pool.PoolDescritpion,
+                            PoolDescription = pool.PoolDescription,
                             CityID = pool.CityID,
                             CityName = pool.City.CityDescription,
                             ContactNumber = pool.ContactNumber,

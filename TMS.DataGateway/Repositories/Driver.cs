@@ -88,6 +88,9 @@ namespace TMS.DataGateway.Repositories
                             {
                                 driverData.CreatedBy = driverRequest.CreatedBy;
                                 driverData.CreatedTime = DateTime.Now;
+
+                                //Making ISActive true while creation
+                                driverData.IsActive = true;
                                 tMSDBContext.Drivers.Add(driverData);
                                 tMSDBContext.SaveChanges();
                                 driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.DriversCreated;

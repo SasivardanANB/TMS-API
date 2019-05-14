@@ -21,7 +21,7 @@ namespace TMS.DataGateway.DataModels
         [Index("Pool_PoolName", IsUnique = true)]
         public string PoolName { get; set; }
         [MaxLength(50)]
-        public string PoolDescritpion { get; set; }
+        public string PoolDescription { get; set; }
         [MaxLength(255)]
         public string Address { get; set; }
         [MaxLength(15)]

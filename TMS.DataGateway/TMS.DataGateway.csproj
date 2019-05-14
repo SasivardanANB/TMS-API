@@ -242,6 +242,14 @@
     <Compile Include="Migrations\201905141007167_Masterdatachanges.Designer.cs">
       <DependentUpon>201905141007167_Masterdatachanges.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201905141139452_TMSMasterDataChanges.cs" />
+    <Compile Include="Migrations\201905141139452_TMSMasterDataChanges.Designer.cs">
+      <DependentUpon>201905141139452_TMSMasterDataChanges.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201905141152468_TMSMasterDataChanges1.cs" />
+    <Compile Include="Migrations\201905141152468_TMSMasterDataChanges1.Designer.cs">
+      <DependentUpon>201905141152468_TMSMasterDataChanges1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\Authenticate.cs" />
@@ -332,6 +340,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201905141007167_Masterdatachanges.resx">
       <DependentUpon>201905141007167_Masterdatachanges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905141139452_TMSMasterDataChanges.resx">
+      <DependentUpon>201905141139452_TMSMasterDataChanges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905141152468_TMSMasterDataChanges1.resx">
+      <DependentUpon>201905141152468_TMSMasterDataChanges1.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SeedData\Activities.csv" />
     <EmbeddedResource Include="SeedData\applications.csv" />

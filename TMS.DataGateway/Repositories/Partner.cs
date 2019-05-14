@@ -58,6 +58,7 @@ namespace TMS.DataGateway.Repositories
                             {
                                 partnerData.CreatedBy = partnerRequest.CreatedBy;
                                 partnerData.CreatedTime = DateTime.Now;
+                                partnerData.IsActive = true;
                                 context.Partners.Add(partnerData);
                                 context.SaveChanges();
                                 partnerResponse.StatusMessage = DomainObjects.Resource.ResourceData.PartnerCreated;

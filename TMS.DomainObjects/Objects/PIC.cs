@@ -21,6 +21,7 @@ namespace TMS.DomainObjects.Objects
         [MaxLength(50)]
         public string PICPassword { get; set; }
         public int PhotoId { get; set; }
+        [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidImage")]
         public string PhotoGuId { get; set; }
     }
 }
