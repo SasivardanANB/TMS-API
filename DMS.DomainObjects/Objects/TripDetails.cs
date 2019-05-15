@@ -20,5 +20,7 @@ namespace DMS.DomainObjects.Objects
         public decimal Weight { get; set; }
         public string PoliceNumber { get; set; }
         public List<StopPoints> StopPoints { get; set; }
+        public string TripStatus { get; set; }
+        public int? TripStatusId { get; set; }
     }
 }

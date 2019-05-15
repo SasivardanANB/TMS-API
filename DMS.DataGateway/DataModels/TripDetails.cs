@@ -29,7 +29,9 @@ namespace DMS.DataGateway.DataModels
         public string TripType { get; set; }
         public decimal Weight { get; set; }
         public string PoliceNumber { get; set; }
-
         public User User { get; set; }
+        [ForeignKey("TripStatus")]
+        public int? CurrentTripStatusId { get; set; }
+        public virtual TripStatus TripStatus { get; set; }
     }
 }

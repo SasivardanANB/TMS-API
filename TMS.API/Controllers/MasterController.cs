@@ -73,7 +73,7 @@ namespace TMS.API.Controllers
 
         [Route("getpoolnames")]
         [HttpGet]
-        public IHttpActionResult GetPoolNames(string searchText)
+        public IHttpActionResult GetPoolNames(string searchText = "")
         {
             IMasterTask masterTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().MasterTask;
             CommonResponse commonResponse = masterTask.GetPoolNames(searchText);
@@ -82,7 +82,7 @@ namespace TMS.API.Controllers
 
         [Route("getshippernames")]
         [HttpGet]
-        public IHttpActionResult GetShipperNames(string searchText)
+        public IHttpActionResult GetShipperNames(string searchText = "")
         {
             IMasterTask masterTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().MasterTask;
             CommonResponse commonResponse = masterTask.GetShipperNames(searchText);
@@ -90,7 +90,7 @@ namespace TMS.API.Controllers
         }
         [Route("getcitynames")]
         [HttpGet]
-        public IHttpActionResult GetCityNames(string searchText)
+        public IHttpActionResult GetCityNames(string searchText = "")
         {
             IMasterTask masterTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().MasterTask;
             CommonResponse commonResponse = masterTask.GetCityNames(searchText);

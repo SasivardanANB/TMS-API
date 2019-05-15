@@ -272,13 +272,28 @@ namespace TMS.DataGateway.Repositories
             {
                 using (var context = new TMSDBContext())
                 {
-                    var poolData = (from pool in context.Pools
+
+                    var poolData = new List<Domain.Common>();
+                    if (searchText != "")
+                    {
+                        poolData = (from pool in context.Pools
                                     where pool.PoolName.Contains(searchText)
                                     select new Domain.Common
                                     {
                                         Id = pool.ID,
                                         Value = pool.PoolName
                                     }).ToList();
+                    }
+                    else
+                    {
+                        poolData = (from pool in context.Pools
+                                        // where pool.PoolName.Contains(searchText)
+                                    select new Domain.Common
+                                    {
+                                        Id = pool.ID,
+                                        Value = pool.PoolName
+                                    }).ToList();
+                    }
 
                     if (poolData.Count > 0)
                     {
@@ -313,16 +328,30 @@ namespace TMS.DataGateway.Repositories
             CommonResponse commonResponse = new CommonResponse();
             try
             {
+
                 using (var context = new TMSDBContext())
                 {
-                    var shipperData = (from partner in context.Partners
-                                    where partner.PartnerName.Contains(searchText) && partner.PartnerTypeID == 1
-                                    select new Domain.Common
-                                    {
-                                        Id = partner.ID,
-                                        Value = partner.PartnerName
-                                    }).ToList();
-
+                    var shipperData = new List<Domain.Common>();
+                    if (searchText != "")
+                    {
+                        shipperData = (from partner in context.Partners
+                                       where partner.PartnerName.Contains(searchText) && partner.PartnerTypeID == 1
+                                       select new Domain.Common
+                                       {
+                                           Id = partner.ID,
+                                           Value = partner.PartnerName
+                                       }).ToList();
+                    }
+                    else
+                    {
+                        shipperData = (from partner in context.Partners
+                                       where partner.PartnerTypeID == 1 // partner.PartnerName.Contains(searchText) && 
+                                       select new Domain.Common
+                                       {
+                                           Id = partner.ID,
+                                           Value = partner.PartnerName
+                                       }).ToList();
+                    }
                     if (shipperData.Count > 0)
                     {
                         commonResponse.Data = shipperData;
@@ -357,14 +386,27 @@ namespace TMS.DataGateway.Repositories
             {
                 using (var context = new TMSDBContext())
                 {
-                    var cityData = (from city in context.Cities
+                    var cityData = new List<Domain.Common>();
+                    if (searchText != "")
+                    {
+                        cityData = (from city in context.Cities
                                     where city.CityDescription.Contains(searchText)
                                     select new Domain.Common
                                     {
                                         Id = city.ID,
                                         Value = city.CityDescription
                                     }).ToList();
-
+                    }
+                    else
+                    {
+                        cityData = (from city in context.Cities
+                                        // where city.CityDescription.Contains(searchText)
+                                    select new Domain.Common
+                                    {
+                                        Id = city.ID,
+                                        Value = city.CityDescription
+                                    }).ToList();
+                    }
                     if (cityData.Count > 0)
                     {
                         commonResponse.Data = cityData;
