@@ -93,7 +93,9 @@ namespace OMS.API.Controllers
             {
                 Requests = new List<User>() {
                     new User(){
-                        Applications = user.Requests[0].Applications,
+                        Applications = new List<int>(){
+                            2
+                        },
                         FirstName = user.Requests[0].FirstName,
                         LastName = user.Requests[0].LastName,
                         UserName = user.Requests[0].UserName,
@@ -117,6 +119,7 @@ namespace OMS.API.Controllers
                                 LastName = user.Requests[0].LastName,
                                 UserName = user.Requests[0].UserName,
                                 Password = user.Requests[0].Password,
+                                IsActive = true
                             }
                         },
                 CreatedBy = "SYSTEM",
