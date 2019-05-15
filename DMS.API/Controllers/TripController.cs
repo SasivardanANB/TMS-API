@@ -63,5 +63,16 @@ namespace DMS.API.Controllers
             UpdateTripStatusResponse tripData = tripTask.UpdateTripStatusEventLog(updateTripStatusRequest);
             return Ok(tripData);
         }
+
+        [Route("updatetripstatus")]
+        [HttpPost]
+        public IHttpActionResult UpdateEntireTripStatus(TripsByDriverRequest tripsByDriverRequest)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            ITripTask tripTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().TripTask;
+            TripResponse tripData = tripTask.UpdateEntireTripStatus(tripsByDriverRequest);
+            return Ok(tripData);
+        }
     }
 }

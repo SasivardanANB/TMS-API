@@ -124,6 +124,11 @@ namespace DMS.DataGateway.Repositories
                     {
                         var tripFilter = tripsByDriverRequest.Requests[0];
 
+                        //For getting trip deatails and updating trip status as assigned
+                        var tripDetails = context.TripDetails.Where(t => t.TripNumber == tripFilter.TripNumber).FirstOrDefault();
+                        tripDetails.CurrentTripStatusId = 3;
+                        context.SaveChanges();
+
                         var tripsByUser = (from trip in context.TripDetails
                                            where trip.UserId == tripFilter.UserId
                                            select new Domain.TripDetails
@@ -137,7 +142,9 @@ namespace DMS.DataGateway.Repositories
                                                VehicleNumber = trip.VehicleNumber,
                                                TripType = trip.TripType,
                                                Weight = trip.Weight,
-                                               PoliceNumber = trip.PoliceNumber
+                                               PoliceNumber = trip.PoliceNumber,
+                                               TripStatus=trip.TripStatus.StatusName,
+                                               TripStatusId=trip.CurrentTripStatusId
                                            }).ToList();
 
 
@@ -203,6 +210,12 @@ namespace DMS.DataGateway.Repositories
                             StatusDate = DateTime.Now,
 
                         };
+
+                        //For getting trip deatails and updating trip status as assigned
+                        var tripID = context.StopPoints.Where(t => t.ID == tripStatusEventLogFilter.StopPointId).Select(t=>t.TripID).FirstOrDefault();
+                        var tripDetails = context.TripDetails.Where(t => t.ID == tripID).FirstOrDefault();
+                        tripDetails.CurrentTripStatusId = tripStatusEventLogFilter.TripStatusId;
+
                         context.TripStatusEventLogs.Add(dataTripStatusEventLog);
                         context.SaveChanges();
                         int guidCountValue = 0;
@@ -276,6 +289,80 @@ namespace DMS.DataGateway.Repositories
             }
 
             return response;
+        }
+
+        public TripResponse UpdateEntireTripStatus(TripsByDriverRequest tripsByDriverRequest)
+        {
+            TripResponse tripResponse = new TripResponse()
+            {
+                Data = new List<Domain.TripDetails>()
+            };
+
+            using (var context = new DMSDBContext())
+            {
+                try
+                {
+                    if (tripsByDriverRequest.Requests.Count > 0)
+                    {
+                        var tripFilter = tripsByDriverRequest.Requests[0];
+
+                        //For getting trip deatails and updating trip status
+                        var tripDetails = context.TripDetails.Where(t => t.ID == tripFilter.ID).FirstOrDefault();
+                        tripDetails.CurrentTripStatusId = tripFilter.TripStatusId;
+                        context.SaveChanges();
+
+                        var tripsByUser = (from trip in context.TripDetails
+                                           where trip.UserId == tripFilter.UserId
+                                           select new Domain.TripDetails
+                                           {
+                                               ID = trip.ID,
+                                               TripNumber = trip.TripNumber,
+                                               OrderNumber = trip.OrderNumber,
+                                               TransporterName = trip.TransporterName,
+                                               UserId = trip.UserId,
+                                               VehicleType = trip.VehicleType,
+                                               VehicleNumber = trip.VehicleNumber,
+                                               TripType = trip.TripType,
+                                               Weight = trip.Weight,
+                                               PoliceNumber = trip.PoliceNumber,
+                                               TripStatus = trip.TripStatus.StatusName,
+                                               TripStatusId = trip.CurrentTripStatusId
+                                           }).ToList();
+
+
+                        foreach (var trip in tripsByUser)
+                        {
+                            var stopPoints = (from sp in context.StopPoints
+                                              where sp.TripID == trip.ID
+                                              select new Domain.StopPoints
+                                              {
+                                                  ID = sp.ID,
+                                                  TripId = sp.TripID,
+                                                  LocationId = sp.LocationID,
+                                                  LocationName = context.Locations.FirstOrDefault(t => t.ID == sp.LocationID).Name,
+                                                  SequenceNumber = sp.SequenceNumber,
+                                                  EstimatedDeliveryDate = sp.EstimatedDeliveryDate
+                                              }).ToList();
+
+                            trip.StopPoints = stopPoints;
+                        }
+
+                        tripResponse.Data.AddRange(tripsByUser);
+                    }
+
+                    tripResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                    tripResponse.StatusCode = (int)HttpStatusCode.OK;
+                    tripResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log(LogLevel.Error, ex);
+                    tripResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                    tripResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                    tripResponse.StatusMessage = ex.Message;
+                }
+            }
+            return tripResponse;
         }
 
         //For inserting new record into ImageGuid table
