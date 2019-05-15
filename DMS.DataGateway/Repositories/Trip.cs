@@ -124,11 +124,6 @@ namespace DMS.DataGateway.Repositories
                     {
                         var tripFilter = tripsByDriverRequest.Requests[0];
 
-                        //For getting trip deatails and updating trip status as assigned
-                        var tripDetails = context.TripDetails.Where(t => t.TripNumber == tripFilter.TripNumber).FirstOrDefault();
-                        tripDetails.CurrentTripStatusId = 3;
-                        context.SaveChanges();
-
                         var tripsByUser = (from trip in context.TripDetails
                                            where trip.UserId == tripFilter.UserId
                                            select new Domain.TripDetails
