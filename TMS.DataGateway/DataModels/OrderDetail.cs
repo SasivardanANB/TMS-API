@@ -38,6 +38,7 @@ namespace TMS.DataGateway.DataModels
             set { }
         }
         public string LastModifiedBy { get; set; }
+        public string Katerangan { get; set; }
         public DateTime? LastModifiedTime { get; set; }
     }
 }

@@ -385,7 +385,7 @@
     <value />
   </data>
   <data name="DriverNoExisted" xml:space="preserve">
-    <value>Driver no alredy exist</value>
+    <value>Driver no already exist</value>
   </data>
   <data name="DrivingLicenseNoExisted" xml:space="preserve">
     <value>License number already exists</value>
