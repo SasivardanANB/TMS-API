@@ -43,6 +43,7 @@ namespace TMS.API.Controllers
                     if (order.UploadType == 1) // Upload Order
                     {
                         ModelState.Remove("order.Requests[" + i + "].BusinessAreaID");
+                        ModelState.Remove("order.Requests[" + i + "]");
 
                         if (string.IsNullOrEmpty(order.Requests[i].ShippingListNo))
                         {
