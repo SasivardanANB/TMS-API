@@ -20,7 +20,6 @@ namespace TMS.DataGateway.DataModels
         public string BusinessAreaCode { get; set; }
         [MaxLength(100)]
         public string BusinessAreaDescription { get; set; }
-        [Index("BusinessArea_CompanyCodeID", IsUnique = true)]
         [ForeignKey("CompanyCode")]
         public int? CompanyCodeID { get; set; }
         public CompanyCode CompanyCode { get; set; }

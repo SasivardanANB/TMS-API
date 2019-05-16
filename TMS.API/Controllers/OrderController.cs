@@ -43,6 +43,7 @@ namespace TMS.API.Controllers
                     if (order.UploadType == 1) // Upload Order
                     {
                         ModelState.Remove("order.Requests[" + i + "].BusinessAreaID");
+                        ModelState.Remove("order.Requests[" + i + "]");
 
                         if (string.IsNullOrEmpty(order.Requests[i].ShippingListNo))
                         {
@@ -106,12 +107,30 @@ namespace TMS.API.Controllers
         }
 
         [Route("getorders")]
-        [HttpPost]
+        [AllowAnonymous, HttpPost]
         public IHttpActionResult GetOrders(OrderSearchRequest orderSearchRequest)
         {
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
             OrderSearchResponse orderSearchResponse = orderTask.GetOrders(orderSearchRequest);
             return Ok(orderSearchResponse);
+        }
+
+        [Route("createupdatepackingsheet")]
+        [HttpPost]
+        public IHttpActionResult CreateUpdatePackingSheet(PackingSheetRequest packingSheetRequest)
+        {
+            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            PackingSheetResponse packingSheetResponse = orderTask.CreateUpdatePackingSheet(packingSheetRequest);
+            return Ok(packingSheetResponse);
+        }
+
+        [Route("trackorder")]
+        [AllowAnonymous, HttpGet]
+        public IHttpActionResult TrackOrder(int orderId)
+        {
+            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            OrderTrackResponse orderTrackResponse = orderTask.TrackOrder(orderId);
+            return Ok(orderTrackResponse);
         }
     }
 }

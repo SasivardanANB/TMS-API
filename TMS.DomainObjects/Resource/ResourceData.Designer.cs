@@ -97,7 +97,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Driver no alredy exist.
+        ///   Looks up a localized string similar to Driver no already exist.
         /// </summary>
         public static string DriverNoExisted {
             get {
