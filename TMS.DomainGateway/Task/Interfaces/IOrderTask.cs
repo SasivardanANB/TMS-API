@@ -12,5 +12,6 @@ namespace TMS.DomainGateway.Task.Interfaces
     {
         OrderResponse CreateUpdateOrder(OrderRequest order);
         OrderSearchResponse GetOrders(OrderSearchRequest orderSearchRequest);
+        OrderTrackResponse TrackOrder(int orderId);
     }
 }

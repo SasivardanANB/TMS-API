@@ -37,5 +37,15 @@ namespace TMS.BusinessGateway.Task
             //If needed write business logic here for response.
             return orderSearchResponse;
         }
+
+        public override OrderTrackResponse TrackOrder(int orderId)
+        {
+            //If needed write business logic here for request.
+
+            OrderTrackResponse orderTrackResponse = _orderRepository.TrackOrder(orderId);
+
+            //If needed write business logic here for response.
+            return orderTrackResponse;
+        }
     }
 }

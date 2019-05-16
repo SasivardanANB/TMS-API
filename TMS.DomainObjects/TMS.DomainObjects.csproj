@@ -70,6 +70,8 @@
     <Compile Include="Objects\RoleMenuActivity.cs" />
     <Compile Include="Objects\PIC.cs" />
     <Compile Include="Objects\Partner.cs" />
+    <Compile Include="Objects\TrackDetail.cs" />
+    <Compile Include="Objects\TrackHeader.cs" />
     <Compile Include="Objects\Transporter.cs" />
     <Compile Include="Objects\User.cs" />
     <Compile Include="Objects\UserRole.cs" />
@@ -103,6 +105,7 @@
     <Compile Include="Response\ErrorResponse.cs" />
     <Compile Include="Response\OrderSearchResponse.cs" />
     <Compile Include="Response\OrderResponse.cs" />
+    <Compile Include="Response\OrderTrackResponse.cs" />
     <Compile Include="Response\PartnerDetilasResponse.cs" />
     <Compile Include="Response\PartnerSearchResponse.cs" />
     <Compile Include="Response\SubDistrictDetailsResponse.cs" />
