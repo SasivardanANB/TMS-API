@@ -508,7 +508,8 @@ namespace TMS.DataGateway.Repositories
                         {
                             //Get Packing Sheet No
                             var packingSheets = (from ps in context.PackingSheets
-                                                 join od in context.OrderDetails on ps.OrderDetailID equals od.ID
+                                                 join od in context.OrderDetails on ps.ShippingListNo equals od.ShippingListNo
+                                                 join oh in context.OrderHeaders on od.OrderHeaderID equals oh.ID
                                                  where od.OrderHeaderID == order.OrderId
                                                  select new
                                                  {
@@ -744,8 +745,10 @@ namespace TMS.DataGateway.Repositories
                                         CreatedBy = packingSheetRequest.CreatedBy,
                                         CreatedTime = DateTime.Now,
                                         LastModifiedBy = "",
-                                        LastModifiedTime = null
-                                    };
+                                        LastModifiedTime = null,
+                                        ShippingListNo = packingSheet.ShippingListNo
+
+                                };
 
                                     context.PackingSheets.Add(packingSheetData);
                                     context.SaveChanges();
