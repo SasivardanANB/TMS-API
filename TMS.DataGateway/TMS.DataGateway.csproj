@@ -249,6 +249,7 @@
     <Compile Include="Migrations\201905161010327_orderdeatialcahnges.cs" />
     <Compile Include="Migrations\201905161010327_orderdeatialcahnges.Designer.cs">
       <DependentUpon>201905161010327_orderdeatialcahnges.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201905161014420_tms_v1.0_BusinessArea.cs" />
     <Compile Include="Migrations\201905161014420_tms_v1.0_BusinessArea.Designer.cs">
       <DependentUpon>201905161014420_tms_v1.0_BusinessArea.cs</DependentUpon>
@@ -349,6 +350,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201905161010327_orderdeatialcahnges.resx">
       <DependentUpon>201905161010327_orderdeatialcahnges.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201905161014420_tms_v1.0_BusinessArea.resx">
       <DependentUpon>201905161014420_tms_v1.0_BusinessArea.cs</DependentUpon>
     </EmbeddedResource>
