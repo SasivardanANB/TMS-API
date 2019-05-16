@@ -686,8 +686,12 @@ namespace TMS.DataGateway.Repositories
             }
             return orderSearchResponse;
         }
+        public OrderTrackResponse TrackOrder(int orderId)
+        {
+            OrderTrackResponse orderTrackResponse = new OrderTrackResponse();
 
-
+            return orderTrackResponse;
+        }
         private string GetOrderNumber(int businessAreaId, string businessArea, string applicationCode, int year)
         {
             string orderNo = businessArea + applicationCode;

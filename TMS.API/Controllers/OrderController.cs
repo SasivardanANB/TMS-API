@@ -107,7 +107,7 @@ namespace TMS.API.Controllers
         }
 
         [Route("getorders")]
-        [AllowAnonymous, HttpPost]
+        [HttpPost]
         public IHttpActionResult GetOrders(OrderSearchRequest orderSearchRequest)
         {
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
@@ -122,6 +122,15 @@ namespace TMS.API.Controllers
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
             PackingSheetResponse packingSheetResponse = orderTask.CreateUpdatePackingSheet(packingSheetRequest);
             return Ok(packingSheetResponse);
+        }
+
+        [Route("trackorder")]
+        [AllowAnonymous, HttpGet]
+        public IHttpActionResult TrackOrder(int orderId)
+        {
+            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            OrderTrackResponse orderTrackResponse = orderTask.TrackOrder(orderId);
+            return Ok(orderTrackResponse);
         }
     }
 }

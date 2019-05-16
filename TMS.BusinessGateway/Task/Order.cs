@@ -42,5 +42,15 @@ namespace TMS.BusinessGateway.Task
             PackingSheetResponse  packingSheetResponse = _orderRepository.CreateUpdatePackingSheet(packingSheetRequest);
             return packingSheetResponse;
         }
+
+        public override OrderTrackResponse TrackOrder(int orderId)
+        {
+            //If needed write business logic here for request.
+
+            OrderTrackResponse orderTrackResponse = _orderRepository.TrackOrder(orderId);
+
+            //If needed write business logic here for response.
+            return orderTrackResponse;
+        }
     }
 }
