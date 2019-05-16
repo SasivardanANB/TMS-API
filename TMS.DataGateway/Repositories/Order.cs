@@ -754,10 +754,11 @@ namespace TMS.DataGateway.Repositories
                                     context.SaveChanges();
                                 } 
                             }
-
-                           
-
                         }
+                        //packingSheetRequest.Requests = mapper.Map<List<DataModel.Role>, List<Domain.Role>>(roles);
+                        //packingSheetResponse.Data = packingSheetRequest.Requests;
+                        packingSheetResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        packingSheetResponse.StatusCode = (int)HttpStatusCode.OK;
 
                     }
 
