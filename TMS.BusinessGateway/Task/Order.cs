@@ -37,5 +37,10 @@ namespace TMS.BusinessGateway.Task
             //If needed write business logic here for response.
             return orderSearchResponse;
         }
+        public override PackingSheetResponse CreateUpdatePackingSheet(PackingSheetRequest packingSheetRequest)
+        {
+            PackingSheetResponse  packingSheetResponse = _orderRepository.CreateUpdatePackingSheet(packingSheetRequest);
+            return packingSheetResponse;
+        }
     }
 }

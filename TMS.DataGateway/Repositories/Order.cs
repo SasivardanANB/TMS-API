@@ -422,7 +422,7 @@ namespace TMS.DataGateway.Repositories
                                 {
                                     Data.PackingSheet packingSheetRequest = new Data.PackingSheet()
                                     {
-                                        OrderDetailID = orderDetail.ID,
+                                       // OrderDetailID = orderDetail.ID,
                                         PackingSheetNo = packinSheet,
                                         CreatedBy = request.CreatedBy,
                                         CreatedTime = DateTime.Now,
@@ -621,6 +621,7 @@ namespace TMS.DataGateway.Repositories
             return orderSearchResponse;
         }
 
+
         private string GetOrderNumber(int businessAreaId, string businessArea, string applicationCode, int year)
         {
             string orderNo = businessArea + applicationCode;
@@ -648,6 +649,61 @@ namespace TMS.DataGateway.Repositories
                 }
             }
             return orderNo;
+        }
+
+        public PackingSheetResponse CreateUpdatePackingSheet(PackingSheetRequest packingSheetRequest)
+        {
+            PackingSheetResponse packingSheetResponse = new PackingSheetResponse();
+            try
+            {
+                using (var context = new Data.TMSDBContext())
+                {
+                    foreach(var packingSheet in packingSheetRequest.Requests)
+                    {
+                        var orderDetailsData = context.OrderDetails.Where(x => x.ID == packingSheet.OrderDetailId).FirstOrDefault();
+                        if(orderDetailsData != null)
+                        {
+                            orderDetailsData.ShippingListNo = packingSheet.ShippingListNo;
+                            orderDetailsData.TotalCollie = packingSheet.Collie;
+                            orderDetailsData.Katerangan = packingSheet.Katerangan;
+                            // context.SaveChanges();
+                            
+                            if(packingSheet.PackingSheetNumbers.Count > 0 )
+                            {
+                                foreach (var item in packingSheet.PackingSheetNumbers)
+                                {
+                                    Data.PackingSheet packingSheetData = new Data.PackingSheet()
+                                    {
+                                        // OrderDetailID = orderDetail.ID,
+                                        PackingSheetNo = item.Value,
+                                        CreatedBy = packingSheetRequest.CreatedBy,
+                                        CreatedTime = DateTime.Now,
+                                        LastModifiedBy = "",
+                                        LastModifiedTime = null
+                                    };
+
+                                    context.PackingSheets.Add(packingSheetData);
+                                    context.SaveChanges();
+                                } 
+                            }
+
+                           
+
+                        }
+
+                    }
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+                packingSheetResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                packingSheetResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                packingSheetResponse.StatusMessage = ex.Message;
+            }
+            return packingSheetResponse;
         }
     }
 }

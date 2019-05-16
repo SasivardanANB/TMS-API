@@ -113,5 +113,14 @@ namespace TMS.API.Controllers
             OrderSearchResponse orderSearchResponse = orderTask.GetOrders(orderSearchRequest);
             return Ok(orderSearchResponse);
         }
+
+        [Route("createupdatepackingsheet")]
+        [HttpPost]
+        public IHttpActionResult CreateUpdatePackingSheet(PackingSheetRequest packingSheetRequest)
+        {
+            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            PackingSheetResponse packingSheetResponse = orderTask.CreateUpdatePackingSheet(packingSheetRequest);
+            return Ok(packingSheetResponse);
+        }
     }
 }
