@@ -19,7 +19,7 @@ namespace DMS.DomainObjects.Objects
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidLastName")]
         public string LastName { get; set; }
         public string Email { get; set; }
-        public Nullable<int> PhoneNumber { get; set; }        
+        public string PhoneNumber { get; set; }        
         public bool IsActive { get; set; }
     }
 }

@@ -12,6 +12,7 @@ namespace DMS.DomainGateway.Task.Interfaces
     {
         UserResponse LoginUser(LoginRequest login);
         UserResponse CreateUpdateUser(UserRequest user);
+        UserResponse GetProfileDetails(int userID);
 
     }
 }

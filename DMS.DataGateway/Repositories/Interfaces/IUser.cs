@@ -13,5 +13,6 @@ namespace DMS.DataGateway.Repositories.Iterfaces
     {
         UserResponse LoginUser(LoginRequest login);
         UserResponse CreateUpdateUser(UserRequest user);
+        UserResponse GetProfileDetails(int userID);
     }
 }

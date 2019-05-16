@@ -14,5 +14,6 @@ namespace DMS.DomainGateway.Task
     {
         public abstract UserResponse LoginUser(LoginRequest login);
         public abstract UserResponse CreateUpdateUser(UserRequest user);
+        public abstract UserResponse GetProfileDetails(int userID);
     }
 }
