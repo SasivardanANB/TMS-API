@@ -14,9 +14,11 @@ namespace TMS.DataGateway.DataModels
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
-        [ForeignKey("OrderDetail")]
-        public int OrderDetailID { get; set; }
-        public OrderDetail OrderDetail { get; set; }
+        //[ForeignKey("OrderDetail")]
+        //public int OrderDetailID { get; set; }
+        //public OrderDetail OrderDetail { get; set; }
+
+        public string ShippingListNo { get; set; }
         public string PackingSheetNo { get; set; }
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public string CreatedBy

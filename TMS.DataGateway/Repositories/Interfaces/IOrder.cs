@@ -12,6 +12,7 @@ namespace TMS.DataGateway.Repositories.Interfaces
     {
         OrderResponse CreateUpdateOrder(OrderRequest request);
         OrderSearchResponse GetOrders(OrderSearchRequest orderSearchRequest);
+        PackingSheetResponse CreateUpdatePackingSheet(PackingSheetRequest packingSheetRequest);
         OrderTrackResponse TrackOrder(int orderId);
     }
 }
