@@ -88,6 +88,46 @@ namespace OMS.API.Controllers
 
             UserResponse userResponse = new UserResponse();
 
+            //Create new request object to hold status
+            UserRequest tmsRequest = new UserRequest()
+            {
+                Requests = new List<User>() {
+                    new User(){
+                        Applications = new List<int>(){
+                            2
+                        },
+                        FirstName = user.Requests[0].FirstName,
+                        LastName = user.Requests[0].LastName,
+                        UserName = user.Requests[0].UserName,
+                        Password = user.Requests[0].Password,
+                        ConfirmPassword = user.Requests[0].ConfirmPassword
+                    }
+                },
+                CreatedBy = "SYSTEM",
+                LastModifiedBy = user.LastModifiedBy,
+                CreatedTime = user.CreatedTime,
+                LastModifiedTime = user.LastModifiedTime
+            };
+
+            UserRequest dmsRequest = new UserRequest()
+            {
+                Requests = new List<User>()
+                        {
+                            new User()
+                            {
+                                FirstName = user.Requests[0].FirstName,
+                                LastName = user.Requests[0].LastName,
+                                UserName = user.Requests[0].UserName,
+                                Password = user.Requests[0].Password,
+                                IsActive = true
+                            }
+                        },
+                CreatedBy = "SYSTEM",
+                LastModifiedBy = user.LastModifiedBy,
+                CreatedTime = user.CreatedTime,
+                LastModifiedTime = user.LastModifiedTime
+            };
+
             foreach (var application in user.Requests[0].Applications)
             {
                 if (application == 1)
@@ -111,7 +151,7 @@ namespace OMS.API.Controllers
                     }
 
                     userResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
-                        + "/v1/user/createupdateuser", Method.POST, user, null));
+                        + "/v1/user/createupdateuser", Method.POST, tmsRequest, null));
                 }
 
                 if (application == 3) //For DMS Application - Integrate Azure API Gateway
@@ -127,7 +167,7 @@ namespace OMS.API.Controllers
                     }
 
                     userResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
-                        + "/v1/user/createupdateuser", Method.POST, user, token));
+                        + "/v1/user/createupdateuser", Method.POST, dmsRequest, token));
                 }
             }
 

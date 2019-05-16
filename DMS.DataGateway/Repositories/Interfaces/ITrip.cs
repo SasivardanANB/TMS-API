@@ -15,5 +15,6 @@ namespace DMS.DataGateway.Repositories.Iterfaces
         StopPointsResponse GetStopPointsByTrip(StopPointsRequest stopPointsByTripRequest);
         StopPointOrderItemsResponse GetOrderItemsByStopPoint(StopPointsRequest stopPointsByTripRequest);
         UpdateTripStatusResponse UpdateTripStatusEventLog(UpdateTripStatusRequest updateTripStatusRequest);
+        TripResponse UpdateEntireTripStatus(TripsByDriverRequest tripsByDriverRequest);
     }
 }

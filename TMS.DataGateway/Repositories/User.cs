@@ -231,7 +231,7 @@ namespace TMS.DataGateway.Repositories
                 _logger.Log(LogLevel.Error, ex);
                 userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                 userResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                userResponse.StatusMessage = ex.Message;
+                userResponse.StatusMessage = ex.Message + ex.InnerException == null ? "": ex.InnerException.Message;
             }
             return userResponse;
         }
