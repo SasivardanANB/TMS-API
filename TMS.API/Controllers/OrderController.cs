@@ -107,7 +107,7 @@ namespace TMS.API.Controllers
         }
 
         [Route("getorders")]
-        [HttpPost]
+        [AllowAnonymous, HttpPost]
         public IHttpActionResult GetOrders(OrderSearchRequest orderSearchRequest)
         {
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
