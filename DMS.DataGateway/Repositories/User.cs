@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using DataModel = DMS.DataGateway.DataModels;
 using Domain = DMS.DomainObjects.Objects;
 using System.Configuration;
+using System.Net.Mail;
 
 namespace DMS.DataGateway.Repositories
 {
@@ -133,7 +134,7 @@ namespace DMS.DataGateway.Repositories
                         {
                             userData.Password = Encryption.EncryptionLibrary.EncryptPassword(userData.Password);
                         }
-                        
+
                         if (userData.ID > 0) //Update User
                         {
                             context.Entry(userData).State = System.Data.Entity.EntityState.Modified;
@@ -164,5 +165,100 @@ namespace DMS.DataGateway.Repositories
             }
             return userResponse;
         }
+        public UserResponse ChangePassword(ChangePasswordRequest changePasswordRequest)
+        {
+            UserResponse userResponse = new UserResponse();
+            try
+            {
+                using (var context = new DMSDBContext())
+                {
+                    var userDetails = context.Users.Where(u => u.ID == changePasswordRequest.Id).FirstOrDefault();
+                    if (userDetails != null)
+                    {
+                        if (!string.IsNullOrEmpty(changePasswordRequest.NewPassword))
+                        {
+                            changePasswordRequest.NewPassword = Encryption.EncryptionLibrary.EncryptPassword(changePasswordRequest.NewPassword);
+                        }
+                        userDetails.Password = changePasswordRequest.NewPassword;
+                        context.SaveChanges();
+                        userResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        userResponse.StatusCode = (int)HttpStatusCode.OK;
+                        userResponse.StatusMessage = DomainObjects.Resource.ResourceData.PasswordUpdated;
+                    }
+                    else
+                    {
+                        userResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        userResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                        userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserDetailsNotFound;
+                    }
+                }                
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+                userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                userResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                userResponse.StatusMessage = ex.Message;
+            }
+            return userResponse;
+        }
+        public UserResponse ForgotPassword(ForgotPasswordRequest forgotPasswordRequest)
+        {
+            UserResponse userResponse = new UserResponse();
+            try
+            {
+                using (var context = new DMSDBContext())
+                {
+                    var userDetails = context.Users.Where(u => u.Email == forgotPasswordRequest.Email).FirstOrDefault();
+                    if(userDetails !=null)
+                    {
+                        MailMessage mail = new MailMessage();
+                        mail.To.Add(forgotPasswordRequest.Email);
+                        string emailFrom = ConfigurationManager.AppSettings["EmailFrom"];
+                        mail.From = new MailAddress(emailFrom);
+                        mail.Subject = ConfigurationManager.AppSettings["EmailSubject"]; // "Test-case";
+                                                                                         
+                        string Body = "To reset Your Password <a href=\"http://localhost:51375/api/v1/user/resetpassword\">Click Here</a>";
+                        mail.Body = Body;
+                        mail.IsBodyHtml = true;
+
+                        string smtpHost = ConfigurationManager.AppSettings["SmtpHost"];
+                        string loginEmailId = ConfigurationManager.AppSettings["SmtpUserName"];
+                        string emailPassword = ConfigurationManager.AppSettings["SmtpPassword"];
+                        SmtpClient smtp = new SmtpClient(smtpHost);
+                        smtp.Port = 587;
+                        smtp.UseDefaultCredentials = false;
+                        smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+                        smtp.Credentials = new System.Net.NetworkCredential(loginEmailId, emailPassword); // Enter senders User name and password  
+                        smtp.EnableSsl = true;
+                        smtp.Send(mail);
+
+                        userResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        userResponse.StatusCode = (int)HttpStatusCode.OK;
+                        userResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                    }
+                    else
+                    {
+                        userResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        userResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                        userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserDetailsNotFound;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+                userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                userResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                userResponse.StatusMessage = ex.Message;
+            }
+            return userResponse;
+        }
     }
+    
 }
+
+
+
+
+

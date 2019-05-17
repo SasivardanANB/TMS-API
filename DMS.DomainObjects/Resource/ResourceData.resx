@@ -138,11 +138,17 @@
   <data name="LoginSuccess" xml:space="preserve">
     <value>Login Success</value>
   </data>
+  <data name="PasswordUpdated" xml:space="preserve">
+    <value>PasswordUpdated</value>
+  </data>
   <data name="Success" xml:space="preserve">
     <value>Success</value>
   </data>
   <data name="TripStatusUpdated" xml:space="preserve">
     <value>Trip Status Updated</value>
+  </data>
+  <data name="UserDetailsNotFound" xml:space="preserve">
+    <value>UserDetailsNotFound</value>
   </data>
   <data name="UserInActive" xml:space="preserve">
     <value>User In-Active</value>
