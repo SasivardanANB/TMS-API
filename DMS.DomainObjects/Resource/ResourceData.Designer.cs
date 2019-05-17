@@ -124,6 +124,15 @@ namespace DMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to NewPasswordMustbeDifferent.
+        /// </summary>
+        public static string NewPasswordMustbeDifferent {
+            get {
+                return ResourceManager.GetString("NewPasswordMustbeDifferent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to PasswordUpdated.
         /// </summary>
         public static string PasswordUpdated {

@@ -179,11 +179,21 @@ namespace DMS.DataGateway.Repositories
                         {
                             changePasswordRequest.NewPassword = Encryption.EncryptionLibrary.EncryptPassword(changePasswordRequest.NewPassword);
                         }
+                        if(userDetails.Password==changePasswordRequest.NewPassword)
+                        {
+                            userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                            userResponse.StatusCode = (int)HttpStatusCode.BadRequest;
+                            userResponse.StatusMessage = DomainObjects.Resource.ResourceData.NewPasswordMustbeDifferent;
+                        }
+                        else
+                        { 
                         userDetails.Password = changePasswordRequest.NewPassword;
                         context.SaveChanges();
                         userResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         userResponse.StatusCode = (int)HttpStatusCode.OK;
                         userResponse.StatusMessage = DomainObjects.Resource.ResourceData.PasswordUpdated;
+                        }
+
                     }
                     else
                     {

@@ -138,6 +138,9 @@
   <data name="LoginSuccess" xml:space="preserve">
     <value>Login Success</value>
   </data>
+  <data name="NewPasswordMustbeDifferent" xml:space="preserve">
+    <value>NewPasswordMustbeDifferent</value>
+  </data>
   <data name="PasswordUpdated" xml:space="preserve">
     <value>PasswordUpdated</value>
   </data>
