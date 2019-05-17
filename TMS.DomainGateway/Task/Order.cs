@@ -16,6 +16,8 @@ namespace TMS.DomainGateway.Task
         public abstract PackingSheetResponse CreateUpdatePackingSheet(PackingSheetRequest packingSheetRequest);
         public abstract OrderTrackResponse TrackOrder(int orderId);
         public abstract CommonResponse GetOrderIds();
-        public abstract DealerDetailsResponse GetDealers(int OrderId, string searchText);
+        public abstract DealerDetailsResponse GetDealers(int orderId, string searchText);
+
+        public abstract OrderResponse GetOrderDetails(int orderId);
     }
 }

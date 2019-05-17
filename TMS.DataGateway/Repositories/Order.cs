@@ -825,7 +825,7 @@ namespace TMS.DataGateway.Repositories
 
         }
 
-        public DealerDetailsResponse GetDealers(int OrderId, string searchText)
+        public DealerDetailsResponse GetDealers(int orderId, string searchText)
         {
             DealerDetailsResponse dealerDetailsResponse = new DealerDetailsResponse();
             try
@@ -839,7 +839,7 @@ namespace TMS.DataGateway.Repositories
                         delearData = (from orderHeader in context.OrderHeaders
                                       join orderDetails in context.OrderDetails on orderHeader.ID equals orderDetails.OrderHeaderID
                                       join opd in context.OrderPartnerDetails on orderDetails.ID equals opd.OrderDetailID
-                                      where orderHeader.ID == OrderId && opd.Partner.PartnerTypeID == 1
+                                      where orderHeader.ID == orderId && opd.Partner.PartnerTypeID == 1
                                       && opd.Partner.PartnerName.Contains(searchText)
                                       select new Domain.DealerDetails
                                       {
@@ -855,7 +855,7 @@ namespace TMS.DataGateway.Repositories
                         delearData = (from orderHeader in context.OrderHeaders
                                       join orderDetails in context.OrderDetails on orderHeader.ID equals orderDetails.OrderHeaderID
                                       join opd in context.OrderPartnerDetails on orderDetails.ID equals opd.OrderDetailID
-                                      where orderHeader.ID == OrderId && opd.Partner.PartnerTypeID == 1
+                                      where orderHeader.ID == orderId && opd.Partner.PartnerTypeID == 1
                                       select new Domain.DealerDetails
                                       {
                                           DealerId = opd.PartnerID,
@@ -894,6 +894,69 @@ namespace TMS.DataGateway.Repositories
                 dealerDetailsResponse.StatusMessage = ex.Message;
             }
             return dealerDetailsResponse;
+
+        }
+
+        public OrderResponse GetOrderDetails(int orderId)
+        {
+            OrderResponse orderResponse = new OrderResponse();
+            try
+            {
+                using (var context = new Data.TMSDBContext())
+                {
+
+                    var orderData = (from oH in context.OrderHeaders
+                                     where oH.ID == orderId
+                                     select new Domain.Order
+                                     {
+                                         ID=oH.ID,
+                                         ActualShipment=oH.ActualShipmentDate,
+                                         ActualShipmentDate=oH.ActualShipmentDate.ToString(),
+                                         BusinessArea=oH.BusinessArea.BusinessAreaDescription,
+                                         BusinessAreaId=oH.BusinessAreaId,
+                                         DriverName=oH.DriverName,
+                                         DriverNo=oH.DriverNo,
+                                         EstimationShipmentDate=oH.EstimationShipmentDate.ToString(),
+                                         FleetType=oH.FleetType.ID,
+                                         Harga=oH.Harga,
+                                         IsActive=oH.IsActive,
+                                         LegecyOrderNo=oH.LegecyOrderNo,
+                                         OrderDate=oH.OrderDate,
+                                         OrderNo=oH.OrderNo,
+                                         OrderShipmentStatus=oH.OrderStatusID,
+
+                                     }).ToList();
+
+
+                    if (orderData != null)
+                    {
+                        //orderResponse.NumberOfRecords = delearData.Count;
+                        orderResponse.Data = orderData;
+                        orderResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        orderResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                        orderResponse.StatusCode = (int)HttpStatusCode.OK;
+                    }
+                    else
+                    {
+                        orderResponse.NumberOfRecords = 0;
+                        orderResponse.Data = null;
+                        orderResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        orderResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                        orderResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                    }
+
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+                orderResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                orderResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                orderResponse.StatusMessage = ex.Message;
+            }
+            return orderResponse;
 
         }
     }

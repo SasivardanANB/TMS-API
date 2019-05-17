@@ -144,11 +144,20 @@ namespace TMS.API.Controllers
 
         [Route("getdealers")]
         [AllowAnonymous, HttpGet]
-        public IHttpActionResult GetDealers(int OrderId ,string searchText = "")
+        public IHttpActionResult GetDealers(int orderId, string searchText = "")
         {
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
-            DealerDetailsResponse dealerDetailsResponse = orderTask.GetDealers(OrderId, searchText);
+            DealerDetailsResponse dealerDetailsResponse = orderTask.GetDealers(orderId, searchText);
             return Ok(dealerDetailsResponse);
+        }
+
+        [Route("getorderdetails")]
+        [AllowAnonymous, HttpGet]
+        public IHttpActionResult GetOrderDetails(int orderId)
+        {
+            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            OrderResponse orderResponse = orderTask.GetOrderDetails(orderId);
+            return Ok(orderResponse);
         }
 
     }

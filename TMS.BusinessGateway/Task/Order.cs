@@ -63,10 +63,16 @@ namespace TMS.BusinessGateway.Task
             return commonResponse;
         }
 
-        public override DealerDetailsResponse GetDealers(int OrderId, string searchText)
+        public override DealerDetailsResponse GetDealers(int orderId, string searchText)
         {
-            DealerDetailsResponse dealerDetailsResponse = _orderRepository.GetDealers(OrderId, searchText);
+            DealerDetailsResponse dealerDetailsResponse = _orderRepository.GetDealers(orderId, searchText);
             return dealerDetailsResponse;
+        }
+
+        public override OrderResponse GetOrderDetails(int orderId)
+        {
+            OrderResponse orderResponse = _orderRepository.GetOrderDetails(orderId);
+            return orderResponse;
         }
 
     }
