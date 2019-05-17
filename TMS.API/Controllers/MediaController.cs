@@ -63,7 +63,7 @@ namespace TMS.API.Controllers
                 return Ok(responseDataForFileUpload);
             }
 
-            [HttpPost, Route("downloadfile")]
+            [AllowAnonymous, HttpGet, Route("downloadfile")]
             public async Task<HttpResponseMessage> Get(string fileGuid)
             {
                 try
@@ -84,11 +84,7 @@ namespace TMS.API.Controllers
                     message.Content = new StreamContent(blobStream);
                     message.Content.Headers.ContentLength = Blob.Properties.Length;
                     message.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(Blob.Properties.ContentType);
-                    message.Content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("attachment")
-                    {
-                        FileName = "{MediaFile.jpg}",
-                        Size = Blob.Properties.Length
-                    };
+                    message.Content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("inline");
                     return message;
                 }
                 catch (Exception ex)

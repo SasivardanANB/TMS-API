@@ -422,7 +422,7 @@ namespace TMS.DataGateway.Repositories
                                 {
                                     Data.PackingSheet packingSheetRequest = new Data.PackingSheet()
                                     {
-                                       // OrderDetailID = orderDetail.ID,
+                                        // OrderDetailID = orderDetail.ID,
                                         PackingSheetNo = packinSheet,
                                         CreatedBy = request.CreatedBy,
                                         CreatedTime = DateTime.Now,
@@ -689,6 +689,23 @@ namespace TMS.DataGateway.Repositories
         public OrderTrackResponse TrackOrder(int orderId)
         {
             OrderTrackResponse orderTrackResponse = new OrderTrackResponse();
+            try
+            {
+                using (var context = new Data.TMSDBContext())
+                {
+                    var sources = (from od in context.OrderDetails
+                                   select new
+                                   {
+                                   });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+                orderTrackResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                orderTrackResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                orderTrackResponse.StatusMessage = ex.Message;
+            }
 
             return orderTrackResponse;
         }
@@ -728,17 +745,17 @@ namespace TMS.DataGateway.Repositories
             {
                 using (var context = new Data.TMSDBContext())
                 {
-                    foreach(var packingSheet in packingSheetRequest.Requests)
+                    foreach (var packingSheet in packingSheetRequest.Requests)
                     {
                         var orderDetailsData = context.OrderDetails.Where(x => x.ID == packingSheet.OrderDetailId).FirstOrDefault();
-                        if(orderDetailsData != null)
+                        if (orderDetailsData != null)
                         {
                             orderDetailsData.ShippingListNo = packingSheet.ShippingListNo;
                             orderDetailsData.TotalCollie = packingSheet.Collie;
                             orderDetailsData.Katerangan = packingSheet.Katerangan;
                             // context.SaveChanges();
-                            
-                            if(packingSheet.PackingSheetNumbers.Count > 0 )
+
+                            if (packingSheet.PackingSheetNumbers.Count > 0)
                             {
                                 foreach (var item in packingSheet.PackingSheetNumbers)
                                 {
@@ -752,11 +769,11 @@ namespace TMS.DataGateway.Repositories
                                         LastModifiedTime = null,
                                         ShippingListNo = packingSheet.ShippingListNo
 
-                                };
+                                    };
 
                                     context.PackingSheets.Add(packingSheetData);
                                     context.SaveChanges();
-                                } 
+                                }
                             }
                         }
                         //packingSheetRequest.Requests = mapper.Map<List<DataModel.Role>, List<Domain.Role>>(roles);

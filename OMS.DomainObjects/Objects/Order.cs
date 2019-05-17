@@ -49,16 +49,16 @@ namespace OMS.DomainObjects.Objects
         public decimal OrderWeight { get; set; }
         public string OrderWeightUM { get; set; }
         [Required]
-        [RegularExpression(@"(((0|1)[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/((19|20)\d\d))$", ErrorMessage = "Invalid date format.")]
+        [RegularExpression(@"(((0|1)[0-9]|2[0-9]|3[0-1])\.(0[1-9]|1[0-2])\.((19|20)\d\d))$", ErrorMessage = "Invalid date format.")]
         public string EstimationShipmentDate { get; set; }
         [Required]
-        [RegularExpression(@"^(0[0-9]|1[0-9]|2[0-3]|[0-9]):[0-5][0-9]$", ErrorMessage = "Invalid time format.")]
+        [RegularExpression(@"^(0[0-9]|1[0-9]|2[0-3]|[0-9])\:[0-5][0-9]$", ErrorMessage = "Invalid time format.")]
         public string EstimationShipmentTime { get; set; }
         [Required]
-        [RegularExpression(@"(((0|1)[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/((19|20)\d\d))$", ErrorMessage = "Invalid date format.")]
+        [RegularExpression(@"(((0|1)[0-9]|2[0-9]|3[0-1])\.(0[1-9]|1[0-2])\.((19|20)\d\d))$", ErrorMessage = "Invalid date format.")]
         public string ActualShipmentDate { get; set; }
         [Required]
-        [RegularExpression(@"^(0[0-9]|1[0-9]|2[0-3]|[0-9]):[0-5][0-9]$", ErrorMessage = "Invalid time format.")]
+        [RegularExpression(@"^(0[0-9]|1[0-9]|2[0-3]|[0-9])\:[0-5][0-9]$", ErrorMessage = "Invalid time format.")]
         public string ActualShipmentTime { get; set; }
         public string Sender { get; set; }
         public string Receiver { get; set; }
