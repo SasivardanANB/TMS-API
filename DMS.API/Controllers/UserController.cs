@@ -31,6 +31,20 @@ namespace DMS.API.Controllers
             UserResponse userData = userTask.LoginUser(login);
             return Ok(userData);
         }
+      
+        [Route("getprofiledetails")]
+        [HttpPost]
+        public IHttpActionResult GetProfileDetails(int userID)
+        {
+            if (userID <= 0)
+            {
+                return Ok("Invalid userID");
+            }
+            IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
+            UserResponse userResponse = userTask.GetProfileDetails(userID);
+            return Ok(userResponse);
+        }
+
 
         [Route("createupdateuser")]
         [AllowAnonymous, HttpPost]
@@ -41,6 +55,35 @@ namespace DMS.API.Controllers
 
             IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
             UserResponse userResponse = userTask.CreateUpdateUser(user);
+            return Ok(userResponse);
+        }
+        [Route("changepassword")]
+        public IHttpActionResult ChangePassword(ChangePasswordRequest changePasswordRequest)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
+            UserResponse userResponse = userTask.ChangePassword(changePasswordRequest);
+            return Ok(userResponse);
+        }
+        [Route("forgotpassword")]
+        public IHttpActionResult ForgotPassword(ForgotPasswordRequest forgotPasswordRequest)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
+            UserResponse userResponse = userTask.ForgotPassword(forgotPasswordRequest);
+            return Ok(userResponse);
+        }
+        [Route("resetpassword")]
+        public IHttpActionResult ResetPassword(ChangePasswordRequest changePasswordRequest)
+        {
+            ModelState.Remove("changePasswordRequest.OldPassword");
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
+            UserResponse userResponse = userTask.ChangePassword(changePasswordRequest);
             return Ok(userResponse);
         }
     }

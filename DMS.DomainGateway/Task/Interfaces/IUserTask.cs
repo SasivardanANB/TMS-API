@@ -12,6 +12,9 @@ namespace DMS.DomainGateway.Task.Interfaces
     {
         UserResponse LoginUser(LoginRequest login);
         UserResponse CreateUpdateUser(UserRequest user);
+        UserResponse ChangePassword(ChangePasswordRequest changePasswordRequest);
+        UserResponse ForgotPassword(ForgotPasswordRequest forgotPasswordRequest);
+        UserResponse GetProfileDetails(int userID);
 
     }
 }

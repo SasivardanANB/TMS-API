@@ -5,7 +5,9 @@ using DMS.DomainObjects.Request;
 using DMS.DomainObjects.Response;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -38,5 +40,23 @@ namespace DMS.BusinessGateway.Task
             //If needed write business logic here for response.
             return userData;
         }
+        public override UserResponse ChangePassword(ChangePasswordRequest changePasswordRequest)
+        {
+            UserResponse userData = _userRepository.ChangePassword(changePasswordRequest);
+            return userData;
+        }
+        public override UserResponse ForgotPassword(ForgotPasswordRequest forgotPasswordRequest)
+        {
+            UserResponse userData = _userRepository.ForgotPassword(forgotPasswordRequest);
+            return userData;
+        }
+        
+      
+        public override UserResponse GetProfileDetails(int userID)
+        {
+            UserResponse userData = _userRepository.GetProfileDetails(userID);
+            return userData;
+        }
+
     }
 }

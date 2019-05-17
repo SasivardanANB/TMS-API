@@ -12,9 +12,9 @@ namespace OMS.DomainObjects.Objects
         public string BusinessAreaCode { get; set; }
         public string BusinessAreaDescription { get; set; }
         //public CompanyCode CompanyCode { get; set; }
-        public int CompanyCodeID { get; set; }
+        public int? CompanyCodeID { get; set; }
         public string Address { get; set; }
         //public PostalCode PostalCode { get; set; }
-        public int PostalCodeID { get; set; }
+        public int? PostalCodeID { get; set; }
     }
 }

@@ -124,6 +124,24 @@ namespace DMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to NewPasswordMustbeDifferent.
+        /// </summary>
+        public static string NewPasswordMustbeDifferent {
+            get {
+                return ResourceManager.GetString("NewPasswordMustbeDifferent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PasswordUpdated.
+        /// </summary>
+        public static string PasswordUpdated {
+            get {
+                return ResourceManager.GetString("PasswordUpdated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Success.
         /// </summary>
         public static string Success {
@@ -138,6 +156,15 @@ namespace DMS.DomainObjects.Resource {
         public static string TripStatusUpdated {
             get {
                 return ResourceManager.GetString("TripStatusUpdated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UserDetailsNotFound.
+        /// </summary>
+        public static string UserDetailsNotFound {
+            get {
+                return ResourceManager.GetString("UserDetailsNotFound", resourceCulture);
             }
         }
         

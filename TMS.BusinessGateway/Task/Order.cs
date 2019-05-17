@@ -52,5 +52,29 @@ namespace TMS.BusinessGateway.Task
             //If needed write business logic here for response.
             return orderTrackResponse;
         }
+
+        public override CommonResponse GetOrderIds()
+        {
+            //If needed write business logic here for request.
+
+            CommonResponse commonResponse  = _orderRepository.GetOrderIds();
+
+            //If needed write business logic here for response.
+            return commonResponse;
+        }
+
+        public override DealerDetailsResponse GetDealers(int orderId, string searchText)
+        {
+            DealerDetailsResponse dealerDetailsResponse = _orderRepository.GetDealers(orderId, searchText);
+            return dealerDetailsResponse;
+        }
+
+        public override OrderResponse GetOrderDetails(int orderId)
+        {
+            OrderResponse orderResponse = _orderRepository.GetOrderDetails(orderId);
+            return orderResponse;
+        }
+
     }
+
 }
