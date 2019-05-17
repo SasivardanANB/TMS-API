@@ -283,7 +283,7 @@ namespace DMS.DataGateway.Repositories
                     {
                         userResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         userResponse.StatusCode = (int)HttpStatusCode.NotFound;
-                        userResponse.StatusMessage = DomainObjects.Resource.ResourceData.NotFound;
+                        userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserDetailsNotFound;
                     }
                 }
             }
