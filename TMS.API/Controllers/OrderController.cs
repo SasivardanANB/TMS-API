@@ -132,5 +132,24 @@ namespace TMS.API.Controllers
             OrderTrackResponse orderTrackResponse = orderTask.TrackOrder(orderId);
             return Ok(orderTrackResponse);
         }
+
+        [Route("getorderids")]
+        [AllowAnonymous, HttpGet]
+        public IHttpActionResult GetOrderIds()
+        {
+            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            CommonResponse commonResponse = orderTask.GetOrderIds();
+            return Ok(commonResponse);
+        }
+
+        [Route("getdealers")]
+        [AllowAnonymous, HttpGet]
+        public IHttpActionResult GetDealers(int OrderId ,string searchText = "")
+        {
+            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            DealerDetailsResponse dealerDetailsResponse = orderTask.GetDealers(OrderId, searchText);
+            return Ok(dealerDetailsResponse);
+        }
+
     }
 }
