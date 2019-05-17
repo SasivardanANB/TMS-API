@@ -37,12 +37,13 @@ namespace TMS.DataGateway.Repositories
                         try
                         {
 
-                            DateTime estimationShipmentDate = DateTime.ParseExact(order.EstimationShipmentDate, "dd/MM/yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(order.EstimationShipmentTime);
-                            DateTime actualShipmentDate = DateTime.ParseExact(order.ActualShipmentDate, "dd/MM/yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(order.ActualShipmentTime);
+                            DateTime estimationShipmentDate = DateTime.ParseExact(order.EstimationShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(order.EstimationShipmentTime);
+                            DateTime actualShipmentDate = DateTime.ParseExact(order.ActualShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(order.ActualShipmentTime);
 
                             #region Step 1: Business Area
 
                             int businessAreaId = 0;
+                            string businessAreaCode = "";
                             if (request.UploadType == 1) // Upload via Excel
                             {
                                 // Check if We have Business Area in Master data
@@ -50,10 +51,14 @@ namespace TMS.DataGateway.Repositories
                                                     where ba.BusinessAreaCode == order.BusinessArea
                                                     select new Domain.BusinessArea()
                                                     {
-                                                        ID = ba.ID
+                                                        ID = ba.ID,
+                                                        BusinessAreaCode = ba.BusinessAreaCode
                                                     }).FirstOrDefault();
                                 if (businessArea != null)
+                                {
                                     businessAreaId = businessArea.ID;
+                                    businessAreaCode = businessArea.BusinessAreaCode;
+                                }
                                 else
                                 {
                                     Data.BusinessArea businessAreaRequest = new Data.BusinessArea()
@@ -67,11 +72,21 @@ namespace TMS.DataGateway.Repositories
                                     context.BusinessAreas.Add(businessAreaRequest);
                                     context.SaveChanges();
                                     businessAreaId = businessAreaRequest.ID;
+                                    businessAreaCode = businessAreaRequest.BusinessAreaCode;
                                 }
                             }
                             else if (request.UploadType == 2) // Upload via UI
                             {
-                                businessAreaId = order.BusinessAreaId;
+                                var businessArea = (from ba in context.BusinessAreas
+                                                    where ba.ID == order.BusinessAreaId
+                                                    select new Domain.BusinessArea()
+                                                    {
+                                                        ID = ba.ID,
+                                                        BusinessAreaCode = ba.BusinessAreaCode
+                                                    }).FirstOrDefault();
+
+                                businessAreaId = businessArea.ID;
+                                businessAreaCode = businessArea.BusinessAreaCode;
                             }
 
                             #endregion
@@ -230,7 +245,7 @@ namespace TMS.DataGateway.Repositories
                                 Data.OrderHeader orderHeader = new Data.OrderHeader()
                                 {
                                     LegecyOrderNo = order.OrderNo,
-                                    OrderNo = GetOrderNumber(businessAreaId, order.BusinessArea, "TMS", DateTime.Now.Year),
+                                    OrderNo = GetOrderNumber(businessAreaId, businessAreaCode, "TMS", DateTime.Now.Year),
                                     OrderType = order.OrderType,
                                     FleetTypeID = order.FleetType,
                                     VehicleShipment = order.VehicleShipmentType,
@@ -926,21 +941,21 @@ namespace TMS.DataGateway.Repositories
                                      where oH.ID == orderId
                                      select new Domain.Order
                                      {
-                                         ID=oH.ID,
-                                         ActualShipment=oH.ActualShipmentDate,
-                                         ActualShipmentDate=oH.ActualShipmentDate.ToString(),
-                                         BusinessArea=oH.BusinessArea.BusinessAreaDescription,
-                                         BusinessAreaId=oH.BusinessAreaId,
-                                         DriverName=oH.DriverName,
-                                         DriverNo=oH.DriverNo,
-                                         EstimationShipmentDate=oH.EstimationShipmentDate.ToString(),
-                                         FleetType=oH.FleetType.ID,
-                                         Harga=oH.Harga,
-                                         IsActive=oH.IsActive,
-                                         LegecyOrderNo=oH.LegecyOrderNo,
-                                         OrderDate=oH.OrderDate,
-                                         OrderNo=oH.OrderNo,
-                                         OrderShipmentStatus=oH.OrderStatusID,
+                                         ID = oH.ID,
+                                         ActualShipment = oH.ActualShipmentDate,
+                                         ActualShipmentDate = oH.ActualShipmentDate.ToString(),
+                                         BusinessArea = oH.BusinessArea.BusinessAreaDescription,
+                                         BusinessAreaId = oH.BusinessAreaId,
+                                         DriverName = oH.DriverName,
+                                         DriverNo = oH.DriverNo,
+                                         EstimationShipmentDate = oH.EstimationShipmentDate.ToString(),
+                                         FleetType = oH.FleetType.ID,
+                                         Harga = oH.Harga,
+                                         IsActive = oH.IsActive,
+                                         LegecyOrderNo = oH.LegecyOrderNo,
+                                         OrderDate = oH.OrderDate,
+                                         OrderNo = oH.OrderNo,
+                                         OrderShipmentStatus = oH.OrderStatusID,
 
                                      }).ToList();
 

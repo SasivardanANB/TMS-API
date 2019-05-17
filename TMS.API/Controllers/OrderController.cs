@@ -72,6 +72,8 @@ namespace TMS.API.Controllers
                 }
                 else if (order.Requests[i].OrderType == 2)//For Outbound
                 {
+                    ModelState.Remove("order.Requests[" + i + "].BusinessArea");
+
                     if (string.IsNullOrEmpty(order.Requests[i].ShipmentSAPNo))
                         ModelState.AddModelError($"{nameof(order)}.{nameof(order.Requests)}.[{i}].{nameof(Order.ShipmentSAPNo)}", "Invalid Shipment SAP Number");
                 }
@@ -92,7 +94,7 @@ namespace TMS.API.Controllers
                 {
                     Error errorData = new Error()
                     {
-                        ErrorMessage = ModelState.Keys.ToList<string>()[i].Replace("order.Requests[", "Row Number[") + " : " + ModelState.Values.ToList<ModelState>()[i].Errors[0].ErrorMessage + " : " + ModelState.Values.ToList<ModelState>()[i].Errors[0].Exception.Message
+                        ErrorMessage = ModelState.Keys.ToList<string>()[i].Replace("request.Requests[", "Row Number[") + " : " + ModelState.Values.ToList<ModelState>()[i].Errors[0].ErrorMessage
                     };
 
                     errorResponse.Data.Add(errorData);
