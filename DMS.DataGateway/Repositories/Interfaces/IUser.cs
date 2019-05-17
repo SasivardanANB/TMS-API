@@ -15,5 +15,6 @@ namespace DMS.DataGateway.Repositories.Iterfaces
         UserResponse CreateUpdateUser(UserRequest user);
         UserResponse ChangePassword(ChangePasswordRequest changePasswordRequest);
         UserResponse ForgotPassword(ForgotPasswordRequest forgotPasswordRequest);
+        UserResponse GetProfileDetails(int userID);
     }
 }

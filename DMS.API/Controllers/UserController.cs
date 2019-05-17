@@ -31,6 +31,20 @@ namespace DMS.API.Controllers
             UserResponse userData = userTask.LoginUser(login);
             return Ok(userData);
         }
+      
+        [Route("getprofiledetails")]
+        [HttpPost]
+        public IHttpActionResult GetProfileDetails(int userID)
+        {
+            if (userID <= 0)
+            {
+                return Ok("Invalid userID");
+            }
+            IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
+            UserResponse userResponse = userTask.GetProfileDetails(userID);
+            return Ok(userResponse);
+        }
+
 
         [Route("createupdateuser")]
         [AllowAnonymous, HttpPost]

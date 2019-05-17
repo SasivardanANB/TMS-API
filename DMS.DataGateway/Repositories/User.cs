@@ -254,6 +254,48 @@ namespace DMS.DataGateway.Repositories
             }
             return userResponse;
         }
+
+        public UserResponse GetProfileDetails(int userID)
+        {
+            UserResponse userResponse = new UserResponse();
+            try
+            {
+                using (var context = new DMSDBContext())
+                {
+                    var userDetails = context.Users.Where(i => i.ID == userID && i.IsActive).Select(user=>new Domain.User {
+                        ID=user.ID,
+                        UserName=user.UserName,
+                        FirstName=user.FirstName,
+                        LastName=user.LastName,
+                        Email=user.Email,
+                       PhoneNumber=user.PhoneNumber
+                    }).FirstOrDefault();
+                    if (userDetails != null)
+                    {
+                        List<Domain.User> users = new List<Domain.User>();
+                        users.Add(userDetails);
+                        userResponse.Data = users;
+                        userResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        userResponse.StatusCode = (int)HttpStatusCode.OK;
+                        userResponse.StatusMessage= DomainObjects.Resource.ResourceData.Success; 
+                    }
+                    else
+                    {
+                        userResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        userResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                        userResponse.StatusMessage = DomainObjects.Resource.ResourceData.NotFound;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+                userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                userResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                userResponse.StatusMessage = ex.Message;
+            }
+            return userResponse;
+        }
     }
     
 }

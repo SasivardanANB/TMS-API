@@ -8,10 +8,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace DMS.DomainObjects.Resource {
+namespace DMS.DomainObjects.Resource
+{
     using System;
-    
-    
+
+
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -22,107 +23,129 @@ namespace DMS.DomainObjects.Resource {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class ResourceData {
-        
+    public class ResourceData
+    {
+
         private static global::System.Resources.ResourceManager resourceMan;
-        
+
         private static global::System.Globalization.CultureInfo resourceCulture;
-        
+
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal ResourceData() {
+        internal ResourceData()
+        {
         }
-        
+
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Resources.ResourceManager ResourceManager {
-            get {
-                if (object.ReferenceEquals(resourceMan, null)) {
+        public static global::System.Resources.ResourceManager ResourceManager
+        {
+            get
+            {
+                if (object.ReferenceEquals(resourceMan, null))
+                {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("DMS.DomainObjects.Resource.ResourceData", typeof(ResourceData).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
             }
         }
-        
+
         /// <summary>
         ///   Overrides the current thread's CurrentUICulture property for all
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Globalization.CultureInfo Culture {
-            get {
+        public static global::System.Globalization.CultureInfo Culture
+        {
+            get
+            {
                 return resourceCulture;
             }
-            set {
+            set
+            {
                 resourceCulture = value;
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Data Base Exception.
         /// </summary>
-        public static string DataBaseException {
-            get {
+        public static string DataBaseException
+        {
+            get
+            {
                 return ResourceManager.GetString("DataBaseException", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Failure.
         /// </summary>
-        public static string Failure {
-            get {
+        public static string Failure
+        {
+            get
+            {
                 return ResourceManager.GetString("Failure", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to An error occured while uploading the file.
         /// </summary>
-        public static string FileUploadError {
-            get {
+        public static string FileUploadError
+        {
+            get
+            {
                 return ResourceManager.GetString("FileUploadError", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to File uploaded successfully.
         /// </summary>
-        public static string FileUploadSuccess {
-            get {
+        public static string FileUploadSuccess
+        {
+            get
+            {
                 return ResourceManager.GetString("FileUploadSuccess", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Only jpeg and png are supported.
         /// </summary>
-        public static string InvalidFileFormat {
-            get {
+        public static string InvalidFileFormat
+        {
+            get
+            {
                 return ResourceManager.GetString("InvalidFileFormat", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Login Fail.
         /// </summary>
-        public static string LoginFail {
-            get {
+        public static string LoginFail
+        {
+            get
+            {
                 return ResourceManager.GetString("LoginFail", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Login Success.
         /// </summary>
-        public static string LoginSuccess {
-            get {
+        public static string LoginSuccess
+        {
+            get
+            {
                 return ResourceManager.GetString("LoginSuccess", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to PasswordUpdated.
         /// </summary>
@@ -135,21 +158,25 @@ namespace DMS.DomainObjects.Resource {
         /// <summary>
         ///   Looks up a localized string similar to Success.
         /// </summary>
-        public static string Success {
-            get {
+        public static string Success
+        {
+            get
+            {
                 return ResourceManager.GetString("Success", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Trip Status Updated.
         /// </summary>
-        public static string TripStatusUpdated {
-            get {
+        public static string TripStatusUpdated
+        {
+            get
+            {
                 return ResourceManager.GetString("TripStatusUpdated", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to UserDetailsNotFound.
         /// </summary>
@@ -162,27 +189,54 @@ namespace DMS.DomainObjects.Resource {
         /// <summary>
         ///   Looks up a localized string similar to User In-Active.
         /// </summary>
-        public static string UserInActive {
-            get {
+        public static string UserInActive
+        {
+            get
+            {
                 return ResourceManager.GetString("UserInActive", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Users Created.
         /// </summary>
-        public static string UsersCreated {
-            get {
+        public static string UsersCreated
+        {
+            get
+            {
                 return ResourceManager.GetString("UsersCreated", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Users Updated.
         /// </summary>
-        public static string UsersUpdated {
-            get {
+        public static string UsersUpdated
+        {
+            get
+            {
                 return ResourceManager.GetString("UsersUpdated", resourceCulture);
+            }
+        }
+        public static string PasswordUpdated
+        {
+            get
+            {
+                return ResourceManager.GetString("PasswordUpdated", resourceCulture);
+            }
+        }
+        public static string PasswordIsNotUpdated
+        {
+            get
+            {
+                return ResourceManager.GetString("PasswordIsNotUpdated", resourceCulture);
+            }
+        }
+        public static string NotFound
+        {
+            get
+            {
+                return ResourceManager.GetString("NotFound", resourceCulture);
             }
         }
     }

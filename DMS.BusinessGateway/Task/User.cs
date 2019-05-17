@@ -5,7 +5,9 @@ using DMS.DomainObjects.Request;
 using DMS.DomainObjects.Response;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -49,5 +51,12 @@ namespace DMS.BusinessGateway.Task
             return userData;
         }
         
+      
+        public override UserResponse GetProfileDetails(int userID)
+        {
+            UserResponse userData = _userRepository.GetProfileDetails(userID);
+            return userData;
+        }
+
     }
 }

@@ -105,7 +105,6 @@ namespace TMS.DataGateway.Repositories
             }
             return VehicleResponse;
         }
-
         public VehicleResponse GetVehicles(VehicleRequest vehicleRequest)
         {
             VehicleResponse vehicleResponse = new VehicleResponse();
@@ -164,9 +163,9 @@ namespace TMS.DataGateway.Repositories
                         vehiclesList = vehiclesList.Where(s => s.MaxDimension.Contains(vehicleFilter.MaxDimension)).ToList();
                     }
 
-                    if (!String.IsNullOrEmpty(vehicleFilter.MaxWeight.ToString()))
+                    if (!String.IsNullOrEmpty(vehicleFilter.MaxWeight.ToString()) && vehicleFilter.MaxWeight > 0)
                     {
-                        vehiclesList = vehiclesList.Where(s => s.MaxWeight.ToString().Contains(vehicleFilter.MaxWeight.ToString())).ToList();
+                        vehiclesList = vehiclesList.Where(s => s.MaxWeight == vehicleFilter.MaxWeight).ToList();
                     }
 
                     if (!String.IsNullOrEmpty(vehicleFilter.PoolName))

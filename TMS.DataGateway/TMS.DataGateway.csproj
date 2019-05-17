@@ -246,9 +246,17 @@
     <Compile Include="Migrations\201905141139452_TMSMasterDataChanges.Designer.cs">
       <DependentUpon>201905141139452_TMSMasterDataChanges.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201905141152468_TMSMasterDataChanges1.cs" />
-    <Compile Include="Migrations\201905141152468_TMSMasterDataChanges1.Designer.cs">
-      <DependentUpon>201905141152468_TMSMasterDataChanges1.cs</DependentUpon>
+    <Compile Include="Migrations\201905161010327_orderdeatialcahnges.cs" />
+    <Compile Include="Migrations\201905161010327_orderdeatialcahnges.Designer.cs">
+      <DependentUpon>201905161010327_orderdeatialcahnges.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201905161014420_tms_v1.0_BusinessArea.cs" />
+    <Compile Include="Migrations\201905161014420_tms_v1.0_BusinessArea.Designer.cs">
+      <DependentUpon>201905161014420_tms_v1.0_BusinessArea.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201905161135344_tms_v1.0_Order_PackingList.cs" />
+    <Compile Include="Migrations\201905161135344_tms_v1.0_Order_PackingList.Designer.cs">
+      <DependentUpon>201905161135344_tms_v1.0_Order_PackingList.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -344,8 +352,14 @@
     <EmbeddedResource Include="Migrations\201905141139452_TMSMasterDataChanges.resx">
       <DependentUpon>201905141139452_TMSMasterDataChanges.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201905141152468_TMSMasterDataChanges1.resx">
-      <DependentUpon>201905141152468_TMSMasterDataChanges1.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201905161010327_orderdeatialcahnges.resx">
+      <DependentUpon>201905161010327_orderdeatialcahnges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905161014420_tms_v1.0_BusinessArea.resx">
+      <DependentUpon>201905161014420_tms_v1.0_BusinessArea.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905161135344_tms_v1.0_Order_PackingList.resx">
+      <DependentUpon>201905161135344_tms_v1.0_Order_PackingList.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SeedData\Activities.csv" />
     <EmbeddedResource Include="SeedData\applications.csv" />
