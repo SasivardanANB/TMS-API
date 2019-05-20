@@ -63,6 +63,7 @@
     <Compile Include="Objects\PartnerSearch.cs" />
     <Compile Include="Objects\PartnerDeatils.cs" />
     <Compile Include="Objects\PackingSheet.cs" />
+    <Compile Include="Objects\StopPoints.cs" />
     <Compile Include="Objects\SubDistrictDeatils.cs" />
     <Compile Include="Objects\Pool.cs" />
     <Compile Include="Objects\Region.cs" />
@@ -106,6 +107,7 @@
     <Compile Include="Response\DashboardResponse.cs" />
     <Compile Include="Response\DriverResponse.cs" />
     <Compile Include="Response\ErrorResponse.cs" />
+    <Compile Include="Response\OrderDetailsResponse.cs" />
     <Compile Include="Response\OrderSearchResponse.cs" />
     <Compile Include="Response\OrderResponse.cs" />
     <Compile Include="Response\PackingSheetResponse.cs" />

@@ -158,8 +158,8 @@ namespace TMS.API.Controllers
         public IHttpActionResult GetOrderDetails(int orderId)
         {
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
-            OrderResponse orderResponse = orderTask.GetOrderDetails(orderId);
-            return Ok(orderResponse);
+            OrderDetailsResponse orderDetailsResponse = orderTask.GetOrderDetails(orderId);
+            return Ok(orderDetailsResponse);
         }
 
     }

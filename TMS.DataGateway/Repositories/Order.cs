@@ -929,9 +929,9 @@ namespace TMS.DataGateway.Repositories
 
         }
 
-        public OrderResponse GetOrderDetails(int orderId)
+        public OrderDetailsResponse GetOrderDetails(int orderId)
         {
-            OrderResponse orderResponse = new OrderResponse();
+            OrderDetailsResponse orderDetailsResponse = new OrderDetailsResponse();
             try
             {
                 using (var context = new Data.TMSDBContext())
@@ -939,10 +939,10 @@ namespace TMS.DataGateway.Repositories
 
                     var orderData = (from oH in context.OrderHeaders
                                      where oH.ID == orderId
-                                     select new Domain.Order
+                                     select new OrderDetailsResponse
                                      {
                                          ID = oH.ID,
-                                         ActualShipment = oH.ActualShipmentDate,
+                                         //ActualShipment = oH.ActualShipmentDate,
                                          ActualShipmentDate = oH.ActualShipmentDate.ToString(),
                                          BusinessArea = oH.BusinessArea.BusinessAreaDescription,
                                          BusinessAreaId = oH.BusinessAreaId,
@@ -953,28 +953,82 @@ namespace TMS.DataGateway.Repositories
                                          Harga = oH.Harga,
                                          IsActive = oH.IsActive,
                                          LegecyOrderNo = oH.LegecyOrderNo,
-                                         OrderDate = oH.OrderDate,
+                                         //OrderDate = oH.OrderDate,
                                          OrderNo = oH.OrderNo,
                                          OrderShipmentStatus = oH.OrderStatusID,
+                                         OrderType=oH.OrderType
 
-                                     }).ToList();
+                                     }).FirstOrDefault();
 
 
                     if (orderData != null)
                     {
+
+                        var orderPartnerData = (from orderPartnerDetails in context.OrderPartnerDetails
+                                                join orderDetailsData in context.OrderDetails on orderPartnerDetails.OrderDetailID equals orderDetailsData.ID
+                                                where orderDetailsData.OrderHeaderID == orderId
+                                                select new Domain.StopPoints
+                                                {
+                                                    ID = orderPartnerDetails.ID,
+                                                    Address = orderPartnerDetails.Partner.PartnerAddress,
+                                                    CityName = orderPartnerDetails.Partner.PostalCode.SubDistrict.City.CityDescription,
+                                                    ProvinceName = orderPartnerDetails.Partner.PostalCode.SubDistrict.City.Province.ProvinceDescription,
+                                                    SubDistrictName= orderPartnerDetails.Partner.PostalCode.SubDistrict.SubdistrictName,
+                                                    ActualShipmentDate=orderData.ActualShipmentDate,
+                                                    EstimationShipmentDate=orderData.EstimationShipmentDate,
+                                                    PartnerCode= orderPartnerDetails.Partner.PartnerNo,
+                                                    PartnerId= orderPartnerDetails.PartnerID,
+                                                    PartnerName= orderPartnerDetails.Partner.PartnerName,
+                                                    PeartnerType= orderPartnerDetails.Partner.PartnerTypeID,
+                                                    SequenceNo = orderDetailsData.SequenceNo
+
+                                                }
+                                                ).ToList();
+                        if(orderPartnerData.Count > 0)
+                        {
+                            int maxSeqNo = orderPartnerData.Max(x => x.SequenceNo);
+                            var transporter = (from data in orderPartnerData
+                                               where data.PeartnerType == 1 && data.SequenceNo== maxSeqNo
+                                               select data
+                                               ).FirstOrDefault();
+                            var source = (from data in orderPartnerData
+                                               where data.PeartnerType == 2 && data.SequenceNo == maxSeqNo
+                                               select data
+                                              ).FirstOrDefault();
+                            var destinations = (from data in orderPartnerData
+                                          where data.PeartnerType == 3 // && data.SequenceNo == maxSeqNo
+                                          select data
+                                              ).ToList();
+
+                            List<Domain.StopPoints> stopPoints = new List<Domain.StopPoints>();
+                            stopPoints.Add(source);
+                            if (destinations.Count > 0)
+                            {
+                                foreach (var item in destinations)
+                                {
+                                    stopPoints.Add(item);
+                                }
+                            }
+                           
+
+                            orderDetailsResponse = orderData;
+                            orderDetailsResponse.Transporter = transporter;
+                            orderDetailsResponse.SourceOrDestinations = stopPoints;
+
+                        }
+
+
                         //orderResponse.NumberOfRecords = delearData.Count;
-                        orderResponse.Data = orderData;
-                        orderResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                        orderResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
-                        orderResponse.StatusCode = (int)HttpStatusCode.OK;
+                        orderDetailsResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        orderDetailsResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                        orderDetailsResponse.StatusCode = (int)HttpStatusCode.OK;
                     }
                     else
                     {
-                        orderResponse.NumberOfRecords = 0;
-                        orderResponse.Data = null;
-                        orderResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                        orderResponse.StatusCode = (int)HttpStatusCode.NotFound;
-                        orderResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                        orderDetailsResponse.NumberOfRecords = 0;
+                        orderDetailsResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        orderDetailsResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                        orderDetailsResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
                     }
 
 
@@ -984,11 +1038,11 @@ namespace TMS.DataGateway.Repositories
             catch (Exception ex)
             {
                 _logger.Log(LogLevel.Error, ex);
-                orderResponse.Status = DomainObjects.Resource.ResourceData.Failure;
-                orderResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                orderResponse.StatusMessage = ex.Message;
+                orderDetailsResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                orderDetailsResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                orderDetailsResponse.StatusMessage = ex.Message;
             }
-            return orderResponse;
+            return orderDetailsResponse;
 
         }
     }

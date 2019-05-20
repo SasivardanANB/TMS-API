@@ -16,7 +16,7 @@ namespace TMS.DomainGateway.Task.Interfaces
         OrderTrackResponse TrackOrder(int orderId);
         CommonResponse GetOrderIds();
         DealerDetailsResponse GetDealers(int orderId, string searchText);
-        OrderResponse GetOrderDetails(int orderId);
+        OrderDetailsResponse GetOrderDetails(int orderId);
 
     }
 }
