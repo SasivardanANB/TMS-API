@@ -501,46 +501,40 @@ namespace TMS.DataGateway.Repositories
             {
                 Data = new List<Domain.OrderSearch>()
             };
+
             List<Domain.OrderSearch> orderList;
+
             try
             {
                 using (var context = new Data.TMSDBContext())
                 {
                     orderList = (from oh in context.OrderHeaders
+                                 join od in context.OrderDetails on oh.ID equals od.OrderHeaderID
+                                 join ps in context.PackingSheets on od.ShippingListNo equals ps.ShippingListNo into pks
+                                 from pksh in pks.DefaultIfEmpty()
+                                 where ((!String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.OrderNo == orderSearchRequest.GlobalSearch)
+                                        || (String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.OrderNo == oh.OrderNo))
+                                        ||
+                                        ((!String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.VehicleNo == orderSearchRequest.GlobalSearch)
+                                        || (String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.VehicleNo == oh.VehicleNo))
+                                 ||
+                                 ((orderSearchRequest.GlobalSearch != string.Empty && pksh.PackingSheetNo == orderSearchRequest.GlobalSearch)
+                                 || (orderSearchRequest.GlobalSearch == string.Empty && pksh.PackingSheetNo == pksh.PackingSheetNo))
+                                 
                                  select new Domain.OrderSearch
                                  {
                                      OrderId = oh.ID,
+                                     OrderType = oh.OrderType,
                                      OrderNumber = oh.OrderNo,
                                      VehicleType = oh.VehicleShipment,
                                      PoliceNumber = oh.VehicleNo,
-                                     OrderStatus = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusValue,
-                                     OrderType = oh.OrderType
-                                 }).ToList();
+                                     OrderStatus = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusValue
+                                 }).Distinct().ToList();
 
                     if (orderList != null && orderList.Count > 0)
                     {
                         foreach (var order in orderList)
                         {
-                            //Get Packing Sheet No
-                            var packingSheets = (from ps in context.PackingSheets
-                                                 join od in context.OrderDetails on ps.ShippingListNo equals od.ShippingListNo
-                                                 join oh in context.OrderHeaders on od.OrderHeaderID equals oh.ID
-                                                 where od.OrderHeaderID == order.OrderId
-                                                 select new
-                                                 {
-                                                     packingSheetNo = ps.PackingSheetNo
-                                                 }).ToList();
-                            if (packingSheets != null && packingSheets.Count > 0)
-                            {
-                                foreach (var packingSheet in packingSheets)
-                                {
-                                    if (string.IsNullOrEmpty(order.PackingSheetNumber))
-                                        order.PackingSheetNumber = packingSheet.packingSheetNo;
-                                    else
-                                        order.PackingSheetNumber += ", " + packingSheet.packingSheetNo;
-                                }
-                            }
-
                             var orderData = (from od in context.OrderDetails
                                              where od.OrderHeaderID == order.OrderId
                                              group od by new { od.ID, od.SequenceNo } into gp
@@ -549,6 +543,7 @@ namespace TMS.DataGateway.Repositories
                                                  OrderDetailId = gp.Key.ID,
                                                  SequenceNo = gp.Max(t => t.SequenceNo),
                                              }).FirstOrDefault();
+
                             if (orderData != null)
                             {
                                 var partnerData = (from op in context.OrderPartnerDetails
@@ -571,6 +566,7 @@ namespace TMS.DataGateway.Repositories
                                                         partnerTypeID = pd.partnerTypeID,
                                                         PartnerTypeCode = pt.PartnerTypeCode
                                                     }).ToList();
+
                                     if (partners != null && partners.Count > 0)
                                     {
                                         foreach (var partner in partners)
@@ -585,101 +581,174 @@ namespace TMS.DataGateway.Repositories
                                     }
                                 }
                             }
-                            //Add to List
-                            orderSearchResponse.Data.Add(order);
                         }
                     }
+
+                    //if (orderList != null && orderList.Count > 0)
+                    //{
+                    //    foreach (var order in orderList)
+                    //    {
+                    //        //Get Packing Sheet No
+                    //        var packingSheets = (from ps in context.PackingSheets
+                    //                             join od in context.OrderDetails on ps.ShippingListNo equals od.ShippingListNo
+                    //                             join oh in context.OrderHeaders on od.OrderHeaderID equals oh.ID
+                    //                             where od.OrderHeaderID == order.OrderId
+                    //                             select new
+                    //                             {
+                    //                                 packingSheetNo = ps.PackingSheetNo
+                    //                             }).ToList();
+                    //        if (packingSheets != null && packingSheets.Count > 0)
+                    //        {
+                    //            foreach (var packingSheet in packingSheets)
+                    //            {
+                    //                if (string.IsNullOrEmpty(order.PackingSheetNumber))
+                    //                    order.PackingSheetNumber = packingSheet.packingSheetNo;
+                    //                else
+                    //                    order.PackingSheetNumber += ", " + packingSheet.packingSheetNo;
+                    //            }
+                    //        }
+
+                    //        var orderData = (from od in context.OrderDetails
+                    //                         where od.OrderHeaderID == order.OrderId
+                    //                         group od by new { od.ID, od.SequenceNo } into gp
+                    //                         select new
+                    //                         {
+                    //                             OrderDetailId = gp.Key.ID,
+                    //                             SequenceNo = gp.Max(t => t.SequenceNo),
+                    //                         }).FirstOrDefault();
+                    //        if (orderData != null)
+                    //        {
+                    //            var partnerData = (from op in context.OrderPartnerDetails
+                    //                               where op.OrderDetailID == orderData.OrderDetailId
+                    //                               select new
+                    //                               {
+                    //                                   PrtnerID = op.PartnerID,
+                    //                                   PartnerName = context.Partners.Where(t => t.ID == op.PartnerID).FirstOrDefault().PartnerName,
+                    //                                   partnerTypeID = context.Partners.Where(t => t.ID == op.PartnerID).FirstOrDefault().PartnerTypeID
+                    //                               }).ToList();
+
+                    //            if (partnerData != null && partnerData.Count > 0)
+                    //            {
+                    //                var partners = (from pd in partnerData
+                    //                                join pt in context.PartnerTypes on pd.partnerTypeID equals pt.ID
+                    //                                select new
+                    //                                {
+                    //                                    PrtnerID = pd.PrtnerID,
+                    //                                    PartnerName = pd.PartnerName,
+                    //                                    partnerTypeID = pd.partnerTypeID,
+                    //                                    PartnerTypeCode = pt.PartnerTypeCode
+                    //                                }).ToList();
+                    //                if (partners != null && partners.Count > 0)
+                    //                {
+                    //                    foreach (var partner in partners)
+                    //                    {
+                    //                        if (partner.PartnerTypeCode == "1")
+                    //                            order.ExpeditionName = partner.PartnerName;
+                    //                        if (partner.PartnerTypeCode == "2")
+                    //                            order.Source = partner.PartnerName;
+                    //                        if (partner.PartnerTypeCode == "3")
+                    //                            order.Destination = partner.PartnerName;
+                    //                    }
+                    //                }
+                    //            }
+                    //        }
+                    //        //Add to List
+                    //        orderSearchResponse.Data.Add(order);
+                    //    }
+                    //}
+
                     // Filter
-                    if (orderSearchResponse.Data.Count > 0)
+                    if (orderList != null && orderList.Count > 0 && orderSearchRequest.Requests.Count > 0)
                     {
                         var orderFilter = orderSearchRequest.Requests[0];
 
                         if (!string.IsNullOrEmpty(orderFilter.OrderNumber))
                         {
-                            orderSearchResponse.Data = orderSearchResponse.Data.Where(o => o.OrderNumber.Contains(orderFilter.OrderNumber)).ToList();
+                            orderList = orderList.Where(o => o.OrderNumber.Contains(orderFilter.OrderNumber)).ToList();
                         }
 
                         if (!String.IsNullOrEmpty(orderFilter.PackingSheetNumber))
                         {
-                            orderSearchResponse.Data = orderSearchResponse.Data.Where(o => o.PackingSheetNumber.Contains(orderFilter.PackingSheetNumber)).ToList();
+                            orderList = orderList.Where(o => o.PackingSheetNumber.Contains(orderFilter.PackingSheetNumber)).ToList();
                         }
 
                         if (!String.IsNullOrEmpty(orderFilter.PoliceNumber))
                         {
-                            orderSearchResponse.Data = orderSearchResponse.Data.Where(o => o.PoliceNumber.Contains(orderFilter.PoliceNumber)).ToList();
+                            orderList = orderList.Where(o => o.PoliceNumber.Contains(orderFilter.PoliceNumber)).ToList();
                         }
                         if (orderFilter.OrderType != 0)
                         {
-                            orderSearchResponse.Data = orderSearchResponse.Data.Where(o => o.OrderType == orderFilter.OrderType).ToList();
+                            orderList = orderList.Where(o => o.OrderType == orderFilter.OrderType).ToList();
                         }
-
                     }
 
                     // Sorting
-                    if (orderSearchResponse.Data.Count > 0 && !string.IsNullOrEmpty(orderSearchRequest.SortOrder))
+                    if (orderList.Count > 0 && !string.IsNullOrEmpty(orderSearchRequest.SortOrder))
                     {
                         switch (orderSearchRequest.SortOrder.ToLower())
                         {
                             case "ordernumber":
-                                orderSearchResponse.Data = orderSearchResponse.Data.OrderBy(o => o.OrderNumber).ToList();
+                                orderList = orderList.OrderBy(o => o.OrderNumber).ToList();
                                 break;
                             case "ordernumber_desc":
-                                orderSearchResponse.Data = orderSearchResponse.Data.OrderByDescending(o => o.OrderNumber).ToList();
+                                orderList = orderList.OrderByDescending(o => o.OrderNumber).ToList();
                                 break;
                             case "source":
-                                orderSearchResponse.Data = orderSearchResponse.Data.OrderBy(o => o.Source).ToList();
+                                orderList = orderList.OrderBy(o => o.Source).ToList();
                                 break;
                             case "source_desc":
-                                orderSearchResponse.Data = orderSearchResponse.Data.OrderByDescending(o => o.Source).ToList();
+                                orderList = orderList.OrderByDescending(o => o.Source).ToList();
                                 break;
                             case "destination":
-                                orderSearchResponse.Data = orderSearchResponse.Data.OrderBy(o => o.Destination).ToList();
+                                orderList = orderList.OrderBy(o => o.Destination).ToList();
                                 break;
                             case "destination_desc":
-                                orderSearchResponse.Data = orderSearchResponse.Data.OrderByDescending(o => o.Destination).ToList();
+                                orderList = orderList.OrderByDescending(o => o.Destination).ToList();
                                 break;
                             case "vehicletype":
-                                orderSearchResponse.Data = orderSearchResponse.Data.OrderBy(o => o.VehicleType).ToList();
+                                orderList = orderList.OrderBy(o => o.VehicleType).ToList();
                                 break;
                             case "vehicletype_desc":
-                                orderSearchResponse.Data = orderSearchResponse.Data.OrderByDescending(o => o.VehicleType).ToList();
+                                orderList = orderList.OrderByDescending(o => o.VehicleType).ToList();
                                 break;
                             case "expiditionname":
-                                orderSearchResponse.Data = orderSearchResponse.Data.OrderBy(o => o.ExpeditionName).ToList();
+                                orderList = orderList.OrderBy(o => o.ExpeditionName).ToList();
                                 break;
                             case "expiditionname_desc":
-                                orderSearchResponse.Data = orderSearchResponse.Data.OrderByDescending(o => o.ExpeditionName).ToList();
+                                orderList = orderList.OrderByDescending(o => o.ExpeditionName).ToList();
                                 break;
                             case "policenumber":
-                                orderSearchResponse.Data = orderSearchResponse.Data.OrderBy(o => o.PoliceNumber).ToList();
+                                orderList = orderList.OrderBy(o => o.PoliceNumber).ToList();
                                 break;
                             case "policenumber_desc":
-                                orderSearchResponse.Data = orderSearchResponse.Data.OrderByDescending(o => o.PoliceNumber).ToList();
+                                orderList = orderList.OrderByDescending(o => o.PoliceNumber).ToList();
                                 break;
                             case "orderstatus":
-                                orderSearchResponse.Data = orderSearchResponse.Data.OrderBy(o => o.OrderStatus).ToList();
+                                orderList = orderList.OrderBy(o => o.OrderStatus).ToList();
                                 break;
                             case "orderstatus_desc":
-                                orderSearchResponse.Data = orderSearchResponse.Data.OrderByDescending(o => o.OrderStatus).ToList();
+                                orderList = orderList.OrderByDescending(o => o.OrderStatus).ToList();
                                 break;
                             default:  // ID Descending 
-                                orderSearchResponse.Data = orderSearchResponse.Data.OrderByDescending(o => o.OrderId).ToList();
+                                orderList = orderList.OrderByDescending(o => o.OrderId).ToList();
                                 break;
                         }
                     }
 
                     // Total NumberOfRecords
-                    orderSearchResponse.NumberOfRecords = orderSearchResponse.Data.Count;
+                    orderSearchResponse.NumberOfRecords = orderList.Count;
 
                     // Paging
                     int pageNumber = (orderSearchRequest.PageNumber ?? 1);
                     int pageSize = Convert.ToInt32(orderSearchRequest.PageSize);
                     if (pageSize > 0)
                     {
-                        orderSearchResponse.Data = orderSearchResponse.Data.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+                        orderList = orderList.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
                     }
-                    if (orderSearchResponse.Data.Count > 0)
+
+                    if (orderList.Count > 0)
                     {
+                        orderSearchResponse.Data.AddRange(orderList);
                         orderSearchResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         orderSearchResponse.StatusCode = (int)HttpStatusCode.OK;
                         orderSearchResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
@@ -701,6 +770,7 @@ namespace TMS.DataGateway.Repositories
             }
             return orderSearchResponse;
         }
+
         public OrderTrackResponse TrackOrder(int orderId)
         {
             OrderTrackResponse orderTrackResponse = new OrderTrackResponse();
@@ -724,6 +794,7 @@ namespace TMS.DataGateway.Repositories
 
             return orderTrackResponse;
         }
+
         private string GetOrderNumber(int businessAreaId, string businessArea, string applicationCode, int year)
         {
             string orderNo = businessArea + applicationCode;
@@ -991,20 +1062,20 @@ namespace TMS.DataGateway.Repositories
 
                                                 }
                                                 ).ToList();
-                        if(orderPartnerData.Count > 0)
+                        if (orderPartnerData.Count > 0)
                         {
                             int maxSeqNo = orderPartnerData.Max(x => x.SequenceNo);
                             var transporter = (from data in orderPartnerData
-                                               where data.PeartnerType == 1 && data.SequenceNo== maxSeqNo
+                                               where data.PeartnerType == 1 && data.SequenceNo == maxSeqNo
                                                select data
                                                ).FirstOrDefault();
                             var source = (from data in orderPartnerData
-                                               where data.PeartnerType == 2 && data.SequenceNo == maxSeqNo
-                                               select data
+                                          where data.PeartnerType == 2 && data.SequenceNo == maxSeqNo
+                                          select data
                                               ).FirstOrDefault();
                             var destinations = (from data in orderPartnerData
-                                          where data.PeartnerType == 3 // && data.SequenceNo == maxSeqNo
-                                          select data
+                                                where data.PeartnerType == 3 // && data.SequenceNo == maxSeqNo
+                                                select data
                                               ).ToList();
 
                             List<Domain.StopPoints> stopPoints = new List<Domain.StopPoints>();
@@ -1016,7 +1087,7 @@ namespace TMS.DataGateway.Repositories
                                     stopPoints.Add(item);
                                 }
                             }
-                           
+
 
                             orderDetailsResponse = orderData;
                             orderDetailsResponse.Transporter = transporter;
