@@ -512,14 +512,15 @@ namespace TMS.DataGateway.Repositories
                                  join od in context.OrderDetails on oh.ID equals od.OrderHeaderID
                                  join ps in context.PackingSheets on od.ShippingListNo equals ps.ShippingListNo into pks
                                  from pksh in pks.DefaultIfEmpty()
-                                 where ((orderSearchRequest.GlobalSearch != string.Empty && oh.OrderNo == orderSearchRequest.GlobalSearch)
-                                        || (orderSearchRequest.GlobalSearch == string.Empty && oh.OrderNo == oh.OrderNo))
+                                 where ((!String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.OrderNo == orderSearchRequest.GlobalSearch)
+                                        || (String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.OrderNo == oh.OrderNo))
                                         ||
-                                        ((orderSearchRequest.GlobalSearch != string.Empty && oh.VehicleNo == orderSearchRequest.GlobalSearch)
-                                        || (orderSearchRequest.GlobalSearch == string.Empty && oh.VehicleNo == oh.VehicleNo))
-                                        ||
-                                        ((orderSearchRequest.GlobalSearch != string.Empty && pksh.PackingSheetNo == orderSearchRequest.GlobalSearch)
-                                        || (orderSearchRequest.GlobalSearch == string.Empty && pksh.PackingSheetNo == pksh.PackingSheetNo))
+                                        ((!String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.VehicleNo == orderSearchRequest.GlobalSearch)
+                                        || (String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.VehicleNo == oh.VehicleNo))
+                                 ||
+                                 ((orderSearchRequest.GlobalSearch != string.Empty && pksh.PackingSheetNo == orderSearchRequest.GlobalSearch)
+                                 || (orderSearchRequest.GlobalSearch == string.Empty && pksh.PackingSheetNo == pksh.PackingSheetNo))
+                                 
                                  select new Domain.OrderSearch
                                  {
                                      OrderId = oh.ID,
@@ -528,7 +529,7 @@ namespace TMS.DataGateway.Repositories
                                      VehicleType = oh.VehicleShipment,
                                      PoliceNumber = oh.VehicleNo,
                                      OrderStatus = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusValue
-                                 }).ToList();
+                                 }).Distinct().ToList();
 
                     if (orderList != null && orderList.Count > 0)
                     {
@@ -657,30 +658,29 @@ namespace TMS.DataGateway.Repositories
                     //}
 
                     // Filter
-                    //if (orderSearchResponse.Data.Count > 0)
-                    //{
-                    //    var orderFilter = orderSearchRequest.Requests[0];
+                    if (orderList != null && orderList.Count > 0 && orderSearchRequest.Requests.Count > 0)
+                    {
+                        var orderFilter = orderSearchRequest.Requests[0];
 
-                    //    if (!string.IsNullOrEmpty(orderFilter.OrderNumber))
-                    //    {
-                    //        orderSearchResponse.Data = orderSearchResponse.Data.Where(o => o.OrderNumber.Contains(orderFilter.OrderNumber)).ToList();
-                    //    }
+                        if (!string.IsNullOrEmpty(orderFilter.OrderNumber))
+                        {
+                            orderList = orderList.Where(o => o.OrderNumber.Contains(orderFilter.OrderNumber)).ToList();
+                        }
 
-                    //    if (!String.IsNullOrEmpty(orderFilter.PackingSheetNumber))
-                    //    {
-                    //        orderSearchResponse.Data = orderSearchResponse.Data.Where(o => o.PackingSheetNumber.Contains(orderFilter.PackingSheetNumber)).ToList();
-                    //    }
+                        if (!String.IsNullOrEmpty(orderFilter.PackingSheetNumber))
+                        {
+                            orderList = orderList.Where(o => o.PackingSheetNumber.Contains(orderFilter.PackingSheetNumber)).ToList();
+                        }
 
-                    //    if (!String.IsNullOrEmpty(orderFilter.PoliceNumber))
-                    //    {
-                    //        orderSearchResponse.Data = orderSearchResponse.Data.Where(o => o.PoliceNumber.Contains(orderFilter.PoliceNumber)).ToList();
-                    //    }
-                    //    if (orderFilter.OrderType != 0)
-                    //    {
-                    //        orderSearchResponse.Data = orderSearchResponse.Data.Where(o => o.OrderType == orderFilter.OrderType).ToList();
-                    //    }
-
-                    //}
+                        if (!String.IsNullOrEmpty(orderFilter.PoliceNumber))
+                        {
+                            orderList = orderList.Where(o => o.PoliceNumber.Contains(orderFilter.PoliceNumber)).ToList();
+                        }
+                        if (orderFilter.OrderType != 0)
+                        {
+                            orderList = orderList.Where(o => o.OrderType == orderFilter.OrderType).ToList();
+                        }
+                    }
 
                     // Sorting
                     if (orderList.Count > 0 && !string.IsNullOrEmpty(orderSearchRequest.SortOrder))
@@ -1027,7 +1027,7 @@ namespace TMS.DataGateway.Repositories
                                          //OrderDate = oH.OrderDate,
                                          OrderNo = oH.OrderNo,
                                          OrderShipmentStatus = oH.OrderStatusID,
-                                         OrderType=oH.OrderType
+                                         OrderType = oH.OrderType
 
                                      }).FirstOrDefault();
 
@@ -1044,31 +1044,31 @@ namespace TMS.DataGateway.Repositories
                                                     Address = orderPartnerDetails.Partner.PartnerAddress,
                                                     CityName = orderPartnerDetails.Partner.PostalCode.SubDistrict.City.CityDescription,
                                                     ProvinceName = orderPartnerDetails.Partner.PostalCode.SubDistrict.City.Province.ProvinceDescription,
-                                                    SubDistrictName= orderPartnerDetails.Partner.PostalCode.SubDistrict.SubdistrictName,
-                                                    ActualShipmentDate=orderData.ActualShipmentDate,
-                                                    EstimationShipmentDate=orderData.EstimationShipmentDate,
-                                                    PartnerCode= orderPartnerDetails.Partner.PartnerNo,
-                                                    PartnerId= orderPartnerDetails.PartnerID,
-                                                    PartnerName= orderPartnerDetails.Partner.PartnerName,
-                                                    PeartnerType= orderPartnerDetails.Partner.PartnerTypeID,
+                                                    SubDistrictName = orderPartnerDetails.Partner.PostalCode.SubDistrict.SubdistrictName,
+                                                    ActualShipmentDate = orderData.ActualShipmentDate,
+                                                    EstimationShipmentDate = orderData.EstimationShipmentDate,
+                                                    PartnerCode = orderPartnerDetails.Partner.PartnerNo,
+                                                    PartnerId = orderPartnerDetails.PartnerID,
+                                                    PartnerName = orderPartnerDetails.Partner.PartnerName,
+                                                    PeartnerType = orderPartnerDetails.Partner.PartnerTypeID,
                                                     SequenceNo = orderDetailsData.SequenceNo
 
                                                 }
                                                 ).ToList();
-                        if(orderPartnerData.Count > 0)
+                        if (orderPartnerData.Count > 0)
                         {
                             int maxSeqNo = orderPartnerData.Max(x => x.SequenceNo);
                             var transporter = (from data in orderPartnerData
-                                               where data.PeartnerType == 1 && data.SequenceNo== maxSeqNo
+                                               where data.PeartnerType == 1 && data.SequenceNo == maxSeqNo
                                                select data
                                                ).FirstOrDefault();
                             var source = (from data in orderPartnerData
-                                               where data.PeartnerType == 2 && data.SequenceNo == maxSeqNo
-                                               select data
+                                          where data.PeartnerType == 2 && data.SequenceNo == maxSeqNo
+                                          select data
                                               ).FirstOrDefault();
                             var destinations = (from data in orderPartnerData
-                                          where data.PeartnerType == 3 // && data.SequenceNo == maxSeqNo
-                                          select data
+                                                where data.PeartnerType == 3 // && data.SequenceNo == maxSeqNo
+                                                select data
                                               ).ToList();
 
                             List<Domain.StopPoints> stopPoints = new List<Domain.StopPoints>();
@@ -1080,7 +1080,7 @@ namespace TMS.DataGateway.Repositories
                                     stopPoints.Add(item);
                                 }
                             }
-                           
+
 
                             orderDetailsResponse = orderData;
                             orderDetailsResponse.Transporter = transporter;
