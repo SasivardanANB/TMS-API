@@ -20,5 +20,9 @@ namespace TMS.DomainObjects.Objects
         public string EstimationShipmentDate { get; set; }
         public string ActualShipmentDate { get; set; }
         public int SequenceNo { get; set; }
+        public string Instruction { get; set; }
+        public int TotalPallet { get; set; }
+        
+
     }
 }

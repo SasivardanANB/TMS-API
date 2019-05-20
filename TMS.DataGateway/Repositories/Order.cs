@@ -794,6 +794,7 @@ namespace TMS.DataGateway.Repositories
                         //packingSheetRequest.Requests = mapper.Map<List<DataModel.Role>, List<Domain.Role>>(roles);
                         //packingSheetResponse.Data = packingSheetRequest.Requests;
                         packingSheetResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        packingSheetResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
                         packingSheetResponse.StatusCode = (int)HttpStatusCode.OK;
 
                     }
@@ -953,10 +954,14 @@ namespace TMS.DataGateway.Repositories
                                          Harga = oH.Harga,
                                          IsActive = oH.IsActive,
                                          LegecyOrderNo = oH.LegecyOrderNo,
+                                         VehicleNo=oH.VehicleNo,
+                                         VehicleShipmentType=oH.VehicleShipment,
                                          //OrderDate = oH.OrderDate,
                                          OrderNo = oH.OrderNo,
                                          OrderShipmentStatus = oH.OrderStatusID,
-                                         OrderType=oH.OrderType
+                                         OrderType=oH.OrderType,
+                                         OrderWeight=oH.OrderWeight,
+                                         OrderWeightUM=oH.OrderWeightUM,
 
                                      }).FirstOrDefault();
 
@@ -973,14 +978,16 @@ namespace TMS.DataGateway.Repositories
                                                     Address = orderPartnerDetails.Partner.PartnerAddress,
                                                     CityName = orderPartnerDetails.Partner.PostalCode.SubDistrict.City.CityDescription,
                                                     ProvinceName = orderPartnerDetails.Partner.PostalCode.SubDistrict.City.Province.ProvinceDescription,
-                                                    SubDistrictName= orderPartnerDetails.Partner.PostalCode.SubDistrict.SubdistrictName,
-                                                    ActualShipmentDate=orderData.ActualShipmentDate,
-                                                    EstimationShipmentDate=orderData.EstimationShipmentDate,
-                                                    PartnerCode= orderPartnerDetails.Partner.PartnerNo,
-                                                    PartnerId= orderPartnerDetails.PartnerID,
-                                                    PartnerName= orderPartnerDetails.Partner.PartnerName,
-                                                    PeartnerType= orderPartnerDetails.Partner.PartnerTypeID,
-                                                    SequenceNo = orderDetailsData.SequenceNo
+                                                    SubDistrictName = orderPartnerDetails.Partner.PostalCode.SubDistrict.SubdistrictName,
+                                                    ActualShipmentDate = orderData.ActualShipmentDate,
+                                                    EstimationShipmentDate = orderData.EstimationShipmentDate,
+                                                    PartnerCode = orderPartnerDetails.Partner.PartnerNo,
+                                                    PartnerId = orderPartnerDetails.PartnerID,
+                                                    PartnerName = orderPartnerDetails.Partner.PartnerName,
+                                                    PeartnerType = orderPartnerDetails.Partner.PartnerTypeID,
+                                                    SequenceNo = orderDetailsData.SequenceNo,
+                                                    Instruction = orderDetailsData.Instruction,
+                                                    TotalPallet = orderDetailsData.TotalPallet
 
                                                 }
                                                 ).ToList();
@@ -1013,6 +1020,8 @@ namespace TMS.DataGateway.Repositories
 
                             orderDetailsResponse = orderData;
                             orderDetailsResponse.Transporter = transporter;
+                            orderDetailsResponse.Instructions = transporter.Instruction;
+                            orderDetailsResponse.TotalPallet = transporter.TotalPallet;
                             orderDetailsResponse.SourceOrDestinations = stopPoints;
 
                         }
