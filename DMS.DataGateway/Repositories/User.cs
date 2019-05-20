@@ -227,8 +227,7 @@ namespace DMS.DataGateway.Repositories
                         string emailFrom = ConfigurationManager.AppSettings["EmailFrom"];
                         mail.From = new MailAddress(emailFrom);
                         mail.Subject = ConfigurationManager.AppSettings["EmailSubject"]; // "Test-case";
-                                                                                         
-                        string Body = "To reset Your Password <a href=\"http://localhost:51375/api/v1/user/resetpassword\">Click Here</a>";
+                        string Body = "To reset your password click the link : " + ConfigurationManager.AppSettings["ResetPassword"];
                         mail.Body = Body;
                         mail.IsBodyHtml = true;
 
