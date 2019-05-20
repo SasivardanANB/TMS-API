@@ -68,6 +68,7 @@ namespace DMS.API.Controllers
             return Ok(userResponse);
         }
         [Route("forgotpassword")]
+        [AllowAnonymous, HttpPost]
         public IHttpActionResult ForgotPassword(ForgotPasswordRequest forgotPasswordRequest)
         {
             if (!ModelState.IsValid)
@@ -77,6 +78,7 @@ namespace DMS.API.Controllers
             return Ok(userResponse);
         }
         [Route("resetpassword")]
+        [AllowAnonymous, HttpPost]
         public IHttpActionResult ResetPassword(ChangePasswordRequest changePasswordRequest)
         {
             ModelState.Remove("changePasswordRequest.OldPassword");
