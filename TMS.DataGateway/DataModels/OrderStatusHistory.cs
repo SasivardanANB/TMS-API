@@ -22,5 +22,6 @@ namespace TMS.DataGateway.DataModels
         public OrderStatus OrderStatus { get; set; }
         public DateTime StatusDate { get; set; }
         public string Remarks { get; set; }
+        public bool? IsLoad { get; set; }
     }
 }
