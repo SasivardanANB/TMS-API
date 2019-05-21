@@ -242,7 +242,6 @@ namespace OMS.DataGateway.Repositories
                     {
                         try
                         {
-
                             DateTime estimationShipmentDate = DateTime.ParseExact(order.EstimationShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(order.EstimationShipmentTime);
                             DateTime actualShipmentDate = DateTime.ParseExact(order.ActualShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(order.ActualShipmentTime);
 
@@ -618,6 +617,7 @@ namespace OMS.DataGateway.Repositories
                                 }
                             }
                             #endregion
+
                             transaction.Commit();
                         }
 

@@ -125,7 +125,7 @@ namespace DMS.DataGateway.Repositories
                         var tripFilter = tripsByDriverRequest.Requests[0];
 
                         var tripsByUser = (from trip in context.TripDetails
-                                           where trip.UserId == tripFilter.UserId
+                                           where trip.UserId == tripFilter.UserId && trip.OrderType == tripFilter.OrderType
                                            select new Domain.TripDetails
                                            {
                                                ID = trip.ID,
