@@ -64,7 +64,7 @@ namespace DMS.API.Controllers
                 return BadRequest(ModelState);
 
             IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
-            UserResponse userResponse = userTask.ChangePassword(changePasswordRequest);
+            UserResponse userResponse = userTask.ChangePassword(changePasswordRequest, "changepassword");
             return Ok(userResponse);
         }
         [Route("forgotpassword")]
@@ -85,7 +85,7 @@ namespace DMS.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
-            UserResponse userResponse = userTask.ChangePassword(changePasswordRequest);
+            UserResponse userResponse = userTask.ChangePassword(changePasswordRequest,"resetpassword");
             return Ok(userResponse);
         }
     }
