@@ -46,7 +46,7 @@ namespace TMS.DataGateway.Repositories
                                        || (String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.VehicleNo == oh.VehicleNo))
                                 ||
                                 ((tripRequest.GlobalSearch != string.Empty && pksh.PackingSheetNo == tripRequest.GlobalSearch)
-                                || (tripRequest.GlobalSearch == string.Empty && pksh.PackingSheetNo == pksh.PackingSheetNo))) && ((oh.OrderStatusID == 1)) ) 
+                                || (tripRequest.GlobalSearch == string.Empty && pksh.PackingSheetNo == pksh.PackingSheetNo))) && (oh.DriverName != null) && (oh.VehicleNo != null)) 
 
                                 select new Domain.Trip
                                  {
@@ -57,7 +57,8 @@ namespace TMS.DataGateway.Repositories
                                      Vehicle = oh.VehicleNo,
                                      EstimatedArrivalDate=oh.ActualShipmentDate,
                                      EstimatedShipmentDate=oh.EstimationShipmentDate,
-                                     Dimensions=oh.OrderWeight+" "+oh.OrderWeightUM, 
+                                     Dimensions=oh.OrderWeight+" "+oh.OrderWeightUM,
+                                     OrderStatusId=oh.OrderStatusID,
                                      OrderStatus = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusValue
                                  }).Distinct().ToList();
 
@@ -65,6 +66,14 @@ namespace TMS.DataGateway.Repositories
                     {
                         foreach (var order in tripList)
                         {
+                            if(order.OrderStatus == "Assigned" || order.OrderStatus == "Accepted" || order.OrderStatus == "Rejected")
+                            {
+                                order.IsChangeAllowed = true;
+                            }
+                            else
+                            {
+                                order.IsChangeAllowed = false;
+                            }
                             var orderData = (from od in context.OrderDetails
                                              where od.OrderHeaderID == order.OrderId
                                              group od by new { od.ID, od.SequenceNo } into gp
@@ -162,18 +171,18 @@ namespace TMS.DataGateway.Repositories
                             case "destination_desc":
                                 tripList = tripList.OrderByDescending(o => o.Destination).ToList();
                                 break;
-                            case "vehicletype":
-                                tripList = tripList.OrderBy(o => o.VehicleType).ToList();
+                            case "estimatedarrivaldate":
+                                tripList = tripList.OrderBy(o => o.EstimatedArrivalDate).ToList();
                                 break;
-                            case "vehicletype_desc":
-                                tripList = tripList.OrderByDescending(o => o.VehicleType).ToList();
+                            case "estimatedarrivaldate_desc":
+                                tripList = tripList.OrderByDescending(o => o.EstimatedArrivalDate).ToList();
                                 break;
-                            //case "expiditionname":
-                            //    tripList = tripList.OrderBy(o => o.ExpeditionName).ToList();
-                            //    break;
-                            //case "expiditionname_desc":
-                            //    tripList = tripList.OrderByDescending(o => o.ExpeditionName).ToList();
-                            //    break;
+                            case "estimatedshipmentdate":
+                                tripList = tripList.OrderBy(o => o.EstimatedShipmentDate).ToList();
+                                break;
+                            case "estimatedshipmentdate_desc":
+                                tripList = tripList.OrderByDescending(o => o.EstimatedShipmentDate).ToList();
+                                break;
                             case "policenumber":
                                 tripList = tripList.OrderBy(o => o.PoliceNumber).ToList();
                                 break;
@@ -185,6 +194,12 @@ namespace TMS.DataGateway.Repositories
                                 break;
                             case "orderstatus_desc":
                                 tripList = tripList.OrderByDescending(o => o.OrderStatus).ToList();
+                                break;
+                            case "dimensions":
+                                tripList = tripList.OrderBy(o => o.Dimensions).ToList();
+                                break;
+                            case "dimensions_desc":
+                                tripList = tripList.OrderByDescending(o => o.Dimensions).ToList();
                                 break;
                             default:  // ID Descending 
                                 tripList = tripList.OrderByDescending(o => o.OrderId).ToList();

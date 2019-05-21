@@ -25,5 +25,6 @@ namespace TMS.DomainObjects.Objects
         public string PackingSheetNumber { get; set; }
         public string PoliceNumber { get; set; }
         public int OrderStatusId { get; set; }
+        public bool IsChangeAllowed { get; set; }
     }
 }
