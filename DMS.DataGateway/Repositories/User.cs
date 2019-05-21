@@ -165,7 +165,7 @@ namespace DMS.DataGateway.Repositories
             }
             return userResponse;
         }
-        public UserResponse ChangePassword(ChangePasswordRequest changePasswordRequest)
+        public UserResponse ChangePassword(ChangePasswordRequest changePasswordRequest,string type)
         {
             UserResponse userResponse = new UserResponse();
             try
@@ -175,25 +175,50 @@ namespace DMS.DataGateway.Repositories
                     var userDetails = context.Users.Where(u => u.ID == changePasswordRequest.Id).FirstOrDefault();
                     if (userDetails != null)
                     {
-                        if (!string.IsNullOrEmpty(changePasswordRequest.NewPassword))
+                        if (type == "changepassword")
                         {
-                            changePasswordRequest.NewPassword = Encryption.EncryptionLibrary.EncryptPassword(changePasswordRequest.NewPassword);
+                            var userPassword= Encryption.EncryptionLibrary.DecrypPassword(userDetails.Password);
+                            if(userPassword!= changePasswordRequest.OldPassword)
+                            {
+                                userResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                                userResponse.StatusCode = (int)HttpStatusCode.NotAcceptable;
+                                userResponse.StatusMessage = DomainObjects.Resource.ResourceData.OldPasswordMismatch;
+                            }
+                            else
+                            {
+                                if (userPassword == changePasswordRequest.NewPassword)
+                                {
+                                    userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                                    userResponse.StatusCode = (int)HttpStatusCode.BadRequest;
+                                    userResponse.StatusMessage = DomainObjects.Resource.ResourceData.NewPasswordMustbeDifferent;
+                                }
+                                else
+                                {
+                                    if (!string.IsNullOrEmpty(changePasswordRequest.NewPassword))
+                                    {
+                                        changePasswordRequest.NewPassword = Encryption.EncryptionLibrary.EncryptPassword(changePasswordRequest.NewPassword);
+                                    }
+                                    userDetails.Password = changePasswordRequest.NewPassword;
+                                    context.SaveChanges();
+                                    userResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                                    userResponse.StatusCode = (int)HttpStatusCode.OK;
+                                    userResponse.StatusMessage = DomainObjects.Resource.ResourceData.PasswordUpdated;
+                                }
+                            }
+                            
                         }
-                        if(userDetails.Password==changePasswordRequest.NewPassword)
+                        if (type == "resetpassword")
                         {
-                            userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
-                            userResponse.StatusCode = (int)HttpStatusCode.BadRequest;
-                            userResponse.StatusMessage = DomainObjects.Resource.ResourceData.NewPasswordMustbeDifferent;
+                            if (!string.IsNullOrEmpty(changePasswordRequest.NewPassword))
+                            {
+                                changePasswordRequest.NewPassword = Encryption.EncryptionLibrary.EncryptPassword(changePasswordRequest.NewPassword);
+                            }
+                            userDetails.Password = changePasswordRequest.NewPassword;
+                            context.SaveChanges();
+                            userResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                            userResponse.StatusCode = (int)HttpStatusCode.OK;
+                            userResponse.StatusMessage = DomainObjects.Resource.ResourceData.PasswordUpdated;
                         }
-                        else
-                        { 
-                        userDetails.Password = changePasswordRequest.NewPassword;
-                        context.SaveChanges();
-                        userResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                        userResponse.StatusCode = (int)HttpStatusCode.OK;
-                        userResponse.StatusMessage = DomainObjects.Resource.ResourceData.PasswordUpdated;
-                        }
-
                     }
                     else
                     {
@@ -227,8 +252,7 @@ namespace DMS.DataGateway.Repositories
                         string emailFrom = ConfigurationManager.AppSettings["EmailFrom"];
                         mail.From = new MailAddress(emailFrom);
                         mail.Subject = ConfigurationManager.AppSettings["EmailSubject"]; // "Test-case";
-                                                                                         
-                        string Body = "To reset Your Password <a href=\"http://localhost:51375/api/v1/user/resetpassword\">Click Here</a>";
+                        string Body = "To reset your password click the link : " + ConfigurationManager.AppSettings["ResetPassword"]+"?userId="+userDetails.ID;
                         mail.Body = Body;
                         mail.IsBodyHtml = true;
 

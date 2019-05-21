@@ -158,35 +158,38 @@ namespace OMS.DataGateway.Repositories
                     }
 
                     // Sorting
-                    switch (orderRequest.SortOrder.ToLower())
+                    if (!String.IsNullOrEmpty(orderRequest.SortOrder))
                     {
-                        case "ordernumber":
-                            orders = orders.OrderBy(s => s.OrderNo).ToList();
-                            break;
-                        case "ordernumber_desc":
-                            orders = orders.OrderByDescending(s => s.OrderNo).ToList();
-                            break;
-                        case "fromdate":
-                            orders = orders.OrderBy(s => s.OrderDate).ToList();
-                            break;
-                        case "fromdate_desc":
-                            orders = orders.OrderByDescending(s => s.OrderDate).ToList();
-                            break;
-                        case "todate":
-                            orders = orders.OrderBy(s => s.OrderDate).ToList();
-                            break;
-                        case "todate_desc":
-                            orders = orders.OrderByDescending(s => s.OrderDate).ToList();
-                            break;
-                        case "statusid":
-                            orders = orders.OrderBy(s => s.OrderShipmentStatus).ToList();
-                            break;
-                        case "statusid_desc":
-                            orders = orders.OrderByDescending(s => s.OrderShipmentStatus).ToList();
-                            break;
-                        default:  // ID Descending 
-                            orders = orders.OrderByDescending(s => s.ID).ToList();
-                            break;
+                        switch (orderRequest.SortOrder.ToLower())
+                        {
+                            case "ordernumber":
+                                orders = orders.OrderBy(s => s.OrderNo).ToList();
+                                break;
+                            case "ordernumber_desc":
+                                orders = orders.OrderByDescending(s => s.OrderNo).ToList();
+                                break;
+                            case "fromdate":
+                                orders = orders.OrderBy(s => s.OrderDate).ToList();
+                                break;
+                            case "fromdate_desc":
+                                orders = orders.OrderByDescending(s => s.OrderDate).ToList();
+                                break;
+                            case "todate":
+                                orders = orders.OrderBy(s => s.OrderDate).ToList();
+                                break;
+                            case "todate_desc":
+                                orders = orders.OrderByDescending(s => s.OrderDate).ToList();
+                                break;
+                            case "statusid":
+                                orders = orders.OrderBy(s => s.OrderShipmentStatus).ToList();
+                                break;
+                            case "statusid_desc":
+                                orders = orders.OrderByDescending(s => s.OrderShipmentStatus).ToList();
+                                break;
+                            default:  // ID Descending 
+                                orders = orders.OrderByDescending(s => s.ID).ToList();
+                                break;
+                        }
                     }
 
                     // Total NumberOfRecords
@@ -652,7 +655,8 @@ namespace OMS.DataGateway.Repositories
                     {
                         foreach (var item in orderStatus)
                         {
-                            Domain.Common common = new Common() {
+                            Domain.Common common = new Common()
+                            {
                                 Id = Convert.ToInt32(item.OrderStatusCode),
                                 Value = item.OrderStatusValue
                             };
@@ -671,7 +675,7 @@ namespace OMS.DataGateway.Repositories
                     response.StatusCode = (int)HttpStatusCode.ExpectationFailed;
                     response.StatusMessage = ex.Message;
                 }
-                
+
             }
             return response;
         }

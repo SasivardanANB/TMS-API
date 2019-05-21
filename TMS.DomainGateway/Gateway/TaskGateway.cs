@@ -19,5 +19,6 @@ namespace TMS.DomainGateway.Gateway
         public abstract IPartnerTask PartnerTask { get; set; }
         public abstract IOrderTask OrderTask { get; set; }
         public abstract IMasterTask MasterTask { get; set; }
+        public abstract IGateTask GateTask { get; set; }
     }
 }

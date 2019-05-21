@@ -133,6 +133,15 @@ namespace DMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to OldPasswordMismatch.
+        /// </summary>
+        public static string OldPasswordMismatch {
+            get {
+                return ResourceManager.GetString("OldPasswordMismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to PasswordUpdated.
         /// </summary>
         public static string PasswordUpdated {
