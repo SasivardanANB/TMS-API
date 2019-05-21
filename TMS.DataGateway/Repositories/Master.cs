@@ -34,7 +34,7 @@ namespace TMS.DataGateway.Repositories
                 {
                     partnerList =
                         (from partner in context.Partners
-                         where partner.PartnerName.Contains(partnerSearch.SearchText)
+                         where partner.PartnerName.Contains(partnerSearch.SearchText) && partner.PartnerTypeID == partnerSearch.PartnerTypeId
                          select new Domain.Common
                          {
                              Id = partner.ID,

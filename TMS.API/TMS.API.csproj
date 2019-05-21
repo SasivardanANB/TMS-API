@@ -212,6 +212,7 @@
     <Compile Include="Controllers\MediaController.cs" />
     <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Controllers\MasterController.cs" />
+    <Compile Include="Controllers\TripController.cs" />
     <Compile Include="Controllers\PICController.cs" />
     <Compile Include="Controllers\PoolController.cs" />
     <Compile Include="Controllers\PartnerController.cs" />

@@ -49,11 +49,13 @@
     <Compile Include="Gateway\TaskGateway.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Task\Authenticate.cs" />
+    <Compile Include="Task\Interfaces\ITripTask.cs" />
     <Compile Include="Task\Interfaces\IPoolTask.cs" />
     <Compile Include="Task\Interfaces\IPartnerTask.cs" />
     <Compile Include="Task\Interfaces\IMasterTask.cs" />
     <Compile Include="Task\Interfaces\IVehicleTask.cs" />
     <Compile Include="Task\Master.cs" />
+    <Compile Include="Task\Trip.cs" />
     <Compile Include="Task\Pool.cs" />
     <Compile Include="Task\Interfaces\IPICTask.cs" />
     <Compile Include="Task\PIC.cs" />

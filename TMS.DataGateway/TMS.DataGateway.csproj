@@ -265,10 +265,12 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\Authenticate.cs" />
+    <Compile Include="Repositories\Interfaces\ITrip.cs" />
     <Compile Include="Repositories\Interfaces\IPool.cs" />
     <Compile Include="Repositories\Interfaces\IPartner.cs" />
     <Compile Include="Repositories\Interfaces\IMaster.cs" />
     <Compile Include="Repositories\Interfaces\IVechicle.cs" />
+    <Compile Include="Repositories\Trip.cs" />
     <Compile Include="Repositories\Pool.cs" />
     <Compile Include="Repositories\Interfaces\IPIC.cs" />
     <Compile Include="Repositories\PIC.cs" />
