@@ -14,16 +14,13 @@ namespace TMS.DataGateway.DataModels
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
-        [Index("OrderStatusHistory_OrderHeaderID", IsUnique = true)]
-        public int OrderHeaderID { get; set; }
-        [Index("OrderStatusHistory_OrderStatus", IsUnique = true)]
-        public int OrderStatus { get; set; }
-        [Index("OrderStatusHistory_StepNo", IsUnique = true)]
-        public int StepNo { get; set; }
-        public int IsOptional { get; set; }
-        public DateTime CreatedTime { get; set; }
-        public DateTime CreatedBy { get; set; }
-        public DateTime LastModififiedTime { get; set; }
-        public DateTime LastModifiedBy { get; set; }
+        [ForeignKey("OrderDetail")]
+        public int OrderDetailID { get; set; }
+        public OrderDetail OrderDetail { get; set; }
+        [ForeignKey("OrderStatus")]
+        public int OrderStatusID { get; set; }
+        public OrderStatus OrderStatus { get; set; }
+        public DateTime StatusDate { get; set; }
+        public string Remarks { get; set; }
     }
 }

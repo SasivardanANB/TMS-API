@@ -18,6 +18,6 @@ namespace TMS.DomainGateway.Task
         public abstract CommonResponse GetOrderIds();
         public abstract DealerDetailsResponse GetDealers(int orderId, string searchText);
 
-        public abstract OrderResponse GetOrderDetails(int orderId);
+        public abstract OrderDetailsResponse GetOrderDetails(int orderId);
     }
 }
