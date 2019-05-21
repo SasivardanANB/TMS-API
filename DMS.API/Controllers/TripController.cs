@@ -17,7 +17,7 @@ namespace DMS.API.Controllers
     public class TripController : ApiController
     {
         [Route("gettrips")]
-        [HttpPost]
+        [AllowAnonymous, HttpPost]
         public IHttpActionResult GetTripsByDriver(TripsByDriverRequest tripsByDriverRequest)
         {
             if (!ModelState.IsValid)

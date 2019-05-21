@@ -10,6 +10,8 @@ namespace TMS.DomainObjects.Objects
     {
         public int StepHeaderNumber { get; set; }
         public string StepHeaderName { get; set; }
+        public string StepHeaderDescription { get; set; }
+        public string StepHeaderDateTime { get; set; }
         public string StepHeaderNotification { get; set; }
         public List<TrackDetail> TackDetails { get; set; }
     }

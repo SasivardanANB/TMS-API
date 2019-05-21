@@ -33,5 +33,6 @@ namespace DMS.DataGateway.DataModels
         [ForeignKey("TripStatus")]
         public int? CurrentTripStatusId { get; set; }
         public virtual TripStatus TripStatus { get; set; }
+        public int OrderType { get; set; }
     }
 }

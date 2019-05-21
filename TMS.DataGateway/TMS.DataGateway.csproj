@@ -258,9 +258,9 @@
     <Compile Include="Migrations\201905161135344_tms_v1.0_Order_PackingList.Designer.cs">
       <DependentUpon>201905161135344_tms_v1.0_Order_PackingList.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201905200534217_tms_v1.0_unknown.cs" />
-    <Compile Include="Migrations\201905200534217_tms_v1.0_unknown.Designer.cs">
-      <DependentUpon>201905200534217_tms_v1.0_unknown.cs</DependentUpon>
+    <Compile Include="Migrations\201905200802373_tms_v1.0_OrderStatusHistory.cs" />
+    <Compile Include="Migrations\201905200802373_tms_v1.0_OrderStatusHistory.Designer.cs">
+      <DependentUpon>201905200802373_tms_v1.0_OrderStatusHistory.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -365,8 +365,8 @@
     <EmbeddedResource Include="Migrations\201905161135344_tms_v1.0_Order_PackingList.resx">
       <DependentUpon>201905161135344_tms_v1.0_Order_PackingList.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201905200534217_tms_v1.0_unknown.resx">
-      <DependentUpon>201905200534217_tms_v1.0_unknown.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201905200802373_tms_v1.0_OrderStatusHistory.resx">
+      <DependentUpon>201905200802373_tms_v1.0_OrderStatusHistory.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SeedData\Activities.csv" />
     <EmbeddedResource Include="SeedData\applications.csv" />
