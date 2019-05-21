@@ -216,6 +216,7 @@
     <Compile Include="Controllers\PoolController.cs" />
     <Compile Include="Controllers\PartnerController.cs" />
     <Compile Include="Controllers\UserController.cs" />
+    <Compile Include="Controllers\GateController.cs" />
     <Compile Include="Controllers\VehicleController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

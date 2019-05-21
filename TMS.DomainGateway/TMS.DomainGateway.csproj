@@ -52,6 +52,7 @@
     <Compile Include="Task\Interfaces\IPoolTask.cs" />
     <Compile Include="Task\Interfaces\IPartnerTask.cs" />
     <Compile Include="Task\Interfaces\IMasterTask.cs" />
+    <Compile Include="Task\Interfaces\IGateTask.cs" />
     <Compile Include="Task\Interfaces\IVehicleTask.cs" />
     <Compile Include="Task\Master.cs" />
     <Compile Include="Task\Pool.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="Task\Interfaces\IUserTask.cs" />
     <Compile Include="Task\Order.cs" />
     <Compile Include="Task\User.cs" />
+    <Compile Include="Task\Gate.cs" />
     <Compile Include="Task\Vehicle.cs" />
   </ItemGroup>
   <ItemGroup />

@@ -106,6 +106,8 @@
     <Compile Include="DataModels\Driver.cs" />
     <Compile Include="DataModels\FieldLabelMenu.cs" />
     <Compile Include="DataModels\FleetType.cs" />
+    <Compile Include="DataModels\GateInGateOut.cs" />
+    <Compile Include="DataModels\G2G.cs" />
     <Compile Include="DataModels\Menu.cs" />
     <Compile Include="DataModels\MenuActivity.cs" />
     <Compile Include="DataModels\NumberingRange.cs" />
@@ -152,6 +154,7 @@
     <Compile Include="DataModels\UserApplication.cs" />
     <Compile Include="DataModels\UserRoles.cs" />
     <Compile Include="DataModels\Vehicle.cs" />
+    <Compile Include="DataModels\GateType.cs" />
     <Compile Include="DataModels\VehicleType.cs" />
     <Compile Include="Encryption\EncryptionLibrary.cs" />
     <Compile Include="Migrations\201904220732332_Initial.cs" />
@@ -262,12 +265,17 @@
     <Compile Include="Migrations\201905200534217_tms_v1.0_unknown.Designer.cs">
       <DependentUpon>201905200534217_tms_v1.0_unknown.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201905211025010_Gate2GateRelatedTables.cs" />
+    <Compile Include="Migrations\201905211025010_Gate2GateRelatedTables.Designer.cs">
+      <DependentUpon>201905211025010_Gate2GateRelatedTables.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\Authenticate.cs" />
     <Compile Include="Repositories\Interfaces\IPool.cs" />
     <Compile Include="Repositories\Interfaces\IPartner.cs" />
     <Compile Include="Repositories\Interfaces\IMaster.cs" />
+    <Compile Include="Repositories\Interfaces\IGate.cs" />
     <Compile Include="Repositories\Interfaces\IVechicle.cs" />
     <Compile Include="Repositories\Pool.cs" />
     <Compile Include="Repositories\Interfaces\IPIC.cs" />
@@ -282,6 +290,7 @@
     <Compile Include="Repositories\Order.cs" />
     <Compile Include="Repositories\Master.cs" />
     <Compile Include="Repositories\User.cs" />
+    <Compile Include="Repositories\Gate.cs" />
     <Compile Include="Repositories\Vehicle.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -367,6 +376,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201905200534217_tms_v1.0_unknown.resx">
       <DependentUpon>201905200534217_tms_v1.0_unknown.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905211025010_Gate2GateRelatedTables.resx">
+      <DependentUpon>201905211025010_Gate2GateRelatedTables.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SeedData\Activities.csv" />
     <EmbeddedResource Include="SeedData\applications.csv" />
