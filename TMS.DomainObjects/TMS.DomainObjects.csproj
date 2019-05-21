@@ -79,6 +79,7 @@
     <Compile Include="Objects\Transporter.cs" />
     <Compile Include="Objects\User.cs" />
     <Compile Include="Objects\UserRole.cs" />
+    <Compile Include="Objects\Gate.cs" />
     <Compile Include="Objects\Vehicle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Request\AssignUserRoleRequest.cs" />
@@ -97,6 +98,7 @@
     <Compile Include="Request\RoleRequest.cs" />
     <Compile Include="Request\UserRequest.cs" />
     <Compile Include="Request\UserRoleRequest.cs" />
+    <Compile Include="Request\GateRequest.cs" />
     <Compile Include="Request\VehicleRequest.cs" />
     <Compile Include="Resource\ResourceData.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -128,6 +130,7 @@
     <Compile Include="Response\TransporterResponse.cs" />
     <Compile Include="Response\UserResponse.cs" />
     <Compile Include="Response\UserRoleResponse.cs" />
+    <Compile Include="Response\GateResponse.cs" />
     <Compile Include="Response\VehicleResponse.cs" />
   </ItemGroup>
   <ItemGroup>

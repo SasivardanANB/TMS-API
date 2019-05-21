@@ -3,16 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.ComponentModel.DataAnnotations;
 
-namespace DMS.DomainObjects.Request
+namespace TMS.DomainObjects.Request
 {
-  public  class ChangePasswordRequest
+   public  class ResetPasssword
     {
         public int Id { set; get; }
-        [Required]
         public string OldPassword { set; get; }
-        [Required]
         public string NewPassword { set; get; }
     }
 }

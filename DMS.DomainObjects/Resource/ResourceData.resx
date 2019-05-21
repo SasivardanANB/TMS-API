@@ -141,6 +141,9 @@
   <data name="NewPasswordMustbeDifferent" xml:space="preserve">
     <value>NewPasswordMustbeDifferent</value>
   </data>
+  <data name="OldPasswordMismatch" xml:space="preserve">
+    <value>OldPasswordMismatch</value>
+  </data>
   <data name="PasswordUpdated" xml:space="preserve">
     <value>PasswordUpdated</value>
   </data>

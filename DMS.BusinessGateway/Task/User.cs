@@ -40,9 +40,9 @@ namespace DMS.BusinessGateway.Task
             //If needed write business logic here for response.
             return userData;
         }
-        public override UserResponse ChangePassword(ChangePasswordRequest changePasswordRequest)
+        public override UserResponse ChangePassword(ChangePasswordRequest changePasswordRequest, string type)
         {
-            UserResponse userData = _userRepository.ChangePassword(changePasswordRequest);
+            UserResponse userData = _userRepository.ChangePassword(changePasswordRequest,type);
             return userData;
         }
         public override UserResponse ForgotPassword(ForgotPasswordRequest forgotPasswordRequest)
