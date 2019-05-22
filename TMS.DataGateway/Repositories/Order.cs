@@ -868,7 +868,7 @@ namespace TMS.DataGateway.Repositories
 
                                 if (orderDetails != null && orderDetails.Count > 0)
                                 {
-                                    int sourceNumber = 1;
+                                    int sourceNumber = 0;
                                     int totalSources = orderDetails.Count;
                                     foreach (var orderDetail in orderDetails)
                                     {
@@ -904,7 +904,7 @@ namespace TMS.DataGateway.Repositories
                                                         TrackStepLoadUnload loadData = new TrackStepLoadUnload()
                                                         {
                                                             TrackLoadUnloadName = "LAOD",
-                                                            StepHeaderNotification = String.Format("{0} from {1} AHM", sourceNumber, totalSources),
+                                                            StepHeaderNotification = String.Format("{0} from {1} AHM", sourceNumber++, totalSources),
                                                             StartTrip = new TrackStep(),
                                                             ConfirmArrive = new TrackStep(),
                                                             StartLoad = new TrackStep(),
@@ -945,7 +945,7 @@ namespace TMS.DataGateway.Repositories
                                                         TrackStepLoadUnload loadData = new TrackStepLoadUnload()
                                                         {
                                                             TrackLoadUnloadName = "LAOD",
-                                                            StepHeaderNotification = String.Format("{0} from {1} AHM", sourceNumber, totalSources),
+                                                            StepHeaderNotification = String.Format("{0} from {1} AHM", sourceNumber++, totalSources),
                                                             StartTrip = new TrackStep(),
                                                             ConfirmArrive = new TrackStep(),
                                                             StartLoad = new TrackStep(),
@@ -1089,7 +1089,7 @@ namespace TMS.DataGateway.Repositories
 
                                         if (orderDetailOutBound != null && orderDetailOutBound.Count > 0)
                                         {
-                                            int sourceNumber = 1;
+                                            int sourceNumber = 0;
                                             int totalSources = orderDetails.Count;
                                             foreach (var orderDetail in orderDetails)
                                             {
@@ -1125,7 +1125,7 @@ namespace TMS.DataGateway.Repositories
                                                                 TrackStepLoadUnload unLoadData = new TrackStepLoadUnload()
                                                                 {
                                                                     TrackLoadUnloadName = "UNLAOD",
-                                                                    StepHeaderNotification = String.Format("{0} from {1} Main Dealers", sourceNumber, totalSources),
+                                                                    StepHeaderNotification = String.Format("{0} from {1} Main Dealers", sourceNumber++, totalSources),
                                                                     StartTrip = new TrackStep(),
                                                                     ConfirmArrive = new TrackStep(),
                                                                     StartLoad = new TrackStep(),
@@ -1166,7 +1166,7 @@ namespace TMS.DataGateway.Repositories
                                                                 TrackStepLoadUnload unLoadData = new TrackStepLoadUnload()
                                                                 {
                                                                     TrackLoadUnloadName = "UNLAOD",
-                                                                    StepHeaderNotification = String.Format("{0} from {1} Main Dealers", sourceNumber, totalSources),
+                                                                    StepHeaderNotification = String.Format("{0} from {1} Main Dealers", sourceNumber++, totalSources),
                                                                     StartTrip = new TrackStep(),
                                                                     ConfirmArrive = new TrackStep(),
                                                                     StartLoad = new TrackStep(),
