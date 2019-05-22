@@ -405,4 +405,7 @@
   <data name="TripAssigned" xml:space="preserve">
     <value>Trip assigned successfully</value>
   </data>
+  <data name="GateInGateOutCreated" xml:space="preserve">
+    <value>GateIn/GateOut created successfully</value>
+  </data>
 </root>
