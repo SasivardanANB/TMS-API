@@ -159,12 +159,16 @@ namespace TMS.DataGateway.Repositories
 
                     if (!String.IsNullOrEmpty(picFilter.PICName))
                     {
-                        picList = picList.Where(s => s.PICName.Contains(picFilter.PICName)).ToList();
+                        picList = picList.Where(s => s.PICName.ToLower().Contains(picFilter.PICName.ToLower())).ToList();
+                    }
+                    if (!String.IsNullOrEmpty(picFilter.PICPhone))
+                    {
+                        picList = picList.Where(s => s.PICPhone.Contains(picFilter.PICPhone)).ToList();
                     }
 
                     if (!String.IsNullOrEmpty(picFilter.PICEmail))
                     {
-                        picList = picList.Where(s => s.PICEmail.Contains(picFilter.PICEmail)).ToList();
+                        picList = picList.Where(s => s.PICEmail.ToLower().Contains(picFilter.PICEmail.ToLower())).ToList();
                     }
 
                 }
@@ -172,10 +176,10 @@ namespace TMS.DataGateway.Repositories
                 // GLobal Search Filter
                 if (!string.IsNullOrEmpty(picRequest.GlobalSearch))
                 {
-                    string globalSearch = picRequest.GlobalSearch;
-                    picList = picList.Where(s => !s.IsDeleted && s.PICName.Contains(globalSearch)
+                    string globalSearch = picRequest.GlobalSearch.ToLower();
+                    picList = picList.Where(s => !s.IsDeleted && s.PICName.ToLower().Contains(globalSearch)
                     || s.PICPhone.Contains(globalSearch)
-                    || s.PICEmail.ToString().Contains(globalSearch)
+                    || s.PICEmail.ToString().ToLower().Contains(globalSearch)
                     ).ToList();
                 }
 
