@@ -14,9 +14,7 @@ namespace DMS.DomainObjects.Objects
         public string UserName { get; set; }
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidUserPassword")]
         public string Password { get; set; }
-        [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidFirstName")]
         public string FirstName { get; set; }
-        [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidLastName")]
         public string LastName { get; set; }
         public string Email { get; set; }
         public string PhoneNumber { get; set; }        

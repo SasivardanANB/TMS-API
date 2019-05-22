@@ -60,6 +60,8 @@
     <Compile Include="Objects\OrderSearch.cs" />
     <Compile Include="Objects\Order.cs" />
     <Compile Include="Objects\DealerDetails.cs" />
+    <Compile Include="Objects\TrackStep.cs" />
+    <Compile Include="Objects\TrackStepLoadUnload.cs" />
     <Compile Include="Objects\Trip.cs" />
     <Compile Include="Objects\PartnerSearch.cs" />
     <Compile Include="Objects\PartnerDeatils.cs" />

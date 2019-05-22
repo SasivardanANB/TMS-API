@@ -201,22 +201,22 @@ namespace TMS.DataGateway.Repositories
 
                     if (!String.IsNullOrEmpty(driverFilter.DriverNo))
                     {
-                        driversList = driversList.Where(s => s.DriverNo.Contains(driverFilter.DriverNo)).ToList();
+                        driversList = driversList.Where(s => s.DriverNo.ToLower().Contains(driverFilter.DriverNo.ToLower())).ToList();
                     }
 
                     if (!String.IsNullOrEmpty(driverFilter.FirstName))
                     {
-                        driversList = driversList.Where(s => s.FirstName.Contains(driverFilter.FirstName)).ToList();
+                        driversList = driversList.Where(s => s.FirstName.ToLower().Contains(driverFilter.FirstName.ToLower())).ToList();
                     }
 
                     if (!String.IsNullOrEmpty(driverFilter.LastName))
                     {
-                        driversList = driversList.Where(s => s.LastName.Contains(driverFilter.LastName)).ToList();
+                        driversList = driversList.Where(s => s.LastName.ToLower().Contains(driverFilter.LastName.ToLower())).ToList();
                     }
 
                     if (!String.IsNullOrEmpty(driverFilter.Email))
                     {
-                        driversList = driversList.Where(s => s.Email.Contains(driverFilter.Email)).ToList();
+                        driversList = driversList.Where(s => s.Email.ToLower().Contains(driverFilter.Email.ToLower())).ToList();
                     }
 
                     if (!String.IsNullOrEmpty(driverFilter.DriverPhone))
@@ -226,7 +226,7 @@ namespace TMS.DataGateway.Repositories
 
                     if (!String.IsNullOrEmpty(driverFilter.DriverAddress))
                     {
-                        driversList = driversList.Where(s => s.DriverAddress.Contains(driverFilter.DriverAddress)).ToList();
+                        driversList = driversList.Where(s => s.DriverAddress.ToLower().Contains(driverFilter.DriverAddress.ToLower())).ToList();
                     }
 
                     if (!String.IsNullOrEmpty(driverFilter.IdentityNo))
@@ -236,7 +236,7 @@ namespace TMS.DataGateway.Repositories
 
                     if (!String.IsNullOrEmpty(driverFilter.DrivingLicenseNo))
                     {
-                        driversList = driversList.Where(s => s.DrivingLicenseNo.Contains(driverFilter.DrivingLicenseNo)).ToList();
+                        driversList = driversList.Where(s => s.DrivingLicenseNo.ToLower().Contains(driverFilter.DrivingLicenseNo.ToLower())).ToList();
                     }
 
                     //if (!String.IsNullOrEmpty(driverFilter.DrivingLicenseExpiredDate.ToString()))
@@ -258,16 +258,17 @@ namespace TMS.DataGateway.Repositories
                 // GLobal Search Filter
                 if (!string.IsNullOrEmpty(driverRequest.GlobalSearch))
                 {
-                    string globalSearch = driverRequest.GlobalSearch;
-                    driversList = driversList.Where(s => !s.IsDelete && s.FirstName.Contains(globalSearch)
-                    || s.LastName.Contains(globalSearch)
+                    string globalSearch = driverRequest.GlobalSearch.ToLower();
+                    driversList = driversList.Where(s => !s.IsDelete && s.FirstName.ToLower().Contains(globalSearch)
+                    || s.LastName.ToLower().Contains(globalSearch)
                     || s.DriverPhone.Contains(globalSearch)
-                    || s.Email.Contains(globalSearch)
-                    || s.DrivingLicenseNo.Contains(globalSearch)
+                    || s.Email.ToLower().Contains(globalSearch)
+                    || s.DrivingLicenseNo.ToLower().Contains(globalSearch)
                     ).ToList();
                 }
 
 
+     
                 // Sorting
                 if (!string.IsNullOrEmpty(driverRequest.SortOrder) && driversList.Count > 0)
                 {

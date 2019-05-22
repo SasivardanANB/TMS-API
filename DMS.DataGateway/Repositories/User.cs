@@ -137,7 +137,15 @@ namespace DMS.DataGateway.Repositories
 
                         if (userData.ID > 0) //Update User
                         {
-                            context.Entry(userData).State = System.Data.Entity.EntityState.Modified;
+                            var existingUserData = context.Users.FirstOrDefault(t => t.ID == userData.ID);
+                            existingUserData.FirstName = userData.FirstName;
+                            existingUserData.LastName = userData.LastName;
+                            existingUserData.Email = userData.Email;
+                            existingUserData.PhoneNumber = userData.PhoneNumber;
+                            existingUserData.LastModifiedBy = user.LastModifiedBy;
+                            existingUserData.LastModifiedTime = DateTime.Now;
+
+                            context.Entry(existingUserData).State = System.Data.Entity.EntityState.Modified;
                             context.SaveChanges();
                             userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UsersUpdated;
                         }

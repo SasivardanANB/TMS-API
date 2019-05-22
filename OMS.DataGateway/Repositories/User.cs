@@ -187,7 +187,7 @@ namespace OMS.DataGateway.Repositories
                         }
                         else //Create User
                         {
-                            var checkUserName = context.Users.Where(u => u.UserName == userDataModel.UserName).FirstOrDefault();
+                            var checkUserName = context.Users.Where(u => u.UserName == userDataModel.UserName && !u.IsDelete).FirstOrDefault();
                             if (checkUserName == null)
                             {
                                 userDataModel.CreatedBy = user.CreatedBy;
@@ -328,17 +328,17 @@ namespace OMS.DataGateway.Repositories
 
                     if (!String.IsNullOrEmpty(userFilter.UserName))
                     {
-                        usersList = usersList.Where(s => s.UserName.Contains(userFilter.UserName)).ToList();
+                        usersList = usersList.Where(s => s.UserName.ToLower().Contains(userFilter.UserName.ToLower())).ToList();
                     }
 
                     if (!String.IsNullOrEmpty(userFilter.FirstName))
                     {
-                        usersList = usersList.Where(s => s.FirstName.Contains(userFilter.FirstName)).ToList();
+                        usersList = usersList.Where(s => s.FirstName.ToLower().Contains(userFilter.FirstName.ToLower())).ToList();
                     }
 
                     if (!String.IsNullOrEmpty(userFilter.LastName))
                     {
-                        usersList = usersList.Where(s => s.LastName.Contains(userFilter.LastName)).ToList();
+                        usersList = usersList.Where(s => s.LastName.ToLower().Contains(userFilter.LastName.ToLower())).ToList();
                     }
 
                     //if (userFilter.IsActive != null)
@@ -660,12 +660,12 @@ namespace OMS.DataGateway.Repositories
 
                         if (!String.IsNullOrEmpty(filter.RoleCode))
                         {
-                            rolesList = rolesList.Where(s => s.RoleCode.Contains(filter.RoleCode)).ToList();
+                            rolesList = rolesList.Where(s => s.RoleCode.ToLower().Contains(filter.RoleCode.ToLower())).ToList();
                         }
 
                         if (!String.IsNullOrEmpty(filter.RoleDescription))
                         {
-                            rolesList = rolesList.Where(s => s.RoleDescription.Contains(filter.RoleDescription)).ToList();
+                            rolesList = rolesList.Where(s => s.RoleDescription.ToLower().Contains(filter.RoleDescription.ToLower())).ToList();
                         }
 
                         if (filter.ValidFrom != DateTime.MinValue)
@@ -900,7 +900,7 @@ namespace OMS.DataGateway.Repositories
                                         userAssignedRoleDetails.RoleID = userRoleDetail.RoleID;
                                         userAssignedRoleDetails.BusinessAreaID = userRoleDetail.BusinessAreaID;
                                         userAssignedRoleDetails.LastModifiedBy = userRoleRequest.LastModifiedBy;
-                                        userAssignedRoleDetails.LastModifiedTime = userRoleRequest.LastModifiedTime;
+                                        userAssignedRoleDetails.LastModifiedTime = DateTime.Now;
                                         userRoleResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserRoleUpdated;
                                         userRoleResponse.StatusCode = (int)HttpStatusCode.OK;
                                     }
@@ -1016,17 +1016,17 @@ namespace OMS.DataGateway.Repositories
 
                         if (!String.IsNullOrEmpty(filter.BusinessArea))
                         {
-                            userRoleList = userRoleList.Where(s => s.BusinessArea.Contains(filter.BusinessArea)).ToList();
+                            userRoleList = userRoleList.Where(s => s.BusinessArea.ToLower().Contains(filter.BusinessArea.ToLower())).ToList();
                         }
 
                         if (!String.IsNullOrEmpty(filter.RoleName))
                         {
-                            userRoleList = userRoleList.Where(s => s.RoleName.Contains(filter.RoleName)).ToList();
+                            userRoleList = userRoleList.Where(s => s.RoleName.ToLower().Contains(filter.RoleName.ToLower())).ToList();
                         }
 
                         if (!String.IsNullOrEmpty(filter.UserName))
                         {
-                            userRoleList = userRoleList.Where(s => s.UserName.Contains(filter.UserName)).ToList();
+                            userRoleList = userRoleList.Where(s => s.UserName.ToLower().Contains(filter.UserName.ToLower())).ToList();
                         }
 
 

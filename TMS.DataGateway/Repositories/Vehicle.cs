@@ -145,12 +145,12 @@ namespace TMS.DataGateway.Repositories
 
                     if (!String.IsNullOrEmpty(vehicleFilter.VehicleTypeName))
                     {
-                        vehiclesList = vehiclesList.Where(s => s.VehicleTypeName.Contains(vehicleFilter.VehicleTypeName)).ToList();
+                        vehiclesList = vehiclesList.Where(s => s.VehicleTypeName.ToLower().Contains(vehicleFilter.VehicleTypeName.ToLower())).ToList();
                     }
 
                     if (!String.IsNullOrEmpty(vehicleFilter.KIRNo))
                     {
-                        vehiclesList = vehiclesList.Where(s => s.KIRNo.Contains(vehicleFilter.KIRNo)).ToList();
+                        vehiclesList = vehiclesList.Where(s => s.KIRNo.ToLower().Contains(vehicleFilter.KIRNo.ToLower())).ToList();
                     }
 
                     if (!String.IsNullOrEmpty(vehicleFilter.KIRExpiryDate.ToString()))
@@ -160,7 +160,7 @@ namespace TMS.DataGateway.Repositories
 
                     if (!String.IsNullOrEmpty(vehicleFilter.MaxDimension))
                     {
-                        vehiclesList = vehiclesList.Where(s => s.MaxDimension.Contains(vehicleFilter.MaxDimension)).ToList();
+                        vehiclesList = vehiclesList.Where(s => s.MaxDimension.ToLower().Contains(vehicleFilter.MaxDimension.ToLower())).ToList();
                     }
 
                     if (!String.IsNullOrEmpty(vehicleFilter.MaxWeight.ToString()) && vehicleFilter.MaxWeight > 0)
@@ -170,22 +170,22 @@ namespace TMS.DataGateway.Repositories
 
                     if (!String.IsNullOrEmpty(vehicleFilter.PoolName))
                     {
-                        vehiclesList = vehiclesList.Where(s => s.PlateNumber.Contains(vehicleFilter.PoolName)).ToList();
+                        vehiclesList = vehiclesList.Where(s => s.PlateNumber.ToLower().Contains(vehicleFilter.PoolName.ToLower())).ToList();
                     }
 
                     if (!String.IsNullOrEmpty(vehicleFilter.ShipperName))
                     {
-                        vehiclesList = vehiclesList.Where(s => s.PlateNumber.Contains(vehicleFilter.ShipperName)).ToList();
+                        vehiclesList = vehiclesList.Where(s => s.PlateNumber.ToLower().Contains(vehicleFilter.ShipperName.ToLower())).ToList();
                     }
 
                     if (!String.IsNullOrEmpty(vehicleFilter.VehicleTypeDescription))
                     {
-                        vehiclesList = vehiclesList.Where(s => s.PlateNumber.Contains(vehicleFilter.VehicleTypeDescription)).ToList();
+                        vehiclesList = vehiclesList.Where(s => s.PlateNumber.ToLower().Contains(vehicleFilter.VehicleTypeDescription.ToLower())).ToList();
                     }
 
                     if (!String.IsNullOrEmpty(vehicleFilter.PlateNumber))
                     {
-                        vehiclesList = vehiclesList.Where(s => s.PlateNumber.Contains(vehicleFilter.PlateNumber)).ToList();
+                        vehiclesList = vehiclesList.Where(s => s.PlateNumber.ToLower().Contains(vehicleFilter.PlateNumber.ToLower())).ToList();
                     }
 
                     if (!String.IsNullOrEmpty(vehicleFilter.PoliceNo))
@@ -212,12 +212,12 @@ namespace TMS.DataGateway.Repositories
                 // GLobal Search Filter
                 if (!string.IsNullOrEmpty(vehicleRequest.GlobalSearch))
                 {
-                    string globalSearch = vehicleRequest.GlobalSearch;
-                    vehiclesList = vehiclesList.Where(s => !s.IsDelete && s.PlateNumber.Contains(globalSearch)
-                    || s.MaxDimension.Contains(globalSearch)
+                    string globalSearch = vehicleRequest.GlobalSearch.ToLower();
+                    vehiclesList = vehiclesList.Where(s => !s.IsDelete && s.PlateNumber.ToLower().Contains(globalSearch)
+                    || s.MaxDimension.ToLower().Contains(globalSearch)
                     || s.MaxWeight.ToString().Contains(globalSearch)
-                    || s.PoolName.Contains(globalSearch)
-                    || s.VehicleTypeName.Contains(globalSearch)
+                    || s.PoolName.ToLower().Contains(globalSearch)
+                    || s.VehicleTypeName.ToLower().Contains(globalSearch)
                     ).ToList();
                 }
 

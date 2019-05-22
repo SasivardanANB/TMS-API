@@ -8,11 +8,11 @@ namespace TMS.DomainObjects.Objects
 {
     public class TrackHeader
     {
-        public int StepHeaderNumber { get; set; }
-        public string StepHeaderName { get; set; }
-        public string StepHeaderDescription { get; set; }
-        public string StepHeaderDateTime { get; set; }
-        public string StepHeaderNotification { get; set; }
-        public List<TrackDetail> TackDetails { get; set; }
+        public TrackStep AcceptOrder { get; set; }
+
+        public List<TrackStepLoadUnload> Loads { get; set; }
+        public List<TrackStepLoadUnload> Unloads { get; set; }
+        public TrackStep POD { get; set; }
+        public TrackStep Complete { get; set; }
     }
 }
