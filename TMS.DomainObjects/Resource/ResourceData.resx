@@ -352,7 +352,7 @@
     <value>Pool deleted successfully</value>
   </data>
   <data name="VehicleDeleted" xml:space="preserve">
-    <value>Vehicle deleted succesfully</value>
+    <value>Vehicle deleted successfully</value>
   </data>
   <data name="FileUploadError" xml:space="preserve">
     <value>An error occured while uploading the file</value>
@@ -401,5 +401,8 @@
   </data>
   <data name="PicDeleted" xml:space="preserve">
     <value>Pic deleted successfully</value>
+  </data>
+  <data name="TripAssigned" xml:space="preserve">
+    <value>Trip assigned successfully</value>
   </data>
 </root>

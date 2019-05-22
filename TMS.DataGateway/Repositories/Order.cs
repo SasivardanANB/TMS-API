@@ -1191,30 +1191,30 @@ public OrderDetailsResponse GetOrderDetails(int orderId)
         using (var context = new Data.TMSDBContext())
         {
 
-            var orderData = (from oH in context.OrderHeaders
-                             where oH.ID == orderId
-                             select new OrderDetailsResponse
-                             {
-                                 ID = oH.ID,
-                                 //ActualShipment = oH.ActualShipmentDate,
-                                 ActualShipmentDate = oH.ActualShipmentDate.ToString(),
-                                 BusinessArea = oH.BusinessArea.BusinessAreaDescription,
-                                 BusinessAreaId = oH.BusinessAreaId,
-                                 DriverName = oH.DriverName,
-                                 DriverNo = oH.DriverNo,
-                                 EstimationShipmentDate = oH.EstimationShipmentDate.ToString(),
-                                 FleetType = oH.FleetType.ID,
-                                 Harga = oH.Harga,
-                                 IsActive = oH.IsActive,
-                                 LegecyOrderNo = oH.LegecyOrderNo,
-                                 VehicleNo = oH.VehicleNo,
-                                 VehicleShipmentType = oH.VehicleShipment,
-                                 //OrderDate = oH.OrderDate,
-                                 OrderNo = oH.OrderNo,
-                                 OrderShipmentStatus = oH.OrderStatusID,
-                                 OrderType = oH.OrderType,
-                                 OrderWeight = oH.OrderWeight,
-                                 OrderWeightUM = oH.OrderWeightUM,
+                    var orderData = (from oH in context.OrderHeaders
+                                     where oH.ID == orderId
+                                     select new OrderDetailsResponse
+                                     {
+                                         ID = oH.ID,
+                                         //ActualShipment = oH.ActualShipmentDate,
+                                         ActualShipmentDate = oH.ActualShipmentDate.ToString(),
+                                         BusinessArea = oH.BusinessArea.BusinessAreaDescription,
+                                         BusinessAreaId = oH.BusinessAreaId,
+                                         DriverName = oH.DriverName,
+                                         DriverNo = oH.DriverNo,
+                                         EstimationShipmentDate = oH.EstimationShipmentDate.ToString(),
+                                         FleetType = oH.FleetType.ID,
+                                         Harga = oH.Harga,
+                                         IsActive = oH.IsActive,
+                                         LegecyOrderNo = oH.LegecyOrderNo,
+                                         VehicleNo = oH.VehicleNo,
+                                         VehicleShipmentType = oH.VehicleShipment,
+                                         //OrderDate = oH.OrderDate,
+                                         OrderNo = oH.OrderNo,
+                                         OrderShipmentStatus = oH.OrderStatusID,
+                                         OrderType = oH.OrderType,
+                                         OrderWeight = oH.OrderWeight,
+                                         OrderWeightUM = oH.OrderWeightUM,
 
                              }).FirstOrDefault();
 
@@ -1222,76 +1222,107 @@ public OrderDetailsResponse GetOrderDetails(int orderId)
             if (orderData != null)
             {
 
-                var orderPartnerData = (from orderPartnerDetails in context.OrderPartnerDetails
-                                        join orderDetailsData in context.OrderDetails on orderPartnerDetails.OrderDetailID equals orderDetailsData.ID
-                                        where orderDetailsData.OrderHeaderID == orderId
-                                        select new Domain.StopPoints
-                                        {
-                                            ID = orderPartnerDetails.ID,
-                                            Address = orderPartnerDetails.Partner.PartnerAddress,
-                                            CityName = orderPartnerDetails.Partner.PostalCode.SubDistrict.City.CityDescription,
-                                            ProvinceName = orderPartnerDetails.Partner.PostalCode.SubDistrict.City.Province.ProvinceDescription,
-                                            SubDistrictName = orderPartnerDetails.Partner.PostalCode.SubDistrict.SubdistrictName,
-                                            ActualShipmentDate = orderData.ActualShipmentDate,
-                                            EstimationShipmentDate = orderData.EstimationShipmentDate,
-                                            PartnerCode = orderPartnerDetails.Partner.PartnerNo,
-                                            PartnerId = orderPartnerDetails.PartnerID,
-                                            PartnerName = orderPartnerDetails.Partner.PartnerName,
-                                            PeartnerType = orderPartnerDetails.Partner.PartnerTypeID,
-                                            SequenceNo = orderDetailsData.SequenceNo,
-                                            Instruction = orderDetailsData.Instruction,
-                                            TotalPallet = orderDetailsData.TotalPallet
 
-                                        }
-                                        ).ToList();
-                if (orderPartnerData.Count > 0)
-                {
-                    int maxSeqNo = orderPartnerData.Max(x => x.SequenceNo);
-                    var transporter = (from data in orderPartnerData
-                                       where data.PeartnerType == 1 && data.SequenceNo == maxSeqNo
-                                       select data
-                                       ).FirstOrDefault();
-                    var source = (from data in orderPartnerData
-                                  where data.PeartnerType == 2 && data.SequenceNo == maxSeqNo
-                                  select data
-                                      ).FirstOrDefault();
-                    var destinations = (from data in orderPartnerData
-                                        where data.PeartnerType == 3 // && data.SequenceNo == maxSeqNo
-                                        select data
-                                      ).ToList();
+                        var orderPartnerData = (from orderPartnerDetails in context.OrderPartnerDetails
+                                                join orderDetailsData in context.OrderDetails on orderPartnerDetails.OrderDetailID equals orderDetailsData.ID
+                                                where orderDetailsData.OrderHeaderID == orderId
+                                                select new Domain.StopPoints
+                                                {
+                                                    ID = orderPartnerDetails.ID,
+                                                    Address = orderPartnerDetails.Partner.PartnerAddress,
+                                                    CityName = orderPartnerDetails.Partner.PostalCode.SubDistrict.City.CityDescription,
+                                                    ProvinceName = orderPartnerDetails.Partner.PostalCode.SubDistrict.City.Province.ProvinceDescription,
+                                                    SubDistrictName = orderPartnerDetails.Partner.PostalCode.SubDistrict.SubdistrictName,
+                                                    ActualShipmentDate = orderData.ActualShipmentDate,
+                                                    EstimationShipmentDate = orderData.EstimationShipmentDate,
+                                                    PartnerCode = orderPartnerDetails.Partner.PartnerNo,
+                                                    PartnerId = orderPartnerDetails.PartnerID,
+                                                    PartnerName = orderPartnerDetails.Partner.PartnerName,
+                                                    PeartnerType = orderPartnerDetails.Partner.PartnerTypeID,
+                                                    SequenceNo = orderDetailsData.SequenceNo,
+                                                    Instruction = orderDetailsData.Instruction,
+                                                    TotalPallet = orderDetailsData.TotalPallet
 
-                    List<Domain.StopPoints> stopPoints = new List<Domain.StopPoints>();
-                    stopPoints.Add(source);
-                    if (destinations.Count > 0)
-                    {
-                        foreach (var item in destinations)
+                                                }
+                                                ).ToList();
+                        if (orderPartnerData.Count > 0)
                         {
-                            stopPoints.Add(item);
+                            if (orderData.OrderType == 1)
+                            {
+
+                                int maxSeqNo = orderPartnerData.Max(x => x.SequenceNo);
+                                var transporter = (from data in orderPartnerData
+                                                   where data.PeartnerType == 1 && data.SequenceNo == maxSeqNo
+                                                   select data
+                                                   ).FirstOrDefault();
+                                var source = (from data in orderPartnerData
+                                              where data.PeartnerType == 2 && data.SequenceNo == maxSeqNo
+                                              select data
+                                                  ).FirstOrDefault();
+                                var destinations = (from data in orderPartnerData
+                                                    where data.PeartnerType == 3 // && data.SequenceNo == maxSeqNo
+                                                    select data
+                                                  ).ToList();
+
+                                List<Domain.StopPoints> stopPoints = new List<Domain.StopPoints>();
+                                stopPoints.Add(source);
+                                if (destinations.Count > 0)
+                                {
+                                    foreach (var item in destinations)
+                                    {
+                                        stopPoints.Add(item);
+                                    }
+                                }
+                                orderDetailsResponse = orderData;
+                                orderDetailsResponse.Transporter = transporter;
+                                orderDetailsResponse.Instructions = transporter.Instruction;
+                                orderDetailsResponse.TotalPallet = transporter.TotalPallet;
+                                orderDetailsResponse.SourceOrDestinations = stopPoints;
+                            }
+                            else
+                            {
+                                int maxSeqNo = orderPartnerData.Max(x => x.SequenceNo);
+                                var transporter = (from data in orderPartnerData
+                                                   where data.PeartnerType == 1 && data.SequenceNo == maxSeqNo
+                                                   select data
+                                                   ).FirstOrDefault();
+                                var source = (from data in orderPartnerData
+                                              where data.PeartnerType == 2 //&& data.SequenceNo == maxSeqNo
+                                              select data
+                                                  ).ToList();
+                                var destinations = (from data in orderPartnerData
+                                                    where data.PeartnerType == 3  && data.SequenceNo == maxSeqNo
+                                                    select data
+                                                  ).FirstOrDefault();
+
+                                List<Domain.StopPoints> stopPoints = new List<Domain.StopPoints>();
+                                stopPoints.Add(destinations);
+                                if (source.Count > 0)
+                                {
+                                    foreach (var item in source)
+                                    {
+                                        stopPoints.Add(item);
+                                    }
+                                }
+                                orderDetailsResponse = orderData;
+                                orderDetailsResponse.Transporter = transporter;
+                                orderDetailsResponse.Instructions = transporter.Instruction;
+                                orderDetailsResponse.TotalPallet = transporter.TotalPallet;
+                                orderDetailsResponse.SourceOrDestinations = stopPoints;
+                            }
                         }
+                        //orderResponse.NumberOfRecords = delearData.Count;
+                        orderDetailsResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        orderDetailsResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                        orderDetailsResponse.StatusCode = (int)HttpStatusCode.OK;
                     }
-
-
-                    orderDetailsResponse = orderData;
-                    orderDetailsResponse.Transporter = transporter;
-                    orderDetailsResponse.Instructions = transporter.Instruction;
-                    orderDetailsResponse.TotalPallet = transporter.TotalPallet;
-                    orderDetailsResponse.SourceOrDestinations = stopPoints;
-
-                }
-
-
-                //orderResponse.NumberOfRecords = delearData.Count;
-                orderDetailsResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                orderDetailsResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
-                orderDetailsResponse.StatusCode = (int)HttpStatusCode.OK;
-            }
-            else
-            {
-                orderDetailsResponse.NumberOfRecords = 0;
-                orderDetailsResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                orderDetailsResponse.StatusCode = (int)HttpStatusCode.NotFound;
-                orderDetailsResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
-            }
+                    else
+                    {
+                        orderDetailsResponse.NumberOfRecords = 0;
+                        orderDetailsResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        orderDetailsResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                        orderDetailsResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                    }
 
 
         }

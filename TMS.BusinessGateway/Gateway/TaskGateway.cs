@@ -58,5 +58,9 @@ namespace TMS.BusinessGateway.Gateway
         {
             get { return new BusinessGateTask(new Gate()); }
         }
+        public ITripTask TripTask
+        {
+            get { return new BusinessTripTask(new Trip()); }
+        }
     }
 }

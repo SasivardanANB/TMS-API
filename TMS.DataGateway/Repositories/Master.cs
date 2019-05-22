@@ -34,7 +34,7 @@ namespace TMS.DataGateway.Repositories
                 {
                     partnerList =
                         (from partner in context.Partners
-                         where partner.PartnerName.Contains(partnerSearch.SearchText)
+                         where partner.PartnerName.Contains(partnerSearch.SearchText) && partner.PartnerTypeID == partnerSearch.PartnerTypeId
                          select new Domain.Common
                          {
                              Id = partner.ID,
@@ -379,6 +379,7 @@ namespace TMS.DataGateway.Repositories
             }
             return commonResponse;
         }
+
         public CommonResponse GetCityNames(string searchText)
         {
             CommonResponse commonResponse = new CommonResponse();
@@ -411,6 +412,48 @@ namespace TMS.DataGateway.Repositories
                     {
                         commonResponse.Data = cityData;
                         commonResponse.NumberOfRecords = cityData.Count;
+                        commonResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        commonResponse.StatusCode = (int)HttpStatusCode.OK;
+                        commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                    }
+                    else
+                    {
+                        commonResponse.NumberOfRecords = 0;
+                        commonResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        commonResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                        commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+
+                commonResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                commonResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                commonResponse.StatusMessage = ex.Message;
+            }
+            return commonResponse;
+        }
+
+        public CommonResponse GetGateNamesByBusinessArea(int businessAreaId, int gateTypeId)
+        {
+            CommonResponse commonResponse = new CommonResponse();
+            try
+            {
+                using (var context = new TMSDBContext())
+                {
+                    var gateData = new List<Domain.Common>();
+
+                    gateData = context.G2Gs.Where(b => b.BusinessAreaId == businessAreaId && b.GateTypeId== gateTypeId).Select(data=>new Domain.Common {
+                        Id=data.ID,
+                        Value=data.G2GName
+                    }).ToList();
+
+                    if (gateData.Count > 0)
+                    {
+                        commonResponse.Data = gateData;
+                        commonResponse.NumberOfRecords = gateData.Count;
                         commonResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         commonResponse.StatusCode = (int)HttpStatusCode.OK;
                         commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;

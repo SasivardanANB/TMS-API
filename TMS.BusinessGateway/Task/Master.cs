@@ -69,5 +69,11 @@ namespace TMS.BusinessGateway.Task
             CommonResponse commonResponse = _masterRepository.GetCityNames(searchText);
             return commonResponse;
         }
+
+        public override CommonResponse GetGateNamesByBusinessArea(int businessAreaId, int gateTypeId)
+        {
+            CommonResponse commonResponse = _masterRepository.GetGateNamesByBusinessArea(businessAreaId, gateTypeId);
+            return commonResponse;
+        }
     }
 }

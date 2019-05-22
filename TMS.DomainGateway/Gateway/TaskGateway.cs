@@ -20,5 +20,6 @@ namespace TMS.DomainGateway.Gateway
         public abstract IOrderTask OrderTask { get; set; }
         public abstract IMasterTask MasterTask { get; set; }
         public abstract IGateTask GateTask { get; set; }
+        public abstract ITripTask TripTask { get; set; }
     }
 }
