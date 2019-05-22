@@ -132,6 +132,18 @@
   <data name="InvalidFileFormat" xml:space="preserve">
     <value>Only jpeg and png are supported</value>
   </data>
+  <data name="InvalidFirstName" xml:space="preserve">
+    <value>Invalid First Name</value>
+  </data>
+  <data name="InvalidLastName" xml:space="preserve">
+    <value>Invalid Last Name</value>
+  </data>
+  <data name="InvalidUserName" xml:space="preserve">
+    <value>Invalid User Name</value>
+  </data>
+  <data name="InvalidUserPassword" xml:space="preserve">
+    <value>Invalid User Password</value>
+  </data>
   <data name="LoginFail" xml:space="preserve">
     <value>Login Fail</value>
   </data>
@@ -139,7 +151,7 @@
     <value>Login Success</value>
   </data>
   <data name="NewPasswordMustbeDifferent" xml:space="preserve">
-    <value>NewPasswordMustbeDifferent</value>
+    <value>New Password Must be Different</value>
   </data>
   <data name="OldPasswordMismatch" xml:space="preserve">
     <value>OldPasswordMismatch</value>
