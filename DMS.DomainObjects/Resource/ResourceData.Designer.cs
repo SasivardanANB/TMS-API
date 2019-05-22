@@ -106,6 +106,42 @@ namespace DMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid First Name.
+        /// </summary>
+        public static string InvalidFirstName {
+            get {
+                return ResourceManager.GetString("InvalidFirstName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid Last Name.
+        /// </summary>
+        public static string InvalidLastName {
+            get {
+                return ResourceManager.GetString("InvalidLastName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid User Name.
+        /// </summary>
+        public static string InvalidUserName {
+            get {
+                return ResourceManager.GetString("InvalidUserName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid User Password.
+        /// </summary>
+        public static string InvalidUserPassword {
+            get {
+                return ResourceManager.GetString("InvalidUserPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Login Fail.
         /// </summary>
         public static string LoginFail {
@@ -124,7 +160,7 @@ namespace DMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NewPasswordMustbeDifferent.
+        ///   Looks up a localized string similar to New Password Must be Different.
         /// </summary>
         public static string NewPasswordMustbeDifferent {
             get {

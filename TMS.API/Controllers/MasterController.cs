@@ -100,10 +100,10 @@ namespace TMS.API.Controllers
 
         [Route("getgatenames")]
         [HttpGet]
-        public IHttpActionResult GetGateNamesByBusinessArea(int businessAreaId)
+        public IHttpActionResult GetGateNamesByBusinessArea(int businessAreaId,int gateTypeId)
         {
             IMasterTask masterTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().MasterTask;
-            CommonResponse commonResponse = masterTask.GetGateNamesByBusinessArea(businessAreaId);
+            CommonResponse commonResponse = masterTask.GetGateNamesByBusinessArea(businessAreaId, gateTypeId);
             return Ok(commonResponse);
         }
     }
