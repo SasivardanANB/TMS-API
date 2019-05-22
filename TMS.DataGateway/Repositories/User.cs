@@ -183,7 +183,7 @@ namespace TMS.DataGateway.Repositories
                         }
                         else //Create User
                         {
-                            var checkUserName = context.Users.Where(u => u.UserName == userDataModel.UserName).FirstOrDefault();
+                            var checkUserName = context.Users.Where(u => u.UserName == userDataModel.UserName && !u.IsDelete).FirstOrDefault();
                             if (checkUserName == null)
                             {
                                 userDataModel.CreatedBy = user.CreatedBy;
@@ -894,7 +894,7 @@ namespace TMS.DataGateway.Repositories
                                         userAssignedRoleDetails.RoleID = userRoleDetail.RoleID;
                                         userAssignedRoleDetails.BusinessAreaID = userRoleDetail.BusinessAreaID;
                                         userAssignedRoleDetails.LastModifiedBy = userRoleRequest.LastModifiedBy;
-                                        userAssignedRoleDetails.LastModifiedTime = userRoleRequest.LastModifiedTime;
+                                        userAssignedRoleDetails.LastModifiedTime = DateTime.Now;
                                         userRoleResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserRoleUpdated;
                                         userRoleResponse.StatusCode = (int)HttpStatusCode.OK;
                                     }
