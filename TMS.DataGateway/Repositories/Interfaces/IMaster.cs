@@ -20,5 +20,6 @@ namespace TMS.DataGateway.Repositories.Iterfaces
         CommonResponse GetPoolNames(string searchText);
         CommonResponse GetShipperNames(string searchText);
         CommonResponse GetCityNames(string searchText);
+        CommonResponse GetGateNamesByBusinessArea(int businessAreaId);
     }
 }

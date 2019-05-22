@@ -23,6 +23,7 @@ namespace TMS.DomainObjects.Objects
         public int GateId { get; set; }
         public string GateName { get; set; }
         public string Info { get; set; }
+        public int BusinessAreaId { get; set; }
         public string BusinessArea { get; set; }
     }
 }

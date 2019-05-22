@@ -76,6 +76,7 @@ namespace TMS.DataGateway.Repositories
                         BusinessArea=orderHeader.BusinessArea.BusinessAreaDescription,
                         VehicleTypeName = tMSDBContext.VehicleTypes.Where(v => v.ID.ToString() == orderHeader.VehicleShipment).Select(i => i.VehicleTypeDescription).FirstOrDefault(),
                         Status = tMSDBContext.GateInGateOuts.Any(g=>g.OrderId==orderHeader.ID)?tMSDBContext.GateTypes.Where(g => g.ID == tMSDBContext.GateInGateOuts.Where(ga => ga.OrderId == orderHeader.ID).OrderByDescending(id=>id.ID).Select(i=>i.GateTypeId).FirstOrDefault()).Select(i=>i.GateTypeDescription).FirstOrDefault() :"NOT ARRIVED",
+                        BusinessAreaId= orderHeader.BusinessAreaId,
                         GateName = tMSDBContext.GateInGateOuts.Any(g => g.OrderId == orderHeader.ID) ? (tMSDBContext.G2Gs.Where(g => g.ID == (tMSDBContext.GateInGateOuts.Where(ga => ga.OrderId == orderHeader.ID).OrderByDescending(id => id.ID).Select(i => i.G2GId).FirstOrDefault())).Select(i => i.G2GName).FirstOrDefault()) : "",
                     }).ToList();
                 }

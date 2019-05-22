@@ -20,5 +20,6 @@ namespace TMS.DomainGateway.Task
         public abstract CommonResponse GetPoolNames(string searchText);
         public abstract CommonResponse GetShipperNames(string searchText);
         public abstract CommonResponse GetCityNames(string searchText);
+        public abstract CommonResponse GetGateNamesByBusinessArea(int businessAreaId);
     }
 }

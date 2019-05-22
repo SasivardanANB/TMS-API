@@ -88,12 +88,22 @@ namespace TMS.API.Controllers
             CommonResponse commonResponse = masterTask.GetShipperNames(searchText);
             return Ok(commonResponse);
         }
+
         [Route("getcitynames")]
         [HttpGet]
         public IHttpActionResult GetCityNames(string searchText = "")
         {
             IMasterTask masterTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().MasterTask;
             CommonResponse commonResponse = masterTask.GetCityNames(searchText);
+            return Ok(commonResponse);
+        }
+
+        [Route("getgatenames")]
+        [HttpGet]
+        public IHttpActionResult GetGateNamesByBusinessArea(int businessAreaId)
+        {
+            IMasterTask masterTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().MasterTask;
+            CommonResponse commonResponse = masterTask.GetGateNamesByBusinessArea(businessAreaId);
             return Ok(commonResponse);
         }
     }
