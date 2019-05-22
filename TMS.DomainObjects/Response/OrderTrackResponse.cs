@@ -9,6 +9,6 @@ namespace TMS.DomainObjects.Response
 {
     public class OrderTrackResponse : Message
     {
-        public List<TrackHeader> Data { get; set; }
+        public TrackHeader Data { get; set; }
     }
 }
