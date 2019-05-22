@@ -53,9 +53,9 @@ namespace TMS.DataGateway.Repositories
                         }
                         else //Create partner
                         {
-                            var existPartner = context.Partners.Where(p => p.PartnerNo == partnerData.PartnerNo).FirstOrDefault();
-                            if (existPartner == null)
-                            {
+                            //var existPartner = context.Partners.Where(p => p.PartnerNo == partnerData.PartnerNo).FirstOrDefault();
+                            //if (existPartner == null)
+                            //{
                                 partnerData.CreatedBy = partnerRequest.CreatedBy;
                                 partnerData.CreatedTime = DateTime.Now;
                                 partnerData.IsActive = true;
@@ -64,13 +64,13 @@ namespace TMS.DataGateway.Repositories
                                 partnerResponse.StatusMessage = DomainObjects.Resource.ResourceData.PartnerCreated;
                                 partnerResponse.Status = DomainObjects.Resource.ResourceData.Success;
                                 partnerResponse.StatusCode = (int)HttpStatusCode.OK;
-                            }
-                            else
-                            {
-                                partnerResponse.StatusMessage = DomainObjects.Resource.ResourceData.PartnerNoExisted;
-                                partnerResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                                partnerResponse.StatusCode = (int)HttpStatusCode.BadRequest;
-                            }
+                            //}
+                            //else
+                            //{
+                            //    partnerResponse.StatusMessage = DomainObjects.Resource.ResourceData.PartnerNoExisted;
+                            //    partnerResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                            //    partnerResponse.StatusCode = (int)HttpStatusCode.BadRequest;
+                            //}
                         }
                     }
 
