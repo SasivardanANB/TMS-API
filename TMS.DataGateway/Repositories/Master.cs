@@ -436,7 +436,7 @@ namespace TMS.DataGateway.Repositories
             return commonResponse;
         }
 
-        public CommonResponse GetGateNamesByBusinessArea(int businessAreaId)
+        public CommonResponse GetGateNamesByBusinessArea(int businessAreaId, int gateTypeId)
         {
             CommonResponse commonResponse = new CommonResponse();
             try
@@ -445,7 +445,7 @@ namespace TMS.DataGateway.Repositories
                 {
                     var gateData = new List<Domain.Common>();
 
-                    gateData = context.G2Gs.Where(b => b.BusinessAreaId == businessAreaId).Select(data=>new Domain.Common {
+                    gateData = context.G2Gs.Where(b => b.BusinessAreaId == businessAreaId && b.GateTypeId== gateTypeId).Select(data=>new Domain.Common {
                         Id=data.ID,
                         Value=data.G2GName
                     }).ToList();
