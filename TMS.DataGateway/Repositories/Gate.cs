@@ -36,14 +36,14 @@ namespace TMS.DataGateway.Repositories
                             Info = gateInGateOutData.Info,
                             GateTypeId = gateInGateOutData.GateTypeId,
                             G2GId = gateInGateOutData.GateId,
-                            CreatedBy = "SYSTEM",
                             CreatedTime = DateTime.Now
                         };
                         gateInGateOuts.Add(gateInGateOut);
                     }
                     tMSDBContext.GateInGateOuts.AddRange(gateInGateOuts);
                     tMSDBContext.SaveChanges();
-                    gateResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                    gateResponse.Data = gateRequest.Requests;
+                    gateResponse.StatusMessage = DomainObjects.Resource.ResourceData.GateInGateOutCreated;
                     gateResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     gateResponse.StatusCode = (int)HttpStatusCode.OK;
                 }
@@ -75,6 +75,7 @@ namespace TMS.DataGateway.Repositories
                         OrderType = orderHeader.OrderType == 1 ? "Bongkar" : "Muat",
                         BusinessArea=orderHeader.BusinessArea.BusinessAreaDescription,
                         VehicleTypeName = tMSDBContext.VehicleTypes.Where(v => v.ID.ToString() == orderHeader.VehicleShipment).Select(i => i.VehicleTypeDescription).FirstOrDefault(),
+                        ID= tMSDBContext.GateInGateOuts.Any(g => g.OrderId == orderHeader.ID) ? tMSDBContext.GateInGateOuts.Where(g => g.OrderId == orderHeader.ID).Select(i=>i.ID).FirstOrDefault():0,
                         Status = tMSDBContext.GateInGateOuts.Any(g=>g.OrderId==orderHeader.ID)?tMSDBContext.GateTypes.Where(g => g.ID == tMSDBContext.GateInGateOuts.Where(ga => ga.OrderId == orderHeader.ID).OrderByDescending(id=>id.ID).Select(i=>i.GateTypeId).FirstOrDefault()).Select(i=>i.GateTypeDescription).FirstOrDefault() :"NOT ARRIVED",
                         BusinessAreaId= orderHeader.BusinessAreaId,
                         GateName = tMSDBContext.GateInGateOuts.Any(g => g.OrderId == orderHeader.ID) ? (tMSDBContext.G2Gs.Where(g => g.ID == (tMSDBContext.GateInGateOuts.Where(ga => ga.OrderId == orderHeader.ID).OrderByDescending(id => id.ID).Select(i => i.G2GId).FirstOrDefault())).Select(i => i.G2GName).FirstOrDefault()) : "",
@@ -84,16 +85,21 @@ namespace TMS.DataGateway.Repositories
                 // Filter
                 if (gateRequest.Requests.Count > 0)
                 {
-                    var vehicleFilter = gateRequest.Requests[0];
+                    var gateFilter = gateRequest.Requests[0];
 
-                    if (vehicleFilter.ID > 0)
+                    if (gateFilter.ID > 0)
                     {
-                        gateList = gateList.Where(s => s.ID == vehicleFilter.ID).ToList();
+                        gateList = gateList.Where(s => s.ID == gateFilter.ID).ToList();
                     }
 
-                    if (!String.IsNullOrEmpty(vehicleFilter.VehicleTypeName))
+                    if (!String.IsNullOrEmpty(gateFilter.VehicleTypeName))
                     {
-                        gateList = gateList.Where(s => s.VehicleTypeName.Contains(vehicleFilter.VehicleTypeName)).ToList();
+                        gateList = gateList.Where(s => s.VehicleTypeName.Contains(gateFilter.VehicleTypeName)).ToList();
+                    }
+
+                    if (!String.IsNullOrEmpty(gateFilter.GateName))
+                    {
+                        gateList = gateList.Where(s => s.GateName.ToLower().Contains(gateFilter.GateName.ToLower())).ToList();
                     }
                 }
 
