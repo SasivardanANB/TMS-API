@@ -165,12 +165,12 @@ namespace TMS.DataGateway.Repositories
 
                     if (!String.IsNullOrEmpty(partnerFilter.PartnerName))
                     {
-                        partnerList = partnerList.Where(s => s.PartnerName.Contains(partnerFilter.PartnerName)).ToList();
+                        partnerList = partnerList.Where(s => s.PartnerName.ToLower().Contains(partnerFilter.PartnerName.ToLower())).ToList();
                     }
 
                     if (!String.IsNullOrEmpty(partnerFilter.PartnerEmail))
                     {
-                        partnerList = partnerList.Where(s => s.PartnerEmail.Contains(partnerFilter.PartnerEmail)).ToList();
+                        partnerList = partnerList.Where(s => s.PartnerEmail.ToLower().Contains(partnerFilter.PartnerEmail.ToLower())).ToList();
                     }
 
                     if (partnerFilter.PartnerTypeID > 0)
@@ -187,11 +187,11 @@ namespace TMS.DataGateway.Repositories
                 // GLobal Search Filter
                 if (!string.IsNullOrEmpty(partnerRequest.GlobalSearch))
                 {
-                    string globalSearch = partnerRequest.GlobalSearch;
-                    partnerList = partnerList.Where(s => !s.IsDeleted && s.PartnerName.Contains(globalSearch)
-                    || s.PartnerAddress.Contains(globalSearch)
-                    || s.PartnerInitial.Contains(globalSearch)
-                    || s.PICName.Contains(globalSearch)
+                    string globalSearch = partnerRequest.GlobalSearch.ToLower();
+                    partnerList = partnerList.Where(s => !s.IsDeleted && s.PartnerName.ToLower().Contains(globalSearch)
+                    || s.PartnerAddress.ToLower().Contains(globalSearch)
+                    || s.PartnerInitial.ToLower().Contains(globalSearch)
+                    || s.PICName.ToLower().Contains(globalSearch)
                     ).ToList();
                 }
 
