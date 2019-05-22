@@ -14,6 +14,7 @@ using NLog;
 using Data = TMS.DataGateway.DataModels;
 using System.Data.Entity;
 using System.Globalization;
+using TMS.DomainObjects.Objects;
 
 namespace TMS.DataGateway.Repositories
 {
@@ -476,6 +477,20 @@ namespace TMS.DataGateway.Repositories
 
                             #endregion
 
+                            #region Step 8: Update Order Status
+                            string orderStatusCode = order.OrderShipmentStatus.ToString();
+                            Data.OrderStatusHistory orderStatusHistory = new Data.OrderStatusHistory()
+                            {
+                                OrderDetailID = orderDetail.ID,
+                                OrderStatusID = context.OrderStatuses.Where(t => t.OrderStatusCode == orderStatusCode).FirstOrDefault().ID,
+                                StatusDate = DateTime.Now,
+                                Remarks = "Order Creted"
+                            };
+
+                            context.OrderStatusHistories.Add(orderStatusHistory);
+                            context.SaveChanges();
+
+                            #endregion
                             transaction.Commit();
                             response.Status = DomainObjects.Resource.ResourceData.Success;
                             response.StatusCode = (int)HttpStatusCode.OK;
@@ -520,7 +535,7 @@ namespace TMS.DataGateway.Repositories
                                  ||
                                  ((orderSearchRequest.GlobalSearch != string.Empty && pksh.PackingSheetNo == orderSearchRequest.GlobalSearch)
                                  || (orderSearchRequest.GlobalSearch == string.Empty && pksh.PackingSheetNo == pksh.PackingSheetNo))
-                                 
+
                                  select new Domain.OrderSearch
                                  {
                                      OrderId = oh.ID,
@@ -773,15 +788,97 @@ namespace TMS.DataGateway.Repositories
 
         public OrderTrackResponse TrackOrder(int orderId)
         {
-            OrderTrackResponse orderTrackResponse = new OrderTrackResponse();
+            OrderTrackResponse orderTrackResponse = new OrderTrackResponse()
+            {
+                Data = new List<Domain.TrackHeader>()
+            };
             try
             {
                 using (var context = new Data.TMSDBContext())
                 {
-                    var sources = (from od in context.OrderDetails
-                                   select new
-                                   {
-                                   });
+                    var orderHeader = (from oh in context.OrderHeaders
+                                       where oh.ID == orderId
+                                       select new
+                                       {
+                                           OrderId = oh.ID,
+                                           OrderType = oh.OrderType
+                                       }).FirstOrDefault();
+
+                    if (orderHeader != null)
+                    {
+                        //Get Status for the Order
+                        var statusData = (from status in context.OrderStatusHistories
+                                          join od in context.OrderDetails on status.OrderDetailID equals od.ID
+                                          join oh in context.OrderHeaders on od.OrderHeaderID equals oh.ID
+                                          where oh.ID == orderHeader.OrderId
+                                          orderby status.StatusDate ascending
+                                          select new
+                                          {
+                                              OrderHistoryId = status.ID,
+                                              OrderDetailId = status.OrderDetailID,
+                                              OrderStatusId = status.OrderStatusID,
+                                              StatusCode = context.OrderStatuses.Where(t => t.ID == status.OrderStatusID).FirstOrDefault().OrderStatusCode,
+                                              StatusValue = context.OrderStatuses.Where(t => t.ID == status.OrderStatusID).FirstOrDefault().OrderStatusValue,
+                                              StatusDate = status.StatusDate,
+                                              Remarks = status.Remarks
+                                          }).ToList();
+
+                        if (statusData != null && statusData.Count > 0)
+                        {
+                            int stepNumber = 1;
+                            foreach (var status in statusData)
+                            {
+                                TrackHeader trackHeader = new TrackHeader()
+                                {
+                                    StepHeaderNumber = stepNumber + 1,
+                                    StepHeaderDateTime = status.StatusDate.ToString("d MMM yyyy HH:mm")
+                                };
+                                if (status.StatusCode == "15")
+                                {
+                                    stepNumber = stepNumber + 1;
+                                    trackHeader.StepHeaderNumber = stepNumber;
+                                    trackHeader.StepHeaderName = "Accept Order";
+                                    trackHeader.StepHeaderDescription = "Driver/Transporter accept order";
+                                    trackHeader.StepHeaderDateTime = status.StatusDate.ToString("dd MMM yyyy HH:mm");
+                                }
+                                orderTrackResponse.Data.Add(trackHeader);
+                                statusData.Remove(statusData.FirstOrDefault(t => t.OrderHistoryId == status.OrderHistoryId));
+                            }
+
+                            //Create Load response
+                            if (orderHeader.OrderType == 1) //For Inbound, There can be multiple loads for every Order Detail
+                            {
+                                var orderDetails = (from od in context.OrderDetails
+                                                   where od.OrderHeaderID == orderHeader.OrderId
+                                                   select new
+                                                   {
+                                                       OrderID = od.OrderHeaderID,
+                                                       OrderDEtailId = od.ID
+                                                   }).ToList();
+                                                       
+                                if (orderDetails != null && orderDetails.Count > 0)
+                                {
+                                    foreach (var orderDetail in orderDetails)
+                                    {
+                                        //TrackHeader trackHeader = new TrackHeader()
+                                        //{
+                                        //    StepHeaderNumber = stepNumber + 1,
+                                        //    StepHeaderDateTime = status.StatusDate.ToString("d MMM yyyy HH:mm")
+                                        //};
+                                        //if (status.StatusCode == "15")
+                                        //{
+                                        //    stepNumber = stepNumber + 1;
+                                        //    trackHeader.StepHeaderNumber = stepNumber;
+                                        //    trackHeader.StepHeaderName = "Accept Order";
+                                        //    trackHeader.StepHeaderDescription = "Driver/Transporter accept order";
+                                        //    trackHeader.StepHeaderDateTime = status.StatusDate.ToString("dd MMM yyyy HH:mm");
+                                        //}
+                                        //orderTrackResponse.Data.Add(trackHeader);
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -1025,20 +1122,21 @@ namespace TMS.DataGateway.Repositories
                                          Harga = oH.Harga,
                                          IsActive = oH.IsActive,
                                          LegecyOrderNo = oH.LegecyOrderNo,
-                                         VehicleNo=oH.VehicleNo,
-                                         VehicleShipmentType=oH.VehicleShipment,
+                                         VehicleNo = oH.VehicleNo,
+                                         VehicleShipmentType = oH.VehicleShipment,
                                          //OrderDate = oH.OrderDate,
                                          OrderNo = oH.OrderNo,
                                          OrderShipmentStatus = oH.OrderStatusID,
-                                         OrderType=oH.OrderType,
-                                         OrderWeight=oH.OrderWeight,
-                                         OrderWeightUM=oH.OrderWeightUM,
+                                         OrderType = oH.OrderType,
+                                         OrderWeight = oH.OrderWeight,
+                                         OrderWeightUM = oH.OrderWeightUM,
 
                                      }).FirstOrDefault();
 
 
                     if (orderData != null)
                     {
+
 
                         var orderPartnerData = (from orderPartnerDetails in context.OrderPartnerDetails
                                                 join orderDetailsData in context.OrderDetails on orderPartnerDetails.OrderDetailID equals orderDetailsData.ID
@@ -1064,40 +1162,70 @@ namespace TMS.DataGateway.Repositories
                                                 ).ToList();
                         if (orderPartnerData.Count > 0)
                         {
-                            int maxSeqNo = orderPartnerData.Max(x => x.SequenceNo);
-                            var transporter = (from data in orderPartnerData
-                                               where data.PeartnerType == 1 && data.SequenceNo == maxSeqNo
-                                               select data
-                                               ).FirstOrDefault();
-                            var source = (from data in orderPartnerData
-                                          where data.PeartnerType == 2 && data.SequenceNo == maxSeqNo
-                                          select data
-                                              ).FirstOrDefault();
-                            var destinations = (from data in orderPartnerData
-                                                where data.PeartnerType == 3 // && data.SequenceNo == maxSeqNo
-                                                select data
-                                              ).ToList();
-
-                            List<Domain.StopPoints> stopPoints = new List<Domain.StopPoints>();
-                            stopPoints.Add(source);
-                            if (destinations.Count > 0)
+                            if (orderData.OrderType == 1)
                             {
-                                foreach (var item in destinations)
+
+                                int maxSeqNo = orderPartnerData.Max(x => x.SequenceNo);
+                                var transporter = (from data in orderPartnerData
+                                                   where data.PeartnerType == 1 && data.SequenceNo == maxSeqNo
+                                                   select data
+                                                   ).FirstOrDefault();
+                                var source = (from data in orderPartnerData
+                                              where data.PeartnerType == 2 && data.SequenceNo == maxSeqNo
+                                              select data
+                                                  ).FirstOrDefault();
+                                var destinations = (from data in orderPartnerData
+                                                    where data.PeartnerType == 3 // && data.SequenceNo == maxSeqNo
+                                                    select data
+                                                  ).ToList();
+
+                                List<Domain.StopPoints> stopPoints = new List<Domain.StopPoints>();
+                                stopPoints.Add(source);
+                                if (destinations.Count > 0)
                                 {
-                                    stopPoints.Add(item);
+                                    foreach (var item in destinations)
+                                    {
+                                        stopPoints.Add(item);
+                                    }
                                 }
+                                orderDetailsResponse = orderData;
+                                orderDetailsResponse.Transporter = transporter;
+                                orderDetailsResponse.Instructions = transporter.Instruction;
+                                orderDetailsResponse.TotalPallet = transporter.TotalPallet;
+                                orderDetailsResponse.SourceOrDestinations = stopPoints;
                             }
+                            else
+                            {
+                                int maxSeqNo = orderPartnerData.Max(x => x.SequenceNo);
+                                var transporter = (from data in orderPartnerData
+                                                   where data.PeartnerType == 1 && data.SequenceNo == maxSeqNo
+                                                   select data
+                                                   ).FirstOrDefault();
+                                var source = (from data in orderPartnerData
+                                              where data.PeartnerType == 2 //&& data.SequenceNo == maxSeqNo
+                                              select data
+                                                  ).ToList();
+                                var destinations = (from data in orderPartnerData
+                                                    where data.PeartnerType == 3  && data.SequenceNo == maxSeqNo
+                                                    select data
+                                                  ).FirstOrDefault();
 
-
-                            orderDetailsResponse = orderData;
-                            orderDetailsResponse.Transporter = transporter;
-                            orderDetailsResponse.Instructions = transporter.Instruction;
-                            orderDetailsResponse.TotalPallet = transporter.TotalPallet;
-                            orderDetailsResponse.SourceOrDestinations = stopPoints;
-
+                                List<Domain.StopPoints> stopPoints = new List<Domain.StopPoints>();
+                                stopPoints.Add(destinations);
+                                if (source.Count > 0)
+                                {
+                                    foreach (var item in source)
+                                    {
+                                        stopPoints.Add(item);
+                                    }
+                                }
+                                orderDetailsResponse = orderData;
+                                orderDetailsResponse.Transporter = transporter;
+                                orderDetailsResponse.Instructions = transporter.Instruction;
+                                orderDetailsResponse.TotalPallet = transporter.TotalPallet;
+                                orderDetailsResponse.SourceOrDestinations = stopPoints;
+                            }
                         }
-
-
                         //orderResponse.NumberOfRecords = delearData.Count;
                         orderDetailsResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         orderDetailsResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;

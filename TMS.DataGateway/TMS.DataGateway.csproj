@@ -261,22 +261,28 @@
     <Compile Include="Migrations\201905161135344_tms_v1.0_Order_PackingList.Designer.cs">
       <DependentUpon>201905161135344_tms_v1.0_Order_PackingList.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201905200534217_tms_v1.0_unknown.cs" />
-    <Compile Include="Migrations\201905200534217_tms_v1.0_unknown.Designer.cs">
-      <DependentUpon>201905200534217_tms_v1.0_unknown.cs</DependentUpon>
+    <Compile Include="Migrations\201905200802373_tms_v1.0_OrderStatusHistory.cs" />
+    <Compile Include="Migrations\201905200802373_tms_v1.0_OrderStatusHistory.Designer.cs">
+      <DependentUpon>201905200802373_tms_v1.0_OrderStatusHistory.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201905211025010_Gate2GateRelatedTables.cs" />
     <Compile Include="Migrations\201905211025010_Gate2GateRelatedTables.Designer.cs">
       <DependentUpon>201905211025010_Gate2GateRelatedTables.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201905211301459_tms_v1.0_IsLoad.cs" />
+    <Compile Include="Migrations\201905211301459_tms_v1.0_IsLoad.Designer.cs">
+      <DependentUpon>201905211301459_tms_v1.0_IsLoad.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\Authenticate.cs" />
+    <Compile Include="Repositories\Interfaces\ITrip.cs" />
     <Compile Include="Repositories\Interfaces\IPool.cs" />
     <Compile Include="Repositories\Interfaces\IPartner.cs" />
     <Compile Include="Repositories\Interfaces\IMaster.cs" />
     <Compile Include="Repositories\Interfaces\IGate.cs" />
     <Compile Include="Repositories\Interfaces\IVechicle.cs" />
+    <Compile Include="Repositories\Trip.cs" />
     <Compile Include="Repositories\Pool.cs" />
     <Compile Include="Repositories\Interfaces\IPIC.cs" />
     <Compile Include="Repositories\PIC.cs" />
@@ -374,11 +380,14 @@
     <EmbeddedResource Include="Migrations\201905161135344_tms_v1.0_Order_PackingList.resx">
       <DependentUpon>201905161135344_tms_v1.0_Order_PackingList.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201905200534217_tms_v1.0_unknown.resx">
-      <DependentUpon>201905200534217_tms_v1.0_unknown.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201905200802373_tms_v1.0_OrderStatusHistory.resx">
+      <DependentUpon>201905200802373_tms_v1.0_OrderStatusHistory.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201905211025010_Gate2GateRelatedTables.resx">
       <DependentUpon>201905211025010_Gate2GateRelatedTables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905211301459_tms_v1.0_IsLoad.resx">
+      <DependentUpon>201905211301459_tms_v1.0_IsLoad.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SeedData\Activities.csv" />
     <EmbeddedResource Include="SeedData\applications.csv" />
