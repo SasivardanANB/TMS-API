@@ -20,7 +20,7 @@ namespace TMS.DataGateway.DataModels
         //[Index("Partner_OrderPointCode", IsUnique = true)]
         public string OrderPointCode { get; set; }
         [MaxLength(10)]
-        [Index("Partner_PartnerNo", IsUnique = true)]
+        //[Index("Partner_PartnerNo", IsUnique = true)]
         public string PartnerNo { get; set; }
         public string PartnerName { get; set; }
         public string PartnerAddress { get; set; }
