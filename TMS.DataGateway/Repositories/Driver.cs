@@ -63,7 +63,6 @@ namespace TMS.DataGateway.Repositories
                         {
                             driverData.DriverImageId = InsertImageGuid(driverRequest.Requests[driverObjectCount].DriverImageGuId, driverRequest.CreatedBy, driverData.DriverImageId);
                         }
-
                         //For update driver
                         if (driverData.ID > 0)
                         {
@@ -76,7 +75,6 @@ namespace TMS.DataGateway.Repositories
                             driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.DriversUpdated;
                             driverResponse.StatusCode = (int)HttpStatusCode.OK;
                         }
-
                         //For create driver
                         else
                         {

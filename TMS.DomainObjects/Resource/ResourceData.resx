@@ -405,4 +405,10 @@
   <data name="TripAssigned" xml:space="preserve">
     <value>Trip assigned successfully</value>
   </data>
+  <data name="VehicleCreated" xml:space="preserve">
+    <value>Vehicle(s) created successfully</value>
+  </data>
+  <data name="VehicleUpdated" xml:space="preserve">
+    <value>Vehicle(s) updated successfully</value>
+  </data>
 </root>
