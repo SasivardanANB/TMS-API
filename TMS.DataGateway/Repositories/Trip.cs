@@ -243,5 +243,212 @@ namespace TMS.DataGateway.Repositories
             //return orderSearchResponse;
             return tripResponse;
         }
+
+        public OrderDetailsResponse GetTripDetails(int orderId)
+        {
+            OrderDetailsResponse orderDetailsResponse = new OrderDetailsResponse();
+            try
+            {
+                using (var context = new DataModel.TMSDBContext())
+                {
+
+                    var orderData = (from oH in context.OrderHeaders
+                                     where oH.ID == orderId
+                                     select new OrderDetailsResponse
+                                     {
+                                         ID = oH.ID,
+                                         //ActualShipment = oH.ActualShipmentDate,
+                                         ActualShipmentDate = oH.ActualShipmentDate.ToString(),
+                                         BusinessArea = oH.BusinessArea.BusinessAreaDescription,
+                                         BusinessAreaId = oH.BusinessAreaId,
+                                         DriverName = oH.DriverName,
+                                         DriverNo = oH.DriverNo,
+                                         EstimationShipmentDate = oH.EstimationShipmentDate.ToString(),
+                                         FleetType = oH.FleetType.ID,
+                                         Harga = oH.Harga,
+                                         IsActive = oH.IsActive,
+                                         LegecyOrderNo = oH.LegecyOrderNo,
+                                         VehicleNo = oH.VehicleNo,
+                                         VehicleShipmentType = oH.VehicleShipment,
+                                         //OrderDate = oH.OrderDate,
+                                         OrderNo = oH.OrderNo,
+                                         OrderShipmentStatus = oH.OrderStatusID,
+                                         OrderType = oH.OrderType,
+                                         OrderWeight = oH.OrderWeight,
+                                         OrderWeightUM = oH.OrderWeightUM,
+
+                                     }).FirstOrDefault();
+
+
+                    if (orderData != null)
+                    {
+
+
+                        var orderPartnerData = (from orderPartnerDetails in context.OrderPartnerDetails
+                                                join orderDetailsData in context.OrderDetails on orderPartnerDetails.OrderDetailID equals orderDetailsData.ID
+                                                where orderDetailsData.OrderHeaderID == orderId
+                                                select new Domain.StopPoints
+                                                {
+                                                    ID = orderPartnerDetails.ID,
+                                                    Address = orderPartnerDetails.Partner.PartnerAddress,
+                                                    CityName = orderPartnerDetails.Partner.PostalCode.SubDistrict.City.CityDescription,
+                                                    ProvinceName = orderPartnerDetails.Partner.PostalCode.SubDistrict.City.Province.ProvinceDescription,
+                                                    SubDistrictName = orderPartnerDetails.Partner.PostalCode.SubDistrict.SubdistrictName,
+                                                    ActualShipmentDate = orderData.ActualShipmentDate,
+                                                    EstimationShipmentDate = orderData.EstimationShipmentDate,
+                                                    PartnerCode = orderPartnerDetails.Partner.PartnerNo,
+                                                    PartnerId = orderPartnerDetails.PartnerID,
+                                                    PartnerName = orderPartnerDetails.Partner.PartnerName,
+                                                    PeartnerType = orderPartnerDetails.Partner.PartnerTypeID,
+                                                    SequenceNo = orderDetailsData.SequenceNo,
+                                                    Instruction = orderDetailsData.Instruction,
+                                                    TotalPallet = orderDetailsData.TotalPallet
+
+                                                }
+                                                ).ToList();
+                        if (orderPartnerData.Count > 0)
+                        {
+                            if (orderData.OrderType == 1)
+                            {
+
+                                int maxSeqNo = orderPartnerData.Max(x => x.SequenceNo);
+                                var transporter = (from data in orderPartnerData
+                                                   where data.PeartnerType == 1 && data.SequenceNo == maxSeqNo
+                                                   select data
+                                                   ).FirstOrDefault();
+                                var source = (from data in orderPartnerData
+                                              where data.PeartnerType == 2 && data.SequenceNo == maxSeqNo
+                                              select data
+                                                  ).FirstOrDefault();
+                                var destinations = (from data in orderPartnerData
+                                                    where data.PeartnerType == 3 // && data.SequenceNo == maxSeqNo
+                                                    select data
+                                                  ).ToList();
+
+                                List<Domain.StopPoints> stopPoints = new List<Domain.StopPoints>();
+                                stopPoints.Add(source);
+                                if (destinations.Count > 0)
+                                {
+                                    foreach (var item in destinations)
+                                    {
+                                        stopPoints.Add(item);
+                                    }
+                                }
+                                orderDetailsResponse = orderData;
+                                orderDetailsResponse.Transporter = transporter;
+                                orderDetailsResponse.Instructions = transporter.Instruction;
+                                orderDetailsResponse.TotalPallet = transporter.TotalPallet;
+                                orderDetailsResponse.SourceOrDestinations = stopPoints;
+                            }
+                            else
+                            {
+                                int maxSeqNo = orderPartnerData.Max(x => x.SequenceNo);
+                                var transporter = (from data in orderPartnerData
+                                                   where data.PeartnerType == 1 && data.SequenceNo == maxSeqNo
+                                                   select data
+                                                   ).FirstOrDefault();
+                                var source = (from data in orderPartnerData
+                                              where data.PeartnerType == 2 //&& data.SequenceNo == maxSeqNo
+                                              select data
+                                                  ).ToList();
+                                var destinations = (from data in orderPartnerData
+                                                    where data.PeartnerType == 3 && data.SequenceNo == maxSeqNo
+                                                    select data
+                                                  ).FirstOrDefault();
+
+                                List<Domain.StopPoints> stopPoints = new List<Domain.StopPoints>();
+                                stopPoints.Add(destinations);
+                                if (source.Count > 0)
+                                {
+                                    foreach (var item in source)
+                                    {
+                                        stopPoints.Add(item);
+                                    }
+                                }
+                                orderDetailsResponse = orderData;
+                                orderDetailsResponse.Transporter = transporter;
+                                orderDetailsResponse.Instructions = transporter.Instruction;
+                                orderDetailsResponse.TotalPallet = transporter.TotalPallet;
+                                orderDetailsResponse.SourceOrDestinations = stopPoints;
+                            }
+                        }
+                        //orderResponse.NumberOfRecords = delearData.Count;
+                        orderDetailsResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        orderDetailsResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                        orderDetailsResponse.StatusCode = (int)HttpStatusCode.OK;
+                    }
+                    else
+                    {
+                        orderDetailsResponse.NumberOfRecords = 0;
+                        orderDetailsResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        orderDetailsResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                        orderDetailsResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                    }
+
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+                orderDetailsResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                orderDetailsResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                orderDetailsResponse.StatusMessage = ex.Message;
+            }
+            return orderDetailsResponse;
+
+        }
+
+        public TripResponse UpdateTripDetails(TripRequest tripRequest)
+        {
+            //TripResponse tripResponse = new TripResponse();
+            TripResponse tripResponse = new TripResponse()
+            {
+                Data = new List<Domain.Trip>()
+            };
+
+            try
+            {
+                using (var context = new DataModel.TMSDBContext())
+                {
+                    foreach (var request in tripRequest.Requests)
+                    {
+                      var   orderHeadeData = (from data in context.OrderHeaders
+                                          where data.ID == request.OrderId
+                                          select data).FirstOrDefault();
+                        if(orderHeadeData != null)
+                        {
+                            orderHeadeData.DriverName = request.DriverName;
+                            orderHeadeData.DriverNo = request.DriverNo;
+                            orderHeadeData.VehicleShipment = request.Vehicle;
+                            orderHeadeData.LastModifiedTime = tripRequest.LastModifiedTime;
+                            orderHeadeData.LastModifiedBy = tripRequest.LastModifiedBy;
+                            context.SaveChanges();
+                            tripResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                            tripResponse.StatusCode = (int)HttpStatusCode.OK;
+                            tripResponse.StatusMessage = DomainObjects.Resource.ResourceData.TripAssigned;
+                        }
+                        else
+                        {
+                            tripResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                            tripResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                            tripResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
+                        }
+
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+                tripResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                tripResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                tripResponse.StatusMessage = ex.Message;
+            }
+            //return orderSearchResponse;
+            return tripResponse;
+        }
     }
 }

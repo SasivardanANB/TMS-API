@@ -808,6 +808,15 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Trip assigned successfully.
+        /// </summary>
+        public static string TripAssigned {
+            get {
+                return ResourceManager.GetString("TripAssigned", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to User is In-Active.
         /// </summary>
         public static string UserInActive {
@@ -907,7 +916,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Vehicle deleted succesfully.
+        ///   Looks up a localized string similar to Vehicle deleted successfully.
         /// </summary>
         public static string VehicleDeleted {
             get {

@@ -26,5 +26,24 @@ namespace TMS.API.Controllers
             return Ok(tripResponse);
         }
 
+        [Route("gettripdetails")]
+        [HttpGet]
+        public IHttpActionResult GetTripDetails(int orderId)
+        {
+            ITripTask tripTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().TripTask;
+            OrderDetailsResponse orderDetailsResponse = tripTask.GetTripDetails(orderId);
+            return Ok(orderDetailsResponse);
+        }
+
+        [Route("updatetripdetails")]
+        [HttpPost]
+        public IHttpActionResult UpdateTripDetails(TripRequest tripRequest)
+        {
+            ITripTask tripTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().TripTask;
+            TripResponse tripResponse = tripTask.UpdateTripDetails(tripRequest);
+            return Ok(tripResponse);
+        }
+
+
     }
 }

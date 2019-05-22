@@ -11,5 +11,7 @@ namespace TMS.DomainGateway.Task.Interfaces
     public interface ITripTask
     {
         TripResponse GetTripList(TripRequest tripRequest);
+        OrderDetailsResponse GetTripDetails(int orderId);
+        TripResponse UpdateTripDetails(TripRequest tripRequest);
     }
 }

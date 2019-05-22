@@ -12,5 +12,7 @@ namespace TMS.DataGateway.Repositories.Iterfaces
     public interface ITrip
     {
         TripResponse GetTripList(TripRequest tripRequest);
+        OrderDetailsResponse GetTripDetails(int orderId);
+        TripResponse UpdateTripDetails(TripRequest tripRequest);
     }
 }
