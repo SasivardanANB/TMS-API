@@ -26,5 +26,7 @@ namespace TMS.DomainObjects.Objects
         public string PoliceNumber { get; set; }
         public int OrderStatusId { get; set; }
         public bool IsChangeAllowed { get; set; }
+        public string DriverNo { get; set; }
+        public string DriverName { get; set; }
     }
 }

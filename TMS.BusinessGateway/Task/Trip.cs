@@ -25,5 +25,16 @@ namespace TMS.BusinessGateway.Task
             TripResponse tripResponse = _tripRepository.GetTripList(tripRequest);
             return tripResponse;
         }
+        public override OrderDetailsResponse GetTripDetails(int orderId)
+        {
+            OrderDetailsResponse orderDetailsResponse = _tripRepository.GetTripDetails(orderId);
+            return orderDetailsResponse;
+        }
+
+        public override TripResponse UpdateTripDetails(TripRequest tripRequest)
+        {
+            TripResponse tripResponse = _tripRepository.UpdateTripDetails(tripRequest);
+            return tripResponse;
+        }
     }
 }

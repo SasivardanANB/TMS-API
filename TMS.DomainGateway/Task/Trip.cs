@@ -12,5 +12,7 @@ namespace TMS.DomainGateway.Task
     public abstract class TripTask : ITripTask
     {
         public abstract TripResponse GetTripList(TripRequest tripRequest);
+        public abstract OrderDetailsResponse GetTripDetails(int orderId);
+        public abstract TripResponse UpdateTripDetails(TripRequest tripRequest);
     }
 }
