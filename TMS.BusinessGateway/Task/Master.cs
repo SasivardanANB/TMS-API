@@ -70,9 +70,9 @@ namespace TMS.BusinessGateway.Task
             return commonResponse;
         }
 
-        public override CommonResponse GetGateNamesByBusinessArea(int businessAreaId)
+        public override CommonResponse GetGateNamesByBusinessArea(int businessAreaId, int gateTypeId)
         {
-            CommonResponse commonResponse = _masterRepository.GetGateNamesByBusinessArea(businessAreaId);
+            CommonResponse commonResponse = _masterRepository.GetGateNamesByBusinessArea(businessAreaId, gateTypeId);
             return commonResponse;
         }
     }

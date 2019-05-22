@@ -50,6 +50,13 @@ namespace DMS.API.Controllers
         [AllowAnonymous, HttpPost]
         public IHttpActionResult CreateUpdateUser(UserRequest user)
         {
+            if (user.Requests!=null && user.Requests.Count>0)
+            {
+                if (user.Requests[0].ID > 0)
+                {
+                    ModelState.Remove("user.Requests[0].Password");
+                }
+            }
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
