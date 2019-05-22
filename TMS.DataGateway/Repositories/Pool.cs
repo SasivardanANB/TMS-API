@@ -146,10 +146,10 @@ namespace TMS.DataGateway.Repositories
                         poolsList = tMSDBContext.Pools
                         .Where(p => !p.IsDelete)
                         .Where(p => poolFilter.ID == 0 || p.ID == poolFilter.ID)
-                        .Where(p => String.IsNullOrEmpty(poolFilter.PoolName) || p.PoolName.Contains(poolFilter.PoolName))
-                        .Where(p => String.IsNullOrEmpty(poolFilter.PoolDescription) || p.PoolDescription.Contains(poolFilter.PoolDescription))
+                        .Where(p => String.IsNullOrEmpty(poolFilter.PoolName) || p.PoolName.ToLower().Contains(poolFilter.PoolName.ToLower()))
+                        .Where(p => String.IsNullOrEmpty(poolFilter.PoolDescription) || p.PoolDescription.ToLower().Contains(poolFilter.PoolDescription.ToLower()))
                         .Where(p => String.IsNullOrEmpty(poolFilter.ContactNumber) || p.ContactNumber.Contains(poolFilter.ContactNumber))
-                        .Where(p => String.IsNullOrEmpty(poolFilter.Address) || p.Address.Contains(poolFilter.Address))
+                        .Where(p => String.IsNullOrEmpty(poolFilter.Address) || p.Address.ToLower().Contains(poolFilter.Address.ToLower()))
                         .Select(pool => new Domain.Pool
                         {
                             ID = pool.ID,
@@ -168,12 +168,12 @@ namespace TMS.DataGateway.Repositories
                 // GLobal Search Filter
                 if (!string.IsNullOrEmpty(poolRequest.GlobalSearch))
                 {
-                    string globalSearch = poolRequest.GlobalSearch;
-                    poolsList = poolsList.Where(s => !s.IsDelete && s.PoolName.Contains(globalSearch)
-                    || s.PoolDescription.Contains(globalSearch)
-                    || s.CityName.Contains(globalSearch)
-                    || s.ContactNumber.Contains(globalSearch)
-                    || s.Address.Contains(globalSearch)
+                    string globalSearch = poolRequest.GlobalSearch.ToLower();
+                    poolsList = poolsList.Where(s => !s.IsDelete && s.PoolName.ToLower().Contains(globalSearch)
+                    || s.PoolDescription.ToLower().Contains(globalSearch)
+                    || s.CityName.ToLower().Contains(globalSearch)
+                    || s.ContactNumber.ToLower().Contains(globalSearch)
+                    || s.Address.ToLower().Contains(globalSearch)
                     ).ToList();
                 }
 
