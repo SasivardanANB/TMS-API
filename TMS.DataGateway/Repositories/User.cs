@@ -1464,7 +1464,10 @@ namespace TMS.DataGateway.Repositories
         public DashboardResponse GetUserDashboard(UserRequest user)
         {
             DashboardResponse dashboardResponse = new DashboardResponse();
-            throw new NotImplementedException();
+            dashboardResponse.Status = DomainObjects.Resource.ResourceData.Success;
+            dashboardResponse.StatusCode = (int)HttpStatusCode.OK;
+            dashboardResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+            return dashboardResponse;
         }
     }
 }
