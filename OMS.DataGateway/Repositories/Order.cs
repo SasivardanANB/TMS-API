@@ -128,8 +128,8 @@ namespace OMS.DataGateway.Repositories
                         .Where(p => p.IsActive)
                         .Where(p => filter.StatusId == 0 || p.OrderShipmentStatus == filter.StatusId)
                         .Where(p => String.IsNullOrEmpty(filter.OrderNumber) || p.OrderNo.Contains(filter.OrderNumber))
-                        .Where(p => filter.FromDate == DateTime.MinValue || (p.OrderDate >= filter.FromDate))
-                        .Where(p => filter.ToDate == DateTime.MinValue || (p.OrderDate <= filter.ToDate)).ToList();
+                        .Where(p => filter.FromDate == DateTime.MinValue || (DbFunctions.TruncateTime(p.OrderDate) >= filter.FromDate.Date))
+                        .Where(p => filter.ToDate == DateTime.MinValue || (DbFunctions.TruncateTime(p.OrderDate)  <= filter.ToDate.Date)).ToList();
                     }
 
 
