@@ -173,6 +173,7 @@ namespace DMS.DataGateway.Repositories
             }
             return userResponse;
         }
+
         public UserResponse ChangePassword(ChangePasswordRequest changePasswordRequest,string type)
         {
             UserResponse userResponse = new UserResponse();

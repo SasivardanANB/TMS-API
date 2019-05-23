@@ -16,7 +16,6 @@ namespace DMS.DataGateway.DataModels
         public int ID { get; set; }
         [Required(ErrorMessage = "")]
         [MaxLength(50)]
-        [Index("User_UserName", IsUnique = true)]
         public string UserName { get; set; }
         [MinLength(8)]
         public string Password { get; set; }
