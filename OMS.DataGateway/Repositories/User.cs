@@ -298,6 +298,7 @@ namespace OMS.DataGateway.Repositories
                              UserName = user.UserName,
                              FirstName = user.FirstName,
                              LastName = user.LastName,
+                             Password= user.Password,
                              IsActive = user.IsActive,
                              Applications = context.UserApplications.Where(userApp => userApp.UserID == user.ID).Select(userApp => userApp.ApplicationID).ToList(),
                              ApplicationNames = context.Applications.Where(a => (context.UserApplications.Where(userApp => userApp.UserID == user.ID).Select(userApp => userApp.ApplicationID).ToList()).Contains(a.ID)).Select(a => a.ApplicationName).ToList(),
@@ -314,6 +315,13 @@ namespace OMS.DataGateway.Repositories
                                  BusinessAreaDescription = fe.BusinessAreaDescription
                              }).ToList(),
                          }).ToList();
+                    if (usersList.Count > 0)
+                    {
+                        foreach (var item in usersList)
+                        {
+                            item.Password= Encryption.EncryptionLibrary.DecrypPassword(item.Password);
+                        }
+                    }
                 }
 
                 // Filter

@@ -293,6 +293,7 @@ namespace TMS.DataGateway.Repositories
                              FirstName = user.FirstName,
                              LastName = user.LastName,
                              IsActive = user.IsActive,
+                             Password=user.Password,
                              Applications = context.UserApplications.Where(userApp => userApp.UserID == user.ID).Select(userApp => userApp.ApplicationID).ToList(),
                              ApplicationNames = context.Applications.Where(a => (context.UserApplications.Where(userApp => userApp.UserID == user.ID).Select(userApp => userApp.ApplicationID).ToList()).Contains(a.ID)).Select(a => a.ApplicationName).ToList(),
                              Roles = context.Roles.Where(r => (context.UserRoles.Where(ur => ur.UserID == user.ID).Select(l => l.ID).ToList()).Contains(r.ID)).Select(fe => new Domain.Role
@@ -308,6 +309,13 @@ namespace TMS.DataGateway.Repositories
                                  BusinessAreaDescription = fe.BusinessAreaDescription
                              }).ToList(),
                          }).ToList();
+                    if (usersList.Count > 0)
+                    {
+                        foreach (var item in usersList)
+                        {
+                            item.Password = Encryption.EncryptionLibrary.DecrypPassword(item.Password);
+                        }
+                    }
                 }
 
                 // Filter
