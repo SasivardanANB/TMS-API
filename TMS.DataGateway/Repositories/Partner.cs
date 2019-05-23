@@ -191,7 +191,7 @@ namespace TMS.DataGateway.Repositories
                     partnerList = partnerList.Where(s => !s.IsDeleted && s.PartnerName.ToLower().Contains(globalSearch)
                     || s.PartnerAddress.ToLower().Contains(globalSearch)
                     || s.PartnerInitial.ToLower().Contains(globalSearch)
-                    || s.PICName.ToLower().Contains(globalSearch)
+                    || (s.PICName != null && s.PICName.ToLower().Contains(globalSearch))
                     ).ToList();
                 }
 
