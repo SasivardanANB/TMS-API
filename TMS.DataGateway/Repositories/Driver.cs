@@ -259,11 +259,11 @@ namespace TMS.DataGateway.Repositories
                 if (!string.IsNullOrEmpty(driverRequest.GlobalSearch))
                 {
                     string globalSearch = driverRequest.GlobalSearch.ToLower();
-                    driversList = driversList.Where(s => !s.IsDelete && s.FirstName.ToLower().Contains(globalSearch)
-                    || s.LastName.ToLower().Contains(globalSearch)
-                    || s.DriverPhone.Contains(globalSearch)
-                    || s.Email.ToLower().Contains(globalSearch)
-                    || s.DrivingLicenseNo.ToLower().Contains(globalSearch)
+                    driversList = driversList.Where(s => !s.IsDelete && (s.FirstName != null && s.FirstName.ToLower().Contains(globalSearch))
+                    || (s.LastName != null && s.LastName.ToLower().Contains(globalSearch))
+                    || (s.DriverPhone != null && s.DriverPhone.Contains(globalSearch))
+                    || (s.Email != null && s.Email.ToLower().Contains(globalSearch))
+                    || (s.DrivingLicenseNo != null && s.DrivingLicenseNo.ToLower().Contains(globalSearch))
                     ).ToList();
                 }
 

@@ -188,9 +188,9 @@ namespace TMS.DataGateway.Repositories
                 if (!string.IsNullOrEmpty(partnerRequest.GlobalSearch))
                 {
                     string globalSearch = partnerRequest.GlobalSearch.ToLower();
-                    partnerList = partnerList.Where(s => !s.IsDeleted && s.PartnerName.ToLower().Contains(globalSearch)
-                    || s.PartnerAddress.ToLower().Contains(globalSearch)
-                    || s.PartnerInitial.ToLower().Contains(globalSearch)
+                    partnerList = partnerList.Where(s => !s.IsDeleted && (s.PartnerName != null && s.PartnerName.ToLower().Contains(globalSearch))
+                    || (s.PartnerAddress != null && s.PartnerAddress.ToLower().Contains(globalSearch))
+                    || (s.PartnerInitial != null && s.PartnerInitial.ToLower().Contains(globalSearch))
                     || (s.PICName != null && s.PICName.ToLower().Contains(globalSearch))
                     ).ToList();
                 }
