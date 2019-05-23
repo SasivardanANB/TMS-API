@@ -181,7 +181,7 @@ namespace DMS.DataGateway.Repositories
                         var tripFilter = tripsByDriverRequest.Requests[0];
 
                         var tripsByUser = (from trip in context.TripDetails
-                                           where trip.UserId == tripFilter.UserId && trip.OrderType == tripFilter.OrderType
+                                           where trip.UserId == tripFilter.UserId 
                                            select new Domain.TripDetails
                                            {
                                                ID = trip.ID,
@@ -199,7 +199,10 @@ namespace DMS.DataGateway.Repositories
                                                OrderType = trip.OrderType
                                            }).ToList();
 
-
+                        if (tripFilter.OrderType != 0)
+                        {
+                            tripsByUser = tripsByUser.Where(t => t.OrderType == tripFilter.OrderType).ToList();
+                        }
                         foreach (var trip in tripsByUser)
                         {
                             var stopPoints = (from sp in context.StopPoints

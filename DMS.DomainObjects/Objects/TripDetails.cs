@@ -23,8 +23,7 @@ namespace DMS.DomainObjects.Objects
         public List<StopPoints> StopPoints { get; set; }
         public string TripStatus { get; set; }
         public int? TripStatusId { get; set; }
-        [Required]
-        [Range(1, 2)]
+        [Range(0, 2)]
         public int OrderType { get; set; }
     }
 }
