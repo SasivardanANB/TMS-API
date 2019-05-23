@@ -22,6 +22,7 @@ namespace DMS.DomainObjects.Objects
         public string PoliceNumber { get; set; }
         public string TripStatusCode { get; set; }
         public int OrderType { get; set; }
+        public string BusinessAreaCode { get; set; }
         public List<TripLocation> TripLocations { get; set; }
     }
 }

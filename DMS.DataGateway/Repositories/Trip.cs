@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using DataModel = DMS.DataGateway.DataModels;
 using Domain = DMS.DomainObjects.Objects;
 using System.Configuration;
+using System.Data.Entity;
 
 namespace DMS.DataGateway.Repositories
 {
@@ -25,58 +26,212 @@ namespace DMS.DataGateway.Repositories
             TripResponse response = new TripResponse();
             using (var context = new DMSDBContext())
             {
-                try
+                using (DbContextTransaction transaction = context.Database.BeginTransaction())
                 {
-                    foreach (var trip in request.Requests)
+                    try
                     {
-                        int userId = 0;
-                        int statusId = 0;
-                        #region Check if Driver Exists
-                        var driver = context.Users.FirstOrDefault(t => t.UserName == trip.DriverName);
-                        if (driver != null)
-                            userId = driver.ID;
-                        else
+                        foreach (var trip in request.Requests)
                         {
-                            response.Status = DomainObjects.Resource.ResourceData.Failure;
-                            response.StatusCode = (int)HttpStatusCode.BadRequest;
-                            response.StatusMessage = "User + " + trip.DriverName + " is not available in DMS";
-                            return response;
+                            int userId = 0;
+                            int statusId = 0;
+                            #region Check if Driver Exists
+                            var driver = context.Users.FirstOrDefault(t => t.UserName == trip.DriverName);
+                            if (driver != null)
+                                userId = driver.ID;
+                            else
+                            {
+                                transaction.Rollback();
+                                response.Status = DomainObjects.Resource.ResourceData.Failure;
+                                response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                response.StatusMessage = "User " + trip.DriverName + " is not available in DMS";
+                                return response;
+                            }
+                            #endregion
+
+                            #region Check if Trip Status Exists
+                            var status = context.TripStatuses.FirstOrDefault(t => t.StatusCode == trip.TripStatusCode);
+                            if (status != null)
+                                statusId = status.ID;
+                            else
+                            {
+                                transaction.Rollback();
+                                response.Status = DomainObjects.Resource.ResourceData.Failure;
+                                response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                response.StatusMessage = "Trip Status " + trip.TripStatusCode + " is not available in DMS";
+                                return response;
+                            }
+                            #endregion
+
+                            #region Create/Update Trip
+                            int tripId = 0;
+                            #region Check if OrderNumber already exists
+
+                            var existingTrip = context.TripDetails.FirstOrDefault(t => t.OrderNumber == trip.OrderNumber);
+
+                            #endregion
+                            if (existingTrip != null)
+                            {
+                                existingTrip.TransporterCode = trip.TransporterCode;
+                                existingTrip.TransporterName = trip.TransporterName;
+                                existingTrip.UserId = userId;
+                                existingTrip.VehicleType = trip.VehicleType;
+                                existingTrip.VehicleNumber = trip.VehicleNumber;
+                                existingTrip.TripType = trip.TripType;
+                                existingTrip.Weight = trip.Weight;
+                                existingTrip.PoliceNumber = trip.PoliceNumber;
+                                existingTrip.CurrentTripStatusId = statusId;
+
+                                context.Entry(existingTrip).State = System.Data.Entity.EntityState.Modified;
+                                context.SaveChanges();
+                                tripId = existingTrip.ID;
+                            }
+                            else
+                            {
+
+                                DataModel.TripDetails tripRequest = new DataModel.TripDetails()
+                                {
+                                    OrderNumber = trip.OrderNumber,
+                                    TripNumber = GetTripNumber(trip.BusinessAreaCode),
+                                    TransporterCode = trip.TransporterCode,
+                                    TransporterName = trip.TransporterName,
+                                    UserId = userId,
+                                    VehicleType = trip.VehicleType,
+                                    VehicleNumber = trip.VehicleNumber,
+                                    TripType = trip.TripType,
+                                    Weight = trip.Weight,
+                                    PoliceNumber = trip.PoliceNumber,
+                                    CurrentTripStatusId = statusId,
+                                    OrderType = trip.OrderType,
+                                    TripDate = DateTime.Now,
+                                    BusinessAreaCode = trip.BusinessAreaCode
+                                };
+                                context.TripDetails.Add(tripRequest);
+                                context.SaveChanges();
+                                tripId = tripRequest.ID;
+
+                                foreach (var tripLocation in trip.TripLocations)
+                                {
+                                    int locationId = 0;
+
+                                    #region Check If Locations exists
+                                    var location = context.Locations.FirstOrDefault(t => t.Name == tripLocation.Name);
+                                    #endregion
+
+                                    if (location != null)
+                                        locationId = location.ID;
+                                    else
+                                    {
+                                        int cityId = 0;
+                                        var city = context.Cities.FirstOrDefault(t => t.CityCode == tripLocation.CityCode);
+                                        if (city != null)
+                                        {
+                                            cityId = city.ID;
+                                            #region Create Location
+                                            DataModel.Location locationData = new DataModel.Location()
+                                            {
+                                                TypeofLocation = tripLocation.TypeofLocation,
+                                                CityId = cityId,
+                                                Name = tripLocation.Name,
+                                                Place = tripLocation.Place,
+                                                Address = tripLocation.Address
+                                            };
+                                            context.Locations.Add(locationData);
+                                            context.SaveChanges();
+                                            locationId = locationData.ID;
+                                            #endregion
+
+                                        }
+                                        else
+                                        {
+                                            transaction.Rollback();
+                                            response.Status = DomainObjects.Resource.ResourceData.Failure;
+                                            response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                            response.StatusMessage = "City : + " + tripLocation.CityCode + " is not available in DMS";
+                                            return response;
+                                        }
+                                    }
+                                    #region Create Stop Points
+
+                                    DataModel.StopPoints stopPoint = new DataModel.StopPoints()
+                                    {
+                                        TripID = tripId,
+                                        LocationID = locationId,
+                                        SequenceNumber = tripLocation.SequnceNumber,
+                                        ActualDeliveryDate = tripLocation.ActualDeliveryDate,
+                                        EstimatedDeliveryDate = tripLocation.EstimatedDeliveryDate
+                                    };
+                                    context.StopPoints.Add(stopPoint);
+                                    context.SaveChanges();
+                                    int stopPointId = stopPoint.ID;
+
+                                    #endregion
+
+                                    #region Create Trip Event Log
+                                    DataModel.TripStatusEventLog tripEventLog = new DataModel.TripStatusEventLog()
+                                    {
+                                        StopPointId = stopPointId,
+                                        StatusDate = DateTime.Now,
+                                        Remarks = "Driver Assigned to Trip",
+                                        TripStatusId = statusId
+                                    };
+                                    context.TripStatusEventLogs.Add(tripEventLog);
+                                    context.SaveChanges();
+                                    #endregion
+
+                                }
+                            }
+                            #endregion
                         }
-                        #endregion
-
-                        #region Check if Trip Status Exists
-                        //var status = context.TripStatuses.FirstOrDefault(t => t.StatusName == trip.);
-                        //if (driver != null)
-                        //    userId = driver.ID;
-                        //else
-                        //{
-                        //    response.Status = DomainObjects.Resource.ResourceData.Failure;
-                        //    response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        //    response.StatusMessage = "User + " + trip.DriverName + " is not available in DMS";
-                        //    return response;
-                        //}
-                        #endregion
-
-                        #region Create Trip
-                        DataModel.TripDetails tripRequest = new DataModel.TripDetails()
-                        {
-                            OrderNumber = trip.OrderNumber,
-                            TripNumber = Guid.NewGuid().ToString("N").Substring(0, 10),//TODO: Will be replaced with Trip Number Naming convention
-                            UserId = userId
-                        };
+                        #region Return Response with Success and Commit Changes
+                        transaction.Commit();
+                        response.Status = DomainObjects.Resource.ResourceData.Success;
+                        response.StatusCode = (int)HttpStatusCode.OK;
+                        response.StatusMessage = "Trip(s) created/updated successfully";
+                        return response;
                         #endregion
                     }
-                }
-                catch (Exception ex)
-                {
-                    _logger.Log(LogLevel.Error, ex);
-                    response.Status = DomainObjects.Resource.ResourceData.Failure;
-                    response.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                    response.StatusMessage = ex.Message;
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        _logger.Log(LogLevel.Error, ex);
+                        response.Status = DomainObjects.Resource.ResourceData.Failure;
+                        response.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                        response.StatusMessage = ex.Message;
+                    }
                 }
             }
             return response;
         }
+
+        private string GetTripNumber(string businessAreaCode)
+        {
+            string tripNo = businessAreaCode.ToUpper() + "TRIP";
+            using (var context = new DMSDBContext())
+            {
+                var trip = context.TripDetails.Where(t => t.BusinessAreaCode == businessAreaCode).OrderByDescending(t => t.ID).FirstOrDefault();
+                if (trip != null)
+                {
+                    int lastOrderYear = trip.TripDate.Year;
+                    if (DateTime.Now.Year != lastOrderYear)
+                    {
+                        tripNo += "000000000001";
+                    }
+                    else
+                    {
+                        string tripSequnceString = trip.TripNumber.Substring(trip.TripNumber.Length - 11);
+                        int tripSequnceNumber = Convert.ToInt32(tripSequnceString) + 1;
+
+                        tripNo += tripSequnceNumber.ToString().PadLeft(11, '0');
+                    }
+                }
+                else
+                {
+                    tripNo += "000000000001";
+                }
+            }
+            return tripNo;
+        }
+
         public StopPointOrderItemsResponse GetOrderItemsByStopPoint(StopPointsRequest stopPointsByTripRequest)
         {
             StopPointOrderItemsResponse tripResponse = new StopPointOrderItemsResponse()
@@ -181,7 +336,7 @@ namespace DMS.DataGateway.Repositories
                         var tripFilter = tripsByDriverRequest.Requests[0];
 
                         var tripsByUser = (from trip in context.TripDetails
-                                           where trip.UserId == tripFilter.UserId 
+                                           where trip.UserId == tripFilter.UserId
                                            select new Domain.TripDetails
                                            {
                                                ID = trip.ID,

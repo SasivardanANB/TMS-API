@@ -34,5 +34,7 @@ namespace DMS.DataGateway.DataModels
         public int? CurrentTripStatusId { get; set; }
         public virtual TripStatus TripStatus { get; set; }
         public int OrderType { get; set; }
+        public DateTime TripDate { get; set; }
+        public string BusinessAreaCode { get; set; }
     }
 }

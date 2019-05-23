@@ -106,6 +106,10 @@
     <Compile Include="Migrations\201905230502039_dms_v1.0_TripStatusCode.Designer.cs">
       <DependentUpon>201905230502039_dms_v1.0_TripStatusCode.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201905230906333_dms_v1.0_TripDate.cs" />
+    <Compile Include="Migrations\201905230906333_dms_v1.0_TripDate.Designer.cs">
+      <DependentUpon>201905230906333_dms_v1.0_TripDate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\Authenticate.cs" />
@@ -132,6 +136,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201905230502039_dms_v1.0_TripStatusCode.resx">
       <DependentUpon>201905230502039_dms_v1.0_TripStatusCode.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905230906333_dms_v1.0_TripDate.resx">
+      <DependentUpon>201905230906333_dms_v1.0_TripDate.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SeedData\Cities.csv" />
     <EmbeddedResource Include="SeedData\PostalCodes.csv" />
