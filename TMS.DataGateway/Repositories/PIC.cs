@@ -177,9 +177,9 @@ namespace TMS.DataGateway.Repositories
                 if (!string.IsNullOrEmpty(picRequest.GlobalSearch))
                 {
                     string globalSearch = picRequest.GlobalSearch.ToLower();
-                    picList = picList.Where(s => !s.IsDeleted && s.PICName.ToLower().Contains(globalSearch)
-                    || s.PICPhone.Contains(globalSearch)
-                    || s.PICEmail.ToString().ToLower().Contains(globalSearch)
+                    picList = picList.Where(s => !s.IsDeleted && (s.PICName != null && s.PICName.ToLower().Contains(globalSearch))
+                    || (s.PICPhone != null && s.PICPhone.Contains(globalSearch))
+                    || (s.PICEmail != null && s.PICEmail.ToString().ToLower().Contains(globalSearch))
                     ).ToList();
                 }
 

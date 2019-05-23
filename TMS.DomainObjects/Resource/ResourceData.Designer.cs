@@ -916,6 +916,15 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Vehicle(s) created successfully.
+        /// </summary>
+        public static string VehicleCreated {
+            get {
+                return ResourceManager.GetString("VehicleCreated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Vehicle deactivated successfully.
         /// </summary>
         public static string VehicleDeactivated {
@@ -930,6 +939,15 @@ namespace TMS.DomainObjects.Resource {
         public static string VehicleDeleted {
             get {
                 return ResourceManager.GetString("VehicleDeleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Vehicle(s) updated successfully.
+        /// </summary>
+        public static string VehicleUpdated {
+            get {
+                return ResourceManager.GetString("VehicleUpdated", resourceCulture);
             }
         }
     }

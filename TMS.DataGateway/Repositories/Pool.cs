@@ -169,11 +169,11 @@ namespace TMS.DataGateway.Repositories
                 if (!string.IsNullOrEmpty(poolRequest.GlobalSearch))
                 {
                     string globalSearch = poolRequest.GlobalSearch.ToLower();
-                    poolsList = poolsList.Where(s => !s.IsDelete && s.PoolName.ToLower().Contains(globalSearch)
-                    || s.PoolDescription.ToLower().Contains(globalSearch)
-                    || s.CityName.ToLower().Contains(globalSearch)
-                    || s.ContactNumber.ToLower().Contains(globalSearch)
-                    || s.Address.ToLower().Contains(globalSearch)
+                    poolsList = poolsList.Where(s => !s.IsDelete && (s.PoolName != null && s.PoolName.ToLower().Contains(globalSearch))
+                    || (s.PoolDescription != null && s.PoolDescription.ToLower().Contains(globalSearch))
+                    || (s.CityName != null && s.CityName.ToLower().Contains(globalSearch))
+                    || (s.ContactNumber != null && s.ContactNumber.ToLower().Contains(globalSearch))
+                    || (s.Address != null && s.Address.ToLower().Contains(globalSearch))
                     ).ToList();
                 }
 

@@ -394,6 +394,10 @@ namespace TMS.API.Controllers
         [HttpPost]
         public IHttpActionResult GetUserDashboard(UserRequest user)
         {
+            if (user.Requests.Count <= 0 || user.Requests[0].ID <= 0)
+            {
+                return BadRequest(DomainObjects.Resource.ResourceData.InvalidUserID);
+            }
             IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
             DashboardResponse userDashboard = userTask.GetUserDashboard(user);
             return Ok(userDashboard);

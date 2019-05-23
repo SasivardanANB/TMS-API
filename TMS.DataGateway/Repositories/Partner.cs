@@ -53,9 +53,9 @@ namespace TMS.DataGateway.Repositories
                         }
                         else //Create partner
                         {
-                            var existPartner = context.Partners.Where(p => p.PartnerNo == partnerData.PartnerNo).FirstOrDefault();
-                            if (existPartner == null)
-                            {
+                            //var existPartner = context.Partners.Where(p => p.PartnerNo == partnerData.PartnerNo).FirstOrDefault();
+                            //if (existPartner == null)
+                            //{
                                 partnerData.CreatedBy = partnerRequest.CreatedBy;
                                 partnerData.CreatedTime = DateTime.Now;
                                 partnerData.IsActive = true;
@@ -64,13 +64,13 @@ namespace TMS.DataGateway.Repositories
                                 partnerResponse.StatusMessage = DomainObjects.Resource.ResourceData.PartnerCreated;
                                 partnerResponse.Status = DomainObjects.Resource.ResourceData.Success;
                                 partnerResponse.StatusCode = (int)HttpStatusCode.OK;
-                            }
-                            else
-                            {
-                                partnerResponse.StatusMessage = DomainObjects.Resource.ResourceData.PartnerNoExisted;
-                                partnerResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                                partnerResponse.StatusCode = (int)HttpStatusCode.BadRequest;
-                            }
+                            //}
+                            //else
+                            //{
+                            //    partnerResponse.StatusMessage = DomainObjects.Resource.ResourceData.PartnerNoExisted;
+                            //    partnerResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                            //    partnerResponse.StatusCode = (int)HttpStatusCode.BadRequest;
+                            //}
                         }
                     }
 
@@ -188,10 +188,10 @@ namespace TMS.DataGateway.Repositories
                 if (!string.IsNullOrEmpty(partnerRequest.GlobalSearch))
                 {
                     string globalSearch = partnerRequest.GlobalSearch.ToLower();
-                    partnerList = partnerList.Where(s => !s.IsDeleted && s.PartnerName.ToLower().Contains(globalSearch)
-                    || s.PartnerAddress.ToLower().Contains(globalSearch)
-                    || s.PartnerInitial.ToLower().Contains(globalSearch)
-                    || s.PICName.ToLower().Contains(globalSearch)
+                    partnerList = partnerList.Where(s => !s.IsDeleted && (s.PartnerName != null && s.PartnerName.ToLower().Contains(globalSearch))
+                    || (s.PartnerAddress != null && s.PartnerAddress.ToLower().Contains(globalSearch))
+                    || (s.PartnerInitial != null && s.PartnerInitial.ToLower().Contains(globalSearch))
+                    || (s.PICName != null && s.PICName.ToLower().Contains(globalSearch))
                     ).ToList();
                 }
 

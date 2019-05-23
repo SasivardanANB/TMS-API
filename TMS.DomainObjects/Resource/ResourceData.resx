@@ -408,4 +408,10 @@
   <data name="GateInGateOutCreated" xml:space="preserve">
     <value>GateIn/GateOut created successfully</value>
   </data>
+  <data name="VehicleCreated" xml:space="preserve">
+    <value>Vehicle(s) created successfully</value>
+  </data>
+  <data name="VehicleUpdated" xml:space="preserve">
+    <value>Vehicle(s) updated successfully</value>
+  </data>
 </root>
