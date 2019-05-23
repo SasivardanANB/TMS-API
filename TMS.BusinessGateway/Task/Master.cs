@@ -75,5 +75,11 @@ namespace TMS.BusinessGateway.Task
             CommonResponse commonResponse = _masterRepository.GetGateNamesByBusinessArea(businessAreaId, gateTypeId);
             return commonResponse;
         }
+
+        public override CommonResponse GetTripStatusNames()
+        {
+            CommonResponse commonResponse = _masterRepository.GetTripStatusNames();
+            return commonResponse;
+        }
     }
 }

@@ -106,5 +106,14 @@ namespace TMS.API.Controllers
             CommonResponse commonResponse = masterTask.GetGateNamesByBusinessArea(businessAreaId, gateTypeId);
             return Ok(commonResponse);
         }
+
+        [Route("gettripstatusnames")]
+        [HttpGet]
+        public IHttpActionResult GetTripStatusNames()
+        {
+            IMasterTask masterTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().MasterTask;
+            CommonResponse commonResponse = masterTask.GetTripStatusNames();
+            return Ok(commonResponse);
+        }
     }
 }

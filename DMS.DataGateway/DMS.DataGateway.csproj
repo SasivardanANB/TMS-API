@@ -110,6 +110,10 @@
     <Compile Include="Migrations\201905230906333_dms_v1.0_TripDate.Designer.cs">
       <DependentUpon>201905230906333_dms_v1.0_TripDate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201905231103179_UserNameUniqueFieldDisable.cs" />
+    <Compile Include="Migrations\201905231103179_UserNameUniqueFieldDisable.Designer.cs">
+      <DependentUpon>201905231103179_UserNameUniqueFieldDisable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\Authenticate.cs" />
@@ -139,6 +143,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201905230906333_dms_v1.0_TripDate.resx">
       <DependentUpon>201905230906333_dms_v1.0_TripDate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905231103179_UserNameUniqueFieldDisable.resx">
+      <DependentUpon>201905231103179_UserNameUniqueFieldDisable.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SeedData\Cities.csv" />
     <EmbeddedResource Include="SeedData\PostalCodes.csv" />
