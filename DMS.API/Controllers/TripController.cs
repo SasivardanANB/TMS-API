@@ -16,6 +16,18 @@ namespace DMS.API.Controllers
     [RoutePrefix("api/v1/trip")]
     public class TripController : ApiController
     {
+        [Route("createupdatetrip")]
+        [HttpPost]
+        public IHttpActionResult CreateUpdateTrip(TripRequest request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            ITripTask tripTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().TripTask;
+            TripResponse tripData = tripTask.CreateUpdateTrip(request);
+            return Ok(tripData);
+        }
+
         [Route("gettrips")]
         [HttpPost]
         public IHttpActionResult GetTripsByDriver(TripsByDriverRequest tripsByDriverRequest)
@@ -39,7 +51,7 @@ namespace DMS.API.Controllers
             StopPointsResponse tripData = tripTask.GetStopPointsByTrip(stopPointsByTripRequest);
             return Ok(tripData);
         }
-        
+
         [Route("stoppoint/getorderitems")]
         [HttpPost]
         public IHttpActionResult GetOrderItemsByStopPoint(StopPointsRequest stopPointOrderItemsRequest)
@@ -68,6 +80,11 @@ namespace DMS.API.Controllers
         [HttpPost]
         public IHttpActionResult UpdateEntireTripStatus(TripsByDriverRequest tripsByDriverRequest)
         {
+            for (int i = 0; i < tripsByDriverRequest.Requests.Count; i++)
+            {
+                ModelState.Remove("tripsByDriverRequest.Requests[" + i + "]");
+                ModelState.Remove("tripsByDriverRequest.Requests[" + i + "].OrderType");
+            }
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             ITripTask tripTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().TripTask;

@@ -49,5 +49,11 @@ namespace DMS.BusinessGateway.Task
             TripResponse tripData = _tripRepository.UpdateEntireTripStatus(tripsByDriverRequest);
             return tripData;
         }
+
+        public override TripResponse CreateUpdateTrip(TripRequest request)
+        {
+            TripResponse tripData = _tripRepository.CreateUpdateTrip(request);
+            return tripData;
+        }
     }
 }

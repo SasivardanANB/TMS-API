@@ -16,5 +16,7 @@ namespace DMS.DomainGateway.Task
         public abstract TripResponse GetTripsByDriver(TripsByDriverRequest tripsByDriverRequest);
         public abstract UpdateTripStatusResponse UpdateTripStatusEventLog(UpdateTripStatusRequest updateTripStatusRequest);
         public abstract TripResponse UpdateEntireTripStatus(TripsByDriverRequest tripsByDriverRequest);
+
+        public abstract TripResponse CreateUpdateTrip(TripRequest request);
     }
 }

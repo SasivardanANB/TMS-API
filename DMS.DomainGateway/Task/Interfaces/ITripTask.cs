@@ -15,5 +15,6 @@ namespace DMS.DomainGateway.Task.Interfaces
         StopPointOrderItemsResponse GetOrderItemsByStopPoint(StopPointsRequest stopPointsByTripRequest);
         UpdateTripStatusResponse UpdateTripStatusEventLog(UpdateTripStatusRequest updateTripStatusRequest);
         TripResponse UpdateEntireTripStatus(TripsByDriverRequest tripsByDriverRequest);
+        TripResponse CreateUpdateTrip(TripRequest request);
     }
 }

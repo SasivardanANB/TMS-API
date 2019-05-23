@@ -20,7 +20,63 @@ namespace DMS.DataGateway.Repositories
     public class Trip : ITrip
     {
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        public TripResponse CreateUpdateTrip(TripRequest request)
+        {
+            TripResponse response = new TripResponse();
+            using (var context = new DMSDBContext())
+            {
+                try
+                {
+                    foreach (var trip in request.Requests)
+                    {
+                        int userId = 0;
+                        int statusId = 0;
+                        #region Check if Driver Exists
+                        var driver = context.Users.FirstOrDefault(t => t.UserName == trip.DriverName);
+                        if (driver != null)
+                            userId = driver.ID;
+                        else
+                        {
+                            response.Status = DomainObjects.Resource.ResourceData.Failure;
+                            response.StatusCode = (int)HttpStatusCode.BadRequest;
+                            response.StatusMessage = "User + " + trip.DriverName + " is not available in DMS";
+                            return response;
+                        }
+                        #endregion
 
+                        #region Check if Trip Status Exists
+                        //var status = context.TripStatuses.FirstOrDefault(t => t.StatusName == trip.);
+                        //if (driver != null)
+                        //    userId = driver.ID;
+                        //else
+                        //{
+                        //    response.Status = DomainObjects.Resource.ResourceData.Failure;
+                        //    response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        //    response.StatusMessage = "User + " + trip.DriverName + " is not available in DMS";
+                        //    return response;
+                        //}
+                        #endregion
+
+                        #region Create Trip
+                        DataModel.TripDetails tripRequest = new DataModel.TripDetails()
+                        {
+                            OrderNumber = trip.OrderNumber,
+                            TripNumber = Guid.NewGuid().ToString("N").Substring(0, 10),//TODO: Will be replaced with Trip Number Naming convention
+                            UserId = userId
+                        };
+                        #endregion
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log(LogLevel.Error, ex);
+                    response.Status = DomainObjects.Resource.ResourceData.Failure;
+                    response.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                    response.StatusMessage = ex.Message;
+                }
+            }
+            return response;
+        }
         public StopPointOrderItemsResponse GetOrderItemsByStopPoint(StopPointsRequest stopPointsByTripRequest)
         {
             StopPointOrderItemsResponse tripResponse = new StopPointOrderItemsResponse()
@@ -138,8 +194,9 @@ namespace DMS.DataGateway.Repositories
                                                TripType = trip.TripType,
                                                Weight = trip.Weight,
                                                PoliceNumber = trip.PoliceNumber,
-                                               TripStatus=trip.TripStatus.StatusName,
-                                               TripStatusId=trip.CurrentTripStatusId
+                                               TripStatus = trip.TripStatus.StatusName,
+                                               TripStatusId = trip.CurrentTripStatusId,
+                                               OrderType = trip.OrderType
                                            }).ToList();
 
 
@@ -207,7 +264,7 @@ namespace DMS.DataGateway.Repositories
                         };
 
                         //For getting trip deatails and updating trip status as assigned
-                        var tripID = context.StopPoints.Where(t => t.ID == tripStatusEventLogFilter.StopPointId).Select(t=>t.TripID).FirstOrDefault();
+                        var tripID = context.StopPoints.Where(t => t.ID == tripStatusEventLogFilter.StopPointId).Select(t => t.TripID).FirstOrDefault();
                         var tripDetails = context.TripDetails.Where(t => t.ID == tripID).FirstOrDefault();
                         tripDetails.CurrentTripStatusId = tripStatusEventLogFilter.TripStatusId;
 

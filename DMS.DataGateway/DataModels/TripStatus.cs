@@ -14,6 +14,7 @@ namespace DMS.DataGateway.DataModels
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
+        public string StatusCode { get; set; }
         public string StatusName { get; set; }
     }
 }
