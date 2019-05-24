@@ -179,7 +179,6 @@ namespace TMS.DataGateway.Repositories
                         Email = driver.Email,
                         UserName=driver.UserName,
                         IsActive = driver.IsActive,
-                        Password=driver.Password,
                         IdentityNo = driver.IdentityNo,
                         DrivingLicenseExpiredDate = driver.DrivingLicenseExpiredDate,
                         DrivingLicenseNo = driver.DrivingLicenseNo,
