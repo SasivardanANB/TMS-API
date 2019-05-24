@@ -68,9 +68,9 @@ namespace TMS.DataGateway.Repositories
                         {
                             driverData.LastModifiedBy = driverRequest.LastModifiedBy;
                             driverData.LastModifiedTime = DateTime.Now;
-                            driverData.Password= tMSDBContext.Drivers.Where(d => d.ID == driverData.ID).Select(p=>p.Password).FirstOrDefault();
+                            //driverData.Password= tMSDBContext.Drivers.Where(d => d.ID == driverData.ID).Select(p=>p.Password).FirstOrDefault();
                             tMSDBContext.Entry(driverData).State = System.Data.Entity.EntityState.Modified;
-                            tMSDBContext.Entry(driverData).Property(p => p.Password).IsModified = false;
+                            //tMSDBContext.Entry(driverData).Property(p => p.Password).IsModified = false;
                             tMSDBContext.SaveChanges();
                             driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.DriversUpdated;
                             driverResponse.StatusCode = (int)HttpStatusCode.OK;
@@ -78,12 +78,13 @@ namespace TMS.DataGateway.Repositories
                         //For create driver
                         else
                         {
-                            var checkDriverNo = tMSDBContext.Drivers.Where(d => d.DriverNo == driverData.DriverNo).FirstOrDefault();
+                            //var checkDriverNo = tMSDBContext.Drivers.Where(d => d.DriverNo == driverData.DriverNo).FirstOrDefault();
                             var checkDrivingLicenseNo = tMSDBContext.Drivers.Where(d => d.DrivingLicenseNo == driverData.DrivingLicenseNo).FirstOrDefault();
                             var checkDriverIdentityNo = tMSDBContext.Drivers.Where(d => d.IdentityNo == driverData.IdentityNo).FirstOrDefault();
 
-                            if (checkDriverNo == null && checkDrivingLicenseNo == null && checkDriverIdentityNo == null )
+                            if (/*checkDriverNo == null &&*/ checkDrivingLicenseNo == null && checkDriverIdentityNo == null )
                             {
+                                driverData.DriverNo = GetDriverNumber();
                                 driverData.CreatedBy = driverRequest.CreatedBy;
                                 driverData.CreatedTime = DateTime.Now;
 
@@ -96,9 +97,9 @@ namespace TMS.DataGateway.Repositories
                             }
                             else
                             {
-                                if(checkDriverNo != null) {
-                                    driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.DriverNoExisted;
-                                }
+                                //if(checkDriverNo != null) {
+                                //    driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.DriverNoExisted;
+                                //}
                                 if (checkDrivingLicenseNo != null)
                                 {
                                     driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.DrivingLicenseNoExisted;
@@ -187,6 +188,14 @@ namespace TMS.DataGateway.Repositories
                         DrivingLicenceImageGuId = tMSDBContext.ImageGuids.Where(d => d.ID == driver.DrivingLicenceImageId).Select(g => g.ImageGuIdValue).FirstOrDefault(),
                         IdentityImageGuId = tMSDBContext.ImageGuids.Where(d => d.ID == driver.IdentityImageId).Select(g => g.ImageGuIdValue).FirstOrDefault(),
                     }).ToList();
+
+                    if (driversList.Count > 0)
+                    {
+                        foreach (var item in driversList)
+                        {
+                            item.Password = Encryption.EncryptionLibrary.DecrypPassword(item.Password);
+                        }
+                    }
                 }
 
                 // Filter
@@ -403,5 +412,35 @@ namespace TMS.DataGateway.Repositories
             }
             return 0;
         }
+
+        private string GetDriverNumber()
+        {
+            string driverNumber = string.Empty;
+            using (var context = new TMSDBContext())
+            {
+                var driverDetails = context.Drivers.OrderByDescending(t => t.ID).FirstOrDefault();
+                if (driverDetails != null)
+                {
+                    Int64 lastDriverNo = Convert.ToInt64(driverDetails.DriverNo.Substring(3, 9));
+                    if (lastDriverNo >0)
+                    {
+                        lastDriverNo = lastDriverNo + 1;
+                    }
+                    else
+                    {
+                        lastDriverNo = 1;
+                    }
+                    string finalNo=lastDriverNo.ToString().PadLeft(9, '0');
+                    driverNumber = "DRV" + finalNo;
+                    
+                }
+                else
+                {
+                    driverNumber = "DRV000000001";
+                }
+            }
+            return driverNumber;
+        }
+
     }
 }
