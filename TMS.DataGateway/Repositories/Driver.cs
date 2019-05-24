@@ -179,6 +179,7 @@ namespace TMS.DataGateway.Repositories
                         Email = driver.Email,
                         UserName=driver.UserName,
                         IsActive = driver.IsActive,
+                        Password=driver.Password,
                         IdentityNo = driver.IdentityNo,
                         DrivingLicenseExpiredDate = driver.DrivingLicenseExpiredDate,
                         DrivingLicenseNo = driver.DrivingLicenseNo,
@@ -217,7 +218,7 @@ namespace TMS.DataGateway.Repositories
 
                     if (!String.IsNullOrEmpty(driverFilter.FirstName))
                     {
-                        driversList = driversList.Where(s => s.FirstName.ToLower().Contains(driverFilter.FirstName.ToLower())).ToList();
+                        driversList = driversList.Where(s => (s.FirstName +" "+s.LastName).ToLower().Contains(driverFilter.FirstName.ToLower())).ToList();
                     }
 
                     if (!String.IsNullOrEmpty(driverFilter.LastName))
