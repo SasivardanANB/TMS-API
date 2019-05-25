@@ -85,8 +85,16 @@ namespace DMS.DataGateway.Migrations
                         CsvReader csvReader = new CsvReader(reader);
                         csvReader.Configuration.HeaderValidated = null;
                         csvReader.Configuration.MissingFieldFound = null;
-                        var subdistrictsData = csvReader.GetRecords<DMS.DataGateway.DataModels.SubDistrict>().ToArray();
-                        context.SubDistricts.AddOrUpdate(c => c.ID, subdistrictsData);
+                        var subdistrictsData = csvReader.GetRecords<SubDistrictSeed>().ToArray();
+                        foreach (SubDistrictSeed subDistrict in subdistrictsData)
+                        {
+                            context.SubDistricts.AddOrUpdate(c => c.ID, new DMS.DataGateway.DataModels.SubDistrict
+                            {
+                                SubDistrictCode = subDistrict.SubdistrictCode,
+                                SubDistrictName = subDistrict.SubdistrictName,
+                                CityID = context.Cities.Where(p => p.CityDescription == subDistrict.CityName).Select(p => p.ID).FirstOrDefault()
+                            });
+                        }
                     }
                 }
             }
@@ -100,6 +108,13 @@ namespace DMS.DataGateway.Migrations
         {
             public string ProvinceCode { get; set; }
             public string CityCode { get; set; }
+            public string CityName { get; set; }
+        }
+
+        public class SubDistrictSeed
+        {
+            public string SubdistrictCode { get; set; }
+            public string SubdistrictName { get; set; }
             public string CityName { get; set; }
         }
     }
