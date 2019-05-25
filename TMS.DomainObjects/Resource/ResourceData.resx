@@ -414,4 +414,7 @@
   <data name="VehicleUpdated" xml:space="preserve">
     <value>Vehicle(s) updated successfully</value>
   </data>
+  <data name="InvalidToken" xml:space="preserve">
+    <value>Invalid Token</value>
+  </data>
 </root>
