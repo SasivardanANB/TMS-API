@@ -28,23 +28,42 @@ namespace TMS.DataGateway.Repositories
             {
                 Data = new List<Domain.User>()
             };
+
             try
             {
                 using (var context = new TMSDBContext())
                 {
-                    string encryptedPassword = Encryption.EncryptionLibrary.EncryptPassword(login.UserPassword);
-                    var userData = (from user in context.Users
-                                    where user.UserName == login.UserName
-                                    && user.Password == encryptedPassword && !user.IsDelete
-                                    select new Domain.User()
-                                    {
-                                        ID = user.ID,
-                                        FirstName = user.FirstName,
-                                        LastName = user.LastName,
-                                        IsActive = user.IsActive,
-                                        UserName = user.UserName
-                                    }).FirstOrDefault();
+                    Domain.User userData;
 
+                    if (login.IsSAMALogin)
+                    {
+                        userData = (from user in context.Users
+                                        where user.UserName == login.UserName
+                                        && !user.IsDelete
+                                        select new Domain.User()
+                                        {
+                                            ID = user.ID,
+                                            FirstName = user.FirstName,
+                                            LastName = user.LastName,
+                                            IsActive = user.IsActive,
+                                            UserName = user.UserName
+                                        }).FirstOrDefault();
+                    }
+                    else
+                    {
+                        string encryptedPassword = Encryption.EncryptionLibrary.EncryptPassword(login.UserPassword);
+                        userData = (from user in context.Users
+                                        where user.UserName == login.UserName
+                                        && user.Password == encryptedPassword && !user.IsDelete
+                                        select new Domain.User()
+                                        {
+                                            ID = user.ID,
+                                            FirstName = user.FirstName,
+                                            LastName = user.LastName,
+                                            IsActive = user.IsActive,
+                                            UserName = user.UserName
+                                        }).FirstOrDefault();
+                    }
                     if (userData != null)
                     {
                         if (!userData.IsActive)
