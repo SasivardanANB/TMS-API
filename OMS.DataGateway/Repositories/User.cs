@@ -33,8 +33,26 @@ namespace OMS.DataGateway.Repositories
             {
                 using (var context = new OMSDBContext())
                 {
-                    string encryptedPassword = Encryption.EncryptionLibrary.EncryptPassword(login.UserPassword);
-                    var userData = (from user in context.Users
+                    Domain.User userData;
+
+                    if (login.IsSAMALogin)
+                    {
+                        userData = (from user in context.Users
+                                    where user.UserName == login.UserName
+                                    && !user.IsDelete
+                                    select new Domain.User()
+                                    {
+                                        ID = user.ID,
+                                        FirstName = user.FirstName,
+                                        LastName = user.LastName,
+                                        IsActive = user.IsActive,
+                                        UserName = user.UserName
+                                    }).FirstOrDefault();
+                    }
+                    else
+                    {
+                        string encryptedPassword = Encryption.EncryptionLibrary.EncryptPassword(login.UserPassword);
+                        userData = (from user in context.Users
                                     where user.UserName == login.UserName
                                     && user.Password == encryptedPassword && !user.IsDelete
                                     select new Domain.User()
@@ -45,6 +63,7 @@ namespace OMS.DataGateway.Repositories
                                         IsActive = user.IsActive,
                                         UserName = user.UserName
                                     }).FirstOrDefault();
+                    }
 
                     if (userData != null)
                     {
@@ -221,7 +240,7 @@ namespace OMS.DataGateway.Repositories
                                 userResponse.StatusCode = (int)HttpStatusCode.BadRequest;
                             }
 
-                            
+
                         }
 
                         userDataModelList.Add(userDataModel);
@@ -298,7 +317,7 @@ namespace OMS.DataGateway.Repositories
                              UserName = user.UserName,
                              FirstName = user.FirstName,
                              LastName = user.LastName,
-                             Password= user.Password,
+                             Password = user.Password,
                              IsActive = user.IsActive,
                              Applications = context.UserApplications.Where(userApp => userApp.UserID == user.ID).Select(userApp => userApp.ApplicationID).ToList(),
                              ApplicationNames = context.Applications.Where(a => (context.UserApplications.Where(userApp => userApp.UserID == user.ID).Select(userApp => userApp.ApplicationID).ToList()).Contains(a.ID)).Select(a => a.ApplicationName).ToList(),
@@ -319,7 +338,7 @@ namespace OMS.DataGateway.Repositories
                     {
                         foreach (var item in usersList)
                         {
-                            item.Password= Encryption.EncryptionLibrary.DecrypPassword(item.Password);
+                            item.Password = Encryption.EncryptionLibrary.DecrypPassword(item.Password);
                         }
                     }
                 }
@@ -920,7 +939,7 @@ namespace OMS.DataGateway.Repositories
                                 }
                                 tMSDBContext.SaveChanges();
                                 userRoleResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                               
+
                             }
                             else
                             {
