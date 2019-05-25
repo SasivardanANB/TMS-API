@@ -161,7 +161,9 @@ namespace TMS.DataGateway.Repositories
                             ContactNumber = pool.ContactNumber,
                             Address = pool.Address,
                             PhotoId = pool.PhotoId,
-                            PhotoGuId = pool.ImageGuid.ImageGuIdValue
+                            PhotoGuId = pool.ImageGuid.ImageGuIdValue,
+                            PoolNo=pool.PoolNo,
+                            IsDelete=pool.IsDelete
                         }).ToList();
                     }
                 }

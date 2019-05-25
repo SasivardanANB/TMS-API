@@ -541,7 +541,7 @@ namespace TMS.DataGateway.Repositories
                                      OrderId = oh.ID,
                                      OrderType = oh.OrderType,
                                      OrderNumber = oh.OrderNo,
-                                     VehicleType = oh.VehicleShipment,
+                                     VehicleType = context.VehicleTypes.Where(v=>v.ID.ToString()== oh.VehicleShipment).Select(vt=>vt.VehicleTypeDescription).FirstOrDefault() ,
                                      PoliceNumber = oh.VehicleNo,
                                      OrderStatus = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusValue
                                  }).Distinct().ToList();
@@ -1603,7 +1603,7 @@ namespace TMS.DataGateway.Repositories
                                                 ).ToList();
                         if (orderPartnerData.Count > 0)
                         {
-                            if (orderData.OrderType == 1)
+                            if (orderData.OrderType == 2) //Out Bound
                             {
 
                                 int maxSeqNo = orderPartnerData.Max(x => x.SequenceNo);
@@ -1635,7 +1635,7 @@ namespace TMS.DataGateway.Repositories
                                 orderDetailsResponse.TotalPallet = transporter.TotalPallet;
                                 orderDetailsResponse.SourceOrDestinations = stopPoints;
                             }
-                            else
+                            else //In Bound
                             {
                                 int maxSeqNo = orderPartnerData.Max(x => x.SequenceNo);
                                 var transporter = (from data in orderPartnerData
@@ -1652,7 +1652,6 @@ namespace TMS.DataGateway.Repositories
                                                   ).FirstOrDefault();
 
                                 List<Domain.StopPoints> stopPoints = new List<Domain.StopPoints>();
-                                stopPoints.Add(destinations);
                                 if (source.Count > 0)
                                 {
                                     foreach (var item in source)
@@ -1660,6 +1659,7 @@ namespace TMS.DataGateway.Repositories
                                         stopPoints.Add(item);
                                     }
                                 }
+                                stopPoints.Add(destinations);
                                 orderDetailsResponse = orderData;
                                 orderDetailsResponse.Transporter = transporter;
                                 orderDetailsResponse.Instructions = transporter.Instruction;
