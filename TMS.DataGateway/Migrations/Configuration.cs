@@ -136,7 +136,7 @@ namespace TMS.DataGateway.Migrations
                         {
                             context.Cities.AddOrUpdate(c => c.ID, new DataModel.City
                             {
-                                CityCode = city.CityName,
+                                CityCode = city.CityCode,
                                 CityDescription = city.CityName,
                                 ProvinceID = context.Provinces.Where(p => p.ProvinceCode == city.ProvinceCode).Select(p => p.ID).FirstOrDefault()
                             });
@@ -304,6 +304,7 @@ namespace TMS.DataGateway.Migrations
         public class CitySeed
         {
             public string ProvinceCode { get; set; }
+            public string CityCode { get; set; }
             public string CityName { get; set; }
         }
 
