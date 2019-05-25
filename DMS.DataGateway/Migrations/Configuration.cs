@@ -66,17 +66,7 @@ namespace DMS.DataGateway.Migrations
                     }
                 }
 
-                using (Stream stream = assembly.GetManifestResourceStream(postalCodes))
-                {
-                    using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
-                    {
-                        CsvReader csvReader = new CsvReader(reader);
-                        csvReader.Configuration.HeaderValidated = null;
-                        csvReader.Configuration.MissingFieldFound = null;
-                        var postalCodesData = csvReader.GetRecords<DMS.DataGateway.DataModels.PostalCode>().ToArray();
-                        context.PostalCodes.AddOrUpdate(c => c.ID, postalCodesData);
-                    }
-                }
+                context.SaveChanges();
 
                 using (Stream stream = assembly.GetManifestResourceStream(subdistricts))
                 {
@@ -97,6 +87,22 @@ namespace DMS.DataGateway.Migrations
                         }
                     }
                 }
+
+                context.SaveChanges();
+
+                using (Stream stream = assembly.GetManifestResourceStream(postalCodes))
+                {
+                    using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                    {
+                        CsvReader csvReader = new CsvReader(reader);
+                        csvReader.Configuration.HeaderValidated = null;
+                        csvReader.Configuration.MissingFieldFound = null;
+                        var postalCodesData = csvReader.GetRecords<DMS.DataGateway.DataModels.PostalCode>().ToArray();
+                        context.PostalCodes.AddOrUpdate(c => c.ID, postalCodesData);
+                    }
+                }
+
+                context.SaveChanges();
             }
             catch (Exception ex)
             {
