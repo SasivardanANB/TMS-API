@@ -80,6 +80,11 @@ namespace TMS.BusinessGateway.Task
             return _orderRepository.GetPartnerDetail(partnerNo);
         }
 
+        public override string GetBusinessAreaCode(int businessAreaId)
+        {
+            return _orderRepository.GetBusinessAreaCode(businessAreaId);
+        }
+
     }
 
 }

@@ -541,7 +541,7 @@ namespace TMS.DataGateway.Repositories
                                      OrderId = oh.ID,
                                      OrderType = oh.OrderType,
                                      OrderNumber = oh.OrderNo,
-                                     VehicleType = context.VehicleTypes.Where(v=>v.ID.ToString()== oh.VehicleShipment).Select(vt=>vt.VehicleTypeDescription).FirstOrDefault() ,
+                                     VehicleType = context.VehicleTypes.Where(v => v.ID.ToString() == oh.VehicleShipment).Select(vt => vt.VehicleTypeDescription).FirstOrDefault(),
                                      PoliceNumber = oh.VehicleNo,
                                      OrderStatus = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusValue
                                  }).Distinct().ToList();
@@ -1338,7 +1338,7 @@ namespace TMS.DataGateway.Repositories
             string orderNo = businessArea + applicationCode;
             using (var context = new Data.TMSDBContext())
             {
-                var order = context.OrderHeaders.Where(t => t.BusinessAreaId == businessAreaId).OrderByDescending(t => t.ID).FirstOrDefault();
+                var order = context.OrderHeaders.Where(t => t.BusinessAreaId == businessAreaId).OrderByDescending(t => t.OrderNo).FirstOrDefault();
                 if (order != null)
                 {
                     int lastOrderYear = order.OrderDate.Year;
@@ -1711,15 +1711,37 @@ namespace TMS.DataGateway.Repositories
                                 {
                                     PartnerAddress = partner.PartnerAddress,
                                     CityCode = subDistrict.City.CityCode,
-                                    ProvinceCode =subDistrict.City.Province.ProvinceCode
+                                    ProvinceCode = subDistrict.City.Province.ProvinceCode
                                 }).FirstOrDefault();
                 }
-                catch ( Exception ex)
+                catch (Exception ex)
                 {
                     _logger.Log(LogLevel.Error, ex);
                 }
             }
             return response;
+        }
+
+        public string GetBusinessAreaCode(int businessAreaId)
+        {
+            string businessAreaCode = "";
+            using (var context = new DataModel.TMSDBContext())
+            {
+                try
+                {
+                    businessAreaCode = (from ba in context.BusinessAreas
+                                where ba.ID == businessAreaId
+                                select new 
+                                {
+                                    BusinessAreaCode = ba.BusinessAreaCode
+                                }).FirstOrDefault().BusinessAreaCode;
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log(LogLevel.Error, ex);
+                }
+            }
+            return businessAreaCode;
         }
     }
 }

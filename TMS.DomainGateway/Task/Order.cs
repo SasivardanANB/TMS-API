@@ -21,5 +21,6 @@ namespace TMS.DomainGateway.Task
 
         public abstract OrderDetailsResponse GetOrderDetails(int orderId);
         public abstract Partner GetPartnerDetail(string partnerNo);
+        public abstract string GetBusinessAreaCode(int businessAreaId);
     }
 }

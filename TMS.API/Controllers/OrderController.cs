@@ -47,6 +47,12 @@ namespace TMS.API.Controllers
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
             return orderTask.GetPartnerDetail(partnerNo);
         }
+
+        private string GetBusinessAreaCode(int businessAreaId)
+        {
+            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            return orderTask.GetBusinessAreaCode(businessAreaId);
+        }
         #endregion
 
         [Route("createupdateorder")]
@@ -197,6 +203,11 @@ namespace TMS.API.Controllers
                             }
                             else
                             {
+                                string businessArea = "";
+                                if (string.IsNullOrEmpty(request.BusinessArea))
+                                    businessArea = GetBusinessAreaCode(request.BusinessAreaId);
+                                else
+                                    businessArea = request.BusinessArea;
                                 TripDMS tripDMS = new TripDMS()
                                 {
                                     OrderNumber = request.OrderNo,
@@ -210,7 +221,7 @@ namespace TMS.API.Controllers
                                     PoliceNumber = request.VehicleNo,
                                     TripStatusCode = Convert.ToString(request.OrderShipmentStatus),
                                     OrderType = request.OrderType,
-                                    BusinessAreaCode = request.BusinessArea,
+                                    BusinessAreaCode = businessArea,
                                     TripLocations = new List<TripLocation>()
                                 };
 
@@ -247,8 +258,6 @@ namespace TMS.API.Controllers
                                 };
                                 tripDMS.TripLocations.Add(destinationLocation);
                                 #endregion
-
-                                //requestDMS.Requests.Add(tripDMS);
                             }
                         }
                         else
@@ -337,6 +346,8 @@ namespace TMS.API.Controllers
             }
             return Ok(orderData);
         }
+
+        
 
         [Route("getorders")]
         [AllowAnonymous, HttpPost]

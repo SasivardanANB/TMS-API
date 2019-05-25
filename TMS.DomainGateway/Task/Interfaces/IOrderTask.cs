@@ -19,6 +19,7 @@ namespace TMS.DomainGateway.Task.Interfaces
         DealerDetailsResponse GetDealers(int orderId, string searchText);
         OrderDetailsResponse GetOrderDetails(int orderId);
         Partner GetPartnerDetail(string partnerNo);
+        string GetBusinessAreaCode(int businessAreaId);
 
     }
 }
