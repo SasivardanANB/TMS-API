@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TMS.DataGateway.Repositories.Interfaces;
 using TMS.DomainGateway.Task;
+using TMS.DomainObjects.Objects;
 using TMS.DomainObjects.Request;
 using TMS.DomainObjects.Response;
 
@@ -73,6 +74,10 @@ namespace TMS.BusinessGateway.Task
         {
             OrderDetailsResponse orderDetailsResponse = _orderRepository.GetOrderDetails(orderId);
             return orderDetailsResponse;
+        }
+        public override Partner GetPartnerDetail(string partnerNo)
+        {
+            return _orderRepository.GetPartnerDetail(partnerNo);
         }
 
     }

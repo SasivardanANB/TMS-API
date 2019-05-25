@@ -17,10 +17,10 @@ namespace TMS.DomainObjects.Objects
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidExpeditorName")]
         public string PartnerName { get; set; }
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidExpeditorEmail")]
-        [EmailAddress(ErrorMessageResourceType = typeof(Resource.ResourceData),ErrorMessageResourceName = "ExpeditorEmailCheck")]
+        [EmailAddress(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "ExpeditorEmailCheck")]
         public string PartnerEmail { get; set; }
         public string PartnerAddress { get; set; }
-        [Range(minimum:1,maximum: int.MaxValue,ErrorMessageResourceType = typeof(Resource.ResourceData),ErrorMessageResourceName = "InvalidPostalCodeID")]
+        [Range(minimum: 1, maximum: int.MaxValue, ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidPostalCodeID")]
         public int? PostalCodeID { get; set; }
         [Range(minimum: 1, maximum: int.MaxValue, ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidPICID")]
         public int? PICID { get; set; }
@@ -28,6 +28,8 @@ namespace TMS.DomainObjects.Objects
         [Range(minimum: 1, maximum: 4, ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidExpeditorTypeID")]
         public int PartnerTypeID { get; set; }
         public bool IsDeleted { get; set; }
+        public string CityCode { get; set; }
+        public string ProvinceCode { get; set; }
 
     }
 }

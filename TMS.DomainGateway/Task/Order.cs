@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TMS.DomainGateway.Task.Interfaces;
+using TMS.DomainObjects.Objects;
 using TMS.DomainObjects.Request;
 using TMS.DomainObjects.Response;
 
@@ -19,5 +20,6 @@ namespace TMS.DomainGateway.Task
         public abstract DealerDetailsResponse GetDealers(int orderId, string searchText);
 
         public abstract OrderDetailsResponse GetOrderDetails(int orderId);
+        public abstract Partner GetPartnerDetail(string partnerNo);
     }
 }
