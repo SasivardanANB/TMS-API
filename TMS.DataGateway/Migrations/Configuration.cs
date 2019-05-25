@@ -131,14 +131,14 @@ namespace TMS.DataGateway.Migrations
                         CsvReader csvReader = new CsvReader(reader);
                         csvReader.Configuration.HeaderValidated = null;
                         csvReader.Configuration.MissingFieldFound = null;
-                        var citiesData = csvReader.GetRecords<DataModel.City>().ToArray();
-                        foreach (DataModel.City city in citiesData)
+                        var citiesData = csvReader.GetRecords<CitySeed>().ToArray();
+                        foreach (CitySeed city in citiesData)
                         {
                             context.Cities.AddOrUpdate(c => c.ID, new DataModel.City
                             {
-                                CityCode = city.CityCode,
-                                CityDescription = city.CityDescription,
-                                ProvinceID = city.ProvinceID
+                                CityCode = city.CityName,
+                                CityDescription = city.CityName,
+                                ProvinceID = context.Provinces.Where(p => p.ProvinceCode == city.ProvinceCode).Select(p => p.ID).FirstOrDefault()
                             });
                         }
                     }
@@ -212,16 +212,14 @@ namespace TMS.DataGateway.Migrations
                         CsvReader csvReader = new CsvReader(reader);
                         csvReader.Configuration.HeaderValidated = null;
                         csvReader.Configuration.MissingFieldFound = null;
-                        var businessAreasData = csvReader.GetRecords<DataModel.BusinessArea>().ToArray();
-                        foreach (DataModel.BusinessArea businessArea in businessAreasData)
+                        var businessAreasData = csvReader.GetRecords<BusinessAreaSeed>().ToArray();
+                        foreach (BusinessAreaSeed businessArea in businessAreasData)
                         {
                             context.BusinessAreas.AddOrUpdate(c => c.ID, new DataModel.BusinessArea
                             {
                                 BusinessAreaCode = businessArea.BusinessAreaCode,
                                 BusinessAreaDescription = businessArea.BusinessAreaDescription,
-                                CompanyCodeID = businessArea.CompanyCodeID,
-                                Address = businessArea.Address,
-                                PostalCodeID = businessArea.PostalCodeID
+                                CompanyCodeID = context.CompanyCodes.Where(p => p.CompanyCodeCode == businessArea.CompanyCodeCode).Select(p => p.ID).FirstOrDefault()
                             });
                         }
                     }
@@ -301,6 +299,19 @@ namespace TMS.DataGateway.Migrations
             {
                 throw ex;
             }
+        }
+
+        public class CitySeed
+        {
+            public string ProvinceCode { get; set; }
+            public string CityName { get; set; }
+        }
+
+        public class BusinessAreaSeed
+        {
+            public string BusinessAreaCode { get; set; }
+            public string BusinessAreaDescription { get; set; }
+            public string CompanyCodeCode { get; set; }
         }
     }
 }

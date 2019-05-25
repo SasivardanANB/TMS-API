@@ -1,11 +1,17 @@
 OrderStatusCode,OrderStatusValue
 1,Booked
 2,Confirmed
-3,Accepted
-4,Rejected
-5,FinishLaoding
-6,Finish Unloading
-7,Completed
-8,Cancelled
-9,PartialBilled
-10,FinalBilled
+3,Assigned
+4,Start Trip
+5,Confirm Arrived
+6,Start Load
+7,Finish Load
+8,Confirm Pickup
+9,Start Unload
+10,Finish Unload
+11,POD
+12,Complete
+13,Cancel
+14,Billed
+15,Driver Accepted
+16,Driver Rejected
