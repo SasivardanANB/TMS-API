@@ -59,6 +59,7 @@ namespace TMS.DataGateway.Repositories
                         //For create pool
                         else
                         {
+                            poolData.PoolNo = GetPoolNumber();
                             poolData.CreatedBy = poolRequest.CreatedBy;
                             poolData.CreatedTime = DateTime.Now;
                             tMSDBContext.Pools.Add(poolData);
@@ -292,6 +293,36 @@ namespace TMS.DataGateway.Repositories
                 _logger.Log(LogLevel.Error, ex);
             }
             return 0;
+        }
+
+        //For generating unique driver number
+        private string GetPoolNumber()
+        {
+            string poolNumber = string.Empty;
+            using (var tMSDBContext = new TMSDBContext())
+            {
+                var poolDetails = tMSDBContext.Pools.OrderByDescending(t => t.ID).FirstOrDefault();
+                if (poolDetails != null)
+                {
+                    Int64 lastPoolNo = Convert.ToInt64(poolDetails.PoolNo.Substring(4, 8));
+                    if (lastPoolNo > 0)
+                    {
+                        lastPoolNo = lastPoolNo + 1;
+                    }
+                    else
+                    {
+                        lastPoolNo = 1;
+                    }
+                    string finalNo = lastPoolNo.ToString().PadLeft(8, '0');
+                    poolNumber = "POOL" + finalNo;
+
+                }
+                else
+                {
+                    poolNumber = "POOL00000001";
+                }
+            }
+            return poolNumber;
         }
     }
 }

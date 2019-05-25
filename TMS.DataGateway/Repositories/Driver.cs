@@ -78,11 +78,10 @@ namespace TMS.DataGateway.Repositories
                         //For create driver
                         else
                         {
-                            //var checkDriverNo = tMSDBContext.Drivers.Where(d => d.DriverNo == driverData.DriverNo).FirstOrDefault();
                             var checkDrivingLicenseNo = tMSDBContext.Drivers.Where(d => d.DrivingLicenseNo == driverData.DrivingLicenseNo).FirstOrDefault();
                             var checkDriverIdentityNo = tMSDBContext.Drivers.Where(d => d.IdentityNo == driverData.IdentityNo).FirstOrDefault();
 
-                            if (/*checkDriverNo == null &&*/ checkDrivingLicenseNo == null && checkDriverIdentityNo == null )
+                            if (checkDrivingLicenseNo == null && checkDriverIdentityNo == null )
                             {
                                 driverData.DriverNo = GetDriverNumber();
                                 driverData.CreatedBy = driverRequest.CreatedBy;
@@ -140,7 +139,7 @@ namespace TMS.DataGateway.Repositories
                     if (driverDetails != null)
                     {
                         //For deleting driver (soft delete)
-                        //Need to assign lastmodifiedby using session userid
+                        //Need to assign lastmodifiedby using session username
                         driverDetails.LastModifiedTime = DateTime.Now;
                         driverDetails.IsDelete = true;
                         tMSDBContext.SaveChanges();
@@ -176,7 +175,9 @@ namespace TMS.DataGateway.Repositories
                         LastName = driver.LastName,
                         DriverNo = driver.DriverNo,
                         DriverPhone = driver.DriverPhone,
+                        Password=driver.Password,
                         Email = driver.Email,
+                        UserName=driver.UserName,
                         IsActive = driver.IsActive,
                         IdentityNo = driver.IdentityNo,
                         DrivingLicenseExpiredDate = driver.DrivingLicenseExpiredDate,
@@ -184,6 +185,7 @@ namespace TMS.DataGateway.Repositories
                         DrivingLicenceImageId = driver.DrivingLicenceImageId,
                         IdentityImageId = driver.IdentityImageId,
                         DriverImageId = driver.DriverImageId,
+                        IsDelete=driver.IsDelete,
                         DriverImageGuId = tMSDBContext.ImageGuids.Where(d => d.ID == driver.DriverImageId).Select(g => g.ImageGuIdValue).FirstOrDefault(),
                         DrivingLicenceImageGuId = tMSDBContext.ImageGuids.Where(d => d.ID == driver.DrivingLicenceImageId).Select(g => g.ImageGuIdValue).FirstOrDefault(),
                         IdentityImageGuId = tMSDBContext.ImageGuids.Where(d => d.ID == driver.IdentityImageId).Select(g => g.ImageGuIdValue).FirstOrDefault(),
@@ -215,7 +217,7 @@ namespace TMS.DataGateway.Repositories
 
                     if (!String.IsNullOrEmpty(driverFilter.FirstName))
                     {
-                        driversList = driversList.Where(s => s.FirstName.ToLower().Contains(driverFilter.FirstName.ToLower())).ToList();
+                        driversList = driversList.Where(s => (s.FirstName +" "+s.LastName).ToLower().Contains(driverFilter.FirstName.ToLower())).ToList();
                     }
 
                     if (!String.IsNullOrEmpty(driverFilter.LastName))
@@ -413,12 +415,13 @@ namespace TMS.DataGateway.Repositories
             return 0;
         }
 
+        //For generating unique driver number
         private string GetDriverNumber()
         {
             string driverNumber = string.Empty;
-            using (var context = new TMSDBContext())
+            using (var tMSDBContext = new TMSDBContext())
             {
-                var driverDetails = context.Drivers.OrderByDescending(t => t.ID).FirstOrDefault();
+                var driverDetails = tMSDBContext.Drivers.OrderByDescending(t => t.ID).FirstOrDefault();
                 if (driverDetails != null)
                 {
                     Int64 lastDriverNo = Convert.ToInt64(driverDetails.DriverNo.Substring(3, 9));
