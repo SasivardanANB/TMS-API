@@ -20,6 +20,6 @@ namespace TMS.DomainGateway.Task.Interfaces
         OrderDetailsResponse GetOrderDetails(int orderId);
         Partner GetPartnerDetail(string partnerNo);
         string GetBusinessAreaCode(int businessAreaId);
-
+        OrderStatusResponse UpdateOrderStatus(OrderStatusRequest request);
     }
 }

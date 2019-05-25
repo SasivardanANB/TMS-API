@@ -85,6 +85,10 @@ namespace TMS.BusinessGateway.Task
             return _orderRepository.GetBusinessAreaCode(businessAreaId);
         }
 
+        public override OrderStatusResponse UpdateOrderStatus(OrderStatusRequest request)
+        {
+            return _orderRepository.UpdateOrderStatus(request);
+        }
     }
 
 }

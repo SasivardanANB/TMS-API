@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="Objects\ChangePassword.cs" />
     <Compile Include="Objects\City.cs" />
+    <Compile Include="Objects\OrderStatus.cs" />
     <Compile Include="Objects\TripLocation.cs" />
     <Compile Include="Objects\Location.cs" />
     <Compile Include="Objects\PostalCode.cs" />
@@ -71,6 +72,7 @@
     <Compile Include="Request\ChangePasswordRequest.cs" />
     <Compile Include="Request\ForgotPasswordRequest.cs" />
     <Compile Include="Request\LoginRequest.cs" />
+    <Compile Include="Request\OrderStatusRequest.cs" />
     <Compile Include="Request\StopPointsRequest.cs" />
     <Compile Include="Request\TripRequest.cs" />
     <Compile Include="Request\TripsByDriverRequest.cs" />

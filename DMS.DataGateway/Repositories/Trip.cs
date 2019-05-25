@@ -601,5 +601,56 @@ namespace DMS.DataGateway.Repositories
             }
             return 0;
         }
+        public string GetOrderNumber(int stopPointId)
+        {
+            string orderNumber = "";
+            using (var context = new DMSDBContext())
+            {
+                try
+                {
+                    int tripId = context.StopPoints.FirstOrDefault(t => t.ID == stopPointId).TripID;
+                    orderNumber = context.TripDetails.FirstOrDefault(t => t.ID == tripId).OrderNumber;
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error(ex.Message);
+                }
+            }
+            return orderNumber;
+        }
+
+        public string GetOrderStatusCode(int tripStatusId)
+        {
+            string tripStatusCode = "";
+            using (var context = new DMSDBContext())
+            {
+                try
+                {
+                    tripStatusCode = context.TripStatuses.FirstOrDefault(t => t.ID == tripStatusId).StatusCode;
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error(ex.Message);
+                }
+            }
+            return tripStatusCode;
+        }
+
+        public int GetOrderSequnceNumber(int stopPointId)
+        {
+            int sequnceNumber = 0;
+            using (var context = new DMSDBContext())
+            {
+                try
+                {
+                    sequnceNumber =  context.StopPoints.FirstOrDefault(t => t.ID == stopPointId).SequenceNumber;
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error(ex.Message);
+                }
+            }
+            return sequnceNumber;
+        }
     }
 }

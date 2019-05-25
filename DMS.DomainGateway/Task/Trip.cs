@@ -18,5 +18,8 @@ namespace DMS.DomainGateway.Task
         public abstract TripResponse UpdateEntireTripStatus(TripsByDriverRequest tripsByDriverRequest);
 
         public abstract TripResponse CreateUpdateTrip(TripRequest request);
+        public abstract string GetOrderNumber(int stopPointId);
+        public abstract string GetOrderStatusCode(int tripStatusId);
+        public abstract int GetOrderSequnceNumber(int stopPointId);
     }
 }

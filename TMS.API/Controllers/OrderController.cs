@@ -354,8 +354,6 @@ namespace TMS.API.Controllers
             return Ok(orderData);
         }
 
-        
-
         [Route("getorders")]
         [AllowAnonymous, HttpPost]
         public IHttpActionResult GetOrders(OrderSearchRequest orderSearchRequest)
@@ -375,7 +373,7 @@ namespace TMS.API.Controllers
         }
 
         [Route("trackorder")]
-        [AllowAnonymous, HttpGet]
+        [HttpGet]
         public IHttpActionResult TrackOrder(int orderId)
         {
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
@@ -384,7 +382,7 @@ namespace TMS.API.Controllers
         }
 
         [Route("getorderids")]
-        [AllowAnonymous, HttpGet]
+        [HttpGet]
         public IHttpActionResult GetOrderIds()
         {
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
@@ -402,12 +400,21 @@ namespace TMS.API.Controllers
         }
 
         [Route("getorderdetails")]
-        [AllowAnonymous, HttpGet]
+        [HttpGet]
         public IHttpActionResult GetOrderDetails(int orderId)
         {
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
             OrderDetailsResponse orderDetailsResponse = orderTask.GetOrderDetails(orderId);
             return Ok(orderDetailsResponse);
+        }
+
+        [Route("updateorderstatus")]
+        [HttpPost]
+        public IHttpActionResult UpdateOrderStatus(OrderStatusRequest request)
+        {
+            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            OrderStatusResponse response = orderTask.UpdateOrderStatus(request);
+            return Ok(response);
         }
 
     }

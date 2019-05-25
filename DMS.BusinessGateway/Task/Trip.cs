@@ -55,5 +55,20 @@ namespace DMS.BusinessGateway.Task
             TripResponse tripData = _tripRepository.CreateUpdateTrip(request);
             return tripData;
         }
+
+        public override string GetOrderNumber(int stopPointId)
+        {
+            return _tripRepository.GetOrderNumber(stopPointId);
+        }
+
+        public override string GetOrderStatusCode(int tripStatusId)
+        {
+            return _tripRepository.GetOrderStatusCode(tripStatusId);
+        }
+
+        public override int GetOrderSequnceNumber(int stopPointId)
+        {
+            return _tripRepository.GetOrderSequnceNumber(stopPointId);
+        }
     }
 }

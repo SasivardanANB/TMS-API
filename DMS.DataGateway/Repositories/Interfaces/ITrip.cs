@@ -17,5 +17,8 @@ namespace DMS.DataGateway.Repositories.Iterfaces
         UpdateTripStatusResponse UpdateTripStatusEventLog(UpdateTripStatusRequest updateTripStatusRequest);
         TripResponse UpdateEntireTripStatus(TripsByDriverRequest tripsByDriverRequest);
         TripResponse CreateUpdateTrip(TripRequest request);
+        string GetOrderNumber(int stopPointId);
+        string GetOrderStatusCode(int tripStatusId);
+        int GetOrderSequnceNumber(int stopPointId);
     }
 }

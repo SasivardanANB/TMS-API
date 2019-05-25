@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DMS.DomainObjects.Objects
+{
+    public class OrderStatus
+    {
+        public string OrderNumber { get; set; }
+        public int SequenceNumber { get; set; }
+        public int IsLoad { get; set; }
+        public string Remarks { get; set; }
+        public string OrderStausCode { get; set; }
+    }
+}

@@ -1730,11 +1730,11 @@ namespace TMS.DataGateway.Repositories
                 try
                 {
                     businessAreaCode = (from ba in context.BusinessAreas
-                                where ba.ID == businessAreaId
-                                select new 
-                                {
-                                    BusinessAreaCode = ba.BusinessAreaCode
-                                }).FirstOrDefault().BusinessAreaCode;
+                                        where ba.ID == businessAreaId
+                                        select new
+                                        {
+                                            BusinessAreaCode = ba.BusinessAreaCode
+                                        }).FirstOrDefault().BusinessAreaCode;
                 }
                 catch (Exception ex)
                 {
@@ -1742,6 +1742,56 @@ namespace TMS.DataGateway.Repositories
                 }
             }
             return businessAreaCode;
+        }
+
+        public OrderStatusResponse UpdateOrderStatus(OrderStatusRequest request)
+        {
+            OrderStatusResponse response = new OrderStatusResponse()
+            {
+                Data = new List<OrderStatus>()
+            };
+
+            using (var context = new DataModel.TMSDBContext())
+            {
+                try
+                {
+                    foreach (var statusRequest in request.Requests)
+                    {
+                        int orderId = 0;
+                        int orderDetailId = 0;
+                        orderId = context.OrderHeaders.FirstOrDefault(t => t.LegecyOrderNo == statusRequest.OrderNumner).ID;
+                        if (statusRequest.SequenceNumber > 0)
+                            orderDetailId = context.OrderDetails.FirstOrDefault(t => t.SequenceNo == statusRequest.SequenceNumber && t.OrderHeaderID == orderId).ID;
+                        else
+                        {
+                            orderDetailId = context.OrderDetails.FirstOrDefault(t => t.OrderHeaderID == orderId).ID;
+                        }
+
+                        DataModel.OrderStatusHistory statusHistory = new DataModel.OrderStatusHistory()
+                        {
+                            OrderDetailID = orderDetailId,
+                            OrderStatusID = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == statusRequest.OrderStausCode).ID,
+                            IsLoad = statusRequest.IsLoad == null,
+                            Remarks = statusRequest.Remarks,
+                            StatusDate = DateTime.Now
+
+                        };
+                        context.OrderStatusHistories.Add(statusHistory);
+                        context.SaveChanges();
+
+                        response.Data = request.Requests;
+                        response.Status = DomainObjects.Resource.ResourceData.Success;
+                        response.StatusCode = (int)HttpStatusCode.OK;
+                        response.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log(LogLevel.Error, ex);
+                }
+            }
+
+            return response;
         }
     }
 }
