@@ -62,6 +62,7 @@
     <Compile Include="Objects\DealerDetails.cs" />
     <Compile Include="Objects\TrackStep.cs" />
     <Compile Include="Objects\TrackStepLoadUnload.cs" />
+    <Compile Include="Objects\TripDMS.cs" />
     <Compile Include="Objects\Trip.cs" />
     <Compile Include="Objects\PartnerSearch.cs" />
     <Compile Include="Objects\PartnerDeatils.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="Objects\TrackDetail.cs" />
     <Compile Include="Objects\TrackHeader.cs" />
     <Compile Include="Objects\Transporter.cs" />
+    <Compile Include="Objects\TripLocation.cs" />
     <Compile Include="Objects\User.cs" />
     <Compile Include="Objects\UserRole.cs" />
     <Compile Include="Objects\Gate.cs" />
@@ -89,6 +91,7 @@
     <Compile Include="Request\PackingSheetRequest.cs" />
     <Compile Include="Request\PartnerSearchRequest.cs" />
     <Compile Include="Request\OrderSearchRequest.cs" />
+    <Compile Include="Request\TripRequestDMS.cs" />
     <Compile Include="Request\TripRequest.cs" />
     <Compile Include="Request\PoolRequest.cs" />
     <Compile Include="Request\PICRequest.cs" />

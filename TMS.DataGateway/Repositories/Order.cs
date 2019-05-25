@@ -1146,13 +1146,13 @@ namespace TMS.DataGateway.Repositories
                                                                         unLoadData.ConfirmArrive.StepHeaderDescription = "Arrive at Main Dealer";
                                                                         unLoadData.ConfirmArrive.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
                                                                     }
-                                                                    else if (loadStatus.StatusCode == "6")
+                                                                    else if (loadStatus.StatusCode == "9")
                                                                     {
                                                                         unLoadData.StartLoad.StepHeaderName = "START UNLOAD";
                                                                         unLoadData.StartLoad.StepHeaderDescription = "Unload parts at Main Dealer";
                                                                         unLoadData.StartLoad.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
                                                                     }
-                                                                    else if (loadStatus.StatusCode == "7")
+                                                                    else if (loadStatus.StatusCode == "10")
                                                                     {
                                                                         unLoadData.FinishLoad.StepHeaderName = "FINISH UNLOAD";
                                                                         unLoadData.FinishLoad.StepHeaderDescription = "Finish unload parts at Main Dealer";
@@ -1693,6 +1693,33 @@ namespace TMS.DataGateway.Repositories
             }
             return orderDetailsResponse;
 
+        }
+
+        public Domain.Partner GetPartnerDetail(string partnerNo)
+        {
+            Domain.Partner response = new Domain.Partner();
+
+            using (var context = new DataModel.TMSDBContext())
+            {
+                try
+                {
+                    response = (from partner in context.Partners
+                                join postalcode in context.PostalCodes on partner.PostalCodeID equals postalcode.ID
+                                join subDistrict in context.SubDistricts on postalcode.SubDistrictID equals subDistrict.ID
+                                where partner.PartnerNo == partnerNo
+                                select new Domain.Partner
+                                {
+                                    PartnerAddress = partner.PartnerAddress,
+                                    CityCode = subDistrict.City.CityCode,
+                                    ProvinceCode =subDistrict.City.Province.ProvinceCode
+                                }).FirstOrDefault();
+                }
+                catch ( Exception ex)
+                {
+                    _logger.Log(LogLevel.Error, ex);
+                }
+            }
+            return response;
         }
     }
 }
