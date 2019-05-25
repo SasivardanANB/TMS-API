@@ -5,6 +5,7 @@ namespace DMS.DataGateway.Migrations
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Migrations;
+    using System.Data.Entity.Validation;
     using System.IO;
     using System.Linq;
     using System.Reflection;
@@ -22,6 +23,10 @@ namespace DMS.DataGateway.Migrations
 
         protected override void Seed(DMS.DataGateway.DataModels.DMSDBContext context)
         {
+            //// Uncomment below code to debug while running Update-Database Command
+            //if (!System.Diagnostics.Debugger.IsAttached)
+            //    System.Diagnostics.Debugger.Launch();
+
             try
             {
                 Assembly assembly = Assembly.GetExecutingAssembly();
@@ -98,15 +103,39 @@ namespace DMS.DataGateway.Migrations
                         csvReader.Configuration.HeaderValidated = null;
                         csvReader.Configuration.MissingFieldFound = null;
                         var postalCodesData = csvReader.GetRecords<DMS.DataGateway.DataModels.PostalCode>().ToArray();
-                        context.PostalCodes.AddOrUpdate(c => c.ID, postalCodesData);
+                        foreach (DMS.DataGateway.DataModels.PostalCode postalCode in postalCodesData)
+                        {
+                            context.PostalCodes.AddOrUpdate(c => c.ID, new DMS.DataGateway.DataModels.PostalCode
+                            {
+                                PostalCodeNo = postalCode.PostalCodeNo,
+                                SubDistrictID = postalCode.SubDistrictID
+                            });
+                        }
                     }
                 }
 
                 context.SaveChanges();
             }
+            catch (DbEntityValidationException dbEx)
+            {
+                Exception raise = dbEx;
+                foreach (var validationErrors in dbEx.EntityValidationErrors)
+                {
+                    foreach (var validationError in validationErrors.ValidationErrors)
+                    {
+                        string message = string.Format("{0}:{1}",
+                            validationErrors.Entry.Entity.ToString(),
+                            validationError.ErrorMessage);
+                        // raise a new exception nesting
+                        // the current instance as InnerException
+                        raise = new InvalidOperationException(message, raise);
+                    }
+                }
+                throw raise;
+            }
             catch (Exception ex)
             {
-                _logger.Log(LogLevel.Error, ex);
+                throw ex;
             }
         }
 
