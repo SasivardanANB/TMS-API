@@ -136,7 +136,7 @@ namespace TMS.DataGateway.Migrations
                         {
                             context.Cities.AddOrUpdate(c => c.ID, new DataModel.City
                             {
-                                CityCode = city.CityName,
+                                CityCode = city.CityCode,
                                 CityDescription = city.CityName,
                                 ProvinceID = context.Provinces.Where(p => p.ProvinceCode == city.ProvinceCode).Select(p => p.ID).FirstOrDefault()
                             });
@@ -153,14 +153,14 @@ namespace TMS.DataGateway.Migrations
                         CsvReader csvReader = new CsvReader(reader);
                         csvReader.Configuration.HeaderValidated = null;
                         csvReader.Configuration.MissingFieldFound = null;
-                        var subdistrictsData = csvReader.GetRecords<DataModel.SubDistrict>().ToArray();
-                        foreach (DataModel.SubDistrict subDistrict in subdistrictsData)
+                        var subdistrictsData = csvReader.GetRecords<SubDistrictSeed>().ToArray();
+                        foreach (SubDistrictSeed subDistrict in subdistrictsData)
                         {
                             context.SubDistricts.AddOrUpdate(c => c.ID, new DataModel.SubDistrict
                             {
                                 SubdistrictCode = subDistrict.SubdistrictCode,
                                 SubdistrictName = subDistrict.SubdistrictName,
-                                CityID = subDistrict.CityID
+                                CityID = context.Cities.Where(p => p.CityDescription == subDistrict.CityName).Select(p => p.ID).FirstOrDefault()
                             });
                         }
                     }
@@ -304,6 +304,14 @@ namespace TMS.DataGateway.Migrations
         public class CitySeed
         {
             public string ProvinceCode { get; set; }
+            public string CityCode { get; set; }
+            public string CityName { get; set; }
+        }
+
+        public class SubDistrictSeed
+        {
+            public string SubdistrictCode { get; set; }
+            public string SubdistrictName { get; set; }
             public string CityName { get; set; }
         }
 
