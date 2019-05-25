@@ -13,6 +13,7 @@ namespace DMS.DataGateway.Migrations
     internal sealed class Configuration : DbMigrationsConfiguration<DMS.DataGateway.DataModels.DMSDBContext>
     {
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+
         public Configuration()
         {
             AutomaticMigrationsEnabled = true;
@@ -29,6 +30,7 @@ namespace DMS.DataGateway.Migrations
                 string postalCodes = "DMS.DataGateway.SeedData.PostalCodes.csv";
                 string subdistricts = "DMS.DataGateway.SeedData.SubDistricts.csv";
 
+
                 using (Stream stream = assembly.GetManifestResourceStream(provinces))
                 {
                     using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
@@ -41,6 +43,9 @@ namespace DMS.DataGateway.Migrations
                     }
                 }
 
+
+                context.SaveChanges();
+
                 using (Stream stream = assembly.GetManifestResourceStream(cities))
                 {
                     using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
@@ -48,8 +53,16 @@ namespace DMS.DataGateway.Migrations
                         CsvReader csvReader = new CsvReader(reader);
                         csvReader.Configuration.HeaderValidated = null;
                         csvReader.Configuration.MissingFieldFound = null;
-                        var citiesData = csvReader.GetRecords<DMS.DataGateway.DataModels.City>().ToArray();
-                        context.Cities.AddOrUpdate(c => c.ID, citiesData);
+                        var citiesData = csvReader.GetRecords<CitySeed>().ToArray();
+                        foreach (CitySeed city in citiesData)
+                        {
+                            context.Cities.AddOrUpdate(c => c.ID, new DMS.DataGateway.DataModels.City
+                            {
+                                CityCode = city.CityName,
+                                CityDescription = city.CityName,
+                                ProvinceID = context.Provinces.Where(p => p.ProvinceCode == city.ProvinceCode).Select(p => p.ID).FirstOrDefault()
+                            });
+                        }
                     }
                 }
 
@@ -81,6 +94,12 @@ namespace DMS.DataGateway.Migrations
             {
                 _logger.Log(LogLevel.Error, ex);
             }
+        }
+
+        public class CitySeed
+        {
+            public string ProvinceCode { get; set; }
+            public string CityName { get; set; }
         }
     }
 }

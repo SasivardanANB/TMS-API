@@ -1,3 +1,16 @@
-BusinessAreaCode,BusinessAreaDescription,CompanyCodeID,Address,PostalCodeID
-BA01,Astra Business Area,2,"Gaya Motors, North Jakarta",1
-BA02,Anblicks Business Area,1,"Hitech City, Hyederbad",2
+BusinessAreaCode,BusinessAreaDescription,CompanyCodeCode
+H000,HSO - Head Office,
+H101,HSO-Jakarta Honda Center,I01
+H350,HSO-Semarang,K0Z
+H360,HSO-Yogyakarta,L01
+H530,HSO-Mataram NTB,N02
+H540,HSO-Bali-Denpasar,N01
+H600,HSO-Palembang,G01
+H621,HSO-Part Jambi,G03
+H650,HSO-Bengkulu,G02
+H700,HSO-Balikpapan,R4Z
+H720,HSO-Pontianak,Q01
+H760,HSO-Makassar,W01
+H790,HSO-Jayapura,Z11
+H800,HSO-Samarinda,R5Z
+H662,HSO - JHC Lampung Part,G04
