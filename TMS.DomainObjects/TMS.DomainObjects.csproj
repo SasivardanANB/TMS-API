@@ -60,6 +60,7 @@
     <Compile Include="Objects\OrderSearch.cs" />
     <Compile Include="Objects\Order.cs" />
     <Compile Include="Objects\DealerDetails.cs" />
+    <Compile Include="Objects\SAMAUser.cs" />
     <Compile Include="Objects\TrackStep.cs" />
     <Compile Include="Objects\TrackStepLoadUnload.cs" />
     <Compile Include="Objects\TripDMS.cs" />
@@ -124,6 +125,7 @@
     <Compile Include="Response\PartnerDetilasResponse.cs" />
     <Compile Include="Response\DealerDetailsResponse.cs" />
     <Compile Include="Response\PartnerSearchResponse.cs" />
+    <Compile Include="Response\SAMAUserResponse.cs" />
     <Compile Include="Response\TripResponse.cs" />
     <Compile Include="Response\SubDistrictDetailsResponse.cs" />
     <Compile Include="Response\PoolResponse.cs" />

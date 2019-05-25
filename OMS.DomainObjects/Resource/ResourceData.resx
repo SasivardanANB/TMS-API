@@ -228,4 +228,7 @@
   <data name="MenuActivityRetrieved" xml:space="preserve">
     <value>Menu Activities Retrieved</value>
   </data>
+  <data name="InvalidToken" xml:space="preserve">
+    <value>Invalid Token</value>
+  </data>
 </root>

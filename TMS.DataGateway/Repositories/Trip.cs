@@ -35,6 +35,8 @@ namespace TMS.DataGateway.Repositories
             {
                 using (var context = new DataModel.TMSDBContext())
                 {
+                    var searchRequest = tripRequest.Requests[0];
+                    if(searchRequest.OrderStatusId > 0) { 
                     tripList = (from oh in context.OrderHeaders
                                  join od in context.OrderDetails on oh.ID equals od.OrderHeaderID
                                  join ps in context.PackingSheets on od.ShippingListNo equals ps.ShippingListNo into pks
@@ -46,7 +48,7 @@ namespace TMS.DataGateway.Repositories
                                        || (String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.VehicleNo == oh.VehicleNo))
                                 ||
                                 ((tripRequest.GlobalSearch != string.Empty && pksh.PackingSheetNo == tripRequest.GlobalSearch)
-                                || (tripRequest.GlobalSearch == string.Empty && pksh.PackingSheetNo == pksh.PackingSheetNo))) && (oh.DriverName != null) && (oh.VehicleNo != null)) 
+                                || (tripRequest.GlobalSearch == string.Empty && pksh.PackingSheetNo == pksh.PackingSheetNo))) && (oh.DriverName != null) && (oh.VehicleNo != null) && oh.OrderStatusID == searchRequest.OrderStatusId) 
 
                                 select new Domain.Trip
                                  {
@@ -61,7 +63,36 @@ namespace TMS.DataGateway.Repositories
                                      OrderStatusId=oh.OrderStatusID,
                                      OrderStatus = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusValue
                                  }).Distinct().ToList();
+                    }
+                    else
+                    {
+                        tripList = (from oh in context.OrderHeaders
+                                    join od in context.OrderDetails on oh.ID equals od.OrderHeaderID
+                                    join ps in context.PackingSheets on od.ShippingListNo equals ps.ShippingListNo into pks
+                                    from pksh in pks.DefaultIfEmpty()
+                                    where ((((!String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.OrderNo == tripRequest.GlobalSearch)
+                                           || (String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.OrderNo == oh.OrderNo))
+                                           ||
+                                           ((!String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.VehicleNo == tripRequest.GlobalSearch)
+                                           || (String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.VehicleNo == oh.VehicleNo))
+                                    ||
+                                    ((tripRequest.GlobalSearch != string.Empty && pksh.PackingSheetNo == tripRequest.GlobalSearch)
+                                    || (tripRequest.GlobalSearch == string.Empty && pksh.PackingSheetNo == pksh.PackingSheetNo))) && (oh.DriverName != null) && (oh.VehicleNo != null))
 
+                                    select new Domain.Trip
+                                    {
+                                        OrderId = oh.ID,
+                                        OrderType = oh.OrderType,
+                                        OrderNumber = oh.OrderNo,
+                                        VehicleType = oh.VehicleShipment,
+                                        Vehicle = oh.VehicleNo,
+                                        EstimatedArrivalDate = oh.ActualShipmentDate,
+                                        EstimatedShipmentDate = oh.EstimationShipmentDate,
+                                        Dimensions = oh.OrderWeight + " " + oh.OrderWeightUM,
+                                        OrderStatusId = oh.OrderStatusID,
+                                        OrderStatus = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusValue
+                                    }).Distinct().ToList();
+                    }
                     if (tripList != null && tripList.Count > 0)
                     {
                         foreach (var order in tripList)

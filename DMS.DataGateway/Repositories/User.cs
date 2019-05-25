@@ -173,6 +173,7 @@ namespace DMS.DataGateway.Repositories
             }
             return userResponse;
         }
+
         public UserResponse ChangePassword(ChangePasswordRequest changePasswordRequest,string type)
         {
             UserResponse userResponse = new UserResponse();
@@ -309,12 +310,14 @@ namespace DMS.DataGateway.Repositories
                         UserName=user.UserName,
                         FirstName=user.FirstName,
                         LastName=user.LastName,
+                        Password=user.Password,
                         Email=user.Email,
                        PhoneNumber=user.PhoneNumber
                     }).FirstOrDefault();
                     if (userDetails != null)
                     {
                         List<Domain.User> users = new List<Domain.User>();
+                        userDetails.Password = Encryption.EncryptionLibrary.DecrypPassword(userDetails.Password);
                         users.Add(userDetails);
                         userResponse.Data = users;
                         userResponse.Status = DomainObjects.Resource.ResourceData.Success;

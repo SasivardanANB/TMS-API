@@ -16,6 +16,12 @@ using TMS.API.Classes;
 using RestSharp;
 using System.Configuration;
 using Newtonsoft.Json;
+using RestSharp.Serialization.Json;
+using System.IO;
+using System.Text;
+using System.Runtime.Serialization.Json;
+using Newtonsoft.Json.Linq;
+using NLog;
 
 namespace TMS.API.Controllers
 {
@@ -23,6 +29,8 @@ namespace TMS.API.Controllers
     [RoutePrefix("api/v1/user")]
     public class UserController : ApiController
     {
+        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+
         #region Private Methods
         private static string GetApiResponse(string apiRoute, Method method, object requestQueryParameter, string token)
         {
@@ -45,12 +53,70 @@ namespace TMS.API.Controllers
         [AllowAnonymous, HttpPost]
         public IHttpActionResult LoginUser(LoginRequest login)
         {
+            if (login.IsSAMALogin)
+            {
+                ModelState.Remove("login.UserPassword");
+            }
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
             UserResponse userData = userTask.LoginUser(login);
             return Ok(userData);
+        }
+
+        [Route("getsamauser")]
+        [AllowAnonymous, HttpPost]
+        public IHttpActionResult GetSAMAUser(string token)
+        {
+            SAMAUserResponse samaUserResponse = new SAMAUserResponse();
+
+            if (String.IsNullOrEmpty(token))
+                return BadRequest(ModelState);
+
+            try
+            {
+                var client = new RestClient(ConfigurationManager.AppSettings["SAMAApiGatewayBaseURL"]);
+                RestRequest request = new RestRequest("/users/getmyuserinfo", Method.GET) { RequestFormat = DataFormat.Json };
+                request.AddParameter("Authorization", string.Format("Bearer " + token), ParameterType.HttpHeader);
+                IRestResponse response = client.Execute(request);
+
+                if (response.IsSuccessful)
+                {
+                    var SAMAUsers = JsonConvert.DeserializeObject<List<SAMAUser>>(response.Content);
+                    if (SAMAUsers != null && SAMAUsers.Count == 1)
+                    {
+                        samaUserResponse.Data = SAMAUsers[0];
+                        samaUserResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        samaUserResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                        samaUserResponse.StatusCode = (int)HttpStatusCode.OK;
+                        samaUserResponse.NumberOfRecords = 1;
+                    }
+                    else
+                    {
+                        samaUserResponse.Data = null;
+                        samaUserResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        samaUserResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
+                        samaUserResponse.StatusCode = (int)HttpStatusCode.OK;
+                    }
+                }
+                else
+                {
+                    samaUserResponse.Data = null;
+                    samaUserResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                    samaUserResponse.StatusMessage = DomainObjects.Resource.ResourceData.InvalidToken;
+                    samaUserResponse.StatusCode = (int)HttpStatusCode.OK;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+                samaUserResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                samaUserResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                samaUserResponse.StatusMessage = ex.Message;
+            }
+            return Ok(samaUserResponse);
         }
 
         #region "User Application"

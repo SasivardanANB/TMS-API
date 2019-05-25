@@ -28,23 +28,42 @@ namespace TMS.DataGateway.Repositories
             {
                 Data = new List<Domain.User>()
             };
+
             try
             {
                 using (var context = new TMSDBContext())
                 {
-                    string encryptedPassword = Encryption.EncryptionLibrary.EncryptPassword(login.UserPassword);
-                    var userData = (from user in context.Users
-                                    where user.UserName == login.UserName
-                                    && user.Password == encryptedPassword && !user.IsDelete
-                                    select new Domain.User()
-                                    {
-                                        ID = user.ID,
-                                        FirstName = user.FirstName,
-                                        LastName = user.LastName,
-                                        IsActive = user.IsActive,
-                                        UserName = user.UserName
-                                    }).FirstOrDefault();
+                    Domain.User userData;
 
+                    if (login.IsSAMALogin)
+                    {
+                        userData = (from user in context.Users
+                                        where user.UserName == login.UserName
+                                        && !user.IsDelete
+                                        select new Domain.User()
+                                        {
+                                            ID = user.ID,
+                                            FirstName = user.FirstName,
+                                            LastName = user.LastName,
+                                            IsActive = user.IsActive,
+                                            UserName = user.UserName
+                                        }).FirstOrDefault();
+                    }
+                    else
+                    {
+                        string encryptedPassword = Encryption.EncryptionLibrary.EncryptPassword(login.UserPassword);
+                        userData = (from user in context.Users
+                                        where user.UserName == login.UserName
+                                        && user.Password == encryptedPassword && !user.IsDelete
+                                        select new Domain.User()
+                                        {
+                                            ID = user.ID,
+                                            FirstName = user.FirstName,
+                                            LastName = user.LastName,
+                                            IsActive = user.IsActive,
+                                            UserName = user.UserName
+                                        }).FirstOrDefault();
+                    }
                     if (userData != null)
                     {
                         if (!userData.IsActive)
@@ -152,9 +171,9 @@ namespace TMS.DataGateway.Repositories
                         {
                             userDataModel.LastModifiedBy = user.LastModifiedBy;
                             userDataModel.LastModifiedTime = DateTime.Now;
-                            userDataModel.Password = context.Users.Where(d => d.ID == userDataModel.ID).Select(p => p.Password).FirstOrDefault();
+                            //userDataModel.Password = context.Users.Where(d => d.ID == userDataModel.ID).Select(p => p.Password).FirstOrDefault();
                             context.Entry(userDataModel).State = System.Data.Entity.EntityState.Modified;
-                            context.Entry(userDataModel).Property(p => p.Password).IsModified = false;
+                            //context.Entry(userDataModel).Property(p => p.Password).IsModified = false;
                             context.SaveChanges();
                             var existedApplications = (from userApplication in context.UserApplications
                                                        where userApplication.UserID == userDataModel.ID
@@ -293,6 +312,7 @@ namespace TMS.DataGateway.Repositories
                              FirstName = user.FirstName,
                              LastName = user.LastName,
                              IsActive = user.IsActive,
+                             Password=user.Password,
                              Applications = context.UserApplications.Where(userApp => userApp.UserID == user.ID).Select(userApp => userApp.ApplicationID).ToList(),
                              ApplicationNames = context.Applications.Where(a => (context.UserApplications.Where(userApp => userApp.UserID == user.ID).Select(userApp => userApp.ApplicationID).ToList()).Contains(a.ID)).Select(a => a.ApplicationName).ToList(),
                              Roles = context.Roles.Where(r => (context.UserRoles.Where(ur => ur.UserID == user.ID).Select(l => l.ID).ToList()).Contains(r.ID)).Select(fe => new Domain.Role
@@ -308,6 +328,13 @@ namespace TMS.DataGateway.Repositories
                                  BusinessAreaDescription = fe.BusinessAreaDescription
                              }).ToList(),
                          }).ToList();
+                    if (usersList.Count > 0)
+                    {
+                        foreach (var item in usersList)
+                        {
+                            item.Password = Encryption.EncryptionLibrary.DecrypPassword(item.Password);
+                        }
+                    }
                 }
 
                 // Filter

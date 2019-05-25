@@ -477,5 +477,48 @@ namespace TMS.DataGateway.Repositories
             }
             return commonResponse;
         }
+
+        public CommonResponse GetTripStatusNames()
+        {
+            CommonResponse commonResponse = new CommonResponse();
+            try
+            {
+                using (var context = new TMSDBContext())
+                {
+                    var tripstatusData = new List<Domain.Common>();
+
+                    tripstatusData = context.TripStatuses.Select(data => new Domain.Common
+                    {
+                        Id = data.ID,
+                        Value = data.TripStatusDescription
+                    }).ToList();
+
+                    if (tripstatusData.Count > 0)
+                    {
+                        commonResponse.Data = tripstatusData;
+                        commonResponse.NumberOfRecords = tripstatusData.Count;
+                        commonResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        commonResponse.StatusCode = (int)HttpStatusCode.OK;
+                        commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                    }
+                    else
+                    {
+                        commonResponse.NumberOfRecords = 0;
+                        commonResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        commonResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                        commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+
+                commonResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                commonResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                commonResponse.StatusMessage = ex.Message;
+            }
+            return commonResponse;
+        }
     }
 }

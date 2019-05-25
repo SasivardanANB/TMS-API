@@ -20,5 +20,6 @@ namespace TMS.DomainGateway.Task.Interfaces
         CommonResponse GetShipperNames(string searchText);
         CommonResponse GetCityNames(string searchText);
         CommonResponse GetGateNamesByBusinessArea(int businessAreaId, int gateTypeId);
+        CommonResponse GetTripStatusNames();
     }
 }

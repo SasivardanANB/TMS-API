@@ -67,6 +67,7 @@
     <Compile Include="Objects\RoleMenuActivity.cs" />
     <Compile Include="Objects\RoleMenu.cs" />
     <Compile Include="Objects\Activity.cs" />
+    <Compile Include="Objects\SAMAUser.cs" />
     <Compile Include="Objects\SubDistrict.cs" />
     <Compile Include="Objects\Application.cs" />
     <Compile Include="Objects\Role.cs" />
@@ -100,6 +101,7 @@
     <Compile Include="Response\RoleMenuResponse.cs" />
     <Compile Include="Response\AssignUserRoleResponse.cs" />
     <Compile Include="Response\ApplicationResponse.cs" />
+    <Compile Include="Response\SAMAUserResponse.cs" />
     <Compile Include="Response\UserResponse.cs" />
     <Compile Include="Response\UserRoleResponse.cs" />
   </ItemGroup>
