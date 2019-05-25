@@ -208,6 +208,7 @@ namespace TMS.API.Controllers
                                     businessArea = GetBusinessAreaCode(request.BusinessAreaId);
                                 else
                                     businessArea = request.BusinessArea;
+
                                 TripDMS tripDMS = new TripDMS()
                                 {
                                     OrderNumber = request.OrderNo,
@@ -219,7 +220,7 @@ namespace TMS.API.Controllers
                                     TripType = Convert.ToString(request.FleetType),
                                     Weight = request.OrderWeight,
                                     PoliceNumber = request.VehicleNo,
-                                    TripStatusCode = Convert.ToString(request.OrderShipmentStatus),
+                                    TripStatusCode = "3",
                                     OrderType = request.OrderType,
                                     BusinessAreaCode = businessArea,
                                     TripLocations = new List<TripLocation>()
@@ -262,6 +263,12 @@ namespace TMS.API.Controllers
                         }
                         else
                         {
+                            string businessArea = "";
+                            if (string.IsNullOrEmpty(request.BusinessArea))
+                                businessArea = GetBusinessAreaCode(request.BusinessAreaId);
+                            else
+                                businessArea = request.BusinessArea;
+
                             TripDMS tripDMS = new TripDMS()
                             {
                                 OrderNumber = request.OrderNo,
@@ -273,9 +280,9 @@ namespace TMS.API.Controllers
                                 TripType = Convert.ToString(request.FleetType),
                                 Weight = request.OrderWeight,
                                 PoliceNumber = request.VehicleNo,
-                                TripStatusCode = Convert.ToString(request.OrderShipmentStatus),
+                                TripStatusCode = "3",
                                 OrderType = request.OrderType,
-                                BusinessAreaCode = request.BusinessArea,
+                                BusinessAreaCode = businessArea,
                                 TripLocations = new List<TripLocation>()
                             };
 
