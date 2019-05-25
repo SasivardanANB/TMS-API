@@ -1,7 +1,5 @@
-SubdistrictCode,SubdistrictName,CityID
-SD01,Cilincing,5
-SD02,Koja,5
-SD03,Kelapa Gading,5
-SD04,Tanjung Priok,5
-SD05,Pademangan,5
-SD06,Penjaringan,5
+SubdistrictCode,SubdistrictName,CityName
+SD01,Baktiya,ACEH UTARA
+SD02,Koja,NIAS UTARA
+SD03,Kelapa Gading,DUMAI
+SD04,Tanjung Priok,KOTA JAKARTA UTARA
