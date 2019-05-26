@@ -293,28 +293,46 @@ namespace OMS.DataGateway.Repositories
                                         orderStatusValue = "Confirmed";
                                         break;
                                     case 3:
-                                        orderStatusValue = "Accepted";
+                                        orderStatusValue = "Assigned";
                                         break;
                                     case 4:
-                                        orderStatusValue = "Rejected";
+                                        orderStatusValue = "Start Trip";
                                         break;
                                     case 5:
-                                        orderStatusValue = "FinishLaoding";
+                                        orderStatusValue = "Confirm Arrived";
                                         break;
                                     case 6:
-                                        orderStatusValue = "Finish Unloading";
+                                        orderStatusValue = "Start Load";
                                         break;
                                     case 7:
-                                        orderStatusValue = "Completed";
+                                        orderStatusValue = "Finish Load";
                                         break;
                                     case 8:
-                                        orderStatusValue = "Cancelled";
+                                        orderStatusValue = "Confirm Pickup";
                                         break;
                                     case 9:
-                                        orderStatusValue = "Partial Billed";
+                                        orderStatusValue = "Start Unload";
                                         break;
                                     case 10:
-                                        orderStatusValue = "FinalBilled";
+                                        orderStatusValue = "Finish Unload";
+                                        break;
+                                    case 11:
+                                        orderStatusValue = "POD";
+                                        break;
+                                    case 12:
+                                        orderStatusValue = "Complete";
+                                        break;
+                                    case 13:
+                                        orderStatusValue = "Cancel";
+                                        break;
+                                    case 14:
+                                        orderStatusValue = "Billed";
+                                        break;
+                                    case 15:
+                                        orderStatusValue = "Driver Accepted";
+                                        break;
+                                    case 16:
+                                        orderStatusValue = "Driver Rejected";
                                         break;
                                     default:
                                         break;
