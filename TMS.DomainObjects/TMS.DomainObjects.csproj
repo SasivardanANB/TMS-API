@@ -53,6 +53,7 @@
     <Compile Include="Objects\AssignUserRole.cs" />
     <Compile Include="Objects\Authenticate.cs" />
     <Compile Include="Objects\BusinessArea.cs" />
+    <Compile Include="Objects\CommonCode.cs" />
     <Compile Include="Objects\Common.cs" />
     <Compile Include="Objects\Driver.cs" />
     <Compile Include="Objects\Error.cs" />

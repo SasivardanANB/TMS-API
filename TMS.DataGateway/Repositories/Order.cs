@@ -318,18 +318,26 @@ namespace TMS.DataGateway.Repositories
 
                             #region Step 4: Check if Partners exists or not
 
-                            int partner1Id;
-                            int partner2Id;
-                            int partner3Id;
-                            var partner1 = (from p in context.Partners
-                                            where p.PartnerNo == order.PartnerNo1
-                                            select new Domain.Partner()
-                                            {
-                                                ID = p.ID
-                                            }).FirstOrDefault();
-                            if (partner1 != null)
-                                partner1Id = partner1.ID;
-                            else
+                            int partner1Id = 0;
+                            int partner2Id = 0;
+                            int partner3Id = 0;
+                            if (request.UploadType == 1)
+                            {
+                                var partner1 = (from p in context.Partners
+                                                where p.PartnerNo == order.PartnerNo1
+                                                select new Domain.Partner()
+                                                {
+                                                    ID = p.ID
+                                                }).FirstOrDefault();
+                                if (partner1 != null)
+                                    partner1Id = partner1.ID;
+                            }
+                            else if (request.UploadType == 2)
+                            {
+                                partner1Id = Convert.ToInt32(order.PartnerNo1);
+                            }
+                            
+                            if (partner1Id == 0)
                             {
                                 Data.Partner partner1Request = new Data.Partner()
                                 {
@@ -347,15 +355,23 @@ namespace TMS.DataGateway.Repositories
                                 partner1Id = partner1Request.ID;
                             }
 
-                            var partner2 = (from p in context.Partners
-                                            where p.PartnerNo == order.PartnerNo2
-                                            select new Domain.Partner()
-                                            {
-                                                ID = p.ID
-                                            }).FirstOrDefault();
-                            if (partner2 != null)
-                                partner2Id = partner2.ID;
-                            else
+                            if (request.UploadType == 1)
+                            {
+                                var partner2 = (from p in context.Partners
+                                                where p.PartnerNo == order.PartnerNo2
+                                                select new Domain.Partner()
+                                                {
+                                                    ID = p.ID
+                                                }).FirstOrDefault();
+                                if (partner2 != null)
+                                    partner2Id = partner2.ID;
+                            }
+                            else if (request.UploadType == 2)
+                            {
+                                partner2Id = Convert.ToInt32(order.PartnerNo2);
+                            }
+                            
+                            if (partner2Id == 0)
                             {
                                 Data.Partner partner2Request = new Data.Partner()
                                 {
@@ -373,15 +389,23 @@ namespace TMS.DataGateway.Repositories
                                 partner2Id = partner2Request.ID;
                             }
 
-                            var partner3 = (from p in context.Partners
-                                            where p.PartnerNo == order.PartnerNo3
-                                            select new Domain.Partner()
-                                            {
-                                                ID = p.ID
-                                            }).FirstOrDefault();
-                            if (partner3 != null)
-                                partner3Id = partner3.ID;
-                            else
+                            if (request.UploadType == 1)
+                            {
+                                var partner3 = (from p in context.Partners
+                                                where p.PartnerNo == order.PartnerNo3
+                                                select new Domain.Partner()
+                                                {
+                                                    ID = p.ID
+                                                }).FirstOrDefault();
+                                if (partner3 != null)
+                                    partner3Id = partner3.ID;
+                            }
+                            else if (request.UploadType == 2)
+                            {
+                                partner3Id = Convert.ToInt32(order.PartnerNo3);
+                            }
+
+                            if (partner3Id == 0)
                             {
                                 Data.Partner partner3Request = new Data.Partner()
                                 {
