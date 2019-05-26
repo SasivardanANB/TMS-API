@@ -79,7 +79,7 @@ namespace TMS.DataGateway.Repositories
                 var driversList = context.Drivers.Where(driver => !driver.IsDelete && driver.IsActive).Select(response => new Domain.Common()
                 {
                     Id = response.ID,
-                    Value = response.DriverNo
+                    Value = response.UserName
                 }).ToList();
 
                 // Total NumberOfRecords
