@@ -70,6 +70,7 @@ namespace TMS.DataGateway.Repositories
                             driverData.LastModifiedTime = DateTime.Now;
                             //driverData.Password= tMSDBContext.Drivers.Where(d => d.ID == driverData.ID).Select(p=>p.Password).FirstOrDefault();
                             tMSDBContext.Entry(driverData).State = System.Data.Entity.EntityState.Modified;
+                            tMSDBContext.Entry(driverData).Property(d => d.DriverNo).IsModified = false;
                             //tMSDBContext.Entry(driverData).Property(p => p.Password).IsModified = false;
                             tMSDBContext.SaveChanges();
                             driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.DriversUpdated;
