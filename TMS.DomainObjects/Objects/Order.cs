@@ -51,13 +51,13 @@ namespace TMS.DomainObjects.Objects
         public decimal OrderWeight { get; set; }
         public string OrderWeightUM { get; set; }
         [Required]
-        [RegularExpression(@"(((0|1)[0-9]|2[0-9]|3[0-1])\.(0[1-9]|1[0-2])\.((19|20)\d\d))$", ErrorMessage = "Invalid date format.")]
+        [RegularExpression(@"(3[01]|[12][0-9]|0?[1-9])\.(1[012]|0?[1-9])\.((?:19|20)\d{2})$", ErrorMessage = "Invalid date format.")]
         public string EstimationShipmentDate { get; set; }
         [Required]
         [RegularExpression(@"^(0[0-9]|1[0-9]|2[0-3]|[0-9]):[0-5][0-9]$", ErrorMessage = "Invalid time format.")]
         public string EstimationShipmentTime { get; set; }
         [Required]
-        [RegularExpression(@"(((0|1)[0-9]|2[0-9]|3[0-1])\.(0[1-9]|1[0-2])\.((19|20)\d\d))$", ErrorMessage = "Invalid date format.")]
+        [RegularExpression(@"(3[01]|[12][0-9]|0?[1-9])\.(1[012]|0?[1-9])\.((?:19|20)\d{2})$", ErrorMessage = "Invalid date format.")]
         public string ActualShipmentDate { get; set; }
         [Required]
         [RegularExpression(@"^(0[0-9]|1[0-9]|2[0-3]|[0-9]):[0-5][0-9]$", ErrorMessage = "Invalid time format.")]

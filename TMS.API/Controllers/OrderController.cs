@@ -98,6 +98,10 @@ namespace TMS.API.Controllers
                         ModelState.Remove("order.Requests[" + i + "].ShippingListNo");
                         ModelState.Remove("order.Requests[" + i + "].PackingSheetNo");
                         ModelState.Remove("order.Requests[" + i + "].TotalCollie");
+                        ModelState.Remove("order.Requests[" + i + "].PartnerName1");
+                        ModelState.Remove("order.Requests[" + i + "].PartnerName2");
+                        ModelState.Remove("order.Requests[" + i + "].PartnerName3");
+                        ModelState.Remove("order.Requests[" + i + "].Dimension");
                     }
                     else
                     {

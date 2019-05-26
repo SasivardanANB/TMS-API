@@ -945,7 +945,7 @@ namespace TMS.DataGateway.Repositories
                                                         TrackStepLoadUnload loadData = new TrackStepLoadUnload()
                                                         {
                                                             TrackLoadUnloadName = "LAOD",
-                                                            StepHeaderNotification = String.Format("{0} from {1} AHM", sourceNumber++, totalSources),
+                                                            StepHeaderNotification = String.Format("{0} from {1} AHM", ++sourceNumber, totalSources),
                                                             StartTrip = new TrackStep(),
                                                             ConfirmArrive = new TrackStep(),
                                                             StartLoad = new TrackStep(),
@@ -1125,7 +1125,7 @@ namespace TMS.DataGateway.Repositories
                                                                 TrackStepLoadUnload unLoadData = new TrackStepLoadUnload()
                                                                 {
                                                                     TrackLoadUnloadName = "UNLAOD",
-                                                                    StepHeaderNotification = String.Format("{0} from {1} Main Dealers", sourceNumber++, totalSources),
+                                                                    StepHeaderNotification = String.Format("{0} from {1} Main Dealers", ++sourceNumber, totalSources),
                                                                     StartTrip = new TrackStep(),
                                                                     ConfirmArrive = new TrackStep(),
                                                                     StartLoad = new TrackStep(),
