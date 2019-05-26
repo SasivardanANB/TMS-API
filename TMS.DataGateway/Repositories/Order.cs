@@ -1759,7 +1759,7 @@ namespace TMS.DataGateway.Repositories
                     {
                         int orderId = 0;
                         int orderDetailId = 0;
-                        orderId = context.OrderHeaders.FirstOrDefault(t => t.LegecyOrderNo == statusRequest.OrderNumner).ID;
+                        orderId = context.OrderHeaders.FirstOrDefault(t => t.LegecyOrderNo == statusRequest.OrderNumber).ID;
                         if (statusRequest.SequenceNumber > 0)
                             orderDetailId = context.OrderDetails.FirstOrDefault(t => t.SequenceNo == statusRequest.SequenceNumber && t.OrderHeaderID == orderId).ID;
                         else
@@ -1770,7 +1770,7 @@ namespace TMS.DataGateway.Repositories
                         DataModel.OrderStatusHistory statusHistory = new DataModel.OrderStatusHistory()
                         {
                             OrderDetailID = orderDetailId,
-                            OrderStatusID = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == statusRequest.OrderStausCode).ID,
+                            OrderStatusID = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == statusRequest.OrderStatusCode).ID,
                             IsLoad = statusRequest.IsLoad == null,
                             Remarks = statusRequest.Remarks,
                             StatusDate = DateTime.Now

@@ -139,7 +139,7 @@ namespace DMS.API.Controllers
                 {
                     IsLoad = item.IsLoad ? 1 : 0,
                     OrderNumber = orderNumber,
-                    OrderStausCode = orderStatusCode,
+                    OrderStatusCode = orderStatusCode,
                     Remarks = item.Remarks,
                     SequenceNumber = orderSequenceNumber
                 };
@@ -177,8 +177,6 @@ namespace DMS.API.Controllers
             return Ok(tripData);
         }
 
-        
-
         [Route("updatetripstatus")]
         [HttpPost]
         public IHttpActionResult UpdateEntireTripStatus(TripsByDriverRequest tripsByDriverRequest)
@@ -192,6 +190,68 @@ namespace DMS.API.Controllers
                 return BadRequest(ModelState);
             ITripTask tripTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().TripTask;
             TripResponse tripData = tripTask.UpdateEntireTripStatus(tripsByDriverRequest);
+
+            #region Update Status to TMS 
+            OrderStatusRequest tmsRequest = new OrderStatusRequest()
+            {
+                Requests = new List<OrderStatus>()
+            };
+
+            foreach (var item in tripsByDriverRequest.Requests)
+            {
+                #region Get Order Number by Stop Point
+                int stoppointId = tripData.Data.FirstOrDefault(t => t.ID == item.ID).StopPoints.FirstOrDefault().ID;
+                string orderNumber = GetOrderNumber(stoppointId);
+                #endregion
+
+                #region Get Trip Status Code by Status ID
+                string orderStatusCode = GetOrderStatusCode(item.TripStatusId.Value);
+                #endregion
+
+                #region Get Trip Sequnce Number
+                int orderSequenceNumber = 0;
+                #endregion
+
+                OrderStatus requestData = new OrderStatus()
+                {
+                    IsLoad = null,
+                    OrderNumber = orderNumber,
+                    OrderStatusCode = orderStatusCode,
+                    Remarks = "",
+                    SequenceNumber = orderSequenceNumber
+                };
+
+                tmsRequest.Requests.Add(requestData);
+            }
+
+            if (tmsRequest.Requests.Count > 0)
+            {
+                #region Call TMS API to Update Order
+                #region Login to TMS and get Token
+                LoginRequest loginRequest = new LoginRequest();
+                string token = "";
+
+                loginRequest.UserName = ConfigurationManager.AppSettings["TMSLogin"];
+                loginRequest.UserPassword = ConfigurationManager.AppSettings["TMSPassword"];
+                var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                    + "/v1/user/login", Method.POST, loginRequest, null));
+                if (tmsLoginResponse != null && tmsLoginResponse.Data.Count > 0)
+                {
+                    token = tmsLoginResponse.TokenKey;
+                }
+                #endregion
+
+                var response = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                    + "/v1/order/updateorderstatus", Method.POST, tmsRequest, token));
+                if (response != null)
+                {
+                    tripData.StatusMessage += ". " + response.StatusMessage;
+                }
+                #endregion
+            }
+            #endregion
+
+
             return Ok(tripData);
         }
     }
