@@ -1491,9 +1491,28 @@ namespace TMS.DataGateway.Repositories
         public DashboardResponse GetUserDashboard(UserRequest user)
         {
             DashboardResponse dashboardResponse = new DashboardResponse();
-            dashboardResponse.Status = DomainObjects.Resource.ResourceData.Success;
-            dashboardResponse.StatusCode = (int)HttpStatusCode.OK;
-            dashboardResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+            try
+            {
+                using (var context = new TMSDBContext())
+                {
+                    dashboardResponse.AllOrderCount = context.OrderHeaders.Count();
+                    dashboardResponse.BookedCount = context.OrderHeaders.Where(o => o.OrderStatusID == 1).Count();   // For status booked
+                    dashboardResponse.ConfirmedCount = context.OrderHeaders.Where(o => o.OrderStatusID == 3).Count();   // For status confirmed
+                    dashboardResponse.Acceptedcount = context.OrderHeaders.Where(o => o.OrderStatusID == 15).Count();   // For status accepted
+                    dashboardResponse.PODCount = context.OrderHeaders.Where(o => o.OrderStatusID == 11).Count();   // For status pod
+                    dashboardResponse.CancelledCount = context.OrderHeaders.Where(o => o.OrderStatusID == 13).Count();   // For status cancelled
+                }
+                dashboardResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                dashboardResponse.StatusCode = (int)HttpStatusCode.OK;
+                dashboardResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+            }
+            catch(Exception e)
+            {
+                dashboardResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                dashboardResponse.StatusCode = (int)HttpStatusCode.BadRequest;
+                dashboardResponse.StatusMessage = DomainObjects.Resource.ResourceData.Failure;
+            }
+            
             return dashboardResponse;
         }
     }

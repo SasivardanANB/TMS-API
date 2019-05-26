@@ -136,6 +136,9 @@ namespace TMS.DataGateway.Repositories
                 {
                     partnerList =
                         (from partner in context.Partners
+                         join postalcode in context.PostalCodes on partner.PostalCodeID equals postalcode.ID
+                         join subdistrict in context.SubDistricts on postalcode.SubDistrictID equals subdistrict.ID
+                         join city in context.Cities on subdistrict.CityID equals city.ID
                          where !partner.IsDeleted
                          select new Domain.Partner
                          {
@@ -150,7 +153,8 @@ namespace TMS.DataGateway.Repositories
                              PartnerNo = partner.PartnerNo,
                              PartnerTypeID = partner.PartnerTypeID,
                              PICID = partner.PICID,
-                             PICName = partner.PIC.PICName
+                             PICName = partner.PIC.PICName,
+                             CityCode=city.CityDescription
                          }).ToList();
                 }
                 // Filter

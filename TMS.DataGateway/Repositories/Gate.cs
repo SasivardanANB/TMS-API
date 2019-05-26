@@ -43,7 +43,14 @@ namespace TMS.DataGateway.Repositories
                     tMSDBContext.GateInGateOuts.AddRange(gateInGateOuts);
                     tMSDBContext.SaveChanges();
                     gateResponse.Data = gateRequest.Requests;
-                    gateResponse.StatusMessage = DomainObjects.Resource.ResourceData.GateInGateOutCreated;
+                    if (gateRequest.Requests[0].GateTypeId == 1)
+                    {
+                        gateResponse.StatusMessage = DomainObjects.Resource.ResourceData.GateInCreated;
+                    }
+                    else
+                    {
+                        gateResponse.StatusMessage = DomainObjects.Resource.ResourceData.GateOutCreated;
+                    }
                     gateResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     gateResponse.StatusCode = (int)HttpStatusCode.OK;
                 }

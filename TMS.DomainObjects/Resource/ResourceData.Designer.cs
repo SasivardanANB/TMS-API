@@ -169,11 +169,20 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to GateIn/GateOut created successfully.
+        ///   Looks up a localized string similar to GateIn created successfully.
         /// </summary>
-        public static string GateInGateOutCreated {
+        public static string GateInCreated {
             get {
-                return ResourceManager.GetString("GateInGateOutCreated", resourceCulture);
+                return ResourceManager.GetString("GateInCreated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GateOut created successfully.
+        /// </summary>
+        public static string GateOutCreated {
+            get {
+                return ResourceManager.GetString("GateOutCreated", resourceCulture);
             }
         }
         
@@ -804,15 +813,6 @@ namespace TMS.DomainObjects.Resource {
         public static string RolesUpdated {
             get {
                 return ResourceManager.GetString("RolesUpdated", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
-        public static string String1 {
-            get {
-                return ResourceManager.GetString("String1", resourceCulture);
             }
         }
         
