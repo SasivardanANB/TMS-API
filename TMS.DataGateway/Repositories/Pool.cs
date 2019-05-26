@@ -52,6 +52,7 @@ namespace TMS.DataGateway.Repositories
                             poolData.LastModifiedBy = poolRequest.LastModifiedBy;
                             poolData.LastModifiedTime = DateTime.Now;
                             tMSDBContext.Entry(poolData).State = System.Data.Entity.EntityState.Modified;
+                            tMSDBContext.Entry(poolData).Property(p => p.PoolNo).IsModified = false;
                             tMSDBContext.SaveChanges();
                             poolResponse.StatusMessage = DomainObjects.Resource.ResourceData.PoolsUpdated;
                         }
