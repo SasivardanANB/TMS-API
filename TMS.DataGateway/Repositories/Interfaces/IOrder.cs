@@ -17,7 +17,7 @@ namespace TMS.DataGateway.Repositories.Interfaces
         CommonResponse GetOrderIds();
         DealerDetailsResponse GetDealers(int orderId, string searchText);
         OrderDetailsResponse GetOrderDetails(int orderId);
-        DomainObjects.Objects.Partner GetPartnerDetail(string partnerNo);
+        DomainObjects.Objects.Partner GetPartnerDetail(string partnerNo, int uploadType);
         string GetBusinessAreaCode(int businessAreaId);
         OrderStatusResponse UpdateOrderStatus(OrderStatusRequest request);
     }

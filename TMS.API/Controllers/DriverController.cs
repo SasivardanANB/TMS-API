@@ -10,6 +10,10 @@ using TMS.DomainObjects.Request;
 using TMS.DomainObjects.Response;
 using TMS.DomainGateway.Gateway.Interfaces;
 using TMS.API.Classes;
+using RestSharp;
+using System.Configuration;
+using Newtonsoft.Json;
+using TMS.DomainObjects.Objects;
 
 namespace TMS.API.Controllers
 {
@@ -17,6 +21,24 @@ namespace TMS.API.Controllers
     [RoutePrefix("api/v1/driver")]
     public class DriverController : ApiController
     {
+        #region Private Methods
+        private static string GetApiResponse(string apiRoute, Method method, object requestQueryParameter, string token)
+        {
+            var client = new RestClient(ConfigurationManager.AppSettings["ApiGatewayBaseURL"]);
+            client.AddDefaultHeader("Content-Type", "application/json");
+            if (token != null)
+                client.AddDefaultHeader("Token", token);
+            var request = new RestRequest(apiRoute, method) { RequestFormat = DataFormat.Json };
+            request.Timeout = 500000;
+            if (requestQueryParameter != null)
+            {
+                request.AddJsonBody(requestQueryParameter);
+            }
+            var result = client.Execute(request);
+            return result.Content;
+        }
+        #endregion
+
         [Route("createupdatedriver")]
         [HttpPost]
         public IHttpActionResult CreateUpdateDriver(DriverRequest driverRequest)
@@ -34,8 +56,54 @@ namespace TMS.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            #region Creating Driver for DMS request
+            UserRequest dmsRequest = new UserRequest()
+            {
+                Requests = new List<User>()
+                        {
+                            new User()
+                            {
+                                FirstName = driverRequest.Requests[0].FirstName,
+                                LastName = driverRequest.Requests[0].LastName,
+                                UserName = driverRequest.Requests[0].UserName,
+                                Password = driverRequest.Requests[0].Password,
+                                IsActive = true
+                            }
+                        },
+                CreatedBy = "SYSTEM",
+                LastModifiedBy = driverRequest.LastModifiedBy,
+                CreatedTime = driverRequest.CreatedTime,
+                LastModifiedTime = driverRequest.LastModifiedTime
+            };
+            #endregion
+
             IDriverTask driverTask = DependencyResolver.GetImplementationOf<ITaskGateway>().DriverTask;
             DriverResponse driverResponse = driverTask.CreateUpdateDriver(driverRequest);
+
+            #region Create Driver in DMS
+
+            LoginRequest loginRequest = new LoginRequest();
+            string token = "";
+
+            //Login to DMS and get Token
+            loginRequest.UserName = ConfigurationManager.AppSettings["DMSLogin"];
+            loginRequest.UserPassword = ConfigurationManager.AppSettings["DMSPassword"];
+            var dmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
+                + "/v1/user/login", Method.POST, loginRequest, null));
+            if (dmsLoginResponse != null && dmsLoginResponse.Data.Count > 0)
+            {
+                token = dmsLoginResponse.TokenKey;
+            }
+
+            var userResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
+                + "/v1/user/createupdateuser", Method.POST, dmsRequest, token));
+            if (userResponse != null)
+            {
+                driverResponse.StatusMessage = driverResponse.StatusMessage + ". " + userResponse.StatusMessage;
+            }
+
+            #endregion
+
             return Ok(driverResponse);
         }
 

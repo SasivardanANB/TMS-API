@@ -75,9 +75,9 @@ namespace TMS.BusinessGateway.Task
             OrderDetailsResponse orderDetailsResponse = _orderRepository.GetOrderDetails(orderId);
             return orderDetailsResponse;
         }
-        public override Partner GetPartnerDetail(string partnerNo)
+        public override Partner GetPartnerDetail(string partnerNo, int uploadType)
         {
-            return _orderRepository.GetPartnerDetail(partnerNo);
+            return _orderRepository.GetPartnerDetail(partnerNo, uploadType);
         }
 
         public override string GetBusinessAreaCode(int businessAreaId)

@@ -307,6 +307,8 @@ namespace TMS.DataGateway.Repositories
                                          OrderType = oH.OrderType,
                                          OrderWeight = oH.OrderWeight,
                                          OrderWeightUM = oH.OrderWeightUM,
+                                         ShipmentScheduleImageGUID = context.ImageGuids.FirstOrDefault(t => t.ID == oH.ShipmentScheduleImageID).ImageGuIdValue,
+                                         ShipmentScheduleImageID = oH.ShipmentScheduleImageID
 
                                      }).FirstOrDefault();
 

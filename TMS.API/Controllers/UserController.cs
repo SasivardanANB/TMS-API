@@ -233,6 +233,30 @@ namespace TMS.API.Controllers
 
                     userResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
                         + "/v1/user/createupdateuser", Method.POST, dmsRequest, token));
+
+                    #region Create Driver master data
+                    DriverRequest driverRequest = new DriverRequest()
+                    {
+                        Requests = new List<Driver>()
+                    };
+
+                    var dmsDriver = dmsRequest.Requests[0];
+                    //Driver driver = new Driver()
+                    //{
+                    //    IsActive = true,
+                    //    DriverAddress = "",
+                    //    DriverPhone = "",
+                    //    FirstName = dmsDriver.FirstName,
+                    //    LastName = dmsDriver.LastName,
+                    //    Email = "",
+                    //    UserName = dmsDriver.UserName,
+                    //    Password = dmsDriver.Password,
+                    //    DriverNo
+                    //};
+
+                    IDriverTask driverTask = DependencyResolver.GetImplementationOf<ITaskGateway>().DriverTask;
+                    DriverResponse driverResponse = driverTask.CreateUpdateDriver(driverRequest);
+                    #endregion
                 }
             }
 

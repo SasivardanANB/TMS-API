@@ -42,10 +42,10 @@ namespace TMS.API.Controllers
             return result.Content;
         }
 
-        private Partner GetPartnerDetail(string partnerNo)
+        private Partner GetPartnerDetail(string partnerNo, int uploadType)
         {
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
-            return orderTask.GetPartnerDetail(partnerNo);
+            return orderTask.GetPartnerDetail(partnerNo, uploadType);
         }
 
         private string GetBusinessAreaCode(int businessAreaId)
@@ -165,13 +165,13 @@ namespace TMS.API.Controllers
                                 if (request.OrderType == 1)
                                 {
                                     #region Add Source Location
-                                    Partner sourcePartnerDetail = GetPartnerDetail(request.PartnerNo2);
+                                    Partner sourcePartnerDetail = GetPartnerDetail(request.PartnerNo2, order.UploadType);
                                     TripLocation sourceLocation = new TripLocation()
                                     {
                                         TypeofLocation = "Source",
-                                        Name = request.PartnerName2,
+                                        Name = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
                                         Place = sourcePartnerDetail.PartnerAddress,
-                                        Address = request.PartnerName2,
+                                        Address = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
                                         CityCode = sourcePartnerDetail.CityCode,
                                         ProvinceCode = sourcePartnerDetail.ProvinceCode,
                                         SequnceNumber = request.SequenceNo,
@@ -186,13 +186,15 @@ namespace TMS.API.Controllers
                                 else if (request.OrderType == 2)
                                 {
                                     #region Add Destination Location
-                                    Partner destinationPartnerDetail = GetPartnerDetail(request.PartnerNo3);
+
+                                    Partner destinationPartnerDetail = GetPartnerDetail(request.PartnerNo3, order.UploadType);
+
                                     TripLocation destinationLocation = new TripLocation()
                                     {
                                         TypeofLocation = "Destination",
-                                        Name = request.PartnerName3,
+                                        Name = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
                                         Place = destinationPartnerDetail.PartnerAddress,
-                                        Address = request.PartnerName3,
+                                        Address = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
                                         CityCode = destinationPartnerDetail.CityCode,
                                         ProvinceCode = destinationPartnerDetail.ProvinceCode,
                                         SequnceNumber = request.SequenceNo,
@@ -231,13 +233,13 @@ namespace TMS.API.Controllers
                                 };
 
                                 #region Add Source Location
-                                Partner sourcePartnerDetail = GetPartnerDetail(request.PartnerNo2);
+                                Partner sourcePartnerDetail = GetPartnerDetail(request.PartnerNo2, order.UploadType);
                                 TripLocation sourceLocation = new TripLocation()
                                 {
                                     TypeofLocation = "Source",
-                                    Name = request.PartnerName2,
+                                    Name = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
                                     Place = sourcePartnerDetail.PartnerAddress,
-                                    Address = request.PartnerName2,
+                                    Address = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
                                     CityCode = sourcePartnerDetail.CityCode,
                                     ProvinceCode = sourcePartnerDetail.ProvinceCode,
                                     SequnceNumber = request.OrderType == 1 ? request.SequenceNo : 0,
@@ -248,13 +250,13 @@ namespace TMS.API.Controllers
                                 #endregion
 
                                 #region Add Destination Location
-                                Partner destinationPartnerDetail = GetPartnerDetail(request.PartnerNo3);
+                                Partner destinationPartnerDetail = GetPartnerDetail(request.PartnerNo3, order.UploadType);
                                 TripLocation destinationLocation = new TripLocation()
                                 {
                                     TypeofLocation = "Destination",
-                                    Name = request.PartnerName3,
+                                    Name = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
                                     Place = destinationPartnerDetail.PartnerAddress,
-                                    Address = request.PartnerName3,
+                                    Address = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
                                     CityCode = destinationPartnerDetail.CityCode,
                                     ProvinceCode = destinationPartnerDetail.ProvinceCode,
                                     SequnceNumber = request.OrderType == 1 ? 0 : request.SequenceNo,
@@ -291,13 +293,13 @@ namespace TMS.API.Controllers
                             };
 
                             #region Add Source Location
-                            Partner sourcePartnerDetail = GetPartnerDetail(request.PartnerNo2);
+                            Partner sourcePartnerDetail = GetPartnerDetail(request.PartnerNo2, order.UploadType);
                             TripLocation sourceLocation = new TripLocation()
                             {
                                 TypeofLocation = "Source",
-                                Name = request.PartnerName2,
+                                Name = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
                                 Place = sourcePartnerDetail.PartnerAddress,
-                                Address = request.PartnerName2,
+                                Address = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
                                 CityCode = sourcePartnerDetail.CityCode,
                                 ProvinceCode = sourcePartnerDetail.ProvinceCode,
                                 SequnceNumber = request.OrderType == 1 ? request.SequenceNo : 0,
@@ -308,13 +310,13 @@ namespace TMS.API.Controllers
                             #endregion
 
                             #region Add Destination Location
-                            Partner destinationPartnerDetail = GetPartnerDetail(request.PartnerNo3);
+                            Partner destinationPartnerDetail = GetPartnerDetail(request.PartnerNo3, order.UploadType);
                             TripLocation destinationLocation = new TripLocation()
                             {
                                 TypeofLocation = "Destination",
-                                Name = request.PartnerName3,
+                                Name = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
                                 Place = destinationPartnerDetail.PartnerAddress,
-                                Address = request.PartnerName3,
+                                Address = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
                                 CityCode = destinationPartnerDetail.CityCode,
                                 ProvinceCode = destinationPartnerDetail.ProvinceCode,
                                 SequnceNumber = request.OrderType == 1 ? 0 : request.SequenceNo,

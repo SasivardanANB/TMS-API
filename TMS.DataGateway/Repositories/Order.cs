@@ -180,6 +180,12 @@ namespace TMS.DataGateway.Repositories
                                                         where o.LegecyOrderNo == order.OrderNo
                                                         select o.ID
                                                       ).FirstOrDefault();
+                            if (request.UploadType == 2)
+                            {
+                                int driverId = Convert.ToInt32(order.DriverNo);
+                                order.DriverNo = context.Drivers.FirstOrDefault(t => t.ID == driverId).DriverNo;
+                                order.DriverName = context.Drivers.FirstOrDefault(t => t.ID == driverId).UserName;
+                            }
 
                             if (persistedOrderDataID > 0) // Update Order
                             {
@@ -946,7 +952,7 @@ namespace TMS.DataGateway.Repositories
                                                         TrackStepLoadUnload loadData = new TrackStepLoadUnload()
                                                         {
                                                             TrackLoadUnloadName = "LAOD",
-                                                            StepHeaderNotification = String.Format("{0} from {1} AHM", sourceNumber++, totalSources),
+                                                            StepHeaderNotification = String.Format("{0} from {1} AHM", ++sourceNumber, totalSources),
                                                             StartTrip = new TrackStep(),
                                                             ConfirmArrive = new TrackStep(),
                                                             StartLoad = new TrackStep(),
@@ -1056,7 +1062,7 @@ namespace TMS.DataGateway.Repositories
                                             {
                                                 TrackStepLoadUnload unLoadData = new TrackStepLoadUnload()
                                                 {
-                                                    TrackLoadUnloadName = "UNLAOD",
+                                                    TrackLoadUnloadName = "UNLOAD",
                                                     StartTrip = new TrackStep(),
                                                     ConfirmArrive = new TrackStep(),
                                                     StartLoad = new TrackStep(),
@@ -1095,7 +1101,7 @@ namespace TMS.DataGateway.Repositories
                                             {
                                                 TrackStepLoadUnload unLoadData = new TrackStepLoadUnload()
                                                 {
-                                                    TrackLoadUnloadName = "UNLAOD",
+                                                    TrackLoadUnloadName = "UNLOAD",
                                                     StartTrip = new TrackStep(),
                                                     ConfirmArrive = new TrackStep(),
                                                     StartLoad = new TrackStep(),
@@ -1166,7 +1172,7 @@ namespace TMS.DataGateway.Repositories
                                                             {
                                                                 TrackStepLoadUnload unLoadData = new TrackStepLoadUnload()
                                                                 {
-                                                                    TrackLoadUnloadName = "UNLAOD",
+                                                                    TrackLoadUnloadName = "UNLOAD",
                                                                     StepHeaderNotification = String.Format("{0} from {1} Main Dealers", ++sourceNumber, totalSources),
                                                                     StartTrip = new TrackStep(),
                                                                     ConfirmArrive = new TrackStep(),
@@ -1207,7 +1213,7 @@ namespace TMS.DataGateway.Repositories
                                                             {
                                                                 TrackStepLoadUnload unLoadData = new TrackStepLoadUnload()
                                                                 {
-                                                                    TrackLoadUnloadName = "UNLAOD",
+                                                                    TrackLoadUnloadName = "UNLOAD",
                                                                     StepHeaderNotification = String.Format("{0} from {1} Main Dealers", sourceNumber++, totalSources),
                                                                     StartTrip = new TrackStep(),
                                                                     ConfirmArrive = new TrackStep(),
@@ -1613,6 +1619,8 @@ namespace TMS.DataGateway.Repositories
                                          OrderType = oH.OrderType,
                                          OrderWeight = oH.OrderWeight,
                                          OrderWeightUM = oH.OrderWeightUM,
+                                         ShipmentScheduleImageGUID = context.ImageGuids.FirstOrDefault(t=>t.ID == oH.ShipmentScheduleImageID).ImageGuIdValue,
+                                         ShipmentScheduleImageID = oH.ShipmentScheduleImageID
 
                                      }).FirstOrDefault();
 
@@ -1737,7 +1745,7 @@ namespace TMS.DataGateway.Repositories
 
         }
 
-        public Domain.Partner GetPartnerDetail(string partnerNo)
+        public Domain.Partner GetPartnerDetail(string partnerNo, int uploadType)
         {
             Domain.Partner response = new Domain.Partner();
 
@@ -1745,16 +1753,35 @@ namespace TMS.DataGateway.Repositories
             {
                 try
                 {
-                    response = (from partner in context.Partners
-                                join postalcode in context.PostalCodes on partner.PostalCodeID equals postalcode.ID
-                                join subDistrict in context.SubDistricts on postalcode.SubDistrictID equals subDistrict.ID
-                                where partner.PartnerNo == partnerNo
-                                select new Domain.Partner
-                                {
-                                    PartnerAddress = partner.PartnerAddress,
-                                    CityCode = subDistrict.City.CityCode,
-                                    ProvinceCode = subDistrict.City.Province.ProvinceCode
-                                }).FirstOrDefault();
+                    if (uploadType == 2)
+                    {
+                        int partnerId = Convert.ToInt32(partnerNo);
+                        response = (from partner in context.Partners
+                                    join postalcode in context.PostalCodes on partner.PostalCodeID equals postalcode.ID
+                                    join subDistrict in context.SubDistricts on postalcode.SubDistrictID equals subDistrict.ID
+                                    where partner.ID == partnerId
+                                    select new Domain.Partner
+                                    {
+                                        PartnerAddress = partner.PartnerAddress,
+                                        CityCode = subDistrict.City.CityCode,
+                                        ProvinceCode = subDistrict.City.Province.ProvinceCode,
+                                        PartnerName = partner.PartnerName
+                                    }).FirstOrDefault();
+                    }
+                    else
+                    {
+                        response = (from partner in context.Partners
+                                    join postalcode in context.PostalCodes on partner.PostalCodeID equals postalcode.ID
+                                    join subDistrict in context.SubDistricts on postalcode.SubDistrictID equals subDistrict.ID
+                                    where partner.PartnerNo == partnerNo
+                                    select new Domain.Partner
+                                    {
+                                        PartnerAddress = partner.PartnerAddress,
+                                        CityCode = subDistrict.City.CityCode,
+                                        ProvinceCode = subDistrict.City.Province.ProvinceCode
+                                    }).FirstOrDefault();
+                    }
+                    
                 }
                 catch (Exception ex)
                 {
@@ -1788,6 +1815,7 @@ namespace TMS.DataGateway.Repositories
 
         public OrderStatusResponse UpdateOrderStatus(OrderStatusRequest request)
         {
+            _logger.Log(LogLevel.Error, request);
             OrderStatusResponse response = new OrderStatusResponse()
             {
                 Data = new List<OrderStatus>()
@@ -1813,7 +1841,7 @@ namespace TMS.DataGateway.Repositories
                         {
                             OrderDetailID = orderDetailId,
                             OrderStatusID = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == statusRequest.OrderStatusCode).ID,
-                            IsLoad = statusRequest.IsLoad == null,
+                            IsLoad = statusRequest.IsLoad,
                             Remarks = statusRequest.Remarks,
                             StatusDate = DateTime.Now
 

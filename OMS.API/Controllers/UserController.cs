@@ -62,7 +62,7 @@ namespace OMS.API.Controllers
         }
 
         [Route("getsamauser")]
-        [AllowAnonymous, HttpPost]
+        [HttpPost]
         public IHttpActionResult GetSAMAUser(string token)
         {
             SAMAUserResponse samaUserResponse = new SAMAUserResponse();
@@ -117,7 +117,7 @@ namespace OMS.API.Controllers
         #region "User Application"
 
         [Route("createupdateuser")]
-        [AllowAnonymous, HttpPost]
+        [HttpPost]
         public IHttpActionResult CreateUpdateUser(UserRequest user)
         {
             for (int i = 0; i < user.Requests.Count; i++)

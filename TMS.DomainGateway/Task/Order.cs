@@ -20,7 +20,7 @@ namespace TMS.DomainGateway.Task
         public abstract DealerDetailsResponse GetDealers(int orderId, string searchText);
 
         public abstract OrderDetailsResponse GetOrderDetails(int orderId);
-        public abstract Partner GetPartnerDetail(string partnerNo);
+        public abstract Partner GetPartnerDetail(string partnerNo, int uploadType);
         public abstract string GetBusinessAreaCode(int businessAreaId);
         public abstract OrderStatusResponse UpdateOrderStatus(OrderStatusRequest request);
     }

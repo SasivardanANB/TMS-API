@@ -137,7 +137,7 @@ namespace DMS.API.Controllers
 
                 OrderStatus requestData = new OrderStatus()
                 {
-                    IsLoad = item.IsLoad ? 1 : 0,
+                    IsLoad = item.IsLoad,
                     OrderNumber = orderNumber,
                     OrderStatusCode = orderStatusCode,
                     Remarks = item.Remarks,

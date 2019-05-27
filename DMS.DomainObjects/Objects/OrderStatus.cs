@@ -11,7 +11,7 @@ namespace DMS.DomainObjects.Objects
         public int OrderType { get; set; }
         public string OrderNumber { get; set; }
         public int SequenceNumber { get; set; }
-        public int? IsLoad { get; set; }
+        public bool? IsLoad { get; set; }
         public string Remarks { get; set; }
         public string OrderStatusCode { get; set; }
     }

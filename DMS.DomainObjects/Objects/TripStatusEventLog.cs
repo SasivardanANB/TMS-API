@@ -16,7 +16,7 @@ namespace DMS.DomainObjects.Objects
         public string LocationName { get; set; }
         public List<string> ShipmentImageGuIds { get; set; }
         public List<int> ShipmentImageIds { get; set; }
-        public bool IsLoad { get; set; }
+        public bool? IsLoad { get; set; }
 
     }
 }
