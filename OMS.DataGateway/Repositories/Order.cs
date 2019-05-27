@@ -703,7 +703,7 @@ namespace OMS.DataGateway.Repositories
             string orderNo = businessArea + applicationCode;
             using (var context = new Data.OMSDBContext())
             {
-                var order = context.OrderHeaders.Where(t => t.BusinessAreaId == businessAreaId).OrderByDescending(t => t.OrderDate).FirstOrDefault();
+                var order = context.OrderHeaders.Where(t => t.BusinessAreaId == businessAreaId).OrderByDescending(t => t.OrderNo).FirstOrDefault();
                 if (order != null)
                 {
                     int lastOrderYear = order.OrderDate.Year;

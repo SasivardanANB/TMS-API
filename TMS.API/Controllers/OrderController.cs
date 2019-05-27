@@ -110,6 +110,7 @@ namespace TMS.API.Controllers
                 }
                 else if (order.Requests[i].OrderType == 2)//For Outbound
                 {
+                    ModelState.Remove("order.Requests[" + i + "]");
                     ModelState.Remove("order.Requests[" + i + "].BusinessArea");
 
                     if (string.IsNullOrEmpty(order.Requests[i].ShipmentSAPNo))
