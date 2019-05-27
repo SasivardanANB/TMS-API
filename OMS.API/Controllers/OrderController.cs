@@ -176,7 +176,8 @@ namespace OMS.API.Controllers
                         Instructions = omsOrder.Instructions,
                         ShippingListNo = omsOrder.ShippingListNo,
                         PackingSheetNo = omsOrder.PackingSheetNo,
-                        TotalCollie = omsOrder.TotalCollie
+                        TotalCollie = omsOrder.TotalCollie,
+                        ShipmentSAPNo = omsOrder.ShipmentSAPNo
                     };
                     tmsRequest.Requests.Add(tmsOrder);
                 }
