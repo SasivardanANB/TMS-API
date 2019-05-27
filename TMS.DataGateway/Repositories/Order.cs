@@ -951,7 +951,7 @@ namespace TMS.DataGateway.Repositories
                                                     {
                                                         TrackStepLoadUnload loadData = new TrackStepLoadUnload()
                                                         {
-                                                            TrackLoadUnloadName = "LAOD",
+                                                            TrackLoadUnloadName = "LOAD",
                                                             StepHeaderNotification = String.Format("{0} from {1} AHM", ++sourceNumber, totalSources),
                                                             StartTrip = new TrackStep(),
                                                             ConfirmArrive = new TrackStep(),
@@ -992,7 +992,7 @@ namespace TMS.DataGateway.Repositories
                                                     {
                                                         TrackStepLoadUnload loadData = new TrackStepLoadUnload()
                                                         {
-                                                            TrackLoadUnloadName = "LAOD",
+                                                            TrackLoadUnloadName = "LOAD",
                                                             StepHeaderNotification = String.Format("{0} from {1} AHM", ++sourceNumber, totalSources),
                                                             StartTrip = new TrackStep(),
                                                             ConfirmArrive = new TrackStep(),
@@ -1283,7 +1283,7 @@ namespace TMS.DataGateway.Repositories
                                                     {
                                                         TrackStepLoadUnload loadData = new TrackStepLoadUnload()
                                                         {
-                                                            TrackLoadUnloadName = "LAOD",
+                                                            TrackLoadUnloadName = "LOAD",
                                                             StartTrip = new TrackStep(),
                                                             ConfirmArrive = new TrackStep(),
                                                             StartLoad = new TrackStep(),
@@ -1322,7 +1322,7 @@ namespace TMS.DataGateway.Repositories
                                                     {
                                                         TrackStepLoadUnload loadData = new TrackStepLoadUnload()
                                                         {
-                                                            TrackLoadUnloadName = "LAOD",
+                                                            TrackLoadUnloadName = "LOAD",
                                                             StartTrip = new TrackStep(),
                                                             ConfirmArrive = new TrackStep(),
                                                             StartLoad = new TrackStep(),
