@@ -41,6 +41,13 @@ namespace TMS.DataGateway.Repositories
                     int picObjectCount = 0;
                     foreach (var picData in pics)
                     {
+
+                        //For encrypt password
+                        if (!string.IsNullOrEmpty(picData.PICPassword))
+                        {
+                            picData.PICPassword = Encryption.EncryptionLibrary.EncryptPassword(picData.PICPassword);
+                        }
+
                         picData.IsDeleted = false;
 
                         //For getting new PhotoGuId (Allows in case of new record creation and modification of already existing record imageGuId)
@@ -53,9 +60,9 @@ namespace TMS.DataGateway.Repositories
                         {
                             picData.LastModifiedBy = picRequest.LastModifiedBy;
                             picData.LastModifiedTime = DateTime.Now;
-                            picData.PICPassword= context.Pics.Where(i => i.ID == picData.ID).Select(p => p.PICPassword).FirstOrDefault();
+                            //picData.PICPassword= context.Pics.Where(i => i.ID == picData.ID).Select(p => p.PICPassword).FirstOrDefault();
                             context.Entry(picData).State = System.Data.Entity.EntityState.Modified;
-                            context.Entry(picData).Property(p => p.PICPassword).IsModified = false;
+                            //context.Entry(picData).Property(p => p.PICPassword).IsModified = false;
                             context.SaveChanges();
                             picResponse.StatusMessage = DomainObjects.Resource.ResourceData.PicUpdated;
                         }
@@ -144,8 +151,16 @@ namespace TMS.DataGateway.Repositories
                              IsActive = pic.IsActive,
                              IsDeleted = pic.IsDeleted,
                              PhotoId = pic.PhotoId,
+                             PICPassword=pic.PICPassword,
                              PhotoGuId=pic.ImageGuid.ImageGuIdValue
                          }).ToList();
+                    if (picList.Count > 0)
+                    {
+                        foreach (var item in picList)
+                        {
+                            item.PICPassword = Encryption.EncryptionLibrary.DecrypPassword(item.PICPassword);
+                        }
+                    }
                 }
                 // Filter
                 if (picRequest.Requests.Count > 0)

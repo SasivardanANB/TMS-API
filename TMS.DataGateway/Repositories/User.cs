@@ -192,7 +192,6 @@ namespace TMS.DataGateway.Repositories
                                     userApplication.UserID = userData.ID;
                                     userApplication.ApplicationID = applicationID;
                                     userApplication.CreatedBy = user.CreatedBy;
-
                                     context.UserApplications.Add(userApplication);
                                     context.SaveChanges();
                                 }
@@ -226,7 +225,6 @@ namespace TMS.DataGateway.Repositories
                                         context.SaveChanges();
                                     }
                                 }
-
                                 userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UsersCreated;
                                 userResponse.StatusCode = (int)HttpStatusCode.OK;
                             }
