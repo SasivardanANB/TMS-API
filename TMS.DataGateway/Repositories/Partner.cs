@@ -200,6 +200,10 @@ namespace TMS.DataGateway.Repositories
                 }
 
                 //Sorting
+                if (partnerRequest.SortOrder == null)
+                {
+                    partnerRequest.SortOrder = "ID";
+                }
                 switch (partnerRequest.SortOrder.ToLower())
                 {
                     case "partnername":
