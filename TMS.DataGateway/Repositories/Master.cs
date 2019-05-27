@@ -32,14 +32,28 @@ namespace TMS.DataGateway.Repositories
                 PartnerSearch partnerSearch = partnerSearchRequest.Requests[0];
                 using (var context = new TMSDBContext())
                 {
-                    partnerList =
-                        (from partner in context.Partners
-                         where partner.PartnerName.Contains(partnerSearch.SearchText) && partner.PartnerTypeID == partnerSearch.PartnerTypeId
-                         select new Domain.Common
-                         {
-                             Id = partner.ID,
-                             Value = partner.PartnerName
-                         }).ToList();
+                    if (string.IsNullOrEmpty(partnerSearch.SearchText))
+                    {
+                        partnerList =
+                                                (from partner in context.Partners
+                                                 where partner.PartnerTypeID == partnerSearch.PartnerTypeId
+                                                 select new Domain.Common
+                                                 {
+                                                     Id = partner.ID,
+                                                     Value = partner.PartnerName
+                                                 }).ToList();
+                    }
+                    else
+                    {
+                        partnerList =
+                            (from partner in context.Partners
+                             where partner.PartnerName.Contains(partnerSearch.SearchText) && partner.PartnerTypeID == partnerSearch.PartnerTypeId
+                             select new Domain.Common
+                             {
+                                 Id = partner.ID,
+                                 Value = partner.PartnerName
+                             }).ToList();
+                    }
                 }
 
                 // Total NumberOfRecords
@@ -225,17 +239,35 @@ namespace TMS.DataGateway.Repositories
             {
                 using (var context = new TMSDBContext())
                 {
-                    var subDistrictDateils = (from subDistrict in context.SubDistricts
-                                              join postlCode in context.PostalCodes on subDistrict.ID equals postlCode.SubDistrictID
-                                              where subDistrict.SubdistrictName.Contains(searchText)
-                                              select new Domain.SubDistrictDeatils
-                                              {
-                                                  SubDistrictName = subDistrict.SubdistrictName,
-                                                  CityName = subDistrict.City.CityDescription,
-                                                  ProvinceName = subDistrict.City.Province.ProvinceDescription,
-                                                  PostalCodeId = postlCode.ID,
-                                                  PostalCode = postlCode.PostalCodeNo
-                                              }).ToList();
+                    List<Domain.SubDistrictDeatils> subDistrictDateils = new List<Domain.SubDistrictDeatils>();
+                    if (string.IsNullOrEmpty(searchText))
+                    {
+                        subDistrictDateils = (from subDistrict in context.SubDistricts
+                                                  join postlCode in context.PostalCodes on subDistrict.ID equals postlCode.SubDistrictID
+                                                  select new Domain.SubDistrictDeatils
+                                                  {
+                                                      SubDistrictName = subDistrict.SubdistrictName,
+                                                      CityName = subDistrict.City.CityDescription,
+                                                      ProvinceName = subDistrict.City.Province.ProvinceDescription,
+                                                      PostalCodeId = postlCode.ID,
+                                                      PostalCode = postlCode.PostalCodeNo
+                                                  }).ToList();
+                    }
+                    else
+                    {
+                        subDistrictDateils = (from subDistrict in context.SubDistricts
+                                                  join postlCode in context.PostalCodes on subDistrict.ID equals postlCode.SubDistrictID
+                                                  where subDistrict.SubdistrictName.Contains(searchText)
+                                                  select new Domain.SubDistrictDeatils
+                                                  {
+                                                      SubDistrictName = subDistrict.SubdistrictName,
+                                                      CityName = subDistrict.City.CityDescription,
+                                                      ProvinceName = subDistrict.City.Province.ProvinceDescription,
+                                                      PostalCodeId = postlCode.ID,
+                                                      PostalCode = postlCode.PostalCodeNo
+                                                  }).ToList();
+                    }
+                    
                     if (subDistrictDateils.Count > 0)
                     {
                         subDistrictDetailsResponse.Data = subDistrictDateils;
