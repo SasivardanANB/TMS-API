@@ -10,5 +10,6 @@ namespace OMS.DomainObjects.Request
     public class OrderRequest : RequestFilter
     {
         public List<Order> Requests { get; set; }
+        public int UploadType { get; set; }
     }
 }
