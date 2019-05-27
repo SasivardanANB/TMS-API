@@ -187,6 +187,7 @@ namespace TMS.DataGateway.Repositories
                                 order.DriverName = context.Drivers.FirstOrDefault(t => t.ID == driverId).UserName;
                             }
 
+                            int orderDetailId= 0;
                             if (persistedOrderDataID > 0) // Update Order
                             {
                                 var updatedOrderHeader = context.OrderHeaders.Find(persistedOrderDataID);
@@ -246,6 +247,10 @@ namespace TMS.DataGateway.Repositories
                                 order.ID = updatedOrderHeader.ID;
                                 response.StatusMessage = DomainObjects.Resource.ResourceData.OrderUpdated;
                                 context.Entry(updatedOrderHeader).State = System.Data.Entity.EntityState.Detached;
+
+                                #region TODO: Check if order detail is existing or not else create it
+                                //TODO:
+                                #endregion
                             }
                             else // Create New Order Header
                             {
@@ -295,250 +300,252 @@ namespace TMS.DataGateway.Repositories
                                 context.OrderHeaders.Add(orderHeader);
                                 context.SaveChanges();
                                 order.ID = orderHeader.ID;
-                            }
 
-                            #endregion
+                                #region Step 3 : Create Order Detail
 
-                            #region Step 3 : Create Order Detail
-
-                            Data.OrderDetail orderDetail = new Data.OrderDetail()
-                            {
-                                OrderHeaderID = order.ID,
-                                SequenceNo = order.SequenceNo,
-                                Sender = order.Sender,
-                                Receiver = order.Receiver,
-                                Dimension = order.Dimension,
-                                TotalPallet = order.TotalPallet,
-                                Instruction = order.Instructions,
-                                ShippingListNo = order.ShippingListNo,
-                                TotalCollie = order.TotalCollie,
-                                CreatedBy = request.CreatedBy,
-                                CreatedTime = DateTime.Now,
-                                LastModifiedBy = "",
-                                LastModifiedTime = null
-                            };
-                            context.OrderDetails.Add(orderDetail);
-                            context.SaveChanges();
-
-                            #endregion
-
-                            #region Step 4: Check if Partners exists or not
-
-                            int partner1Id = 0;
-                            int partner2Id = 0;
-                            int partner3Id = 0;
-                            if (request.UploadType == 1)
-                            {
-                                var partner1 = (from p in context.Partners
-                                                where p.PartnerNo == order.PartnerNo1
-                                                select new Domain.Partner()
-                                                {
-                                                    ID = p.ID
-                                                }).FirstOrDefault();
-                                if (partner1 != null)
-                                    partner1Id = partner1.ID;
-                            }
-                            else if (request.UploadType == 2)
-                            {
-                                partner1Id = Convert.ToInt32(order.PartnerNo1);
-                            }
-                            
-                            if (partner1Id == 0)
-                            {
-                                Data.Partner partner1Request = new Data.Partner()
+                                Data.OrderDetail orderDetail = new Data.OrderDetail()
                                 {
-                                    PartnerNo = order.PartnerNo1,
-                                    PartnerName = order.PartnerName1,
-                                    PartnerTypeID = context.PartnerTypes.Where(t => t.PartnerTypeCode == order.PartnerType1.ToString()).FirstOrDefault().ID,
-                                    IsActive = true,
-                                    CreatedBy = "SYSTEM",
+                                    OrderHeaderID = order.ID,
+                                    SequenceNo = order.SequenceNo,
+                                    Sender = order.Sender,
+                                    Receiver = order.Receiver,
+                                    Dimension = order.Dimension,
+                                    TotalPallet = order.TotalPallet,
+                                    Instruction = order.Instructions,
+                                    ShippingListNo = order.ShippingListNo,
+                                    TotalCollie = order.TotalCollie,
+                                    CreatedBy = request.CreatedBy,
                                     CreatedTime = DateTime.Now,
                                     LastModifiedBy = "",
                                     LastModifiedTime = null
                                 };
-                                context.Partners.Add(partner1Request);
+                                context.OrderDetails.Add(orderDetail);
                                 context.SaveChanges();
-                                partner1Id = partner1Request.ID;
-                            }
+                                orderDetailId = orderDetail.ID;
+                                #endregion
 
-                            if (request.UploadType == 1)
-                            {
-                                var partner2 = (from p in context.Partners
-                                                where p.PartnerNo == order.PartnerNo2
-                                                select new Domain.Partner()
-                                                {
-                                                    ID = p.ID
-                                                }).FirstOrDefault();
-                                if (partner2 != null)
-                                    partner2Id = partner2.ID;
-                            }
-                            else if (request.UploadType == 2)
-                            {
-                                partner2Id = Convert.ToInt32(order.PartnerNo2);
-                            }
-                            
-                            if (partner2Id == 0)
-                            {
-                                Data.Partner partner2Request = new Data.Partner()
+                                #region Step 4: Check if Partners exists or not
+
+                                int partner1Id = 0;
+                                int partner2Id = 0;
+                                int partner3Id = 0;
+                                if (request.UploadType == 1)
                                 {
-                                    PartnerNo = order.PartnerNo2,
-                                    PartnerName = order.PartnerName2,
-                                    PartnerTypeID = context.PartnerTypes.Where(t => t.PartnerTypeCode == order.PartnerType2.ToString()).FirstOrDefault().ID,
-                                    IsActive = true,
-                                    CreatedBy = "SYSTEM",
-                                    CreatedTime = DateTime.Now,
-                                    LastModifiedBy = "",
-                                    LastModifiedTime = null
-                                };
-                                context.Partners.Add(partner2Request);
-                                context.SaveChanges();
-                                partner2Id = partner2Request.ID;
-                            }
-
-                            if (request.UploadType == 1)
-                            {
-                                var partner3 = (from p in context.Partners
-                                                where p.PartnerNo == order.PartnerNo3
-                                                select new Domain.Partner()
-                                                {
-                                                    ID = p.ID
-                                                }).FirstOrDefault();
-                                if (partner3 != null)
-                                    partner3Id = partner3.ID;
-                            }
-                            else if (request.UploadType == 2)
-                            {
-                                partner3Id = Convert.ToInt32(order.PartnerNo3);
-                            }
-
-                            if (partner3Id == 0)
-                            {
-                                Data.Partner partner3Request = new Data.Partner()
+                                    var partner1 = (from p in context.Partners
+                                                    where p.PartnerNo == order.PartnerNo1
+                                                    select new Domain.Partner()
+                                                    {
+                                                        ID = p.ID
+                                                    }).FirstOrDefault();
+                                    if (partner1 != null)
+                                        partner1Id = partner1.ID;
+                                }
+                                else if (request.UploadType == 2)
                                 {
-                                    PartnerNo = order.PartnerNo3,
-                                    PartnerName = order.PartnerName3,
-                                    PartnerTypeID = context.PartnerTypes.Where(t => t.PartnerTypeCode == order.PartnerType3.ToString()).FirstOrDefault().ID,
-                                    IsActive = true,
-                                    CreatedBy = "SYSTEM",
-                                    CreatedTime = DateTime.Now,
-                                    LastModifiedBy = "",
-                                    LastModifiedTime = null
-                                };
-                                context.Partners.Add(partner3Request);
-                                context.SaveChanges();
-                                partner3Id = partner3Request.ID;
-                            }
+                                    partner1Id = Convert.ToInt32(order.PartnerNo1);
+                                }
 
-                            #endregion
-
-                            #region Step 5: Insert Order Partner Detail
-
-                            Data.OrderPartnerDetail orderPartner1Detail = new Data.OrderPartnerDetail()
-                            {
-                                OrderDetailID = orderDetail.ID,
-                                PartnerID = partner1Id,
-                                IsOriginal = true,
-                                IsParent = true,
-                                CreatedBy = "SYSTEM",
-                                CreatedTime = DateTime.Now,
-                                LastModifiedBy = "",
-                                LastModifiedTime = null
-                            };
-                            context.OrderPartnerDetails.Add(orderPartner1Detail);
-                            context.SaveChanges();
-
-                            Data.OrderPartnerDetail orderPartner2Detail = new Data.OrderPartnerDetail()
-                            {
-                                OrderDetailID = orderDetail.ID,
-                                PartnerID = partner2Id,
-                                IsOriginal = true,
-                                IsParent = true,
-                                CreatedBy = "SYSTEM",
-                                CreatedTime = DateTime.Now,
-                                LastModifiedBy = "",
-                                LastModifiedTime = null
-                            };
-                            context.OrderPartnerDetails.Add(orderPartner2Detail);
-                            context.SaveChanges();
-
-                            Data.OrderPartnerDetail orderPartner3Detail = new Data.OrderPartnerDetail()
-                            {
-                                OrderDetailID = orderDetail.ID,
-                                PartnerID = partner3Id,
-                                IsOriginal = true,
-                                IsParent = true,
-                                CreatedBy = "SYSTEM",
-                                CreatedTime = DateTime.Now,
-                                LastModifiedBy = "",
-                                LastModifiedTime = null
-                            };
-                            context.OrderPartnerDetails.Add(orderPartner3Detail);
-                            context.SaveChanges();
-
-                            #endregion
-
-                            #region Step 6: Insert Packing Sheet
-
-                            if (!string.IsNullOrEmpty(order.PackingSheetNo))
-                            {
-                                string[] packingSheets = order.PackingSheetNo.Split(',');
-                                foreach (string packinSheet in packingSheets)
+                                if (partner1Id == 0)
                                 {
-                                    Data.PackingSheet packingSheetRequest = new Data.PackingSheet()
+                                    Data.Partner partner1Request = new Data.Partner()
                                     {
-                                        // OrderDetailID = orderDetail.ID,
-                                        PackingSheetNo = packinSheet,
-                                        CreatedBy = request.CreatedBy,
+                                        PartnerNo = order.PartnerNo1,
+                                        PartnerName = order.PartnerName1,
+                                        PartnerTypeID = context.PartnerTypes.Where(t => t.PartnerTypeCode == order.PartnerType1.ToString()).FirstOrDefault().ID,
+                                        IsActive = true,
+                                        CreatedBy = "SYSTEM",
                                         CreatedTime = DateTime.Now,
                                         LastModifiedBy = "",
                                         LastModifiedTime = null
                                     };
-
-                                    context.PackingSheets.Add(packingSheetRequest);
+                                    context.Partners.Add(partner1Request);
                                     context.SaveChanges();
+                                    partner1Id = partner1Request.ID;
                                 }
-                            }
 
-                            #endregion
-
-                            #region Step 7: Insert Shipment SAP
-
-                            if (!string.IsNullOrEmpty(order.ShipmentSAPNo))
-                            {
-                                string[] shipmentSAPs = order.ShipmentSAPNo.Split(',');
-                                foreach (string shipmentSAP in shipmentSAPs)
+                                if (request.UploadType == 1)
                                 {
-                                    Data.ShipmentSAP shipmentSAPRequest = new Data.ShipmentSAP()
+                                    var partner2 = (from p in context.Partners
+                                                    where p.PartnerNo == order.PartnerNo2
+                                                    select new Domain.Partner()
+                                                    {
+                                                        ID = p.ID
+                                                    }).FirstOrDefault();
+                                    if (partner2 != null)
+                                        partner2Id = partner2.ID;
+                                }
+                                else if (request.UploadType == 2)
+                                {
+                                    partner2Id = Convert.ToInt32(order.PartnerNo2);
+                                }
+
+                                if (partner2Id == 0)
+                                {
+                                    Data.Partner partner2Request = new Data.Partner()
                                     {
-                                        OrderDetailID = orderDetail.ID,
-                                        ShipmentSAPNo = shipmentSAP,
-                                        CreatedBy = request.CreatedBy,
+                                        PartnerNo = order.PartnerNo2,
+                                        PartnerName = order.PartnerName2,
+                                        PartnerTypeID = context.PartnerTypes.Where(t => t.PartnerTypeCode == order.PartnerType2.ToString()).FirstOrDefault().ID,
+                                        IsActive = true,
+                                        CreatedBy = "SYSTEM",
                                         CreatedTime = DateTime.Now,
                                         LastModifiedBy = "",
                                         LastModifiedTime = null
                                     };
-
-                                    context.ShipmentSAPs.Add(shipmentSAPRequest);
+                                    context.Partners.Add(partner2Request);
                                     context.SaveChanges();
+                                    partner2Id = partner2Request.ID;
                                 }
+
+                                if (request.UploadType == 1)
+                                {
+                                    var partner3 = (from p in context.Partners
+                                                    where p.PartnerNo == order.PartnerNo3
+                                                    select new Domain.Partner()
+                                                    {
+                                                        ID = p.ID
+                                                    }).FirstOrDefault();
+                                    if (partner3 != null)
+                                        partner3Id = partner3.ID;
+                                }
+                                else if (request.UploadType == 2)
+                                {
+                                    partner3Id = Convert.ToInt32(order.PartnerNo3);
+                                }
+
+                                if (partner3Id == 0)
+                                {
+                                    Data.Partner partner3Request = new Data.Partner()
+                                    {
+                                        PartnerNo = order.PartnerNo3,
+                                        PartnerName = order.PartnerName3,
+                                        PartnerTypeID = context.PartnerTypes.Where(t => t.PartnerTypeCode == order.PartnerType3.ToString()).FirstOrDefault().ID,
+                                        IsActive = true,
+                                        CreatedBy = "SYSTEM",
+                                        CreatedTime = DateTime.Now,
+                                        LastModifiedBy = "",
+                                        LastModifiedTime = null
+                                    };
+                                    context.Partners.Add(partner3Request);
+                                    context.SaveChanges();
+                                    partner3Id = partner3Request.ID;
+                                }
+
+                                #endregion
+
+                                #region Step 5: Insert Order Partner Detail
+
+                                Data.OrderPartnerDetail orderPartner1Detail = new Data.OrderPartnerDetail()
+                                {
+                                    OrderDetailID = orderDetailId,
+                                    PartnerID = partner1Id,
+                                    IsOriginal = true,
+                                    IsParent = true,
+                                    CreatedBy = "SYSTEM",
+                                    CreatedTime = DateTime.Now,
+                                    LastModifiedBy = "",
+                                    LastModifiedTime = null
+                                };
+                                context.OrderPartnerDetails.Add(orderPartner1Detail);
+                                context.SaveChanges();
+
+                                Data.OrderPartnerDetail orderPartner2Detail = new Data.OrderPartnerDetail()
+                                {
+                                    OrderDetailID = orderDetailId,
+                                    PartnerID = partner2Id,
+                                    IsOriginal = true,
+                                    IsParent = true,
+                                    CreatedBy = "SYSTEM",
+                                    CreatedTime = DateTime.Now,
+                                    LastModifiedBy = "",
+                                    LastModifiedTime = null
+                                };
+                                context.OrderPartnerDetails.Add(orderPartner2Detail);
+                                context.SaveChanges();
+
+                                Data.OrderPartnerDetail orderPartner3Detail = new Data.OrderPartnerDetail()
+                                {
+                                    OrderDetailID = orderDetailId,
+                                    PartnerID = partner3Id,
+                                    IsOriginal = true,
+                                    IsParent = true,
+                                    CreatedBy = "SYSTEM",
+                                    CreatedTime = DateTime.Now,
+                                    LastModifiedBy = "",
+                                    LastModifiedTime = null
+                                };
+                                context.OrderPartnerDetails.Add(orderPartner3Detail);
+                                context.SaveChanges();
+
+                                #endregion
+
+                                #region Step 6: Insert Packing Sheet
+
+                                if (!string.IsNullOrEmpty(order.PackingSheetNo))
+                                {
+                                    string[] packingSheets = order.PackingSheetNo.Split(',');
+                                    foreach (string packinSheet in packingSheets)
+                                    {
+                                        Data.PackingSheet packingSheetRequest = new Data.PackingSheet()
+                                        {
+                                            // OrderDetailID = orderDetail.ID,
+                                            PackingSheetNo = packinSheet,
+                                            CreatedBy = request.CreatedBy,
+                                            CreatedTime = DateTime.Now,
+                                            LastModifiedBy = "",
+                                            LastModifiedTime = null
+                                        };
+
+                                        context.PackingSheets.Add(packingSheetRequest);
+                                        context.SaveChanges();
+                                    }
+                                }
+
+                                #endregion
+
+                                #region Step 7: Insert Shipment SAP
+
+                                if (!string.IsNullOrEmpty(order.ShipmentSAPNo))
+                                {
+                                    string[] shipmentSAPs = order.ShipmentSAPNo.Split(',');
+                                    foreach (string shipmentSAP in shipmentSAPs)
+                                    {
+                                        Data.ShipmentSAP shipmentSAPRequest = new Data.ShipmentSAP()
+                                        {
+                                            OrderDetailID = orderDetailId,
+                                            ShipmentSAPNo = shipmentSAP,
+                                            CreatedBy = request.CreatedBy,
+                                            CreatedTime = DateTime.Now,
+                                            LastModifiedBy = "",
+                                            LastModifiedTime = null
+                                        };
+
+                                        context.ShipmentSAPs.Add(shipmentSAPRequest);
+                                        context.SaveChanges();
+                                    }
+                                }
+
+                                #endregion
+
+                                #region Step 8: Update Order Status
+                                string orderStatusCode = order.OrderShipmentStatus.ToString();
+                                Data.OrderStatusHistory orderStatusHistory = new Data.OrderStatusHistory()
+                                {
+                                    OrderDetailID = orderDetailId,
+                                    OrderStatusID = context.OrderStatuses.Where(t => t.OrderStatusCode == orderStatusCode).FirstOrDefault().ID,
+                                    StatusDate = DateTime.Now,
+                                    Remarks = "Order Creted"
+                                };
+
+                                context.OrderStatusHistories.Add(orderStatusHistory);
+                                context.SaveChanges();
+
+                                #endregion
                             }
 
                             #endregion
 
-                            #region Step 8: Update Order Status
-                            string orderStatusCode = order.OrderShipmentStatus.ToString();
-                            Data.OrderStatusHistory orderStatusHistory = new Data.OrderStatusHistory()
-                            {
-                                OrderDetailID = orderDetail.ID,
-                                OrderStatusID = context.OrderStatuses.Where(t => t.OrderStatusCode == orderStatusCode).FirstOrDefault().ID,
-                                StatusDate = DateTime.Now,
-                                Remarks = "Order Creted"
-                            };
 
-                            context.OrderStatusHistories.Add(orderStatusHistory);
-                            context.SaveChanges();
-
-                            #endregion
                             transaction.Commit();
                             response.Status = DomainObjects.Resource.ResourceData.Success;
                             response.StatusCode = (int)HttpStatusCode.OK;
