@@ -487,10 +487,10 @@ namespace TMS.DataGateway.Repositories
                 {
                     var tripstatusData = new List<Domain.Common>();
 
-                    tripstatusData = context.TripStatuses.Select(data => new Domain.Common
+                    tripstatusData = context.OrderStatuses.Select(data => new Domain.Common
                     {
                         Id = data.ID,
-                        Value = data.TripStatusDescription
+                        Value = data.OrderStatusValue
                     }).ToList();
 
                     if (tripstatusData.Count > 0)
