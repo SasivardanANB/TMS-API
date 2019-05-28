@@ -64,7 +64,7 @@ namespace TMS.API.Controllers
 
         [Route("getsubdistrictdetails")]
         [HttpGet]
-        public IHttpActionResult GetSubDistrictDetails(string searchText)
+        public IHttpActionResult GetSubDistrictDetails(string searchText="")
         {
             IMasterTask masterTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().MasterTask;
             SubDistrictDetailsResponse subDistrictDetailsResponse = masterTask.GetSubDistrictDetails(searchText);
