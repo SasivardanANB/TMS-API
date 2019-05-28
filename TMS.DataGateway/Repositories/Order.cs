@@ -59,7 +59,7 @@ namespace TMS.DataGateway.Repositories
                             }
                             else
                             {
-                                
+
                                 var businessArea = (from ba in context.BusinessAreas
                                                     where ba.BusinessAreaCode == order.BusinessArea
                                                     select new Domain.BusinessArea()
@@ -1047,18 +1047,19 @@ namespace TMS.DataGateway.Repositories
                                 }
                             }
                             #endregion
+
+                            var orderDetails = (from od in context.OrderDetails
+                                                where od.OrderHeaderID == orderHeader.OrderId
+                                                orderby od.SequenceNo ascending
+                                                select new
+                                                {
+                                                    OrderID = od.OrderHeaderID,
+                                                    OrderDetailId = od.ID,
+                                                }).ToList();
+
                             if (orderHeader.OrderType == 1) //For Inbound, There can be multiple loads for every Order Detail
                             {
                                 #region Create Load response for In-Bound Orders
-                                var orderDetails = (from od in context.OrderDetails
-                                                    where od.OrderHeaderID == orderHeader.OrderId
-                                                    orderby od.SequenceNo ascending
-                                                    select new
-                                                    {
-                                                        OrderID = od.OrderHeaderID,
-                                                        OrderDetailId = od.ID,
-                                                    }).ToList();
-
                                 if (orderDetails != null && orderDetails.Count > 0)
                                 {
                                     int sourceNumber = 0;
@@ -1267,250 +1268,250 @@ namespace TMS.DataGateway.Repositories
                                             }
                                         }
                                     }
-                                    #endregion
-                                    else if (orderHeader.OrderType == 2) //For Outbound, There can be multiple unloads for every Order Detail
+                                }
+                                #endregion
+                            }
+                            else if (orderHeader.OrderType == 2) //For Outbound, There can be multiple unloads for every Order Detail
+                            {
+                                #region Create Unload response for Out-Bound Orders
+                                var orderDetailOutBound = (from od in context.OrderDetails
+                                                           where od.OrderHeaderID == orderHeader.OrderId
+                                                           orderby od.SequenceNo ascending
+                                                           select new
+                                                           {
+                                                               OrderID = od.OrderHeaderID,
+                                                               OrderDetailId = od.ID,
+                                                           }).ToList();
+
+                                if (orderDetailOutBound != null && orderDetailOutBound.Count > 0)
+                                {
+                                    int sourceNumber = 0;
+                                    int totalSources = orderDetails.Count;
+                                    foreach (var orderDetail in orderDetails)
                                     {
-                                        #region Create Unload response for Out-Bound Orders
-                                        var orderDetailOutBound = (from od in context.OrderDetails
-                                                                   where od.OrderHeaderID == orderHeader.OrderId
-                                                                   orderby od.SequenceNo ascending
-                                                                   select new
-                                                                   {
-                                                                       OrderID = od.OrderHeaderID,
-                                                                       OrderDetailId = od.ID,
-                                                                   }).ToList();
-
-                                        if (orderDetailOutBound != null && orderDetailOutBound.Count > 0)
+                                        //Get Source Name for UnLoading
+                                        var partnerDataUnload = (from p in context.OrderPartnerDetails
+                                                                 where p.OrderDetailID == orderDetail.OrderDetailId
+                                                                 select new
+                                                                 {
+                                                                     PrtnerID = p.PartnerID,
+                                                                     PartnerName = context.Partners.Where(t => t.ID == p.PartnerID).FirstOrDefault().PartnerName,
+                                                                     partnerTypeID = p.PartnerTypeId
+                                                                 }).ToList();
+                                        if (partnerDataUnload != null && partnerDataUnload.Count > 0)
                                         {
-                                            int sourceNumber = 0;
-                                            int totalSources = orderDetails.Count;
-                                            foreach (var orderDetail in orderDetails)
-                                            {
-                                                //Get Source Name for UnLoading
-                                                var partnerDataUnload = (from p in context.OrderPartnerDetails
-                                                                         where p.OrderDetailID == orderDetail.OrderDetailId
-                                                                         select new
-                                                                         {
-                                                                             PrtnerID = p.PartnerID,
-                                                                             PartnerName = context.Partners.Where(t => t.ID == p.PartnerID).FirstOrDefault().PartnerName,
-                                                                             partnerTypeID = p.PartnerTypeId
-                                                                         }).ToList();
-                                                if (partnerDataUnload != null && partnerDataUnload.Count > 0)
-                                                {
-                                                    var partners = (from pd in partnerData
-                                                                    join pt in context.PartnerTypes on pd.partnerTypeID equals pt.ID
-                                                                    where pt.PartnerTypeCode == "3"
-                                                                    select new
-                                                                    {
-                                                                        OrderDetailID = orderDetail.OrderDetailId,
-                                                                        PrtnerID = pd.PrtnerID,
-                                                                        PartnerName = pd.PartnerName,
-                                                                        partnerTypeID = pd.partnerTypeID,
-                                                                        PartnerTypeCode = pt.PartnerTypeCode
-                                                                    }).ToList();
-                                                    if (partners != null && partners.Count > 0)
-                                                    {
-                                                        foreach (var partner in partners)
-                                                        {
-                                                            var loadStatusData = statusData.Where(t => t.IsLoad == false).ToList();
-                                                            if (loadStatusData != null && loadStatusData.Count > 0)
+                                            var partners = (from pd in partnerDataUnload
+                                                            join pt in context.PartnerTypes on pd.partnerTypeID equals pt.ID
+                                                            where pt.PartnerTypeCode == "3"
+                                                            select new
                                                             {
-                                                                TrackStepLoadUnload unLoadData = new TrackStepLoadUnload()
-                                                                {
-                                                                    TrackLoadUnloadName = "UNLOAD",
-                                                                    StepHeaderNotification = String.Format("{0} from {1} Main Dealers", ++sourceNumber, totalSources),
-                                                                    StartTrip = new TrackStep(),
-                                                                    ConfirmArrive = new TrackStep(),
-                                                                    StartLoad = new TrackStep(),
-                                                                    FinishLoad = new TrackStep()
-                                                                };
-
-                                                                foreach (var loadStatus in loadStatusData)
-                                                                {
-                                                                    if (loadStatus.StatusCode == "4")
-                                                                    {
-                                                                        unLoadData.StartTrip.StepHeaderName = "START TRIP";
-                                                                        unLoadData.StartTrip.StepHeaderDescription = "On the way to Main Dealer";
-                                                                        unLoadData.StartTrip.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
-                                                                    }
-                                                                    else if (loadStatus.StatusCode == "5")
-                                                                    {
-                                                                        unLoadData.ConfirmArrive.StepHeaderName = "CONFIRM ARRIVE";
-                                                                        unLoadData.ConfirmArrive.StepHeaderDescription = "Arrive at Main Dealer";
-                                                                        unLoadData.ConfirmArrive.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
-                                                                    }
-                                                                    else if (loadStatus.StatusCode == "9")
-                                                                    {
-                                                                        unLoadData.StartLoad.StepHeaderName = "START UNLOAD";
-                                                                        unLoadData.StartLoad.StepHeaderDescription = "Unload parts at Main Dealer";
-                                                                        unLoadData.StartLoad.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
-                                                                    }
-                                                                    else if (loadStatus.StatusCode == "10")
-                                                                    {
-                                                                        unLoadData.FinishLoad.StepHeaderName = "FINISH UNLOAD";
-                                                                        unLoadData.FinishLoad.StepHeaderDescription = "Finish unload parts at Main Dealer";
-                                                                        unLoadData.FinishLoad.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
-                                                                    }
-                                                                }
-                                                                orderTrackResponse.Data.Loads.Add(unLoadData);
-                                                            }
-                                                            else
-                                                            {
-                                                                TrackStepLoadUnload unLoadData = new TrackStepLoadUnload()
-                                                                {
-                                                                    TrackLoadUnloadName = "UNLOAD",
-                                                                    StepHeaderNotification = String.Format("{0} from {1} Main Dealers", sourceNumber++, totalSources),
-                                                                    StartTrip = new TrackStep(),
-                                                                    ConfirmArrive = new TrackStep(),
-                                                                    StartLoad = new TrackStep(),
-                                                                    FinishLoad = new TrackStep()
-                                                                };
-
-                                                                unLoadData.StartTrip.StepHeaderName = "START TRIP";
-                                                                unLoadData.StartTrip.StepHeaderDescription = "On the way to Main Dealer";
-
-                                                                unLoadData.ConfirmArrive.StepHeaderName = "CONFIRM ARRIVE";
-                                                                unLoadData.ConfirmArrive.StepHeaderDescription = "Arrive at Main Dealer";
-
-                                                                unLoadData.StartLoad.StepHeaderName = "START UNLOAD";
-                                                                unLoadData.StartLoad.StepHeaderDescription = "UnlLoad parts at Main Dealer";
-
-                                                                unLoadData.FinishLoad.StepHeaderName = "FINISH UNLOAD";
-                                                                unLoadData.FinishLoad.StepHeaderDescription = "Finish unload parts at Main Dealer";
-
-                                                                orderTrackResponse.Data.Loads.Add(unLoadData);
-                                                            }
-                                                        }
-
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        #endregion
-                                        #region Create Load response for Out-bound Orders
-                                        var orderDetailsOutbound = (from od in context.OrderDetails
-                                                                    where od.OrderHeaderID == orderHeader.OrderId
-                                                                    group od by new { od.ID, od.SequenceNo } into gp
-                                                                    select new
-                                                                    {
-                                                                        OrderDetailId = gp.Key.ID,
-                                                                        SequenceNo = gp.Max(t => t.SequenceNo),
-                                                                    }).FirstOrDefault();
-
-                                        if (orderDetailsOutbound != null)
-                                        {
-                                            //Get Source Name for Loading
-                                            var partnerDataOutbound = (from p in context.OrderPartnerDetails
-                                                                       where p.OrderDetailID == orderDetailUnload.OrderDetailId
-                                                                       select new
-                                                                       {
-                                                                           PrtnerID = p.PartnerID,
-                                                                           PartnerName = context.Partners.Where(t => t.ID == p.PartnerID).FirstOrDefault().PartnerName,
-                                                                           partnerTypeID = p.PartnerTypeId
-                                                                       }).ToList();
-                                            if (partnerDataOutbound != null && partnerDataOutbound.Count > 0)
+                                                                OrderDetailID = orderDetail.OrderDetailId,
+                                                                PrtnerID = pd.PrtnerID,
+                                                                PartnerName = pd.PartnerName,
+                                                                partnerTypeID = pd.partnerTypeID,
+                                                                PartnerTypeCode = pt.PartnerTypeCode
+                                                            }).ToList();
+                                            if (partners != null && partnerDataUnload.Count > 0)
                                             {
-                                                var partners = (from pd in partnerData
-                                                                join pt in context.PartnerTypes on pd.partnerTypeID equals pt.ID
-                                                                where pt.PartnerTypeCode == "2"
-                                                                select new
-                                                                {
-                                                                    OrderDetailID = orderDetailUnload.OrderDetailId,
-                                                                    PrtnerID = pd.PrtnerID,
-                                                                    PartnerName = pd.PartnerName,
-                                                                    partnerTypeID = pd.partnerTypeID,
-                                                                    PartnerTypeCode = pt.PartnerTypeCode
-                                                                }).FirstOrDefault();
-                                                if (partners != null)
+                                                foreach (var partner in partners)
                                                 {
-                                                    var unLoadStatusData = statusData.Where(t => t.IsLoad == false).ToList();
-                                                    if (unLoadStatusData != null && unLoadStatusData.Count > 0)
+                                                    var loadStatusData = statusData.Where(t => t.IsLoad == false).ToList();
+                                                    if (loadStatusData != null && loadStatusData.Count > 0)
                                                     {
-                                                        TrackStepLoadUnload loadData = new TrackStepLoadUnload()
+                                                        TrackStepLoadUnload unLoadData = new TrackStepLoadUnload()
                                                         {
-                                                            TrackLoadUnloadName = "LOAD",
+                                                            TrackLoadUnloadName = "UNLOAD",
+                                                            StepHeaderNotification = String.Format("{0} from {1} Main Dealers", ++sourceNumber, totalSources),
                                                             StartTrip = new TrackStep(),
                                                             ConfirmArrive = new TrackStep(),
                                                             StartLoad = new TrackStep(),
                                                             FinishLoad = new TrackStep()
                                                         };
-                                                        foreach (var unLoadStatus in unLoadStatusData)
+
+                                                        foreach (var loadStatus in loadStatusData)
                                                         {
-                                                            if (unLoadStatus.StatusCode == "4")
+                                                            if (loadStatus.StatusCode == "4")
                                                             {
-                                                                loadData.StartTrip.StepHeaderName = "START TRIP";
-                                                                loadData.StartTrip.StepHeaderDescription = "On the way to AHM";
-                                                                loadData.StartTrip.StepHeaderDateTime = unLoadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
+                                                                unLoadData.StartTrip.StepHeaderName = "START TRIP";
+                                                                unLoadData.StartTrip.StepHeaderDescription = "On the way to Main Dealer";
+                                                                unLoadData.StartTrip.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
                                                             }
-                                                            else if (unLoadStatus.StatusCode == "5")
+                                                            else if (loadStatus.StatusCode == "5")
                                                             {
-                                                                loadData.ConfirmArrive.StepHeaderName = "CONFIRM ARRIVE";
-                                                                loadData.ConfirmArrive.StepHeaderDescription = "Arrive at AHM";
-                                                                loadData.ConfirmArrive.StepHeaderDateTime = unLoadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
+                                                                unLoadData.ConfirmArrive.StepHeaderName = "CONFIRM ARRIVE";
+                                                                unLoadData.ConfirmArrive.StepHeaderDescription = "Arrive at Main Dealer";
+                                                                unLoadData.ConfirmArrive.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
                                                             }
-                                                            else if (unLoadStatus.StatusCode == "6")
+                                                            else if (loadStatus.StatusCode == "9")
                                                             {
-                                                                loadData.StartLoad.StepHeaderName = "START LOAD";
-                                                                loadData.StartLoad.StepHeaderDescription = "Load parts at AHM";
-                                                                loadData.StartLoad.StepHeaderDateTime = unLoadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
+                                                                unLoadData.StartLoad.StepHeaderName = "START UNLOAD";
+                                                                unLoadData.StartLoad.StepHeaderDescription = "Unload parts at Main Dealer";
+                                                                unLoadData.StartLoad.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
                                                             }
-                                                            else if (unLoadStatus.StatusCode == "7")
+                                                            else if (loadStatus.StatusCode == "10")
                                                             {
-                                                                loadData.FinishLoad.StepHeaderName = "FINISH LOAD";
-                                                                loadData.FinishLoad.StepHeaderDescription = "Finish load parts at AHM";
-                                                                loadData.FinishLoad.StepHeaderDateTime = unLoadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
+                                                                unLoadData.FinishLoad.StepHeaderName = "FINISH UNLOAD";
+                                                                unLoadData.FinishLoad.StepHeaderDescription = "Finish unload parts at Main Dealer";
+                                                                unLoadData.FinishLoad.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
                                                             }
                                                         }
-                                                        orderTrackResponse.Data.Unloads.Add(loadData);
+                                                        orderTrackResponse.Data.Loads.Add(unLoadData);
                                                     }
                                                     else
                                                     {
-                                                        TrackStepLoadUnload loadData = new TrackStepLoadUnload()
+                                                        TrackStepLoadUnload unLoadData = new TrackStepLoadUnload()
                                                         {
-                                                            TrackLoadUnloadName = "LOAD",
+                                                            TrackLoadUnloadName = "UNLOAD",
+                                                            StepHeaderNotification = String.Format("{0} from {1} Main Dealers", sourceNumber++, totalSources),
                                                             StartTrip = new TrackStep(),
                                                             ConfirmArrive = new TrackStep(),
                                                             StartLoad = new TrackStep(),
                                                             FinishLoad = new TrackStep()
                                                         };
-                                                        loadData.StartTrip.StepHeaderName = "START TRIP";
-                                                        loadData.StartTrip.StepHeaderDescription = "On the way to AHM";
 
-                                                        loadData.ConfirmArrive.StepHeaderName = "CONFIRM ARRIVE";
-                                                        loadData.ConfirmArrive.StepHeaderDescription = "Arrive at AHM";
+                                                        unLoadData.StartTrip.StepHeaderName = "START TRIP";
+                                                        unLoadData.StartTrip.StepHeaderDescription = "On the way to Main Dealer";
 
-                                                        loadData.StartLoad.StepHeaderName = "START LOAD";
-                                                        loadData.StartLoad.StepHeaderDescription = "Load parts at AHM";
+                                                        unLoadData.ConfirmArrive.StepHeaderName = "CONFIRM ARRIVE";
+                                                        unLoadData.ConfirmArrive.StepHeaderDescription = "Arrive at Main Dealer";
 
-                                                        loadData.FinishLoad.StepHeaderDescription = "Finish load parts at AHM";
-                                                        orderTrackResponse.Data.Unloads.Add(loadData);
+                                                        unLoadData.StartLoad.StepHeaderName = "START UNLOAD";
+                                                        unLoadData.StartLoad.StepHeaderDescription = "UnlLoad parts at Main Dealer";
+
+                                                        unLoadData.FinishLoad.StepHeaderName = "FINISH UNLOAD";
+                                                        unLoadData.FinishLoad.StepHeaderDescription = "Finish unload parts at Main Dealer";
+
+                                                        orderTrackResponse.Data.Loads.Add(unLoadData);
                                                     }
                                                 }
+
                                             }
                                         }
-                                        #endregion
-                                    }
-                                }
-                                #region POD Section
-                                foreach (var status in statusData)
-                                {
-                                    if (status.StatusCode == "11")
-                                    {
-                                        orderTrackResponse.Data.AcceptOrder.StepHeaderDateTime = status.StatusDate.ToString("dd MMM yyyy HH:mm");
                                     }
                                 }
                                 #endregion
+                                #region Create Load response for Out-bound Orders
+                                var orderDetailsOutbound = (from od in context.OrderDetails
+                                                            where od.OrderHeaderID == orderHeader.OrderId
+                                                            group od by new { od.ID, od.SequenceNo } into gp
+                                                            select new
+                                                            {
+                                                                OrderDetailId = gp.Key.ID,
+                                                                SequenceNo = gp.Max(t => t.SequenceNo),
+                                                            }).FirstOrDefault();
 
-                                #region Complete Order Section
-                                foreach (var status in statusData)
+                                if (orderDetailsOutbound != null)
                                 {
-                                    if (status.StatusCode == "12")
+                                    //Get Source Name for Loading
+                                    var partnerDataOutbound = (from p in context.OrderPartnerDetails
+                                                               where p.OrderDetailID == orderDetailsOutbound.OrderDetailId
+                                                               select new
+                                                               {
+                                                                   PrtnerID = p.PartnerID,
+                                                                   PartnerName = context.Partners.Where(t => t.ID == p.PartnerID).FirstOrDefault().PartnerName,
+                                                                   partnerTypeID = p.PartnerTypeId
+                                                               }).ToList();
+                                    if (partnerDataOutbound != null && partnerDataOutbound.Count > 0)
                                     {
-                                        orderTrackResponse.Data.AcceptOrder.StepHeaderDateTime = status.StatusDate.ToString("dd MMM yyyy HH:mm");
+                                        var partners = (from pd in partnerDataOutbound
+                                                        join pt in context.PartnerTypes on pd.partnerTypeID equals pt.ID
+                                                        where pt.PartnerTypeCode == "2"
+                                                        select new
+                                                        {
+                                                            OrderDetailID = orderDetailsOutbound.OrderDetailId,
+                                                            PrtnerID = pd.PrtnerID,
+                                                            PartnerName = pd.PartnerName,
+                                                            partnerTypeID = pd.partnerTypeID,
+                                                            PartnerTypeCode = pt.PartnerTypeCode
+                                                        }).FirstOrDefault();
+                                        if (partners != null)
+                                        {
+                                            var unLoadStatusData = statusData.Where(t => t.IsLoad == false).ToList();
+                                            if (unLoadStatusData != null && unLoadStatusData.Count > 0)
+                                            {
+                                                TrackStepLoadUnload loadData = new TrackStepLoadUnload()
+                                                {
+                                                    TrackLoadUnloadName = "LOAD",
+                                                    StartTrip = new TrackStep(),
+                                                    ConfirmArrive = new TrackStep(),
+                                                    StartLoad = new TrackStep(),
+                                                    FinishLoad = new TrackStep()
+                                                };
+                                                foreach (var unLoadStatus in unLoadStatusData)
+                                                {
+                                                    if (unLoadStatus.StatusCode == "4")
+                                                    {
+                                                        loadData.StartTrip.StepHeaderName = "START TRIP";
+                                                        loadData.StartTrip.StepHeaderDescription = "On the way to AHM";
+                                                        loadData.StartTrip.StepHeaderDateTime = unLoadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
+                                                    }
+                                                    else if (unLoadStatus.StatusCode == "5")
+                                                    {
+                                                        loadData.ConfirmArrive.StepHeaderName = "CONFIRM ARRIVE";
+                                                        loadData.ConfirmArrive.StepHeaderDescription = "Arrive at AHM";
+                                                        loadData.ConfirmArrive.StepHeaderDateTime = unLoadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
+                                                    }
+                                                    else if (unLoadStatus.StatusCode == "6")
+                                                    {
+                                                        loadData.StartLoad.StepHeaderName = "START LOAD";
+                                                        loadData.StartLoad.StepHeaderDescription = "Load parts at AHM";
+                                                        loadData.StartLoad.StepHeaderDateTime = unLoadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
+                                                    }
+                                                    else if (unLoadStatus.StatusCode == "7")
+                                                    {
+                                                        loadData.FinishLoad.StepHeaderName = "FINISH LOAD";
+                                                        loadData.FinishLoad.StepHeaderDescription = "Finish load parts at AHM";
+                                                        loadData.FinishLoad.StepHeaderDateTime = unLoadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
+                                                    }
+                                                }
+                                                orderTrackResponse.Data.Unloads.Add(loadData);
+                                            }
+                                            else
+                                            {
+                                                TrackStepLoadUnload loadData = new TrackStepLoadUnload()
+                                                {
+                                                    TrackLoadUnloadName = "LOAD",
+                                                    StartTrip = new TrackStep(),
+                                                    ConfirmArrive = new TrackStep(),
+                                                    StartLoad = new TrackStep(),
+                                                    FinishLoad = new TrackStep()
+                                                };
+                                                loadData.StartTrip.StepHeaderName = "START TRIP";
+                                                loadData.StartTrip.StepHeaderDescription = "On the way to AHM";
+
+                                                loadData.ConfirmArrive.StepHeaderName = "CONFIRM ARRIVE";
+                                                loadData.ConfirmArrive.StepHeaderDescription = "Arrive at AHM";
+
+                                                loadData.StartLoad.StepHeaderName = "START LOAD";
+                                                loadData.StartLoad.StepHeaderDescription = "Load parts at AHM";
+
+                                                loadData.FinishLoad.StepHeaderDescription = "Finish load parts at AHM";
+                                                orderTrackResponse.Data.Unloads.Add(loadData);
+                                            }
+                                        }
                                     }
                                 }
                                 #endregion
                             }
+                            #region POD Section
+                            foreach (var status in statusData)
+                            {
+                                if (status.StatusCode == "11")
+                                {
+                                    orderTrackResponse.Data.AcceptOrder.StepHeaderDateTime = status.StatusDate.ToString("dd MMM yyyy HH:mm");
+                                }
+                            }
+                            #endregion
+
+                            #region Complete Order Section
+                            foreach (var status in statusData)
+                            {
+                                if (status.StatusCode == "12")
+                                {
+                                    orderTrackResponse.Data.AcceptOrder.StepHeaderDateTime = status.StatusDate.ToString("dd MMM yyyy HH:mm");
+                                }
+                            }
+                            #endregion
                         }
                     }
                 }
