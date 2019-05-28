@@ -24,12 +24,10 @@ namespace OMS.DataGateway.Migrations
             AddColumn("OMS.OrderPartnerDetail", "PartnerTypeId", c => c.Int(nullable: true));
             CreateIndex("OMS.OrderPartnerDetail", "PartnerTypeId");
             AddForeignKey("OMS.OrderPartnerDetail", "PartnerTypeId", "OMS.PartnerType", "ID", cascadeDelete: true);
-            DropColumn("OMS.User", "Email");
         }
         
         public override void Down()
         {
-            AddColumn("OMS.User", "Email", c => c.String(maxLength: 25));
             DropForeignKey("OMS.PartnerPartnerType", "PartnerTypeId", "OMS.PartnerType");
             DropForeignKey("OMS.PartnerPartnerType", "PartnerId", "OMS.Partner");
             DropForeignKey("OMS.OrderPartnerDetail", "PartnerTypeId", "OMS.PartnerType");

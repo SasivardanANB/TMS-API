@@ -7,13 +7,13 @@ namespace OMS.DataGateway.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.2.0-61023")]
-    public sealed partial class oms_v10_OrderPartnerTypeIdREmoved : IMigrationMetadata
+    public sealed partial class oms_v10_Issues : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(oms_v10_OrderPartnerTypeIdREmoved));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(oms_v10_Issues));
         
         string IMigrationMetadata.Id
         {
-            get { return "201905280907117_oms_v1.0_OrderPartnerTypeIdREmoved"; }
+            get { return "201905281216159_oms_v1.0_Issues"; }
         }
         
         string IMigrationMetadata.Source
