@@ -58,7 +58,9 @@ namespace TMS.DataGateway.Repositories
                             //{
                                 partnerData.CreatedBy = partnerRequest.CreatedBy;
                                 partnerData.CreatedTime = DateTime.Now;
+                                partnerData.PartnerNo = GetPartnerNumber();
                                 partnerData.IsActive = true;
+
                                 context.Partners.Add(partnerData);
                                 context.SaveChanges();
                                 partnerResponse.StatusMessage = DomainObjects.Resource.ResourceData.PartnerCreated;
@@ -274,6 +276,34 @@ namespace TMS.DataGateway.Repositories
                 partnerResponse.StatusMessage = DomainObjects.Resource.ResourceData.DataBaseException;
             }
             return partnerResponse;
+        }
+        //SHIP01
+        private string GetPartnerNumber()
+        {
+            string partnerNumber = string.Empty;
+            using (var tMSDBContext = new TMSDBContext())
+            {
+                var partnerDetails = tMSDBContext.Partners.OrderByDescending(t => t.ID).FirstOrDefault();
+                if (partnerDetails != null)
+                {
+                    Int64 lastPartnerNo = Convert.ToInt64(partnerDetails.PartnerNo.Substring(4, partnerDetails.PartnerNo.Length - 4));
+                    if (lastPartnerNo > 0)
+                    {
+                        lastPartnerNo = lastPartnerNo + 1;
+                    }
+                    else
+                    {
+                        lastPartnerNo = 1;
+                    }
+                    string finalNo = lastPartnerNo.ToString().PadLeft(1, '0');
+                    partnerNumber = "SHIP" + finalNo;
+                }
+                else
+                {
+                    partnerNumber = "SHIP01";
+                }
+            }
+            return partnerNumber;
         }
     }
 }
