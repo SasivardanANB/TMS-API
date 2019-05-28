@@ -18,9 +18,6 @@ namespace OMS.DataGateway.DataModels
         [Index("Partner_PartnerNo", IsUnique = true)]
         public string PartnerNo { get; set; }
         public string PartnerName { get; set; }
-        [ForeignKey("PartnerType")]
-        public int PartnerTypeID { get; set; }
-        public PartnerType PartnerType { get; set; }
         public bool IsActive { get; set; }
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public string CreatedBy

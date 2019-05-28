@@ -36,7 +36,8 @@ namespace TMS.DataGateway.Repositories
                     {
                         partnerList =
                                                 (from partner in context.Partners
-                                                 where partner.PartnerTypeID == partnerSearch.PartnerTypeId
+                                                 join ppt in context.PartnerPartnerTypes on partner.ID equals ppt.PartnerId
+                                                 where ppt.PartnerTypeId == partnerSearch.PartnerTypeId
                                                  select new Domain.Common
                                                  {
                                                      Id = partner.ID,
@@ -47,7 +48,8 @@ namespace TMS.DataGateway.Repositories
                     {
                         partnerList =
                             (from partner in context.Partners
-                             where partner.PartnerName.Contains(partnerSearch.SearchText) && partner.PartnerTypeID == partnerSearch.PartnerTypeId
+                             join ppt in context.PartnerPartnerTypes on partner.ID equals ppt.PartnerId
+                             where partner.PartnerName.Contains(partnerSearch.SearchText) && ppt.PartnerTypeId == partnerSearch.PartnerTypeId
                              select new Domain.Common
                              {
                                  Id = partner.ID,
@@ -367,7 +369,8 @@ namespace TMS.DataGateway.Repositories
                     if (searchText != "")
                     {
                         shipperData = (from partner in context.Partners
-                                       where partner.PartnerName.Contains(searchText) && partner.PartnerTypeID == 1
+                                       join ppt in context.PartnerPartnerTypes on partner.ID equals ppt.PartnerId
+                                       where partner.PartnerName.Contains(searchText) && ppt.PartnerTypeId == context.PartnerTypes.FirstOrDefault(t => t.PartnerTypeCode == "1").ID
                                        select new Domain.Common
                                        {
                                            Id = partner.ID,
@@ -377,7 +380,8 @@ namespace TMS.DataGateway.Repositories
                     else
                     {
                         shipperData = (from partner in context.Partners
-                                       where partner.PartnerTypeID == 1 // partner.PartnerName.Contains(searchText) && 
+                                       join ppt in context.PartnerPartnerTypes on partner.ID equals ppt.PartnerId
+                                       where ppt.PartnerTypeId == context.PartnerTypes.FirstOrDefault(t => t.PartnerTypeCode == "1").ID // partner.PartnerName.Contains(searchText) && 
                                        select new Domain.Common
                                        {
                                            Id = partner.ID,

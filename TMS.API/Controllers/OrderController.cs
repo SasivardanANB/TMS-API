@@ -143,221 +143,221 @@ namespace TMS.API.Controllers
 
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
             OrderResponse orderData = orderTask.CreateUpdateOrder(order);
-            if (orderData.StatusCode == 200 && orderData.Status == "Success")
-            {
-                #region Call DMS API to send Order as Trip if Driver assignment exists
-                TripRequestDMS requestDMS = new TripRequestDMS()
-                {
-                    Requests = new List<TripDMS>()
-                };
+            //if (orderData.StatusCode == 200 && orderData.Status == "Success")
+            //{
+            //    #region Call DMS API to send Order as Trip if Driver assignment exists
+            //    TripRequestDMS requestDMS = new TripRequestDMS()
+            //    {
+            //        Requests = new List<TripDMS>()
+            //    };
 
-                foreach (var request in order.Requests)
-                {
-                    if (!string.IsNullOrEmpty(request.DriverName))
-                    {
-                        DateTime estimationShipmentDate = DateTime.ParseExact(request.EstimationShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(request.EstimationShipmentTime);
-                        DateTime actualShipmentDate = DateTime.ParseExact(request.ActualShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(request.ActualShipmentTime);
+            //    foreach (var request in order.Requests)
+            //    {
+            //        if (!string.IsNullOrEmpty(request.DriverName))
+            //        {
+            //            DateTime estimationShipmentDate = DateTime.ParseExact(request.EstimationShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(request.EstimationShipmentTime);
+            //            DateTime actualShipmentDate = DateTime.ParseExact(request.ActualShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(request.ActualShipmentTime);
 
-                        if (requestDMS.Requests.Count > 0)
-                        {
-                            var existingTrip = requestDMS.Requests.FirstOrDefault(t => t.OrderNumber == request.OrderNo);
-                            if (existingTrip != null)
-                            {
-                                if (request.OrderType == 1)
-                                {
-                                    #region Add Source Location
-                                    Partner sourcePartnerDetail = GetPartnerDetail(request.PartnerNo2, order.UploadType);
-                                    TripLocation sourceLocation = new TripLocation()
-                                    {
-                                        TypeofLocation = "Source",
-                                        Name = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
-                                        Place = sourcePartnerDetail.PartnerAddress,
-                                        Address = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
-                                        CityCode = sourcePartnerDetail.CityCode,
-                                        ProvinceCode = sourcePartnerDetail.ProvinceCode,
-                                        SequnceNumber = request.SequenceNo,
-                                        ActualDeliveryDate = actualShipmentDate,
-                                        EstimatedDeliveryDate = estimationShipmentDate
-                                    };
-                                    existingTrip.TripLocations.Add(sourceLocation);
-                                    requestDMS.Requests.Remove(existingTrip);
-                                    requestDMS.Requests.Add(existingTrip);
-                                    #endregion
-                                }
-                                else if (request.OrderType == 2)
-                                {
-                                    #region Add Destination Location
+            //            if (requestDMS.Requests.Count > 0)
+            //            {
+            //                var existingTrip = requestDMS.Requests.FirstOrDefault(t => t.OrderNumber == request.OrderNo);
+            //                if (existingTrip != null)
+            //                {
+            //                    if (request.OrderType == 1)
+            //                    {
+            //                        #region Add Source Location
+            //                        Partner sourcePartnerDetail = GetPartnerDetail(request.PartnerNo2, order.UploadType);
+            //                        TripLocation sourceLocation = new TripLocation()
+            //                        {
+            //                            TypeofLocation = "Source",
+            //                            Name = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
+            //                            Place = sourcePartnerDetail.PartnerAddress,
+            //                            Address = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
+            //                            CityCode = sourcePartnerDetail.CityCode,
+            //                            ProvinceCode = sourcePartnerDetail.ProvinceCode,
+            //                            SequnceNumber = request.SequenceNo,
+            //                            ActualDeliveryDate = actualShipmentDate,
+            //                            EstimatedDeliveryDate = estimationShipmentDate
+            //                        };
+            //                        existingTrip.TripLocations.Add(sourceLocation);
+            //                        requestDMS.Requests.Remove(existingTrip);
+            //                        requestDMS.Requests.Add(existingTrip);
+            //                        #endregion
+            //                    }
+            //                    else if (request.OrderType == 2)
+            //                    {
+            //                        #region Add Destination Location
 
-                                    Partner destinationPartnerDetail = GetPartnerDetail(request.PartnerNo3, order.UploadType);
+            //                        Partner destinationPartnerDetail = GetPartnerDetail(request.PartnerNo3, order.UploadType);
 
-                                    TripLocation destinationLocation = new TripLocation()
-                                    {
-                                        TypeofLocation = "Destination",
-                                        Name = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
-                                        Place = destinationPartnerDetail.PartnerAddress,
-                                        Address = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
-                                        CityCode = destinationPartnerDetail.CityCode,
-                                        ProvinceCode = destinationPartnerDetail.ProvinceCode,
-                                        SequnceNumber = request.SequenceNo,
-                                        ActualDeliveryDate = actualShipmentDate,
-                                        EstimatedDeliveryDate = estimationShipmentDate
-                                    };
-                                    existingTrip.TripLocations.Add(destinationLocation);
-                                    requestDMS.Requests.Remove(existingTrip);
-                                    requestDMS.Requests.Add(existingTrip);
-                                    #endregion
-                                }
-                            }
-                            else
-                            {
-                                string businessArea = "";
-                                if (string.IsNullOrEmpty(request.BusinessArea))
-                                    businessArea = GetBusinessAreaCode(request.BusinessAreaId);
-                                else
-                                    businessArea = request.BusinessArea;
+            //                        TripLocation destinationLocation = new TripLocation()
+            //                        {
+            //                            TypeofLocation = "Destination",
+            //                            Name = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
+            //                            Place = destinationPartnerDetail.PartnerAddress,
+            //                            Address = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
+            //                            CityCode = destinationPartnerDetail.CityCode,
+            //                            ProvinceCode = destinationPartnerDetail.ProvinceCode,
+            //                            SequnceNumber = request.SequenceNo,
+            //                            ActualDeliveryDate = actualShipmentDate,
+            //                            EstimatedDeliveryDate = estimationShipmentDate
+            //                        };
+            //                        existingTrip.TripLocations.Add(destinationLocation);
+            //                        requestDMS.Requests.Remove(existingTrip);
+            //                        requestDMS.Requests.Add(existingTrip);
+            //                        #endregion
+            //                    }
+            //                }
+            //                else
+            //                {
+            //                    string businessArea = "";
+            //                    if (string.IsNullOrEmpty(request.BusinessArea))
+            //                        businessArea = GetBusinessAreaCode(request.BusinessAreaId);
+            //                    else
+            //                        businessArea = request.BusinessArea;
 
-                                TripDMS tripDMS = new TripDMS()
-                                {
-                                    OrderNumber = request.OrderNo,
-                                    TransporterName = request.PartnerName1,
-                                    TransporterCode = request.PartnerNo1,
-                                    DriverName = request.DriverName,
-                                    VehicleType = request.VehicleShipmentType,
-                                    VehicleNumber = request.VehicleNo,
-                                    TripType = Convert.ToString(request.FleetType),
-                                    Weight = request.OrderWeight,
-                                    PoliceNumber = request.VehicleNo,
-                                    TripStatusCode = "3",
-                                    OrderType = request.OrderType,
-                                    BusinessAreaCode = businessArea,
-                                    TripLocations = new List<TripLocation>()
-                                };
+            //                    TripDMS tripDMS = new TripDMS()
+            //                    {
+            //                        OrderNumber = request.OrderNo,
+            //                        TransporterName = request.PartnerName1,
+            //                        TransporterCode = request.PartnerNo1,
+            //                        DriverName = request.DriverName,
+            //                        VehicleType = request.VehicleShipmentType,
+            //                        VehicleNumber = request.VehicleNo,
+            //                        TripType = Convert.ToString(request.FleetType),
+            //                        Weight = request.OrderWeight,
+            //                        PoliceNumber = request.VehicleNo,
+            //                        TripStatusCode = "3",
+            //                        OrderType = request.OrderType,
+            //                        BusinessAreaCode = businessArea,
+            //                        TripLocations = new List<TripLocation>()
+            //                    };
 
-                                #region Add Source Location
-                                Partner sourcePartnerDetail = GetPartnerDetail(request.PartnerNo2, order.UploadType);
-                                TripLocation sourceLocation = new TripLocation()
-                                {
-                                    TypeofLocation = "Source",
-                                    Name = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
-                                    Place = sourcePartnerDetail.PartnerAddress,
-                                    Address = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
-                                    CityCode = sourcePartnerDetail.CityCode,
-                                    ProvinceCode = sourcePartnerDetail.ProvinceCode,
-                                    SequnceNumber = request.OrderType == 1 ? request.SequenceNo : 0,
-                                    ActualDeliveryDate = actualShipmentDate,
-                                    EstimatedDeliveryDate = estimationShipmentDate
-                                };
-                                tripDMS.TripLocations.Add(sourceLocation);
-                                #endregion
+            //                    #region Add Source Location
+            //                    Partner sourcePartnerDetail = GetPartnerDetail(request.PartnerNo2, order.UploadType);
+            //                    TripLocation sourceLocation = new TripLocation()
+            //                    {
+            //                        TypeofLocation = "Source",
+            //                        Name = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
+            //                        Place = sourcePartnerDetail.PartnerAddress,
+            //                        Address = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
+            //                        CityCode = sourcePartnerDetail.CityCode,
+            //                        ProvinceCode = sourcePartnerDetail.ProvinceCode,
+            //                        SequnceNumber = request.OrderType == 1 ? request.SequenceNo : 0,
+            //                        ActualDeliveryDate = actualShipmentDate,
+            //                        EstimatedDeliveryDate = estimationShipmentDate
+            //                    };
+            //                    tripDMS.TripLocations.Add(sourceLocation);
+            //                    #endregion
 
-                                #region Add Destination Location
-                                Partner destinationPartnerDetail = GetPartnerDetail(request.PartnerNo3, order.UploadType);
-                                TripLocation destinationLocation = new TripLocation()
-                                {
-                                    TypeofLocation = "Destination",
-                                    Name = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
-                                    Place = destinationPartnerDetail.PartnerAddress,
-                                    Address = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
-                                    CityCode = destinationPartnerDetail.CityCode,
-                                    ProvinceCode = destinationPartnerDetail.ProvinceCode,
-                                    SequnceNumber = request.OrderType == 1 ? 0 : request.SequenceNo,
-                                    ActualDeliveryDate = actualShipmentDate,
-                                    EstimatedDeliveryDate = estimationShipmentDate
-                                };
-                                tripDMS.TripLocations.Add(destinationLocation);
-                                #endregion
-                            }
-                        }
-                        else
-                        {
-                            string businessArea = "";
-                            if (string.IsNullOrEmpty(request.BusinessArea))
-                                businessArea = GetBusinessAreaCode(request.BusinessAreaId);
-                            else
-                                businessArea = request.BusinessArea;
+            //                    #region Add Destination Location
+            //                    Partner destinationPartnerDetail = GetPartnerDetail(request.PartnerNo3, order.UploadType);
+            //                    TripLocation destinationLocation = new TripLocation()
+            //                    {
+            //                        TypeofLocation = "Destination",
+            //                        Name = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
+            //                        Place = destinationPartnerDetail.PartnerAddress,
+            //                        Address = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
+            //                        CityCode = destinationPartnerDetail.CityCode,
+            //                        ProvinceCode = destinationPartnerDetail.ProvinceCode,
+            //                        SequnceNumber = request.OrderType == 1 ? 0 : request.SequenceNo,
+            //                        ActualDeliveryDate = actualShipmentDate,
+            //                        EstimatedDeliveryDate = estimationShipmentDate
+            //                    };
+            //                    tripDMS.TripLocations.Add(destinationLocation);
+            //                    #endregion
+            //                }
+            //            }
+            //            else
+            //            {
+            //                string businessArea = "";
+            //                if (string.IsNullOrEmpty(request.BusinessArea))
+            //                    businessArea = GetBusinessAreaCode(request.BusinessAreaId);
+            //                else
+            //                    businessArea = request.BusinessArea;
 
-                            TripDMS tripDMS = new TripDMS()
-                            {
-                                OrderNumber = request.OrderNo,
-                                TransporterName = request.PartnerName1,
-                                TransporterCode = request.PartnerNo1,
-                                DriverName = request.DriverName,
-                                VehicleType = request.VehicleShipmentType,
-                                VehicleNumber = request.VehicleNo,
-                                TripType = Convert.ToString(request.FleetType),
-                                Weight = request.OrderWeight,
-                                PoliceNumber = request.VehicleNo,
-                                TripStatusCode = "3",
-                                OrderType = request.OrderType,
-                                BusinessAreaCode = businessArea,
-                                TripLocations = new List<TripLocation>()
-                            };
+            //                TripDMS tripDMS = new TripDMS()
+            //                {
+            //                    OrderNumber = request.OrderNo,
+            //                    TransporterName = request.PartnerName1,
+            //                    TransporterCode = request.PartnerNo1,
+            //                    DriverName = request.DriverName,
+            //                    VehicleType = request.VehicleShipmentType,
+            //                    VehicleNumber = request.VehicleNo,
+            //                    TripType = Convert.ToString(request.FleetType),
+            //                    Weight = request.OrderWeight,
+            //                    PoliceNumber = request.VehicleNo,
+            //                    TripStatusCode = "3",
+            //                    OrderType = request.OrderType,
+            //                    BusinessAreaCode = businessArea,
+            //                    TripLocations = new List<TripLocation>()
+            //                };
 
-                            #region Add Source Location
-                            Partner sourcePartnerDetail = GetPartnerDetail(request.PartnerNo2, order.UploadType);
-                            TripLocation sourceLocation = new TripLocation()
-                            {
-                                TypeofLocation = "Source",
-                                Name = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
-                                Place = sourcePartnerDetail.PartnerAddress,
-                                Address = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
-                                CityCode = sourcePartnerDetail.CityCode,
-                                ProvinceCode = sourcePartnerDetail.ProvinceCode,
-                                SequnceNumber = request.OrderType == 1 ? request.SequenceNo : 0,
-                                ActualDeliveryDate = actualShipmentDate,
-                                EstimatedDeliveryDate = estimationShipmentDate
-                            };
-                            tripDMS.TripLocations.Add(sourceLocation);
-                            #endregion
+            //                #region Add Source Location
+            //                Partner sourcePartnerDetail = GetPartnerDetail(request.PartnerNo2, order.UploadType);
+            //                TripLocation sourceLocation = new TripLocation()
+            //                {
+            //                    TypeofLocation = "Source",
+            //                    Name = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
+            //                    Place = sourcePartnerDetail.PartnerAddress,
+            //                    Address = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
+            //                    CityCode = sourcePartnerDetail.CityCode,
+            //                    ProvinceCode = sourcePartnerDetail.ProvinceCode,
+            //                    SequnceNumber = request.OrderType == 1 ? request.SequenceNo : 0,
+            //                    ActualDeliveryDate = actualShipmentDate,
+            //                    EstimatedDeliveryDate = estimationShipmentDate
+            //                };
+            //                tripDMS.TripLocations.Add(sourceLocation);
+            //                #endregion
 
-                            #region Add Destination Location
-                            Partner destinationPartnerDetail = GetPartnerDetail(request.PartnerNo3, order.UploadType);
-                            TripLocation destinationLocation = new TripLocation()
-                            {
-                                TypeofLocation = "Destination",
-                                Name = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
-                                Place = destinationPartnerDetail.PartnerAddress,
-                                Address = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
-                                CityCode = destinationPartnerDetail.CityCode,
-                                ProvinceCode = destinationPartnerDetail.ProvinceCode,
-                                SequnceNumber = request.OrderType == 1 ? 0 : request.SequenceNo,
-                                ActualDeliveryDate = actualShipmentDate,
-                                EstimatedDeliveryDate = estimationShipmentDate
-                            };
-                            tripDMS.TripLocations.Add(destinationLocation);
-                            #endregion
+            //                #region Add Destination Location
+            //                Partner destinationPartnerDetail = GetPartnerDetail(request.PartnerNo3, order.UploadType);
+            //                TripLocation destinationLocation = new TripLocation()
+            //                {
+            //                    TypeofLocation = "Destination",
+            //                    Name = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
+            //                    Place = destinationPartnerDetail.PartnerAddress,
+            //                    Address = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
+            //                    CityCode = destinationPartnerDetail.CityCode,
+            //                    ProvinceCode = destinationPartnerDetail.ProvinceCode,
+            //                    SequnceNumber = request.OrderType == 1 ? 0 : request.SequenceNo,
+            //                    ActualDeliveryDate = actualShipmentDate,
+            //                    EstimatedDeliveryDate = estimationShipmentDate
+            //                };
+            //                tripDMS.TripLocations.Add(destinationLocation);
+            //                #endregion
 
-                            requestDMS.Requests.Add(tripDMS);
-                        }
-                    }
-                }
-                #endregion
-                if (requestDMS.Requests.Count > 0)
-                {
-                    #region Call DMS API to assign order to driver
-                    #region Login to DMS and get Token
-                    LoginRequest loginRequest = new LoginRequest();
-                    string token = "";
+            //                requestDMS.Requests.Add(tripDMS);
+            //            }
+            //        }
+            //    }
+            //    #endregion
+            //    if (requestDMS.Requests.Count > 0)
+            //    {
+            //        #region Call DMS API to assign order to driver
+            //        #region Login to DMS and get Token
+            //        LoginRequest loginRequest = new LoginRequest();
+            //        string token = "";
 
-                    loginRequest.UserName = ConfigurationManager.AppSettings["DMSLogin"];
-                    loginRequest.UserPassword = ConfigurationManager.AppSettings["DMSPassword"];
-                    var dmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
-                        + "/v1/user/login", Method.POST, loginRequest, null));
-                    if (dmsLoginResponse != null && dmsLoginResponse.Data.Count > 0)
-                    {
-                        token = dmsLoginResponse.TokenKey;
-                    }
-                    #endregion
+            //        loginRequest.UserName = ConfigurationManager.AppSettings["DMSLogin"];
+            //        loginRequest.UserPassword = ConfigurationManager.AppSettings["DMSPassword"];
+            //        var dmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
+            //            + "/v1/user/login", Method.POST, loginRequest, null));
+            //        if (dmsLoginResponse != null && dmsLoginResponse.Data.Count > 0)
+            //        {
+            //            token = dmsLoginResponse.TokenKey;
+            //        }
+            //        #endregion
 
-                    var response = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
-                        + "/v1/trip/createupdatetrip", Method.POST, requestDMS, token));
-                    if (response != null)
-                    {
-                        orderData.StatusMessage += ". " + response.StatusMessage;
-                    }
-                    #endregion
-                }
-            }
+            //        var response = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
+            //            + "/v1/trip/createupdatetrip", Method.POST, requestDMS, token));
+            //        if (response != null)
+            //        {
+            //            orderData.StatusMessage += ". " + response.StatusMessage;
+            //        }
+            //        #endregion
+            //    }
+            //}
             return Ok(orderData);
         }
 

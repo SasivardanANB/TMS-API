@@ -75,6 +75,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataModels\PartnerPartnerType.cs" />
     <Compile Include="DataModels\ShipmentSAP.cs" />
     <Compile Include="DataModels\PackingSheet.cs" />
     <Compile Include="DataModels\OrderPartnerDetail.cs" />
@@ -123,6 +124,14 @@
     <Compile Include="Migrations\201905230445106_UserNamechanges.Designer.cs">
       <DependentUpon>201905230445106_UserNamechanges.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201905280539574_oms_v1.0_PartnerPartnerType.cs" />
+    <Compile Include="Migrations\201905280539574_oms_v1.0_PartnerPartnerType.Designer.cs">
+      <DependentUpon>201905280539574_oms_v1.0_PartnerPartnerType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201905280907117_oms_v1.0_OrderPartnerTypeIdREmoved.cs" />
+    <Compile Include="Migrations\201905280907117_oms_v1.0_OrderPartnerTypeIdREmoved.Designer.cs">
+      <DependentUpon>201905280907117_oms_v1.0_OrderPartnerTypeIdREmoved.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\Interfaces\IAuthenticate.cs" />
@@ -158,6 +167,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201905230445106_UserNamechanges.resx">
       <DependentUpon>201905230445106_UserNamechanges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905280539574_oms_v1.0_PartnerPartnerType.resx">
+      <DependentUpon>201905280539574_oms_v1.0_PartnerPartnerType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905280907117_oms_v1.0_OrderPartnerTypeIdREmoved.resx">
+      <DependentUpon>201905280907117_oms_v1.0_OrderPartnerTypeIdREmoved.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SeedData\applications.csv" />
     <EmbeddedResource Include="SeedData\Activities.csv" />

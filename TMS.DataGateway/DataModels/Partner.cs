@@ -27,14 +27,12 @@ namespace TMS.DataGateway.DataModels
         [ForeignKey("PostalCode")]
         public int? PostalCodeID { get; set; }
         public virtual PostalCode PostalCode { get; set; }
-        public int PartnerTypeID { get; set; }
         public string PartnerInitial { get; set; }
         public string PartnerEmail { get; set; }
         [ForeignKey("PIC")]
         public int? PICID { get; set; }
         public virtual PIC PIC { get; set; }
         public bool IsDeleted { get; set; }
-        public PartnerType PartnerType { get; set; }
         public bool IsActive { get; set; }
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public string CreatedBy

@@ -136,6 +136,7 @@ namespace TMS.DataGateway.Repositories
                 {
                     partnerList =
                         (from partner in context.Partners
+                         join ppt in context.PartnerPartnerTypes on partner.ID equals ppt.PartnerId
                          join postalcode in context.PostalCodes on partner.PostalCodeID equals postalcode.ID
                          join subdistrict in context.SubDistricts on postalcode.SubDistrictID equals subdistrict.ID
                          join city in context.Cities on subdistrict.CityID equals city.ID
@@ -151,7 +152,7 @@ namespace TMS.DataGateway.Repositories
                              OrderPointTypeID = partner.OrderPointTypeID,
                              PostalCodeID = partner.PostalCodeID,
                              PartnerNo = partner.PartnerNo,
-                             PartnerTypeID = partner.PartnerTypeID,
+                             PartnerTypeID = ppt.PartnerTypeId,
                              PICID = partner.PICID,
                              PICName = partner.PIC.PICName,
                              CityCode=city.CityDescription

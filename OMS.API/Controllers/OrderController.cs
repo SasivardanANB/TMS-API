@@ -188,8 +188,8 @@ namespace OMS.API.Controllers
                 {
                     orderData.StatusMessage = orderData.StatusMessage + ". " + tmsOrderData.StatusMessage;
                 }
-                #endregion
             }
+            #endregion
             return Ok(orderData);
         }
 

@@ -69,5 +69,6 @@ namespace TMS.DataGateway.DataModels
         public virtual DbSet<G2G> G2Gs { get; set; }
         public virtual DbSet<GateType> GateTypes { get; set; }
         public virtual DbSet<GateInGateOut> GateInGateOuts { get; set; }
+        public virtual DbSet<PartnerPartnerType> PartnerPartnerTypes { get; set; }
     }
 }

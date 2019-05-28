@@ -36,5 +36,8 @@ namespace TMS.DataGateway.DataModels
         }
         public string LastModifiedBy { get; set; }
         public DateTime? LastModifiedTime { get; set; }
+        [ForeignKey("PartnerType")]
+        public int PartnerTypeId { get; set; }
+        public PartnerType PartnerType { get; set; }
     }
 }

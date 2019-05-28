@@ -122,7 +122,7 @@ namespace TMS.DataGateway.Repositories
                                                    {
                                                        PrtnerID = op.PartnerID,
                                                        PartnerName = context.Partners.Where(t => t.ID == op.PartnerID).FirstOrDefault().PartnerName,
-                                                       partnerTypeID = context.Partners.Where(t => t.ID == op.PartnerID).FirstOrDefault().PartnerTypeID
+                                                       partnerTypeID = op.PartnerTypeId
                                                    }).ToList();
 
                                 if (partnerData != null && partnerData.Count > 0)
@@ -332,7 +332,7 @@ namespace TMS.DataGateway.Repositories
                                                     PartnerCode = orderPartnerDetails.Partner.PartnerNo,
                                                     PartnerId = orderPartnerDetails.PartnerID,
                                                     PartnerName = orderPartnerDetails.Partner.PartnerName,
-                                                    PeartnerType = orderPartnerDetails.Partner.PartnerTypeID,
+                                                    PeartnerType = orderPartnerDetails.PartnerTypeId,
                                                     SequenceNo = orderDetailsData.SequenceNo,
                                                     Instruction = orderDetailsData.Instruction,
                                                     TotalPallet = orderDetailsData.TotalPallet
