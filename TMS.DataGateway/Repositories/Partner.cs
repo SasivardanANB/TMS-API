@@ -46,6 +46,7 @@ namespace TMS.DataGateway.Repositories
                             partnerData.LastModifiedBy = partnerRequest.LastModifiedBy;
                             partnerData.LastModifiedTime = DateTime.Now;
                             context.Entry(partnerData).State = System.Data.Entity.EntityState.Modified;
+                            context.Entry(partnerData).Property(p => p.PartnerNo).IsModified = false;
                             context.SaveChanges();
                             partnerResponse.StatusMessage = DomainObjects.Resource.ResourceData.PartnerUpdated;
                             partnerResponse.Status = DomainObjects.Resource.ResourceData.Success;
