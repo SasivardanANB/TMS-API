@@ -27,12 +27,10 @@ namespace TMS.DataGateway.Migrations
             CreateIndex("TMS.OrderPartnerDetail", "PartnerTypeId");
             AddForeignKey("TMS.OrderPartnerDetail", "PartnerTypeId", "TMS.PartnerType", "ID", cascadeDelete: true);
             DropColumn("TMS.Partner", "PartnerTypeID");
-            DropColumn("TMS.User", "Email");
         }
         
         public override void Down()
         {
-            AddColumn("TMS.User", "Email", c => c.String(maxLength: 25));
             AddColumn("TMS.Partner", "PartnerTypeID", c => c.Int(nullable: false));
             DropForeignKey("TMS.PartnerPartnerType", "PartnerTypeId", "TMS.PartnerType");
             DropForeignKey("TMS.PartnerPartnerType", "PartnerId", "TMS.Partner");
