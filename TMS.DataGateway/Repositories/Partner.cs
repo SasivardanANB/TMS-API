@@ -57,16 +57,21 @@ namespace TMS.DataGateway.Repositories
                             //var existPartner = context.Partners.Where(p => p.PartnerNo == partnerData.PartnerNo).FirstOrDefault();
                             //if (existPartner == null)
                             //{
-                                partnerData.CreatedBy = partnerRequest.CreatedBy;
-                                partnerData.CreatedTime = DateTime.Now;
-                                partnerData.PartnerNo = GetPartnerNumber();
-                                partnerData.IsActive = true;
+                            partnerData.CreatedBy = partnerRequest.CreatedBy;
+                            partnerData.CreatedTime = DateTime.Now;
+                            partnerData.PartnerNo = GetPartnerNumber();
+                            partnerData.IsActive = true;
 
-                                context.Partners.Add(partnerData);
-                                context.SaveChanges();
-                                partnerResponse.StatusMessage = DomainObjects.Resource.ResourceData.PartnerCreated;
-                                partnerResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                                partnerResponse.StatusCode = (int)HttpStatusCode.OK;
+                            context.Partners.Add(partnerData);
+                            context.SaveChanges();
+                            DataModel.PartnerPartnerType partnerPartnerType = new PartnerPartnerType();
+                            partnerPartnerType.PartnerId = partnerData.ID;
+                            partnerPartnerType.PartnerTypeId = context.PartnerTypes.FirstOrDefault(t=>t.PartnerTypeDescription == "1").ID;
+                            context.PartnerPartnerTypes.Add(partnerPartnerType);
+                            context.SaveChanges();
+                            partnerResponse.StatusMessage = DomainObjects.Resource.ResourceData.PartnerCreated;
+                            partnerResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                            partnerResponse.StatusCode = (int)HttpStatusCode.OK;
                             //}
                             //else
                             //{
@@ -79,7 +84,7 @@ namespace TMS.DataGateway.Repositories
 
                     partnerRequest.Requests = mapper.Map<List<DataModel.Partner>, List<Domain.Partner>>(partners);
                     partnerResponse.Data = partnerRequest.Requests;
-                   
+
                 }
             }
             catch (Exception ex)
@@ -158,7 +163,7 @@ namespace TMS.DataGateway.Repositories
                              PartnerTypeID = ppt.PartnerTypeId,
                              PICID = partner.PICID,
                              PICName = partner.PIC.PICName,
-                             CityCode=city.CityDescription
+                             CityCode = city.CityDescription
                          }).ToList();
                 }
                 // Filter
