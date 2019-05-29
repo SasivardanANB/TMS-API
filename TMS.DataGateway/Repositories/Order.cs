@@ -1135,6 +1135,7 @@ namespace TMS.DataGateway.Repositories
                                                     OrderDetailId = od.ID,
                                                 }).ToList();
 
+
                             if (orderHeader.OrderType == 1) //For Inbound, There can be multiple loads for every Order Detail
                             {
                                 #region Create Load response for In-Bound Orders
@@ -1189,25 +1190,38 @@ namespace TMS.DataGateway.Repositories
                                                             {
                                                                 loadData.StartTrip.StepHeaderName = "START TRIP";
                                                                 loadData.StartTrip.StepHeaderDescription = "On the way to AHM";
-                                                                loadData.StartTrip.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
+                                                                if (orderDetail.OrderDetailId == loadStatus.OrderDetailId)
+                                                                {
+                                                                    loadData.StartTrip.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
+                                                                }
+                                                                
                                                             }
                                                             else if (loadStatus.StatusCode == "5")
                                                             {
                                                                 loadData.ConfirmArrive.StepHeaderName = "CONFIRM ARRIVE";
                                                                 loadData.ConfirmArrive.StepHeaderDescription = "Arrive at AHM";
-                                                                loadData.ConfirmArrive.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
+                                                                if (orderDetail.OrderDetailId == loadStatus.OrderDetailId)
+                                                                {
+                                                                    loadData.StartTrip.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
+                                                                }
                                                             }
                                                             else if (loadStatus.StatusCode == "6")
                                                             {
                                                                 loadData.StartLoad.StepHeaderName = "START LOAD";
                                                                 loadData.StartLoad.StepHeaderDescription = "Load parts at AHM";
-                                                                loadData.StartLoad.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
+                                                                if (orderDetail.OrderDetailId == loadStatus.OrderDetailId)
+                                                                {
+                                                                    loadData.StartTrip.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
+                                                                }
                                                             }
                                                             else if (loadStatus.StatusCode == "7")
                                                             {
                                                                 loadData.FinishLoad.StepHeaderName = "FINISH LOAD";
                                                                 loadData.FinishLoad.StepHeaderDescription = "Finish load parts at AHM";
-                                                                loadData.FinishLoad.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
+                                                                if (orderDetail.OrderDetailId == loadStatus.OrderDetailId)
+                                                                {
+                                                                    loadData.StartTrip.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
+                                                                }
                                                             }
                                                         }
                                                         orderTrackResponse.Data.Loads.Add(loadData);
