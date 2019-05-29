@@ -245,7 +245,23 @@ namespace TMS.DataGateway.Repositories
                                     transaction.Rollback();
                                     response.Status = DomainObjects.Resource.ResourceData.Failure;
                                     response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                }
+                                if (partnerType1 == null)
+                                {
+                                    //Return with Partner Type not found.
                                     response.StatusMessage = order.PartnerType1.ToString() + " Partner Type not found in TMS.";
+                                    return response;
+                                }
+                                if (partnerType2 == null)
+                                {
+                                    //Return with Partner Type not found.
+                                    response.StatusMessage = order.PartnerType2.ToString() + " Partner Type not found in TMS.";
+                                    return response;
+                                }
+                                if (partnerType3 == null)
+                                {
+                                    //Return with Partner Type not found.
+                                    response.StatusMessage = order.PartnerType3.ToString() + " Partner Type not found in TMS.";
                                     return response;
                                 }
 
@@ -256,12 +272,7 @@ namespace TMS.DataGateway.Repositories
                                 int partner3Id;
 
                                 #region Check if Partner Exists or not
-                                Domain.Partner partner1 = new Domain.Partner();
-                                Domain.Partner partner2 = new Domain.Partner();
-                                Domain.Partner partner3 = new Domain.Partner();
-                                if (request.UploadType == 1)
-                                {
-                                    partner1 = (from p in context.Partners
+                                var partner1 = (from p in context.Partners
                                                 join ppt in context.PartnerPartnerTypes on p.ID equals ppt.PartnerId
                                                 where p.PartnerNo == order.PartnerNo1 && ppt.PartnerTypeId == partnerType1.ID
                                                 select new Domain.Partner()
@@ -269,7 +280,7 @@ namespace TMS.DataGateway.Repositories
                                                     ID = p.ID
                                                 }).FirstOrDefault();
 
-                                    partner2 = (from p in context.Partners
+                                var partner2 = (from p in context.Partners
                                                 join ppt in context.PartnerPartnerTypes on p.ID equals ppt.PartnerId
                                                 where p.PartnerNo == order.PartnerNo2 && ppt.PartnerTypeId == partnerType2.ID
                                                 select new Domain.Partner()
@@ -277,7 +288,7 @@ namespace TMS.DataGateway.Repositories
                                                     ID = p.ID
                                                 }).FirstOrDefault();
 
-                                    partner3 = (from p in context.Partners
+                                var partner3 = (from p in context.Partners
                                                 join ppt in context.PartnerPartnerTypes on p.ID equals ppt.PartnerId
                                                 where p.PartnerNo == order.PartnerNo3 && ppt.PartnerTypeId == partnerType3.ID
                                                 select new Domain.Partner()
@@ -285,27 +296,44 @@ namespace TMS.DataGateway.Repositories
                                                     ID = p.ID
                                                 }).FirstOrDefault();
 
-                                    if (partner1 == null || partner2 == null || partner3 == null)
-                                    {
-                                        //Return with Partner not found.
-                                        transaction.Rollback();
-                                        response.Status = DomainObjects.Resource.ResourceData.Failure;
-                                        response.StatusCode = (int)HttpStatusCode.BadRequest;
-                                        response.StatusMessage = "Partner not found in OMS.";
-                                        return response;
-                                    }
-                                    else
-                                    {
-                                        partner1Id = partner1.ID;
-                                        partner2Id = partner2.ID;
-                                        partner3Id = partner3.ID;
-                                    }
+                                if (partnerType1 == null || partnerType2 == null || partnerType3 == null)
+                                {
+                                    //Return with Partner not found.
+                                    transaction.Rollback();
+                                    response.Status = DomainObjects.Resource.ResourceData.Failure;
+                                    response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                }
+
+                                if (partner1 == null)
+                                {
+
+                                    response.StatusMessage = order.PartnerNo1 + " Partner not found in TMS.";
+                                    return response;
                                 }
                                 else
                                 {
-                                    partner1Id = Convert.ToInt32(order.PartnerNo1);
-                                    partner2Id = Convert.ToInt32(order.PartnerNo2);
-                                    partner3Id = Convert.ToInt32(order.PartnerNo3);
+                                    partner1Id = partner1.ID;
+
+                                }
+                                if (partner2 == null)
+                                {
+                                    //Return with Partner not found.
+                                    response.StatusMessage = order.PartnerNo2 + " Partner not found in TMS.";
+                                    return response;
+                                }
+                                else
+                                {
+                                    partner2Id = partner2.ID;
+                                }
+                                if (partner3 == null)
+                                {
+                                    //Return with Partner not found.
+                                    response.StatusMessage = order.PartnerNo3 + " Partner not found in TMS.";
+                                    return response;
+                                }
+                                else
+                                {
+                                    partner3Id = partner3.ID;
                                 }
 
                                 #endregion
@@ -519,7 +547,23 @@ namespace TMS.DataGateway.Repositories
                                     transaction.Rollback();
                                     response.Status = DomainObjects.Resource.ResourceData.Failure;
                                     response.StatusCode = (int)HttpStatusCode.BadRequest;
-                                    response.StatusMessage = order.PartnerType1.ToString() + " Partner Type not found in OMS.";
+                                }
+                                if (partnerType1 == null)
+                                {
+                                    //Return with Partner Type not found.
+                                    response.StatusMessage = order.PartnerType1.ToString() + " Partner Type not found in TMS.";
+                                    return response;
+                                }
+                                if (partnerType2 == null)
+                                {
+                                    //Return with Partner Type not found.
+                                    response.StatusMessage = order.PartnerType2.ToString() + " Partner Type not found in TMS.";
+                                    return response;
+                                }
+                                if (partnerType3 == null)
+                                {
+                                    //Return with Partner Type not found.
+                                    response.StatusMessage = order.PartnerType3.ToString() + " Partner Type not found in TMS.";
                                     return response;
                                 }
 
@@ -530,12 +574,7 @@ namespace TMS.DataGateway.Repositories
                                 int partner3Id;
 
                                 #region Check if Partner Exists or not
-                                Domain.Partner partner1 = new Domain.Partner();
-                                Domain.Partner partner2 = new Domain.Partner();
-                                Domain.Partner partner3 = new Domain.Partner();
-                                if (request.UploadType == 1)
-                                {
-                                    partner1 = (from p in context.Partners
+                                var partner1 = (from p in context.Partners
                                                 join ppt in context.PartnerPartnerTypes on p.ID equals ppt.PartnerId
                                                 where p.PartnerNo == order.PartnerNo1 && ppt.PartnerTypeId == partnerType1.ID
                                                 select new Domain.Partner()
@@ -543,7 +582,7 @@ namespace TMS.DataGateway.Repositories
                                                     ID = p.ID
                                                 }).FirstOrDefault();
 
-                                    partner2 = (from p in context.Partners
+                                var partner2 = (from p in context.Partners
                                                 join ppt in context.PartnerPartnerTypes on p.ID equals ppt.PartnerId
                                                 where p.PartnerNo == order.PartnerNo2 && ppt.PartnerTypeId == partnerType2.ID
                                                 select new Domain.Partner()
@@ -551,7 +590,7 @@ namespace TMS.DataGateway.Repositories
                                                     ID = p.ID
                                                 }).FirstOrDefault();
 
-                                    partner3 = (from p in context.Partners
+                                var partner3 = (from p in context.Partners
                                                 join ppt in context.PartnerPartnerTypes on p.ID equals ppt.PartnerId
                                                 where p.PartnerNo == order.PartnerNo3 && ppt.PartnerTypeId == partnerType3.ID
                                                 select new Domain.Partner()
@@ -559,27 +598,44 @@ namespace TMS.DataGateway.Repositories
                                                     ID = p.ID
                                                 }).FirstOrDefault();
 
-                                    if (partner1 == null || partner2 == null || partner3 == null)
-                                    {
-                                        //Return with Partner not found.
-                                        transaction.Rollback();
-                                        response.Status = DomainObjects.Resource.ResourceData.Failure;
-                                        response.StatusCode = (int)HttpStatusCode.BadRequest;
-                                        response.StatusMessage = "Partner not found in OMS.";
-                                        return response;
-                                    }
-                                    else
-                                    {
-                                        partner1Id = partner1.ID;
-                                        partner2Id = partner2.ID;
-                                        partner3Id = partner3.ID;
-                                    }
+                                if (partnerType1 == null || partnerType2 == null || partnerType3 == null)
+                                {
+                                    //Return with Partner not found.
+                                    transaction.Rollback();
+                                    response.Status = DomainObjects.Resource.ResourceData.Failure;
+                                    response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                }
+
+                                if (partner1 == null)
+                                {
+
+                                    response.StatusMessage = order.PartnerNo1 + " Partner not found in TMS.";
+                                    return response;
                                 }
                                 else
                                 {
-                                    partner1Id = Convert.ToInt32(order.PartnerNo1);
-                                    partner2Id = Convert.ToInt32(order.PartnerNo2);
-                                    partner3Id = Convert.ToInt32(order.PartnerNo3);
+                                    partner1Id = partner1.ID;
+
+                                }
+                                if (partner2 == null)
+                                {
+                                    //Return with Partner not found.
+                                    response.StatusMessage = order.PartnerNo2 + " Partner not found in TMS.";
+                                    return response;
+                                }
+                                else
+                                {
+                                    partner2Id = partner2.ID;
+                                }
+                                if (partner3 == null)
+                                {
+                                    //Return with Partner not found.
+                                    response.StatusMessage = order.PartnerNo3 + " Partner not found in TMS.";
+                                    return response;
+                                }
+                                else
+                                {
+                                    partner3Id = partner3.ID;
                                 }
 
                                 #endregion
@@ -2016,6 +2072,16 @@ namespace TMS.DataGateway.Repositories
                         };
                         context.OrderStatusHistories.Add(statusHistory);
                         context.SaveChanges();
+
+                        #region Update Order Header
+                        var orderHeader = context.OrderHeaders.FirstOrDefault(t => t.ID == orderId);
+                        orderHeader.OrderStatusID = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == statusRequest.OrderStatusCode).ID;
+
+                        context.Entry(orderHeader).State = System.Data.Entity.EntityState.Modified;
+                        context.SaveChanges();
+                        context.Entry(orderHeader).State = System.Data.Entity.EntityState.Detached;
+
+                        #endregion
 
                         response.Data = request.Requests;
                         response.Status = DomainObjects.Resource.ResourceData.Success;

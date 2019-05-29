@@ -390,7 +390,23 @@ namespace OMS.DataGateway.Repositories
                                     transaction.Rollback();
                                     response.Status = DomainObjects.Resource.ResourceData.Failure;
                                     response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                }
+                                if (partnerType1 == null )
+                                {
+                                    //Return with Partner Type not found.
                                     response.StatusMessage = order.PartnerType1.ToString() + " Partner Type not found in OMS.";
+                                    return response;
+                                }
+                                if (partnerType2 == null)
+                                {
+                                    //Return with Partner Type not found.
+                                    response.StatusMessage = order.PartnerType2.ToString() + " Partner Type not found in OMS.";
+                                    return response;
+                                }
+                                if (partnerType3 == null)
+                                {
+                                    //Return with Partner Type not found.
+                                    response.StatusMessage = order.PartnerType3.ToString() + " Partner Type not found in OMS.";
                                     return response;
                                 }
 
@@ -425,20 +441,43 @@ namespace OMS.DataGateway.Repositories
                                                     ID = p.ID
                                                 }).FirstOrDefault();
 
-
-                                if (partner1 == null || partner2 == null || partner3 == null)
+                                if (partnerType1 == null || partnerType2 == null || partnerType3 == null)
                                 {
                                     //Return with Partner not found.
                                     transaction.Rollback();
                                     response.Status = DomainObjects.Resource.ResourceData.Failure;
                                     response.StatusCode = (int)HttpStatusCode.BadRequest;
-                                    response.StatusMessage = "Partner not found in OMS.";
+                                }
+
+                                if (partner1 == null)
+                                {
+                                   
+                                    response.StatusMessage = order.PartnerNo1 + " Partner not found in OMS.";
                                     return response;
                                 }
                                 else
                                 {
                                     partner1Id = partner1.ID;
+
+                                }
+                                if (partner2 == null)
+                                {
+                                    //Return with Partner not found.
+                                    response.StatusMessage = order.PartnerNo2 + " Partner not found in OMS.";
+                                    return response;
+                                }
+                                else
+                                {
                                     partner2Id = partner2.ID;
+                                }
+                                if (partner3 == null)
+                                {
+                                    //Return with Partner not found.
+                                    response.StatusMessage = order.PartnerNo3 + " Partner not found in OMS.";
+                                    return response;
+                                }
+                                else
+                                {
                                     partner3Id = partner3.ID;
                                 }
 
@@ -631,7 +670,23 @@ namespace OMS.DataGateway.Repositories
                                     transaction.Rollback();
                                     response.Status = DomainObjects.Resource.ResourceData.Failure;
                                     response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                }
+                                if (partnerType1 == null)
+                                {
+                                    //Return with Partner Type not found.
                                     response.StatusMessage = order.PartnerType1.ToString() + " Partner Type not found in OMS.";
+                                    return response;
+                                }
+                                if (partnerType2 == null)
+                                {
+                                    //Return with Partner Type not found.
+                                    response.StatusMessage = order.PartnerType2.ToString() + " Partner Type not found in OMS.";
+                                    return response;
+                                }
+                                if (partnerType3 == null)
+                                {
+                                    //Return with Partner Type not found.
+                                    response.StatusMessage = order.PartnerType3.ToString() + " Partner Type not found in OMS.";
                                     return response;
                                 }
 
@@ -666,20 +721,43 @@ namespace OMS.DataGateway.Repositories
                                                     ID = p.ID
                                                 }).FirstOrDefault();
 
-
-                                if (partner1 == null || partner2 == null || partner3 == null)
+                                if (partnerType1 == null || partnerType2 == null || partnerType3 == null)
                                 {
                                     //Return with Partner not found.
                                     transaction.Rollback();
                                     response.Status = DomainObjects.Resource.ResourceData.Failure;
                                     response.StatusCode = (int)HttpStatusCode.BadRequest;
-                                    response.StatusMessage = "Partner not found in OMS.";
+                                }
+
+                                if (partner1 == null)
+                                {
+
+                                    response.StatusMessage = order.PartnerNo1 + " Partner not found in OMS.";
                                     return response;
                                 }
                                 else
                                 {
                                     partner1Id = partner1.ID;
+
+                                }
+                                if (partner2 == null)
+                                {
+                                    //Return with Partner not found.
+                                    response.StatusMessage = order.PartnerNo2 + " Partner not found in OMS.";
+                                    return response;
+                                }
+                                else
+                                {
                                     partner2Id = partner2.ID;
+                                }
+                                if (partner3 == null)
+                                {
+                                    //Return with Partner not found.
+                                    response.StatusMessage = order.PartnerNo3 + " Partner not found in OMS.";
+                                    return response;
+                                }
+                                else
+                                {
                                     partner3Id = partner3.ID;
                                 }
 
