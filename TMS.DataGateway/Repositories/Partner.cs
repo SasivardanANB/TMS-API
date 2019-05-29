@@ -66,7 +66,7 @@ namespace TMS.DataGateway.Repositories
                             context.SaveChanges();
                             DataModel.PartnerPartnerType partnerPartnerType = new PartnerPartnerType();
                             partnerPartnerType.PartnerId = partnerData.ID;
-                            partnerPartnerType.PartnerTypeId = context.PartnerTypes.FirstOrDefault(t=>t.PartnerTypeDescription == "1").ID;
+                            partnerPartnerType.PartnerTypeId = context.PartnerTypes.FirstOrDefault(t=>t.PartnerTypeCode == "1").ID;
                             context.PartnerPartnerTypes.Add(partnerPartnerType);
                             context.SaveChanges();
                             partnerResponse.StatusMessage = DomainObjects.Resource.ResourceData.PartnerCreated;
