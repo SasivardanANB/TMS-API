@@ -786,6 +786,9 @@ namespace OMS.DataGateway.Repositories
                             #endregion
 
                             transaction.Commit();
+                            response.Status = DomainObjects.Resource.ResourceData.Success;
+                            response.StatusCode = (int)HttpStatusCode.OK;
+                            response.StatusMessage = DomainObjects.Resource.ResourceData.OrderCreated;
                         }
                         catch (Exception ex)
                         {
