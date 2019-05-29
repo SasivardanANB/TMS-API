@@ -256,7 +256,12 @@ namespace TMS.DataGateway.Repositories
                                 int partner3Id;
 
                                 #region Check if Partner Exists or not
-                                var partner1 = (from p in context.Partners
+                                Domain.Partner partner1 = new Domain.Partner();
+                                Domain.Partner partner2 = new Domain.Partner();
+                                Domain.Partner partner3 = new Domain.Partner();
+                                if (request.UploadType == 1)
+                                {
+                                    partner1 = (from p in context.Partners
                                                 join ppt in context.PartnerPartnerTypes on p.ID equals ppt.PartnerId
                                                 where p.PartnerNo == order.PartnerNo1 && ppt.PartnerTypeId == partnerType1.ID
                                                 select new Domain.Partner()
@@ -264,7 +269,7 @@ namespace TMS.DataGateway.Repositories
                                                     ID = p.ID
                                                 }).FirstOrDefault();
 
-                                var partner2 = (from p in context.Partners
+                                    partner2 = (from p in context.Partners
                                                 join ppt in context.PartnerPartnerTypes on p.ID equals ppt.PartnerId
                                                 where p.PartnerNo == order.PartnerNo2 && ppt.PartnerTypeId == partnerType2.ID
                                                 select new Domain.Partner()
@@ -272,7 +277,7 @@ namespace TMS.DataGateway.Repositories
                                                     ID = p.ID
                                                 }).FirstOrDefault();
 
-                                var partner3 = (from p in context.Partners
+                                    partner3 = (from p in context.Partners
                                                 join ppt in context.PartnerPartnerTypes on p.ID equals ppt.PartnerId
                                                 where p.PartnerNo == order.PartnerNo3 && ppt.PartnerTypeId == partnerType3.ID
                                                 select new Domain.Partner()
@@ -280,21 +285,27 @@ namespace TMS.DataGateway.Repositories
                                                     ID = p.ID
                                                 }).FirstOrDefault();
 
-
-                                if (partner1 == null || partner2 == null || partner3 == null)
-                                {
-                                    //Return with Partner not found.
-                                    transaction.Rollback();
-                                    response.Status = DomainObjects.Resource.ResourceData.Failure;
-                                    response.StatusCode = (int)HttpStatusCode.BadRequest;
-                                    response.StatusMessage = "Partner not found in TMS.";
-                                    return response;
+                                    if (partner1 == null || partner2 == null || partner3 == null)
+                                    {
+                                        //Return with Partner not found.
+                                        transaction.Rollback();
+                                        response.Status = DomainObjects.Resource.ResourceData.Failure;
+                                        response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                        response.StatusMessage = "Partner not found in OMS.";
+                                        return response;
+                                    }
+                                    else
+                                    {
+                                        partner1Id = partner1.ID;
+                                        partner2Id = partner2.ID;
+                                        partner3Id = partner3.ID;
+                                    }
                                 }
                                 else
                                 {
-                                    partner1Id = partner1.ID;
-                                    partner2Id = partner2.ID;
-                                    partner3Id = partner3.ID;
+                                    partner1Id = Convert.ToInt32(order.PartnerNo1);
+                                    partner2Id = Convert.ToInt32(order.PartnerNo2);
+                                    partner3Id = Convert.ToInt32(order.PartnerNo3);
                                 }
 
                                 #endregion
@@ -519,7 +530,12 @@ namespace TMS.DataGateway.Repositories
                                 int partner3Id;
 
                                 #region Check if Partner Exists or not
-                                var partner1 = (from p in context.Partners
+                                Domain.Partner partner1 = new Domain.Partner();
+                                Domain.Partner partner2 = new Domain.Partner();
+                                Domain.Partner partner3 = new Domain.Partner();
+                                if (request.UploadType == 1)
+                                {
+                                    partner1 = (from p in context.Partners
                                                 join ppt in context.PartnerPartnerTypes on p.ID equals ppt.PartnerId
                                                 where p.PartnerNo == order.PartnerNo1 && ppt.PartnerTypeId == partnerType1.ID
                                                 select new Domain.Partner()
@@ -527,7 +543,7 @@ namespace TMS.DataGateway.Repositories
                                                     ID = p.ID
                                                 }).FirstOrDefault();
 
-                                var partner2 = (from p in context.Partners
+                                    partner2 = (from p in context.Partners
                                                 join ppt in context.PartnerPartnerTypes on p.ID equals ppt.PartnerId
                                                 where p.PartnerNo == order.PartnerNo2 && ppt.PartnerTypeId == partnerType2.ID
                                                 select new Domain.Partner()
@@ -535,7 +551,7 @@ namespace TMS.DataGateway.Repositories
                                                     ID = p.ID
                                                 }).FirstOrDefault();
 
-                                var partner3 = (from p in context.Partners
+                                    partner3 = (from p in context.Partners
                                                 join ppt in context.PartnerPartnerTypes on p.ID equals ppt.PartnerId
                                                 where p.PartnerNo == order.PartnerNo3 && ppt.PartnerTypeId == partnerType3.ID
                                                 select new Domain.Partner()
@@ -543,21 +559,27 @@ namespace TMS.DataGateway.Repositories
                                                     ID = p.ID
                                                 }).FirstOrDefault();
 
-
-                                if (partner1 == null || partner2 == null || partner3 == null)
-                                {
-                                    //Return with Partner not found.
-                                    transaction.Rollback();
-                                    response.Status = DomainObjects.Resource.ResourceData.Failure;
-                                    response.StatusCode = (int)HttpStatusCode.BadRequest;
-                                    response.StatusMessage = "Partner not found in OMS.";
-                                    return response;
+                                    if (partner1 == null || partner2 == null || partner3 == null)
+                                    {
+                                        //Return with Partner not found.
+                                        transaction.Rollback();
+                                        response.Status = DomainObjects.Resource.ResourceData.Failure;
+                                        response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                        response.StatusMessage = "Partner not found in OMS.";
+                                        return response;
+                                    }
+                                    else
+                                    {
+                                        partner1Id = partner1.ID;
+                                        partner2Id = partner2.ID;
+                                        partner3Id = partner3.ID;
+                                    }
                                 }
                                 else
                                 {
-                                    partner1Id = partner1.ID;
-                                    partner2Id = partner2.ID;
-                                    partner3Id = partner3.ID;
+                                    partner1Id = Convert.ToInt32(order.PartnerNo1);
+                                    partner2Id = Convert.ToInt32(order.PartnerNo2);
+                                    partner3Id = Convert.ToInt32(order.PartnerNo3);
                                 }
 
                                 #endregion
@@ -1228,13 +1250,13 @@ namespace TMS.DataGateway.Repositories
                                                         unLoadData.ConfirmArrive.StepHeaderDescription = "Arrive at AHM";
                                                         unLoadData.ConfirmArrive.StepHeaderDateTime = unLoadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
                                                     }
-                                                    else if (unLoadStatus.StatusCode == "6")
+                                                    else if (unLoadStatus.StatusCode == "9")
                                                     {
                                                         unLoadData.StartLoad.StepHeaderName = "START UNLOAD";
                                                         unLoadData.StartLoad.StepHeaderDescription = "Unload parts at AHM";
                                                         unLoadData.StartLoad.StepHeaderDateTime = unLoadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
                                                     }
-                                                    else if (unLoadStatus.StatusCode == "7")
+                                                    else if (unLoadStatus.StatusCode == "10")
                                                     {
                                                         unLoadData.FinishLoad.StepHeaderName = "FINISH UNLOAD";
                                                         unLoadData.FinishLoad.StepHeaderDescription = "Finish Unload parts at AHM";
@@ -1498,7 +1520,7 @@ namespace TMS.DataGateway.Repositories
                             {
                                 if (status.StatusCode == "11")
                                 {
-                                    orderTrackResponse.Data.AcceptOrder.StepHeaderDateTime = status.StatusDate.ToString("dd MMM yyyy HH:mm");
+                                    orderTrackResponse.Data.POD.StepHeaderDateTime = status.StatusDate.ToString("dd MMM yyyy HH:mm");
                                 }
                             }
                             #endregion
@@ -1508,7 +1530,7 @@ namespace TMS.DataGateway.Repositories
                             {
                                 if (status.StatusCode == "12")
                                 {
-                                    orderTrackResponse.Data.AcceptOrder.StepHeaderDateTime = status.StatusDate.ToString("dd MMM yyyy HH:mm");
+                                    orderTrackResponse.Data.Complete.StepHeaderDateTime = status.StatusDate.ToString("dd MMM yyyy HH:mm");
                                 }
                             }
                             #endregion
