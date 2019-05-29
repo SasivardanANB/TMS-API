@@ -20,5 +20,6 @@ namespace TMS.DomainGateway.Gateway.Interfaces
         IMasterTask MasterTask { get; }
         IGateTask GateTask { get; }
         ITripTask TripTask { get; }
+        IReportTask ReportTask { get; }
     }
 }

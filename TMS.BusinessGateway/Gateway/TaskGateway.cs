@@ -62,5 +62,9 @@ namespace TMS.BusinessGateway.Gateway
         {
             get { return new BusinessTripTask(new Trip()); }
         }
+        public IReportTask ReportTask
+        {
+            get { return new BusinessReportTask(new Report()); }
+        }
     }
 }
