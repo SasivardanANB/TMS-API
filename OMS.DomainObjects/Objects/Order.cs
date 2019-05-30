@@ -14,6 +14,7 @@ namespace OMS.DomainObjects.Objects
         [Required, MaxLength(5)]
         public string BusinessArea { get; set; }
         [Required]
+        [MaxLength(15)]
         public string OrderNo { get; set; }
         [Required]
         public int SequenceNo { get; set; }

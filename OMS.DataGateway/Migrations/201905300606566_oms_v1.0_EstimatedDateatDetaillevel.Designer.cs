@@ -7,13 +7,13 @@ namespace OMS.DataGateway.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.2.0-61023")]
-    public sealed partial class oms_v10_Issues : IMigrationMetadata
+    public sealed partial class oms_v10_EstimatedDateatDetaillevel : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(oms_v10_Issues));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(oms_v10_EstimatedDateatDetaillevel));
         
         string IMigrationMetadata.Id
         {
-            get { return "201905281216159_oms_v1.0_Issues"; }
+            get { return "201905300606566_oms_v1.0_EstimatedDateatDetaillevel"; }
         }
         
         string IMigrationMetadata.Source

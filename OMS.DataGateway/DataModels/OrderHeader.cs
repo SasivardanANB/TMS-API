@@ -19,7 +19,7 @@ namespace OMS.DataGateway.DataModels
         public BusinessArea BusinessArea { get; set; }
         [Index("OrderHeader_OrderNo", IsUnique = true)]
         [Required]
-        [MaxLength(20)]
+        [MaxLength(15)]
         public string OrderNo { get; set; }
         public string LegecyOrderNo { get; set; }
         public DateTime OrderDate { get; set; }
@@ -31,8 +31,7 @@ namespace OMS.DataGateway.DataModels
         public string VehicleNo { get; set; }
         public decimal OrderWeight { get; set; }
         public string OrderWeightUM { get; set; }
-        public DateTime EstimationShipmentDate { get; set; }
-        public DateTime ActualShipmentDate { get; set; }
+        
         //[ForeignKey("OrderStatus")]
         public int OrderStatusID { get; set; }
         //public OrderStatus OrderStatus { get; set; }

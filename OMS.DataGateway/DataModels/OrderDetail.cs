@@ -25,6 +25,8 @@ namespace OMS.DataGateway.DataModels
         public string Instruction { get; set; }
         public string ShippingListNo { get; set; }
         public int TotalCollie { get; set; }
+        public DateTime EstimationShipmentDate { get; set; }
+        public DateTime ActualShipmentDate { get; set; }
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public string CreatedBy
         {

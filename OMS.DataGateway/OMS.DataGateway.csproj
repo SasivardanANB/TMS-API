@@ -128,9 +128,9 @@
     <Compile Include="Migrations\201905280539574_oms_v1.0_PartnerPartnerType.Designer.cs">
       <DependentUpon>201905280539574_oms_v1.0_PartnerPartnerType.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201905281216159_oms_v1.0_Issues.cs" />
-    <Compile Include="Migrations\201905281216159_oms_v1.0_Issues.Designer.cs">
-      <DependentUpon>201905281216159_oms_v1.0_Issues.cs</DependentUpon>
+    <Compile Include="Migrations\201905300606566_oms_v1.0_EstimatedDateatDetaillevel.cs" />
+    <Compile Include="Migrations\201905300606566_oms_v1.0_EstimatedDateatDetaillevel.Designer.cs">
+      <DependentUpon>201905300606566_oms_v1.0_EstimatedDateatDetaillevel.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -171,8 +171,8 @@
     <EmbeddedResource Include="Migrations\201905280539574_oms_v1.0_PartnerPartnerType.resx">
       <DependentUpon>201905280539574_oms_v1.0_PartnerPartnerType.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201905281216159_oms_v1.0_Issues.resx">
-      <DependentUpon>201905281216159_oms_v1.0_Issues.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201905300606566_oms_v1.0_EstimatedDateatDetaillevel.resx">
+      <DependentUpon>201905300606566_oms_v1.0_EstimatedDateatDetaillevel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SeedData\applications.csv" />
     <EmbeddedResource Include="SeedData\Activities.csv" />
