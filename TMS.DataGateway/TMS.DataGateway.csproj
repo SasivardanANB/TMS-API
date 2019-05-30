@@ -95,14 +95,9 @@
   <ItemGroup>
     <Compile Include="DataModels\Activity.cs" />
     <Compile Include="DataModels\Application.cs" />
-    <Compile Include="DataModels\BillingTrip.cs" />
-    <Compile Include="DataModels\BillingTripDetail.cs" />
-    <Compile Include="DataModels\BillingTripPartnerDetail.cs" />
     <Compile Include="DataModels\BusinessArea.cs" />
-    <Compile Include="DataModels\CancellationReason.cs" />
     <Compile Include="DataModels\City.cs" />
     <Compile Include="DataModels\CompanyCode.cs" />
-    <Compile Include="DataModels\CompanyCodeNumberingRange.cs" />
     <Compile Include="DataModels\Driver.cs" />
     <Compile Include="DataModels\FieldLabelMenu.cs" />
     <Compile Include="DataModels\FleetType.cs" />
@@ -138,12 +133,6 @@
     <Compile Include="DataModels\TermsOfPayment.cs" />
     <Compile Include="DataModels\TMSDBContext.cs" />
     <Compile Include="DataModels\Token.cs" />
-    <Compile Include="DataModels\TripDetail.cs" />
-    <Compile Include="DataModels\TripHeader.cs" />
-    <Compile Include="DataModels\TripPartnerDetail.cs" />
-    <Compile Include="DataModels\TripStatus.cs" />
-    <Compile Include="DataModels\TripStatusHistory.cs" />
-    <Compile Include="DataModels\TripType.cs" />
     <Compile Include="DataModels\OrderTypeStatusWorkFlow.cs" />
     <Compile Include="DataModels\Partner.cs" />
     <Compile Include="DataModels\PartnerAddress.cs" />
@@ -286,9 +275,9 @@
     <Compile Include="Migrations\201905281129231_tms_v1.0_PrtnerPartnerType.Designer.cs">
       <DependentUpon>201905281129231_tms_v1.0_PrtnerPartnerType.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201905281257205_tms_v1.0_issues.cs" />
-    <Compile Include="Migrations\201905281257205_tms_v1.0_issues.Designer.cs">
-      <DependentUpon>201905281257205_tms_v1.0_issues.cs</DependentUpon>
+    <Compile Include="Migrations\201905300710493_tms_v1.0_DBCleanup.cs" />
+    <Compile Include="Migrations\201905300710493_tms_v1.0_DBCleanup.Designer.cs">
+      <DependentUpon>201905300710493_tms_v1.0_DBCleanup.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -417,8 +406,8 @@
     <EmbeddedResource Include="Migrations\201905281129231_tms_v1.0_PrtnerPartnerType.resx">
       <DependentUpon>201905281129231_tms_v1.0_PrtnerPartnerType.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201905281257205_tms_v1.0_issues.resx">
-      <DependentUpon>201905281257205_tms_v1.0_issues.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201905300710493_tms_v1.0_DBCleanup.resx">
+      <DependentUpon>201905300710493_tms_v1.0_DBCleanup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SeedData\Activities.csv" />
     <EmbeddedResource Include="SeedData\applications.csv" />

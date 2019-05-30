@@ -33,11 +33,9 @@ namespace TMS.DataGateway.DataModels
         public string VehicleNo { get; set; }
         public decimal OrderWeight { get; set; }
         public string OrderWeightUM { get; set; }
-        public DateTime EstimationShipmentDate { get; set; }
-        public DateTime ActualShipmentDate { get; set; }
+        
         //[ForeignKey("OrderStatus")]
         public int OrderStatusID { get; set; }
-        //public OrderStatus OrderStatus { get; set; }
         public bool IsActive { get; set; }
         public decimal Harga { get; set; }
         [ForeignKey("ImageGuid")]

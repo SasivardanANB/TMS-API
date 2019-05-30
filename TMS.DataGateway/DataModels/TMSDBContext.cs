@@ -21,7 +21,6 @@ namespace TMS.DataGateway.DataModels
         public virtual DbSet<CompanyCode> CompanyCodes { get; set; }
         public virtual DbSet<BusinessArea> BusinessAreas { get; set; }
         public virtual DbSet<NumberingRange> NumberingRanges { get; set; }
-        public virtual DbSet<CompanyCodeNumberingRange> CompanyCodeNumberingRanges { get; set; }
         public virtual DbSet<PartnerRole> PartnerRoles { get; set; }
         public virtual DbSet<OrderPointType> OrderPointTypes { get; set; }
         public virtual DbSet<Partner> Partners { get; set; }
@@ -37,18 +36,8 @@ namespace TMS.DataGateway.DataModels
         public virtual DbSet<OrderStatusHistory> OrderStatusHistories { get; set; }
         public virtual DbSet<OrderTypeStatusWorkFlow> OrderTypeStatusWorkFlows { get; set; }
         public virtual DbSet<OrderHeaderHSOAdditionalData> OrderHeaderHSOAdditionalDatas { get; set; }
-        public virtual DbSet<TripHeader> TripHeaders { get; set; }
-        public virtual DbSet<TripDetail> TripDetails { get; set; }
-        public virtual DbSet<TripPartnerDetail> TripPartnerDetails { get; set; }
-        public virtual DbSet<TripStatus> TripStatuses { get; set; }
-        public virtual DbSet<TripStatusHistory> TripStatusHistories { get; set; }
         public virtual DbSet<OrderTripStatusWorkFlow> OrderTripStatusWorkFlows { get; set; }
-        public virtual DbSet<TripType> TripTypes { get; set; }
-        public virtual DbSet<BillingTrip> BillingTrips { get; set; }
-        public virtual DbSet<BillingTripDetail> BillingTripDetails { get; set; }
-        public virtual DbSet<BillingTripPartnerDetail> BillingTripPartnerDetails { get; set; }
         public virtual DbSet<TermsOfPayment> TermsOfPayments { get; set; }
-        public virtual DbSet<CancellationReason> CancellationReasons { get; set; }
         public virtual DbSet<Driver> Drivers { get; set; }
         public virtual DbSet<Application> Applications { get; set; }
         public virtual DbSet<MenuActivity> MenuActivities { get; set; }

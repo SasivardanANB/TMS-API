@@ -117,6 +117,7 @@ namespace TMS.DataGateway.Repositories
                                 int driverId = Convert.ToInt32(order.DriverNo);
                                 order.DriverNo = context.Drivers.FirstOrDefault(t => t.ID == driverId).DriverNo;
                                 order.DriverName = context.Drivers.FirstOrDefault(t => t.ID == driverId).UserName;
+                                order.OrderNo = GetOrderNumber(businessAreaId, businessAreaCode, "TMS", DateTime.Now.Year);
                             }
 
                             int orderDetailId = 0;
@@ -133,8 +134,6 @@ namespace TMS.DataGateway.Repositories
                                 updatedOrderHeader.VehicleNo = order.VehicleNo;
                                 updatedOrderHeader.OrderWeight = order.OrderWeight;
                                 updatedOrderHeader.OrderWeightUM = order.OrderWeightUM;
-                                updatedOrderHeader.EstimationShipmentDate = estimationShipmentDate;
-                                updatedOrderHeader.ActualShipmentDate = actualShipmentDate;
                                 updatedOrderHeader.IsActive = true;
                                 updatedOrderHeader.LastModifiedBy = request.LastModifiedBy;
                                 updatedOrderHeader.LastModifiedTime = DateTime.Now;
@@ -197,6 +196,8 @@ namespace TMS.DataGateway.Repositories
                                     existingOrderDetail.TotalCollie = order.TotalCollie;
                                     existingOrderDetail.LastModifiedBy = order.OrderLastModifiedBy;
                                     existingOrderDetail.LastModifiedTime = DateTime.Now;
+                                    existingOrderDetail.EstimationShipmentDate = estimationShipmentDate;
+                                    existingOrderDetail.ActualShipmentDate = actualShipmentDate;
 
                                     context.Entry(existingOrderDetail).State = System.Data.Entity.EntityState.Modified;
                                     context.SaveChanges();
@@ -491,7 +492,7 @@ namespace TMS.DataGateway.Repositories
                                 Data.OrderHeader orderHeader = new Data.OrderHeader()
                                 {
                                     LegecyOrderNo = order.OrderNo,
-                                    OrderNo = GetOrderNumber(businessAreaId, businessAreaCode, "TMS", DateTime.Now.Year),
+                                    OrderNo = order.OrderNo,
                                     OrderType = order.OrderType,
                                     FleetTypeID = order.FleetType,
                                     VehicleShipment = order.VehicleShipmentType,
@@ -500,8 +501,6 @@ namespace TMS.DataGateway.Repositories
                                     VehicleNo = order.VehicleNo,
                                     OrderWeight = order.OrderWeight,
                                     OrderWeightUM = order.OrderWeightUM,
-                                    EstimationShipmentDate = estimationShipmentDate,
-                                    ActualShipmentDate = actualShipmentDate,
                                     BusinessAreaId = businessAreaId,
                                     IsActive = true,
                                     OrderDate = DateTime.Now,
@@ -530,6 +529,8 @@ namespace TMS.DataGateway.Repositories
                                     Instruction = order.Instructions,
                                     ShippingListNo = order.ShippingListNo,
                                     TotalCollie = order.TotalCollie,
+                                    EstimationShipmentDate = estimationShipmentDate,
+                                    ActualShipmentDate = actualShipmentDate,
                                     CreatedBy = request.CreatedBy,
                                     CreatedTime = DateTime.Now,
                                     LastModifiedBy = "",
@@ -1855,12 +1856,10 @@ namespace TMS.DataGateway.Repositories
                                      {
                                          ID = oH.ID,
                                          //ActualShipment = oH.ActualShipmentDate,
-                                         ActualShipmentDate = oH.ActualShipmentDate.ToString(),
                                          BusinessArea = oH.BusinessArea.BusinessAreaDescription,
                                          BusinessAreaId = oH.BusinessAreaId,
                                          DriverName = oH.DriverName,
                                          DriverNo = oH.DriverNo,
-                                         EstimationShipmentDate = oH.EstimationShipmentDate.ToString(),
                                          FleetType = oH.FleetType.ID,
                                          Harga = oH.Harga,
                                          IsActive = oH.IsActive,
@@ -1893,8 +1892,8 @@ namespace TMS.DataGateway.Repositories
                                                     CityName = orderPartnerDetails.Partner.PostalCode.SubDistrict.City.CityDescription,
                                                     ProvinceName = orderPartnerDetails.Partner.PostalCode.SubDistrict.City.Province.ProvinceDescription,
                                                     SubDistrictName = orderPartnerDetails.Partner.PostalCode.SubDistrict.SubdistrictName,
-                                                    ActualShipmentDate = orderData.ActualShipmentDate,
-                                                    EstimationShipmentDate = orderData.EstimationShipmentDate,
+                                                    ActualShipmentDate = orderDetailsData.ActualShipmentDate.ToString(),
+                                                    EstimationShipmentDate = orderDetailsData.EstimationShipmentDate.ToString(),
                                                     PartnerCode = orderPartnerDetails.Partner.PartnerNo,
                                                     PartnerId = orderPartnerDetails.PartnerID,
                                                     PartnerName = orderPartnerDetails.Partner.PartnerName,
@@ -1971,7 +1970,6 @@ namespace TMS.DataGateway.Repositories
                                 orderDetailsResponse.SourceOrDestinations = stopPoints;
                             }
                         }
-                        //orderResponse.NumberOfRecords = delearData.Count;
                         orderDetailsResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         orderDetailsResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
                         orderDetailsResponse.StatusCode = (int)HttpStatusCode.OK;

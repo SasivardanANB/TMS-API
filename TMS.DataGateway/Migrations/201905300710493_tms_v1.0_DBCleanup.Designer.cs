@@ -7,13 +7,13 @@ namespace TMS.DataGateway.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.2.0-61023")]
-    public sealed partial class tms_v10_issues : IMigrationMetadata
+    public sealed partial class tms_v10_DBCleanup : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(tms_v10_issues));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(tms_v10_DBCleanup));
         
         string IMigrationMetadata.Id
         {
-            get { return "201905281257205_tms_v1.0_issues"; }
+            get { return "201905300710493_tms_v1.0_DBCleanup"; }
         }
         
         string IMigrationMetadata.Source
