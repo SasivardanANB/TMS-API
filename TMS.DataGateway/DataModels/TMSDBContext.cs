@@ -20,24 +20,16 @@ namespace TMS.DataGateway.DataModels
         public virtual DbSet<Activity> Activities { get; set; }
         public virtual DbSet<CompanyCode> CompanyCodes { get; set; }
         public virtual DbSet<BusinessArea> BusinessAreas { get; set; }
-        public virtual DbSet<NumberingRange> NumberingRanges { get; set; }
-        public virtual DbSet<PartnerRole> PartnerRoles { get; set; }
         public virtual DbSet<OrderPointType> OrderPointTypes { get; set; }
         public virtual DbSet<Partner> Partners { get; set; }
         public virtual DbSet<PartnerPIC> PartnerPICs { get; set; }
         public virtual DbSet<PartnerType> PartnerTypes { get; set; }
         public virtual DbSet<PartnerAddress> PartnerAddresses { get; set; }
-        public virtual DbSet<PartnerTypeFunction> PartnerTypeFunctions { get; set; }
         public virtual DbSet<OrderHeader> OrderHeaders { get; set; }
         public virtual DbSet<OrderDetail> OrderDetails { get; set; }
         public virtual DbSet<OrderPartnerDetail> OrderPartnerDetails { get; set; }
-        public virtual DbSet<MappingOrderPartner> MappingOrderPartners { get; set; }
         public virtual DbSet<VehicleType> VehicleTypes { get; set; }
         public virtual DbSet<OrderStatusHistory> OrderStatusHistories { get; set; }
-        public virtual DbSet<OrderTypeStatusWorkFlow> OrderTypeStatusWorkFlows { get; set; }
-        public virtual DbSet<OrderHeaderHSOAdditionalData> OrderHeaderHSOAdditionalDatas { get; set; }
-        public virtual DbSet<OrderTripStatusWorkFlow> OrderTripStatusWorkFlows { get; set; }
-        public virtual DbSet<TermsOfPayment> TermsOfPayments { get; set; }
         public virtual DbSet<Driver> Drivers { get; set; }
         public virtual DbSet<Application> Applications { get; set; }
         public virtual DbSet<MenuActivity> MenuActivities { get; set; }

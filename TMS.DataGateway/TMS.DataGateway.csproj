@@ -105,11 +105,7 @@
     <Compile Include="DataModels\G2G.cs" />
     <Compile Include="DataModels\Menu.cs" />
     <Compile Include="DataModels\MenuActivity.cs" />
-    <Compile Include="DataModels\NumberingRange.cs" />
-    <Compile Include="DataModels\OrderHeaderHSOAdditionalData.cs" />
     <Compile Include="DataModels\OrderStatus.cs" />
-    <Compile Include="DataModels\OrderTripStatusWorkFlow.cs" />
-    <Compile Include="DataModels\MappingOrderPartner.cs" />
     <Compile Include="DataModels\OrderDetail.cs" />
     <Compile Include="DataModels\OrderHeader.cs" />
     <Compile Include="DataModels\OrderPartnerDetail.cs" />
@@ -118,7 +114,6 @@
     <Compile Include="DataModels\OrderType.cs" />
     <Compile Include="DataModels\PackingSheet.cs" />
     <Compile Include="DataModels\PartnerPartnerType.cs" />
-    <Compile Include="DataModels\PartnerRole.cs" />
     <Compile Include="DataModels\ImageGuid.cs" />
     <Compile Include="DataModels\PIC.cs" />
     <Compile Include="DataModels\Pool.cs" />
@@ -130,15 +125,12 @@
     <Compile Include="DataModels\RoleMenuActivity.cs" />
     <Compile Include="DataModels\ShipmentSAP.cs" />
     <Compile Include="DataModels\SubDistrict.cs" />
-    <Compile Include="DataModels\TermsOfPayment.cs" />
     <Compile Include="DataModels\TMSDBContext.cs" />
     <Compile Include="DataModels\Token.cs" />
-    <Compile Include="DataModels\OrderTypeStatusWorkFlow.cs" />
     <Compile Include="DataModels\Partner.cs" />
     <Compile Include="DataModels\PartnerAddress.cs" />
     <Compile Include="DataModels\PartnerPIC.cs" />
     <Compile Include="DataModels\PartnerType.cs" />
-    <Compile Include="DataModels\PartnerTypeFunction.cs" />
     <Compile Include="DataModels\PIC%28SAMA%29.cs" />
     <Compile Include="DataModels\User.cs" />
     <Compile Include="DataModels\UserApplication.cs" />
@@ -279,6 +271,14 @@
     <Compile Include="Migrations\201905300710493_tms_v1.0_DBCleanup.Designer.cs">
       <DependentUpon>201905300710493_tms_v1.0_DBCleanup.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201905300756389_tmsv1.0_OrderHeaderOrderNo15Char.cs" />
+    <Compile Include="Migrations\201905300756389_tmsv1.0_OrderHeaderOrderNo15Char.Designer.cs">
+      <DependentUpon>201905300756389_tmsv1.0_OrderHeaderOrderNo15Char.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201905300801073_tmsv1.0_Unusedtablecleaned.cs" />
+    <Compile Include="Migrations\201905300801073_tmsv1.0_Unusedtablecleaned.Designer.cs">
+      <DependentUpon>201905300801073_tmsv1.0_Unusedtablecleaned.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\Authenticate.cs" />
@@ -408,6 +408,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201905300710493_tms_v1.0_DBCleanup.resx">
       <DependentUpon>201905300710493_tms_v1.0_DBCleanup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905300756389_tmsv1.0_OrderHeaderOrderNo15Char.resx">
+      <DependentUpon>201905300756389_tmsv1.0_OrderHeaderOrderNo15Char.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905300801073_tmsv1.0_Unusedtablecleaned.resx">
+      <DependentUpon>201905300801073_tmsv1.0_Unusedtablecleaned.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SeedData\Activities.csv" />
     <EmbeddedResource Include="SeedData\applications.csv" />

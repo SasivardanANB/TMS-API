@@ -19,7 +19,7 @@ namespace TMS.DataGateway.DataModels
         public BusinessArea BusinessArea { get; set; }
         [Index("OrderHeader_OrderNo", IsUnique = true)]
         [Required]
-        [MaxLength(20)]
+        [MaxLength(15)]
         public string OrderNo { get; set; }
         public string LegecyOrderNo { get; set; }
         public DateTime OrderDate { get; set; }
