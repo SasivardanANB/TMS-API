@@ -80,29 +80,32 @@ namespace TMS.API.Controllers
             IDriverTask driverTask = DependencyResolver.GetImplementationOf<ITaskGateway>().DriverTask;
             DriverResponse driverResponse = driverTask.CreateUpdateDriver(driverRequest);
 
-            #region Create Driver in DMS
-
-            LoginRequest loginRequest = new LoginRequest();
-            string token = "";
-
-            //Login to DMS and get Token
-            loginRequest.UserName = ConfigurationManager.AppSettings["DMSLogin"];
-            loginRequest.UserPassword = ConfigurationManager.AppSettings["DMSPassword"];
-            var dmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
-                + "/v1/user/login", Method.POST, loginRequest, null));
-            if (dmsLoginResponse != null && dmsLoginResponse.Data.Count > 0)
+            if (driverResponse != null && driverResponse.StatusCode == (int)HttpStatusCode.OK && driverResponse.StatusMessage == DomainObjects.Resource.ResourceData.DriversCreated)
             {
-                token = dmsLoginResponse.TokenKey;
-            }
+                #region Create Driver in DMS
 
-            var userResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
-                + "/v1/user/createupdateuser", Method.POST, dmsRequest, token));
-            if (userResponse != null)
-            {
-                driverResponse.StatusMessage = driverResponse.StatusMessage + ". " + userResponse.StatusMessage;
-            }
+                LoginRequest loginRequest = new LoginRequest();
+                string token = "";
 
-            #endregion
+                //Login to DMS and get Token
+                loginRequest.UserName = ConfigurationManager.AppSettings["DMSLogin"];
+                loginRequest.UserPassword = ConfigurationManager.AppSettings["DMSPassword"];
+                var dmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
+                    + "/v1/user/login", Method.POST, loginRequest, null));
+                if (dmsLoginResponse != null && dmsLoginResponse.Data.Count > 0)
+                {
+                    token = dmsLoginResponse.TokenKey;
+                }
+
+                var userResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
+                    + "/v1/user/createupdateuser", Method.POST, dmsRequest, token));
+                if (userResponse != null)
+                {
+                    driverResponse.StatusMessage = driverResponse.StatusMessage + ". " + userResponse.StatusMessage;
+                }
+
+                #endregion
+            }
 
             return Ok(driverResponse);
         }

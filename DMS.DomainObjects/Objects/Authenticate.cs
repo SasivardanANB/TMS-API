@@ -13,6 +13,6 @@ namespace DMS.DomainObjects.Objects
         public DateTime IssuedOn { get; set; }
         public DateTime ExpiresOn { get; set; }
         public DateTime CreatedOn { get; set; }
-        public int UserID { get; set; }
+        public int DriverId { get; set; }
     }
 }

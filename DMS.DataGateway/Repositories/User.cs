@@ -68,7 +68,7 @@ namespace DMS.DataGateway.Repositories
                                 CreatedOn = DateTime.Now,
                                 IssuedOn = DateTime.Now,
                                 ExpiresOn = DateTime.Now.AddMinutes(Convert.ToDouble(ConfigurationManager.AppSettings["TokenExpiry"])),
-                                UserID = userData.ID
+                                DriverId = userData.ID
                             });
 
                             //Get Token and add to response
@@ -77,7 +77,7 @@ namespace DMS.DataGateway.Repositories
                                              && tokens.DriverId == userData.ID
                                              select new Domain.Authenticate()
                                              {
-                                                 UserID = tokens.DriverId,
+                                                 DriverId = tokens.DriverId,
                                                  TokenKey = tokens.TokenKey,
                                                  CreatedOn = tokens.CreatedOn,
                                                  IssuedOn = tokens.IssuedOn,
