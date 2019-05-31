@@ -34,7 +34,7 @@ namespace DMS.DataGateway.Repositories
                 using (var context = new DMSDBContext())
                 {
                     string encryptedPassword = Encryption.EncryptionLibrary.EncryptPassword(login.UserPassword);
-                    var userData = (from user in context.Users
+                    var userData = (from user in context.Drivers
                                     where user.UserName == login.UserName
                                     && user.Password == encryptedPassword
                                     select new Domain.User()
@@ -74,10 +74,10 @@ namespace DMS.DataGateway.Repositories
                             //Get Token and add to response
                             var tokenData = (from tokens in context.TokenManagers
                                              where tokens.TokenKey == token
-                                             && tokens.UserID == userData.ID
+                                             && tokens.DriverId == userData.ID
                                              select new Domain.Authenticate()
                                              {
-                                                 UserID = tokens.UserID,
+                                                 UserID = tokens.DriverId,
                                                  TokenKey = tokens.TokenKey,
                                                  CreatedOn = tokens.CreatedOn,
                                                  IssuedOn = tokens.IssuedOn,
@@ -121,11 +121,11 @@ namespace DMS.DataGateway.Repositories
                 {
                     var config = new MapperConfiguration(cfg =>
                     {
-                        cfg.CreateMap<Domain.User, DataModel.User>().ReverseMap();
+                        cfg.CreateMap<Domain.User, DataModel.Driver>().ReverseMap();
                     });
 
                     IMapper mapper = config.CreateMapper();
-                    var users = mapper.Map<List<Domain.User>, List<DataModel.User>>(user.Requests);
+                    var users = mapper.Map<List<Domain.User>, List<DataModel.Driver>>(user.Requests);
 
                     //Encrypt Password
                     foreach (var userData in users)
@@ -137,7 +137,7 @@ namespace DMS.DataGateway.Repositories
 
                         if (userData.ID > 0) //Update User
                         {
-                            var existingUserData = context.Users.FirstOrDefault(t => t.ID == userData.ID);
+                            var existingUserData = context.Drivers.FirstOrDefault(t => t.ID == userData.ID);
                             existingUserData.FirstName = userData.FirstName;
                             existingUserData.LastName = userData.LastName;
                             existingUserData.Email = userData.Email;
@@ -151,13 +151,13 @@ namespace DMS.DataGateway.Repositories
                         }
                         else //Create User
                         {
-                            context.Users.Add(userData);
+                            context.Drivers.Add(userData);
                             context.SaveChanges();
                             userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UsersCreated;
                         }
                     }
 
-                    user.Requests = mapper.Map<List<DataModel.User>, List<Domain.User>>(users);
+                    user.Requests = mapper.Map<List<DataModel.Driver>, List<Domain.User>>(users);
                     userResponse.Data = user.Requests;
                     userResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     userResponse.StatusCode = (int)HttpStatusCode.OK;
@@ -181,7 +181,7 @@ namespace DMS.DataGateway.Repositories
             {
                 using (var context = new DMSDBContext())
                 {
-                    var userDetails = context.Users.Where(u => u.ID == changePasswordRequest.Id).FirstOrDefault();
+                    var userDetails = context.Drivers.Where(u => u.ID == changePasswordRequest.Id).FirstOrDefault();
                     if (userDetails != null)
                     {
                         if (type == "changepassword")
@@ -253,7 +253,7 @@ namespace DMS.DataGateway.Repositories
             {
                 using (var context = new DMSDBContext())
                 {
-                    var userDetails = context.Users.Where(u => u.Email == forgotPasswordRequest.Email).FirstOrDefault();
+                    var userDetails = context.Drivers.Where(u => u.Email == forgotPasswordRequest.Email).FirstOrDefault();
                     if(userDetails !=null)
                     {
                         MailMessage mail = new MailMessage();
@@ -305,7 +305,7 @@ namespace DMS.DataGateway.Repositories
             {
                 using (var context = new DMSDBContext())
                 {
-                    var userDetails = context.Users.Where(i => i.ID == userID && i.IsActive).Select(user=>new Domain.User {
+                    var userDetails = context.Drivers.Where(i => i.ID == userID && i.IsActive).Select(user=>new Domain.User {
                         ID=user.ID,
                         UserName=user.UserName,
                         FirstName=user.FirstName,

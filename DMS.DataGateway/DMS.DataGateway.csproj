@@ -68,55 +68,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataModels\BusinessArea.cs" />
     <Compile Include="DataModels\City.cs" />
     <Compile Include="DataModels\DMSDBContext.cs" />
-    <Compile Include="DataModels\TripGuid.cs" />
-    <Compile Include="DataModels\ImageGuid.cs" />
-    <Compile Include="DataModels\POD.cs" />
-    <Compile Include="DataModels\Location.cs" />
+    <Compile Include="DataModels\ImageType.cs" />
+    <Compile Include="DataModels\PartnerPartnerType.cs" />
+    <Compile Include="DataModels\PartnerType.cs" />
+    <Compile Include="DataModels\ImageGuId.cs" />
+    <Compile Include="DataModels\Partner.cs" />
     <Compile Include="DataModels\PostalCode.cs" />
     <Compile Include="DataModels\Province.cs" />
     <Compile Include="DataModels\ShipmentListDetails.cs" />
     <Compile Include="DataModels\StopPointImages.cs" />
-    <Compile Include="DataModels\StopPoints.cs" />
+    <Compile Include="DataModels\TripDetail.cs" />
     <Compile Include="DataModels\SubDistrict.cs" />
     <Compile Include="DataModels\TokenManager.cs" />
-    <Compile Include="DataModels\TripDetails.cs" />
+    <Compile Include="DataModels\TripHeader.cs" />
     <Compile Include="DataModels\TripStatus.cs" />
-    <Compile Include="DataModels\TripStatusEventLog.cs" />
-    <Compile Include="DataModels\User.cs" />
+    <Compile Include="DataModels\TripStatusHistory.cs" />
+    <Compile Include="DataModels\Driver.cs" />
     <Compile Include="Encryption\EncryptionLibrary.cs" />
-    <Compile Include="Migrations\201904261052310_DMS_V1.0.cs" />
-    <Compile Include="Migrations\201904261052310_DMS_V1.0.Designer.cs">
-      <DependentUpon>201904261052310_DMS_V1.0.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201905100633323_ImageGuidAdded.cs" />
-    <Compile Include="Migrations\201905100633323_ImageGuidAdded.Designer.cs">
-      <DependentUpon>201905100633323_ImageGuidAdded.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201905150516509_TripStatusColumnAdded.cs" />
-    <Compile Include="Migrations\201905150516509_TripStatusColumnAdded.Designer.cs">
-      <DependentUpon>201905150516509_TripStatusColumnAdded.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201905211234440_dms_v1.0_OrderType.cs" />
-    <Compile Include="Migrations\201905211234440_dms_v1.0_OrderType.Designer.cs">
-      <DependentUpon>201905211234440_dms_v1.0_OrderType.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201905230502039_dms_v1.0_TripStatusCode.cs" />
-    <Compile Include="Migrations\201905230502039_dms_v1.0_TripStatusCode.Designer.cs">
-      <DependentUpon>201905230502039_dms_v1.0_TripStatusCode.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201905230906333_dms_v1.0_TripDate.cs" />
-    <Compile Include="Migrations\201905230906333_dms_v1.0_TripDate.Designer.cs">
-      <DependentUpon>201905230906333_dms_v1.0_TripDate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201905231103179_UserNameUniqueFieldDisable.cs" />
-    <Compile Include="Migrations\201905231103179_UserNameUniqueFieldDisable.Designer.cs">
-      <DependentUpon>201905231103179_UserNameUniqueFieldDisable.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201905250936082_dms_v1.0_ChangesIssue.cs" />
-    <Compile Include="Migrations\201905250936082_dms_v1.0_ChangesIssue.Designer.cs">
-      <DependentUpon>201905250936082_dms_v1.0_ChangesIssue.cs</DependentUpon>
+    <Compile Include="Migrations\201905310552000_dms_v1.0_DatabaseRestructuring.cs" />
+    <Compile Include="Migrations\201905310552000_dms_v1.0_DatabaseRestructuring.Designer.cs">
+      <DependentUpon>201905310552000_dms_v1.0_DatabaseRestructuring.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -130,34 +104,14 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-    <EmbeddedResource Include="Migrations\201904261052310_DMS_V1.0.resx">
-      <DependentUpon>201904261052310_DMS_V1.0.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201905100633323_ImageGuidAdded.resx">
-      <DependentUpon>201905100633323_ImageGuidAdded.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201905150516509_TripStatusColumnAdded.resx">
-      <DependentUpon>201905150516509_TripStatusColumnAdded.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201905211234440_dms_v1.0_OrderType.resx">
-      <DependentUpon>201905211234440_dms_v1.0_OrderType.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201905230502039_dms_v1.0_TripStatusCode.resx">
-      <DependentUpon>201905230502039_dms_v1.0_TripStatusCode.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201905230906333_dms_v1.0_TripDate.resx">
-      <DependentUpon>201905230906333_dms_v1.0_TripDate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201905231103179_UserNameUniqueFieldDisable.resx">
-      <DependentUpon>201905231103179_UserNameUniqueFieldDisable.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201905250936082_dms_v1.0_ChangesIssue.resx">
-      <DependentUpon>201905250936082_dms_v1.0_ChangesIssue.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201905310552000_dms_v1.0_DatabaseRestructuring.resx">
+      <DependentUpon>201905310552000_dms_v1.0_DatabaseRestructuring.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SeedData\Cities.csv" />
     <EmbeddedResource Include="SeedData\PostalCodes.csv" />
     <EmbeddedResource Include="SeedData\Provinces.csv" />
     <EmbeddedResource Include="SeedData\SubDistricts.csv" />
+    <EmbeddedResource Include="SeedData\ImageTypes.csv" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DMS.DomainObjects\DMS.DomainObjects.csproj">

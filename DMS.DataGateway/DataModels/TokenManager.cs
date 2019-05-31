@@ -19,9 +19,9 @@ namespace DMS.DataGateway.DataModels
         public DateTime IssuedOn { get; set; }
         public DateTime ExpiresOn { get; set; }
         public DateTime CreatedOn { get; set; }
-        [ForeignKey("User")]
-        public int UserID { get; set; }
+        [ForeignKey("Driver")]
+        public int DriverId { get; set; }
 
-        public User User { get; set; }
+        public Driver Driver { get; set; }
     }
 }

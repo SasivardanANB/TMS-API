@@ -7,18 +7,18 @@ namespace DMS.DataGateway.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.2.0-61023")]
-    public sealed partial class dms_v10_ChangesIssue : IMigrationMetadata
+    public sealed partial class dms_v10_DatabaseRestructuring : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(dms_v10_ChangesIssue));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(dms_v10_DatabaseRestructuring));
         
         string IMigrationMetadata.Id
         {
-            get { return "201905250936082_dms_v1.0_ChangesIssue"; }
+            get { return "201905310552000_dms_v1.0_DatabaseRestructuring"; }
         }
         
         string IMigrationMetadata.Source
         {
-            get { return Resources.GetString("Source"); }
+            get { return null; }
         }
         
         string IMigrationMetadata.Target

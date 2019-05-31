@@ -8,12 +8,15 @@ using System.Threading.Tasks;
 
 namespace DMS.DataGateway.DataModels
 {
-    [Table("User", Schema = "DMS")]
-    public class User
+    [Table("Driver", Schema = "DMS")]
+    public class Driver
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
+        [Index("Driver_DriverNo", IsUnique = true)]
+        [MaxLength(12)]
+        public string DriverNo { get; set; }
         [Required(ErrorMessage = "")]
         [MaxLength(50)]
         public string UserName { get; set; }
@@ -24,6 +27,13 @@ namespace DMS.DataGateway.DataModels
         public string LastName { get; set; }
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
+        [MaxLength(50)]
+        public string PICName { get; set; }
+
+        [MaxLength(15)]
+        public string PICPhone { get; set; }
+        [MaxLength(50)]
+        public string PICEmail { get; set; }
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime CreatedTime
         {

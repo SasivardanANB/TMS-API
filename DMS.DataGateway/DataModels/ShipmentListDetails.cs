@@ -17,9 +17,9 @@ namespace DMS.DataGateway.DataModels
         public int NumberOfBoxes { get; set; }
         public string Note { get; set; }
         public string PackingSheetNumber { get; set; }
-        [ForeignKey("StopPoints")]
+        [ForeignKey("TripDetail")]
         public int StopPointId { get; set; }
 
-        public StopPoints StopPoints { get; set; }
+        public TripDetail TripDetail { get; set; }
     }
 }

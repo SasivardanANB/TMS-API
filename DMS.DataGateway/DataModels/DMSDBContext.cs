@@ -10,21 +10,24 @@ namespace DMS.DataGateway.DataModels
     public class DMSDBContext : DbContext
     {
         public DMSDBContext() : base("DMSDBConn") { }
+        public virtual DbSet<BusinessArea> BusinessAreas { get; set; }
         public virtual DbSet<City> Cities { get; set; }
-        public virtual DbSet<Location> Locations { get; set; }
+        public virtual DbSet<ImageGuId> ImageGuids { get; set; }
+        public virtual DbSet<Partner> Partners { get; set; }
+        public virtual DbSet<PartnerPartnerType> PartnerPartnerTypes { get; set; }
+        public virtual DbSet<PartnerType> PartnerTypes { get; set; }
         public virtual DbSet<PostalCode> PostalCodes { get; set; }
         public virtual DbSet<Province> Provinces { get; set; }
         public virtual DbSet<ShipmentListDetails> ShipmentListDetails { get; set; }
         public virtual DbSet<StopPointImages> StopPointImages { get; set; }
-        public virtual DbSet<StopPoints> StopPoints { get; set; }
         public virtual DbSet<SubDistrict> SubDistricts { get; set; }
         public virtual DbSet<TokenManager> TokenManagers { get; set; }
-        public virtual DbSet<TripDetails> TripDetails { get; set; }
+        public virtual DbSet<TripDetail> TripDetails { get; set; }
+        public virtual DbSet<TripHeader> TripHeaders { get; set; }
         public virtual DbSet<TripStatus> TripStatuses { get; set; }
-        public virtual DbSet<TripStatusEventLog> TripStatusEventLogs { get; set; }
-        public virtual DbSet<User> Users { get; set; }
-        public virtual DbSet<ImageGuid> ImageGuids { get; set; }
-        public virtual DbSet<TripGuid> TripGuids { get; set; }
-        public virtual DbSet<Pod> Pods { get; set; }
+        public virtual DbSet<TripStatusHistory> TripStatusHistories { get; set; }
+        public virtual DbSet<Driver> Drivers { get; set; }
+        public virtual DbSet<ImageType> ImageTypes { get; set; }
+
     }
 }

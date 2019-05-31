@@ -78,7 +78,7 @@ namespace DMS.DataGateway.Repositories
                 using (var context = new DMSDBContext())
                 {
                     // Validating Time
-                    var ExpiresOn = context.TokenManagers.Where(t => t.TokenKey == token && t.UserID == userId).Select(t=>t.ExpiresOn).FirstOrDefault();
+                    var ExpiresOn = context.TokenManagers.Where(t => t.TokenKey == token && t.DriverId == userId).Select(t=>t.ExpiresOn).FirstOrDefault();
                     if (ExpiresOn != null)
                     {
                         if ((DateTime.Now > ExpiresOn))

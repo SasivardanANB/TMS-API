@@ -20,7 +20,67 @@ namespace DMS.DataGateway.Repositories
 {
     public class Trip : ITrip
     {
+        #region Private variables and Methods
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private string GetTripNumber(string businessAreaCode)
+        {
+            string tripNo = businessAreaCode.ToUpper() + "TRIP";
+            using (var context = new DMSDBContext())
+            {
+                int businessAreaId = context.BusinessAreas.FirstOrDefault(t => t.BusinessAreaCode == businessAreaCode).ID;
+                var trip = context.TripHeaders.Where(t => t.BusinessAreaId == businessAreaId).OrderByDescending(t => t.ID).FirstOrDefault();
+                if (trip != null)
+                {
+                    int lastOrderYear = trip.TripDate.Year;
+                    if (DateTime.Now.Year != lastOrderYear)
+                    {
+                        tripNo += "000000000001";
+                    }
+                    else
+                    {
+                        string tripSequnceString = trip.TripNumber.Substring(trip.TripNumber.Length - 11);
+                        int tripSequnceNumber = Convert.ToInt32(tripSequnceString) + 1;
+
+                        tripNo += tripSequnceNumber.ToString().PadLeft(11, '0');
+                    }
+                }
+                else
+                {
+                    tripNo += "000000000001";
+                }
+            }
+            return tripNo;
+        }
+        private int GetLatestStopPointStatus(int stopPointId)
+        {
+            int lastStatus = 0;
+            using (var context = new DataModel.DMSDBContext())
+            {
+                var stopPointStatusHistories = context.TripStatusHistories.Where(t => t.StopPointId == stopPointId).OrderByDescending(t => t.StatusDate);
+                if (stopPointStatusHistories != null)
+                {
+                    int statusId = stopPointStatusHistories.FirstOrDefault().TripStatusId;
+                    lastStatus = Convert.ToInt32(context.TripStatuses.FirstOrDefault(t => t.ID == statusId).StatusCode);
+                }
+            }
+            return lastStatus;
+        }
+        private int GetImageTypeId(int imageTypeCode)
+        {
+            int imageTypeId = 0;
+
+            using (var context = new DataModel.DMSDBContext())
+            {
+                var imageType = context.ImageTypes.FirstOrDefault(t => t.ImageTypeCode == imageTypeCode);
+                if (imageType != null)
+                {
+                    imageTypeId = imageType.ID;
+                }
+            }
+            return imageTypeId;
+        }
+        #endregion
+
         public TripResponse CreateUpdateTrip(TripRequest request)
         {
             TripResponse response = new TripResponse();
@@ -35,7 +95,7 @@ namespace DMS.DataGateway.Repositories
                             int userId = 0;
                             int statusId = 0;
                             #region Check if Driver Exists
-                            var driver = context.Users.FirstOrDefault(t => t.UserName == trip.DriverName);
+                            var driver = context.Drivers.FirstOrDefault(t => t.DriverNo == trip.DriverName);
                             if (driver != null)
                                 userId = driver.ID;
                             else
@@ -62,39 +122,139 @@ namespace DMS.DataGateway.Repositories
                             }
                             #endregion
 
-                            #region Create/Update Trip
-                            int tripId = 0;
-                            #region Check if OrderNumber already exists
-
-                            var existingTrip = context.TripDetails.FirstOrDefault(t => t.OrderNumber == trip.OrderNumber);
-
+                            #region Check if Business Area Exists
+                            int businessAreaId = 0;
+                            var businessArea = context.BusinessAreas.FirstOrDefault(t => t.BusinessAreaCode == trip.BusinessAreaCode);
+                            if (businessArea != null)
+                                businessAreaId = businessArea.ID;
+                            else
+                            {
+                                transaction.Rollback();
+                                response.Status = DomainObjects.Resource.ResourceData.Failure;
+                                response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                response.StatusMessage = "Business Area Code " + trip.BusinessAreaCode + " is not available in DMS";
+                                return response;
+                            }
                             #endregion
+
+                            #region Check if OrderNumber already exists
+                            int tripId = 0;
+                            var existingTrip = context.TripHeaders.FirstOrDefault(t => t.OrderNumber == trip.OrderNumber);
+                            #endregion
+
+                            #region Update Trip Data
                             if (existingTrip != null)
                             {
                                 existingTrip.TransporterCode = trip.TransporterCode;
                                 existingTrip.TransporterName = trip.TransporterName;
-                                existingTrip.UserId = userId;
+                                existingTrip.DriverId = userId;
                                 existingTrip.VehicleType = trip.VehicleType;
                                 existingTrip.VehicleNumber = trip.VehicleNumber;
                                 existingTrip.TripType = trip.TripType;
                                 existingTrip.Weight = trip.Weight;
                                 existingTrip.PoliceNumber = trip.PoliceNumber;
                                 existingTrip.CurrentTripStatusId = statusId;
+                                existingTrip.BusinessAreaId = businessAreaId;
 
                                 context.Entry(existingTrip).State = System.Data.Entity.EntityState.Modified;
                                 context.SaveChanges();
                                 tripId = existingTrip.ID;
+                                foreach (var tripLocation in trip.TripLocations)
+                                {
+                                    #region Check if Partner Types Exists
+                                    int partnerTypeId = 0;
+                                    string partnerTypeCode = tripLocation.PartnerType.ToString();
+                                    var partnerType = context.PartnerTypes.FirstOrDefault(t => t.PartnerTypeCode == partnerTypeCode);
+                                    if (partnerType != null)
+                                        partnerTypeId = partnerType.ID;
+                                    else
+                                    {
+                                        transaction.Rollback();
+                                        response.Status = DomainObjects.Resource.ResourceData.Failure;
+                                        response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                        response.StatusMessage = "Partner Type " + tripLocation.PartnerType + " is not available in DMS";
+                                        return response;
+                                    }
+                                    #endregion
+
+                                    #region Check If Partners exists
+                                    int locationId = 0;
+                                    var location = (from partner in context.Partners
+                                                    join ppt in context.PartnerPartnerTypes on partner.ID equals ppt.PartnerId
+                                                    where partner.PartnerNo == tripLocation.PartnerNo && ppt.PartnerTypeId == partnerTypeId
+                                                    select new
+                                                    {
+                                                        ID = partner.ID
+                                                    }).FirstOrDefault();
+
+                                    if (location != null)
+                                        locationId = location.ID;
+                                    else
+                                    {
+                                        transaction.Rollback();
+                                        response.Status = DomainObjects.Resource.ResourceData.Failure;
+                                        response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                        response.StatusMessage = tripLocation.PartnerNo + " is not available in DMS";
+                                        return response;
+                                    }
+                                    #endregion
+
+                                    #region Create Trip Detail if not Exist already
+                                    int stopPointId = 0;
+                                    var existingTripDetail = context.TripDetails.FirstOrDefault(t => t.SequenceNumber == tripLocation.SequnceNumber && t.TripID == tripId);
+                                    if (existingTripDetail != null)
+                                    {
+                                        existingTripDetail.PartnerId = locationId;
+                                        existingTripDetail.ActualDeliveryDate = tripLocation.ActualDeliveryDate;
+                                        existingTripDetail.EstimatedDeliveryDate = tripLocation.EstimatedDeliveryDate;
+
+                                        context.Entry(existingTripDetail).State = System.Data.Entity.EntityState.Modified;
+                                        context.SaveChanges();
+                                    }
+                                    else
+                                    {
+                                        DataModel.TripDetail tripDetail = new DataModel.TripDetail()
+                                        {
+                                            TripID = tripId,
+                                            PartnerId = locationId,
+                                            SequenceNumber = tripLocation.SequnceNumber,
+                                            ActualDeliveryDate = tripLocation.ActualDeliveryDate,
+                                            EstimatedDeliveryDate = tripLocation.EstimatedDeliveryDate,
+                                            CreatedBy = "SYSTEM",
+                                            CreatedTime = DateTime.Now
+                                        };
+
+                                        context.TripDetails.Add(tripDetail);
+                                        context.SaveChanges();
+                                        stopPointId = tripDetail.ID;
+                                    }
+                                    #endregion
+
+                                    #region Create Trip Event Log
+                                    DataModel.TripStatusHistory tripEventLog = new DataModel.TripStatusHistory()
+                                    {
+                                        StopPointId = stopPointId,
+                                        StatusDate = DateTime.Now,
+                                        Remarks = "Driver Assigned to Trip",
+                                        TripStatusId = statusId
+                                    };
+                                    context.TripStatusHistories.Add(tripEventLog);
+                                    context.SaveChanges();
+                                    #endregion
+                                }
                             }
+                            #endregion
+                            #region Create Trip data
                             else
                             {
 
-                                DataModel.TripDetails tripRequest = new DataModel.TripDetails()
+                                DataModel.TripHeader tripRequest = new DataModel.TripHeader()
                                 {
                                     OrderNumber = trip.OrderNumber,
                                     TripNumber = GetTripNumber(trip.BusinessAreaCode),
                                     TransporterCode = trip.TransporterCode,
                                     TransporterName = trip.TransporterName,
-                                    UserId = userId,
+                                    DriverId = userId,
                                     VehicleType = trip.VehicleType,
                                     VehicleNumber = trip.VehicleNumber,
                                     TripType = trip.TripType,
@@ -103,81 +263,82 @@ namespace DMS.DataGateway.Repositories
                                     CurrentTripStatusId = statusId,
                                     OrderType = trip.OrderType,
                                     TripDate = DateTime.Now,
-                                    BusinessAreaCode = trip.BusinessAreaCode
+                                    BusinessAreaId = businessAreaId
                                 };
-                                context.TripDetails.Add(tripRequest);
+                                context.TripHeaders.Add(tripRequest);
                                 context.SaveChanges();
                                 tripId = tripRequest.ID;
 
                                 foreach (var tripLocation in trip.TripLocations)
                                 {
-                                    int locationId = 0;
-
-                                    #region Check If Locations exists
-                                    var location = context.Locations.FirstOrDefault(t => t.Name == tripLocation.Name);
+                                    #region Check if Partner Types Exists
+                                    int partnerTypeId = 0;
+                                    string partnerTypeCode = tripLocation.PartnerType.ToString();
+                                    var partnerType = context.PartnerTypes.FirstOrDefault(t => t.PartnerTypeCode == partnerTypeCode);
+                                    if (partnerType != null)
+                                        partnerTypeId = partnerType.ID;
+                                    else
+                                    {
+                                        transaction.Rollback();
+                                        response.Status = DomainObjects.Resource.ResourceData.Failure;
+                                        response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                        response.StatusMessage = "Partner Type " + tripLocation.PartnerType + " is not available in DMS";
+                                        return response;
+                                    }
                                     #endregion
+
+                                    #region Check If Partners exists
+                                    int locationId = 0;
+                                    var location = (from partner in context.Partners
+                                                    join ppt in context.PartnerPartnerTypes on partner.ID equals ppt.PartnerId
+                                                    where partner.PartnerNo == tripLocation.PartnerNo && ppt.PartnerTypeId == partnerTypeId
+                                                    select new
+                                                    {
+                                                        ID = partner.ID
+                                                    }).FirstOrDefault();
 
                                     if (location != null)
                                         locationId = location.ID;
                                     else
                                     {
-                                        int cityId = 0;
-                                        var city = context.Cities.FirstOrDefault(t => t.CityCode == tripLocation.CityCode);
-                                        if (city != null)
-                                        {
-                                            cityId = city.ID;
-                                            #region Create Location
-                                            DataModel.Location locationData = new DataModel.Location()
-                                            {
-                                                TypeofLocation = tripLocation.TypeofLocation,
-                                                CityId = cityId,
-                                                Name = tripLocation.Name,
-                                                Place = tripLocation.Place,
-                                                Address = tripLocation.Address
-                                            };
-                                            context.Locations.Add(locationData);
-                                            context.SaveChanges();
-                                            locationId = locationData.ID;
-                                            #endregion
-
-                                        }
-                                        else
-                                        {
-                                            transaction.Rollback();
-                                            response.Status = DomainObjects.Resource.ResourceData.Failure;
-                                            response.StatusCode = (int)HttpStatusCode.BadRequest;
-                                            response.StatusMessage = "City : + " + tripLocation.CityCode + " is not available in DMS";
-                                            return response;
-                                        }
+                                        transaction.Rollback();
+                                        response.Status = DomainObjects.Resource.ResourceData.Failure;
+                                        response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                        response.StatusMessage = tripLocation.PartnerNo + " is not available in DMS";
+                                        return response;
                                     }
-                                    #region Create Stop Points
+                                    #endregion
 
-                                    DataModel.StopPoints stopPoint = new DataModel.StopPoints()
+                                    #region Create Trip Detail
+
+                                    DataModel.TripDetail tripDetail = new DataModel.TripDetail()
                                     {
                                         TripID = tripId,
-                                        LocationID = locationId,
+                                        PartnerId = locationId,
                                         SequenceNumber = tripLocation.SequnceNumber,
                                         ActualDeliveryDate = tripLocation.ActualDeliveryDate,
-                                        EstimatedDeliveryDate = tripLocation.EstimatedDeliveryDate
+                                        EstimatedDeliveryDate = tripLocation.EstimatedDeliveryDate,
+                                        CreatedBy = "SYSTEM",
+                                        CreatedTime = DateTime.Now
                                     };
-                                    context.StopPoints.Add(stopPoint);
+
+                                    context.TripDetails.Add(tripDetail);
                                     context.SaveChanges();
-                                    int stopPointId = stopPoint.ID;
+                                    int stopPointId = tripDetail.ID;
 
                                     #endregion
 
                                     #region Create Trip Event Log
-                                    DataModel.TripStatusEventLog tripEventLog = new DataModel.TripStatusEventLog()
+                                    DataModel.TripStatusHistory tripEventLog = new DataModel.TripStatusHistory()
                                     {
                                         StopPointId = stopPointId,
                                         StatusDate = DateTime.Now,
                                         Remarks = "Driver Assigned to Trip",
                                         TripStatusId = statusId
                                     };
-                                    context.TripStatusEventLogs.Add(tripEventLog);
+                                    context.TripStatusHistories.Add(tripEventLog);
                                     context.SaveChanges();
                                     #endregion
-
                                 }
                             }
                             #endregion
@@ -201,35 +362,6 @@ namespace DMS.DataGateway.Repositories
                 }
             }
             return response;
-        }
-
-        private string GetTripNumber(string businessAreaCode)
-        {
-            string tripNo = businessAreaCode.ToUpper() + "TRIP";
-            using (var context = new DMSDBContext())
-            {
-                var trip = context.TripDetails.Where(t => t.BusinessAreaCode == businessAreaCode).OrderByDescending(t => t.ID).FirstOrDefault();
-                if (trip != null)
-                {
-                    int lastOrderYear = trip.TripDate.Year;
-                    if (DateTime.Now.Year != lastOrderYear)
-                    {
-                        tripNo += "000000000001";
-                    }
-                    else
-                    {
-                        string tripSequnceString = trip.TripNumber.Substring(trip.TripNumber.Length - 11);
-                        int tripSequnceNumber = Convert.ToInt32(tripSequnceString) + 1;
-
-                        tripNo += tripSequnceNumber.ToString().PadLeft(11, '0');
-                    }
-                }
-                else
-                {
-                    tripNo += "000000000001";
-                }
-            }
-            return tripNo;
         }
 
         public StopPointOrderItemsResponse GetOrderItemsByStopPoint(StopPointsRequest stopPointsByTripRequest)
@@ -288,14 +420,14 @@ namespace DMS.DataGateway.Repositories
                 {
                     foreach (var requestStopPoint in stopPointsByTripRequest.Requests)
                     {
-                        var stopPoints = (from stopPoint in context.StopPoints
+                        var stopPoints = (from stopPoint in context.TripDetails
                                           where stopPoint.TripID == requestStopPoint.TripId
                                           select new Domain.StopPoints
                                           {
                                               ID = stopPoint.ID,
                                               TripId = stopPoint.TripID,
-                                              LocationId = stopPoint.LocationID,
-                                              LocationName = stopPoint.Location.Name,
+                                              LocationId = stopPoint.PartnerId,
+                                              LocationName = stopPoint.Partner.PartnerName,
                                               SequenceNumber = stopPoint.SequenceNumber,
                                               ActualDeliveryDate = stopPoint.ActualDeliveryDate,
                                               EstimatedDeliveryDate = stopPoint.EstimatedDeliveryDate
@@ -335,15 +467,15 @@ namespace DMS.DataGateway.Repositories
                     {
                         var tripFilter = tripsByDriverRequest.Requests[0];
 
-                        var tripsByUser = (from trip in context.TripDetails
-                                           where trip.UserId == tripFilter.UserId
+                        var tripsByUser = (from trip in context.TripHeaders
+                                           where trip.DriverId == tripFilter.UserId
                                            select new Domain.TripDetails
                                            {
                                                ID = trip.ID,
                                                TripNumber = trip.TripNumber,
                                                OrderNumber = trip.OrderNumber,
                                                TransporterName = trip.TransporterName,
-                                               UserId = trip.UserId,
+                                               UserId = trip.DriverId,
                                                VehicleType = trip.VehicleType,
                                                VehicleNumber = trip.VehicleNumber,
                                                TripType = trip.TripType,
@@ -360,21 +492,27 @@ namespace DMS.DataGateway.Repositories
                         }
                         foreach (var trip in tripsByUser)
                         {
-                            var stopPoints = (from sp in context.StopPoints
+                            var stopPoints = (from sp in context.TripDetails
                                               where sp.TripID == trip.ID
                                               select new Domain.StopPoints
                                               {
                                                   ID = sp.ID,
                                                   TripId = sp.TripID,
-                                                  LocationId = sp.LocationID,
-                                                  LocationName = context.Locations.FirstOrDefault(t => t.ID == sp.LocationID).Name,
+                                                  LocationId = sp.PartnerId,
+                                                  LocationName = context.Partners.FirstOrDefault(t => t.ID == sp.PartnerId).PartnerName,
                                                   SequenceNumber = sp.SequenceNumber,
                                                   EstimatedDeliveryDate = sp.EstimatedDeliveryDate
                                               }).ToList();
+                            if (stopPoints != null && stopPoints.Count > 0)
+                            {
+                                foreach (var stopPoint in stopPoints)
+                                {
+                                    stopPoint.TripStatusCoded = GetLatestStopPointStatus(stopPoint.ID);
+                                }
+                            }
 
                             trip.StopPoints = stopPoints;
                         }
-
                         tripResponse.Data.AddRange(tripsByUser);
                     }
 
@@ -390,8 +528,6 @@ namespace DMS.DataGateway.Repositories
                     tripResponse.StatusMessage = ex.Message;
                 }
             }
-
-
             return tripResponse;
         }
 
@@ -412,7 +548,7 @@ namespace DMS.DataGateway.Repositories
                         //Step 1 : Get Request from 0 index
                         var tripStatusEventLogFilter = request.Requests[0];
 
-                        DataModel.TripStatusEventLog dataTripStatusEventLog = new DataModel.TripStatusEventLog()
+                        DataModel.TripStatusHistory dataTripStatusEventLog = new DataModel.TripStatusHistory()
                         {
                             TripStatusId = tripStatusEventLogFilter.TripStatusId,
                             StopPointId = tripStatusEventLogFilter.StopPointId,
@@ -422,66 +558,27 @@ namespace DMS.DataGateway.Repositories
                         };
 
                         //For getting trip deatails and updating trip status as assigned
-                        var tripID = context.StopPoints.Where(t => t.ID == tripStatusEventLogFilter.StopPointId).Select(t => t.TripID).FirstOrDefault();
-                        var tripDetails = context.TripDetails.Where(t => t.ID == tripID).FirstOrDefault();
+                        var tripID = context.TripDetails.Where(t => t.ID == tripStatusEventLogFilter.StopPointId).Select(t => t.TripID).FirstOrDefault();
+                        var tripDetails = context.TripHeaders.Where(t => t.ID == tripID).FirstOrDefault();
                         tripDetails.CurrentTripStatusId = tripStatusEventLogFilter.TripStatusId;
 
-                        context.TripStatusEventLogs.Add(dataTripStatusEventLog);
+                        context.TripStatusHistories.Add(dataTripStatusEventLog);
                         context.SaveChanges();
-                        int guidCountValue = 0;
-                        if (request.Requests[0].ShipmentImageGuIds.Count > 0 && request.Requests[0].ShipmentImageGuIds != null)
+                        if (tripStatusEventLogFilter.ShipmentImageGuIds != null && tripStatusEventLogFilter.ShipmentImageGuIds.Count > 0)
                         {
-                            foreach (var imageGuid in request.Requests[0].ShipmentImageGuIds)
+                            foreach (var imageGuid in tripStatusEventLogFilter.ShipmentImageGuIds)
                             {
-                                if (string.IsNullOrEmpty(request.Requests[0].ShipmentImageGuIds[guidCountValue]))
+                                DataModel.StopPointImages stopPointImages = new DataModel.StopPointImages()
                                 {
-                                    TripGuid tripGuid = new TripGuid()
-                                    {
-                                        TripEventLogID = dataTripStatusEventLog.ID,
-                                        ImageID = InsertImageGuid(request.Requests[0].ShipmentImageGuIds[guidCountValue], request.CreatedBy)
-                                    };
-                                    context.TripGuids.Add(tripGuid);
-                                }
-                                guidCountValue++;
+                                    StopPointId = tripStatusEventLogFilter.StopPointId,
+                                    ImageId = InsertImageGuid(imageGuid, request.CreatedBy),
+                                    ImageTypeId = GetImageTypeId(tripStatusEventLogFilter.ImageTypeCode)
+                                };
+                                context.StopPointImages.Add(stopPointImages);
+                                context.SaveChanges();
                             }
                         }
-                        context.SaveChanges();
 
-                        var tripCurrentStopPoint = context.StopPoints.Where(t => t.ID == tripStatusEventLogFilter.StopPointId).FirstOrDefault();
-                        if (tripCurrentStopPoint != null)
-                        {
-                            int tripId = tripCurrentStopPoint.TripID;
-                            var lstCurrentTripStopPoints = (from sp in context.StopPoints
-                                                            where sp.TripID == tripId
-                                                            select sp).ToList();
-
-                            if (lstCurrentTripStopPoints != null && lstCurrentTripStopPoints.Any())
-                            {
-                                var lstEventLogs = new List<Domain.TripStatusEventLog>();
-                                foreach (var sp in lstCurrentTripStopPoints)
-                                {
-                                    var location = (from loc in context.Locations
-                                                    where loc.ID == sp.LocationID
-                                                    select loc).FirstOrDefault();
-
-                                    var eventLog = from tsEventLog in context.TripStatusEventLogs
-                                                   where sp.ID == tsEventLog.StopPointId
-                                                   select new Domain.TripStatusEventLog
-                                                   {
-                                                       ID = tsEventLog.ID,
-                                                       StopPointId = tsEventLog.StopPointId,
-                                                       Remarks = tsEventLog.Remarks,
-                                                       StatusDate = tsEventLog.StatusDate,
-                                                       TripStatusId = tsEventLog.TripStatusId,
-                                                       LocationName = location.Name,
-                                                       ShipmentImageIds = context.TripGuids.Where(i => i.TripEventLogID == tsEventLog.ID).Select(i => i.ID).ToList()
-                                                   };
-                                    lstEventLogs.AddRange(eventLog.ToList());
-                                }
-                                // Order By status date
-                                response.Data.AddRange(lstEventLogs.OrderByDescending(t => t.StatusDate));
-                            }
-                        }
                         beginDBTransaction.Commit();
                         response.Status = DomainObjects.Resource.ResourceData.Success;
                         response.StatusCode = (int)HttpStatusCode.OK;
@@ -501,6 +598,8 @@ namespace DMS.DataGateway.Repositories
             return response;
         }
 
+        
+
         public TripResponse UpdateEntireTripStatus(TripsByDriverRequest tripsByDriverRequest)
         {
             TripResponse tripResponse = new TripResponse()
@@ -517,19 +616,19 @@ namespace DMS.DataGateway.Repositories
                         var tripFilter = tripsByDriverRequest.Requests[0];
 
                         //For getting trip deatails and updating trip status
-                        var tripDetails = context.TripDetails.Where(t => t.ID == tripFilter.ID).FirstOrDefault();
+                        var tripDetails = context.TripHeaders.Where(t => t.ID == tripFilter.ID).FirstOrDefault();
                         tripDetails.CurrentTripStatusId = tripFilter.TripStatusId;
                         context.SaveChanges();
 
-                        var tripsByUser = (from trip in context.TripDetails
-                                           where trip.UserId == tripFilter.UserId
+                        var tripsByUser = (from trip in context.TripHeaders
+                                           where trip.DriverId == tripFilter.UserId
                                            select new Domain.TripDetails
                                            {
                                                ID = trip.ID,
                                                TripNumber = trip.TripNumber,
                                                OrderNumber = trip.OrderNumber,
                                                TransporterName = trip.TransporterName,
-                                               UserId = trip.UserId,
+                                               UserId = trip.DriverId,
                                                VehicleType = trip.VehicleType,
                                                VehicleNumber = trip.VehicleNumber,
                                                TripType = trip.TripType,
@@ -542,14 +641,14 @@ namespace DMS.DataGateway.Repositories
 
                         foreach (var trip in tripsByUser)
                         {
-                            var stopPoints = (from sp in context.StopPoints
+                            var stopPoints = (from sp in context.TripDetails
                                               where sp.TripID == trip.ID
                                               select new Domain.StopPoints
                                               {
                                                   ID = sp.ID,
                                                   TripId = sp.TripID,
-                                                  LocationId = sp.LocationID,
-                                                  LocationName = context.Locations.FirstOrDefault(t => t.ID == sp.LocationID).Name,
+                                                  LocationId = sp.PartnerId,
+                                                  LocationName = context.Partners.FirstOrDefault(t => t.ID == sp.PartnerId).PartnerName,
                                                   SequenceNumber = sp.SequenceNumber,
                                                   EstimatedDeliveryDate = sp.EstimatedDeliveryDate
                                               }).ToList();
@@ -575,7 +674,6 @@ namespace DMS.DataGateway.Repositories
             return tripResponse;
         }
 
-        //For inserting new record into ImageGuid table
         public int InsertImageGuid(string imageGuidValue, string createdBy)
         {
             try
@@ -583,7 +681,7 @@ namespace DMS.DataGateway.Repositories
                 using (var dMSDBContext = new DMSDBContext())
                 {
                     //Inserting new record along with IsActive true
-                    ImageGuid imageGuidObject = new ImageGuid()
+                    ImageGuId imageGuidObject = new ImageGuId()
                     {
                         ImageGuIdValue = imageGuidValue,
                         CreatedBy = createdBy,
@@ -608,8 +706,8 @@ namespace DMS.DataGateway.Repositories
             {
                 try
                 {
-                    int tripId = context.StopPoints.FirstOrDefault(t => t.ID == stopPointId).TripID;
-                    orderNumber = context.TripDetails.FirstOrDefault(t => t.ID == tripId).OrderNumber;
+                    int tripId = context.TripDetails.FirstOrDefault(t => t.ID == stopPointId).TripID;
+                    orderNumber = context.TripHeaders.FirstOrDefault(t => t.ID == tripId).OrderNumber;
                 }
                 catch (Exception ex)
                 {
@@ -643,7 +741,7 @@ namespace DMS.DataGateway.Repositories
             {
                 try
                 {
-                    sequnceNumber =  context.StopPoints.FirstOrDefault(t => t.ID == stopPointId).SequenceNumber;
+                    sequnceNumber = context.TripDetails.FirstOrDefault(t => t.ID == stopPointId).SequenceNumber;
                 }
                 catch (Exception ex)
                 {

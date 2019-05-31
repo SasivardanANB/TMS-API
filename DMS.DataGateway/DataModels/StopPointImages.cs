@@ -14,11 +14,15 @@ namespace DMS.DataGateway.DataModels
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
-        [ForeignKey("StopPoints")]
+        [ForeignKey("TripDetail")]
         public int StopPointId { get; set; }
-        public string ImageGUId { get; set; }
-        public string ImageType { get; set; }
+        public TripDetail TripDetail { get; set; }
+        [ForeignKey("ImageGuId")]
+        public int ImageId { get; set; }
+        public ImageGuId ImageGuId { get; set; }
+        [ForeignKey("ImageType")]
+        public int ImageTypeId { get; set; }
+        public ImageType ImageType { get; set; }
 
-        public StopPoints StopPoints { get; set; }
     }
 }

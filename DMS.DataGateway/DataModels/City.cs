@@ -25,5 +25,19 @@ namespace DMS.DataGateway.DataModels
         public int ProvinceID { get; set; }
 
         public Province Province { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public string CreatedBy
+        {
+            get { return "SYSTEM"; }
+            set { }
+        }
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public DateTime CreatedTime
+        {
+            get { return DateTime.Now; }
+            set { }
+        }
+        public string LastModifiedBy { get; set; }
+        public DateTime? LastModifiedTime { get; set; }
     }
 }

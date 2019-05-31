@@ -1,21 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DMS.DataGateway.DataModels
 {
-    [Table("ImageGuid", Schema = "DMS")]
-    public class ImageGuId
+    [Table("TripDetail", Schema = "DMS")]
+    public class TripDetail
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
-        [MaxLength(1000)]
-        public string ImageGuIdValue { get; set; }
+        [ForeignKey("TripHeader")]
+        public int TripID { get; set; }
+        public TripHeader TripHeader { get; set; }
+        [ForeignKey("Partner")]
+        public int PartnerId { get; set; }
+        public Partner Partner { get; set; }
+        public int SequenceNumber { get; set; }
+        public DateTime ActualDeliveryDate { get; set; }    
+        public DateTime EstimatedDeliveryDate { get; set; }
+
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public string CreatedBy
         {
@@ -30,6 +38,6 @@ namespace DMS.DataGateway.DataModels
         }
         public string LastModifiedBy { get; set; }
         public DateTime? LastModifiedTime { get; set; }
-        public bool IsActive { get; set; }
+
     }
 }

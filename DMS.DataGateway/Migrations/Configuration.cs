@@ -17,7 +17,7 @@ namespace DMS.DataGateway.Migrations
 
         public Configuration()
         {
-            AutomaticMigrationsEnabled = true;
+            AutomaticMigrationsEnabled = false;
             ContextKey = "DMS.DataGateway.DataModels.DMSDBContext";
         }
 
@@ -34,7 +34,7 @@ namespace DMS.DataGateway.Migrations
                 string cities = "DMS.DataGateway.SeedData.Cities.csv";
                 string postalCodes = "DMS.DataGateway.SeedData.PostalCodes.csv";
                 string subdistricts = "DMS.DataGateway.SeedData.SubDistricts.csv";
-
+                string imageTypes = "DMS.DataGateway.SeedData.ImageTypes.csv";
 
                 using (Stream stream = assembly.GetManifestResourceStream(provinces))
                 {
@@ -47,8 +47,6 @@ namespace DMS.DataGateway.Migrations
                         context.Provinces.AddOrUpdate(c => c.ID, provincesData);
                     }
                 }
-
-
                 context.SaveChanges();
 
                 using (Stream stream = assembly.GetManifestResourceStream(cities))
@@ -70,7 +68,6 @@ namespace DMS.DataGateway.Migrations
                         }
                     }
                 }
-
                 context.SaveChanges();
 
                 using (Stream stream = assembly.GetManifestResourceStream(subdistricts))
@@ -92,7 +89,6 @@ namespace DMS.DataGateway.Migrations
                         }
                     }
                 }
-
                 context.SaveChanges();
 
                 using (Stream stream = assembly.GetManifestResourceStream(postalCodes))
@@ -113,7 +109,19 @@ namespace DMS.DataGateway.Migrations
                         }
                     }
                 }
+                context.SaveChanges();
 
+                using (Stream stream = assembly.GetManifestResourceStream(imageTypes))
+                {
+                    using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                    {
+                        CsvReader csvReader = new CsvReader(reader);
+                        csvReader.Configuration.HeaderValidated = null;
+                        csvReader.Configuration.MissingFieldFound = null;
+                        var imageTypesData = csvReader.GetRecords<DMS.DataGateway.DataModels.ImageType>().ToArray();
+                        context.ImageTypes.AddOrUpdate(c => c.ID, imageTypesData);
+                    }
+                }
                 context.SaveChanges();
             }
             catch (DbEntityValidationException dbEx)

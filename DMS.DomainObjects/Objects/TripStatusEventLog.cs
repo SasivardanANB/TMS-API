@@ -15,8 +15,8 @@ namespace DMS.DomainObjects.Objects
         public int TripStatusId { get; set; }
         public string LocationName { get; set; }
         public List<string> ShipmentImageGuIds { get; set; }
-        public List<int> ShipmentImageIds { get; set; }
         public bool? IsLoad { get; set; }
+        public int ImageTypeCode { get; set; }
 
     }
 }

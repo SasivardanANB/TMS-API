@@ -143,6 +143,7 @@ namespace TMS.API.Controllers
 
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
             OrderResponse orderData = orderTask.CreateUpdateOrder(order);
+
             if (orderData.StatusCode == 200 && orderData.Status == "Success")
             {
                 #region Call DMS API to send Order as Trip if Driver assignment exists
@@ -169,12 +170,9 @@ namespace TMS.API.Controllers
                                     Partner sourcePartnerDetail = GetPartnerDetail(request.PartnerNo2, order.UploadType);
                                     TripLocation sourceLocation = new TripLocation()
                                     {
-                                        TypeofLocation = "Source",
-                                        Name = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
-                                        Place = sourcePartnerDetail.PartnerAddress,
-                                        Address = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
-                                        CityCode = sourcePartnerDetail.CityCode,
-                                        ProvinceCode = sourcePartnerDetail.ProvinceCode,
+                                        PartnerType = request.PartnerType2,
+                                        PartnerNo = request.PartnerNo2,
+                                        PartnerName = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
                                         SequnceNumber = request.SequenceNo,
                                         ActualDeliveryDate = actualShipmentDate,
                                         EstimatedDeliveryDate = estimationShipmentDate
@@ -192,12 +190,9 @@ namespace TMS.API.Controllers
 
                                     TripLocation destinationLocation = new TripLocation()
                                     {
-                                        TypeofLocation = "Destination",
-                                        Name = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
-                                        Place = destinationPartnerDetail.PartnerAddress,
-                                        Address = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
-                                        CityCode = destinationPartnerDetail.CityCode,
-                                        ProvinceCode = destinationPartnerDetail.ProvinceCode,
+                                        PartnerType = request.PartnerType3,
+                                        PartnerNo = request.PartnerNo3,
+                                        PartnerName = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
                                         SequnceNumber = request.SequenceNo,
                                         ActualDeliveryDate = actualShipmentDate,
                                         EstimatedDeliveryDate = estimationShipmentDate
@@ -237,12 +232,9 @@ namespace TMS.API.Controllers
                                 Partner sourcePartnerDetail = GetPartnerDetail(request.PartnerNo2, order.UploadType);
                                 TripLocation sourceLocation = new TripLocation()
                                 {
-                                    TypeofLocation = "Source",
-                                    Name = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
-                                    Place = sourcePartnerDetail.PartnerAddress,
-                                    Address = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
-                                    CityCode = sourcePartnerDetail.CityCode,
-                                    ProvinceCode = sourcePartnerDetail.ProvinceCode,
+                                    PartnerType = request.PartnerType2,
+                                    PartnerNo = request.PartnerNo2,
+                                    PartnerName = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
                                     SequnceNumber = request.OrderType == 1 ? request.SequenceNo : 0,
                                     ActualDeliveryDate = actualShipmentDate,
                                     EstimatedDeliveryDate = estimationShipmentDate
@@ -254,12 +246,9 @@ namespace TMS.API.Controllers
                                 Partner destinationPartnerDetail = GetPartnerDetail(request.PartnerNo3, order.UploadType);
                                 TripLocation destinationLocation = new TripLocation()
                                 {
-                                    TypeofLocation = "Destination",
-                                    Name = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
-                                    Place = destinationPartnerDetail.PartnerAddress,
-                                    Address = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
-                                    CityCode = destinationPartnerDetail.CityCode,
-                                    ProvinceCode = destinationPartnerDetail.ProvinceCode,
+                                    PartnerType = request.PartnerType3,
+                                    PartnerNo = request.PartnerNo3,
+                                    PartnerName = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
                                     SequnceNumber = request.OrderType == 1 ? 0 : request.SequenceNo,
                                     ActualDeliveryDate = actualShipmentDate,
                                     EstimatedDeliveryDate = estimationShipmentDate
@@ -297,12 +286,9 @@ namespace TMS.API.Controllers
                             Partner sourcePartnerDetail = GetPartnerDetail(request.PartnerNo2, order.UploadType);
                             TripLocation sourceLocation = new TripLocation()
                             {
-                                TypeofLocation = "Source",
-                                Name = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
-                                Place = sourcePartnerDetail.PartnerAddress,
-                                Address = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
-                                CityCode = sourcePartnerDetail.CityCode,
-                                ProvinceCode = sourcePartnerDetail.ProvinceCode,
+                                PartnerType = request.PartnerType2,
+                                PartnerNo = request.PartnerNo2,
+                                PartnerName = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
                                 SequnceNumber = request.OrderType == 1 ? request.SequenceNo : 0,
                                 ActualDeliveryDate = actualShipmentDate,
                                 EstimatedDeliveryDate = estimationShipmentDate
@@ -314,12 +300,9 @@ namespace TMS.API.Controllers
                             Partner destinationPartnerDetail = GetPartnerDetail(request.PartnerNo3, order.UploadType);
                             TripLocation destinationLocation = new TripLocation()
                             {
-                                TypeofLocation = "Destination",
-                                Name = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
-                                Place = destinationPartnerDetail.PartnerAddress,
-                                Address = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
-                                CityCode = destinationPartnerDetail.CityCode,
-                                ProvinceCode = destinationPartnerDetail.ProvinceCode,
+                                PartnerType = request.PartnerType3,
+                                PartnerNo = request.PartnerNo3,
+                                PartnerName = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
                                 SequnceNumber = request.OrderType == 1 ? 0 : request.SequenceNo,
                                 ActualDeliveryDate = actualShipmentDate,
                                 EstimatedDeliveryDate = estimationShipmentDate

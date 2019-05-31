@@ -8,14 +8,23 @@ using System.Threading.Tasks;
 
 namespace DMS.DataGateway.DataModels
 {
-    [Table("ImageGuid", Schema = "DMS")]
-    public class ImageGuId
+    [Table("BusinessArea", Schema = "DMS")]
+    public class BusinessArea
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
-        [MaxLength(1000)]
-        public string ImageGuIdValue { get; set; }
+        [Required(ErrorMessage = "")]
+        [MaxLength(5)]
+        [Index("BusinessArea_BusinessAreaCode", IsUnique = true)]
+        public string BusinessAreaCode { get; set; }
+        [MaxLength(100)]
+        public string BusinessAreaDescription { get; set; }
+        [MaxLength(200)]
+        public string Address { get; set; }
+        [ForeignKey("PostalCode")]
+        public int? PostalCodeID { get; set; }
+        public PostalCode PostalCode { get; set; }
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public string CreatedBy
         {
@@ -30,6 +39,5 @@ namespace DMS.DataGateway.DataModels
         }
         public string LastModifiedBy { get; set; }
         public DateTime? LastModifiedTime { get; set; }
-        public bool IsActive { get; set; }
     }
 }

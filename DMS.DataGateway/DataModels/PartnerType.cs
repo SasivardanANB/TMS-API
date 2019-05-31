@@ -8,18 +8,18 @@ using System.Threading.Tasks;
 
 namespace DMS.DataGateway.DataModels
 {
-    [Table("TripGuid", Schema = "DMS")]
-    public class TripGuid
+    [Table("PartnerType", Schema = "DMS")]
+    public class PartnerType
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
-        [ForeignKey("TripStatusEventLog")]
-        public int TripEventLogID { get; set; }
-        public virtual TripStatusEventLog TripStatusEventLog { get; set; }
-        [ForeignKey("ImageGuid")]
-        public int ImageID { get; set; }
-        public virtual ImageGuid ImageGuid { get; set; }
+        [Required(ErrorMessage = "")]
+        [MaxLength(10)]
+        [Index("PartnerType_PartnerTypeCode", IsUnique = true)]
+        public string PartnerTypeCode { get; set; }
+        public string PartnerTypeDescription { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public string CreatedBy
         {
             get { return "SYSTEM"; }

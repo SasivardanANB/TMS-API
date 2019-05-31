@@ -8,15 +8,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DMS.DataGateway.DataModels
 {
-    [Table("TripEventLog", Schema = "DMS")]
-    public class TripStatusEventLog
+    [Table("TripStatusHistory", Schema = "DMS")]
+    public class TripStatusHistory
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
-        [ForeignKey("StopPoints")]
+        [ForeignKey("TripDetail")]
         public int StopPointId { get; set; }
-        public virtual StopPoints StopPoints { get; set; }
+        public virtual TripDetail TripDetail { get; set; }
         public DateTime StatusDate { get; set; }
         public string Remarks { get; set; }
         [ForeignKey("TripStatus")]

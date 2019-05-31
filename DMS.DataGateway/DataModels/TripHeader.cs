@@ -8,8 +8,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DMS.DataGateway.DataModels
 {
-    [Table("TripManager", Schema = "DMS")]
-    public class TripDetails
+    [Table("TripHeader", Schema = "DMS")]
+    public class TripHeader
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -22,19 +22,35 @@ namespace DMS.DataGateway.DataModels
         [MaxLength(50)]
         public string TransporterName { get; set; }
         public string TransporterCode { get; set; }
-        [ForeignKey("User")]
-        public int UserId { get; set; }
+        [ForeignKey("Driver")]
+        public int DriverId { get; set; }
+        public Driver Driver { get; set; }
         public string VehicleType { get; set; }
         public string VehicleNumber { get; set; }
         public string TripType { get; set; }
         public decimal Weight { get; set; }
         public string PoliceNumber { get; set; }
-        public User User { get; set; }
         [ForeignKey("TripStatus")]
         public int? CurrentTripStatusId { get; set; }
         public virtual TripStatus TripStatus { get; set; }
         public int OrderType { get; set; }
         public DateTime TripDate { get; set; }
-        public string BusinessAreaCode { get; set; }
+        [ForeignKey("BusinessArea")]
+        public int BusinessAreaId { get; set; }
+        public BusinessArea BusinessArea { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public string CreatedBy
+        {
+            get { return "SYSTEM"; }
+            set { }
+        }
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public DateTime CreatedTime
+        {
+            get { return DateTime.Now; }
+            set { }
+        }
+        public string LastModifiedBy { get; set; }
+        public DateTime? LastModifiedTime { get; set; }
     }
 }
