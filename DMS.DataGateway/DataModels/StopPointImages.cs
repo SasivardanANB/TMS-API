@@ -23,6 +23,18 @@ namespace DMS.DataGateway.DataModels
         [ForeignKey("ImageType")]
         public int ImageTypeId { get; set; }
         public ImageType ImageType { get; set; }
+        public string CreatedBy
+        {
+            get;
+            set;
+        }
+        public DateTime? CreatedTime
+        {
+            get;
+            set;
+        }
+        public string LastModifiedBy { get; set; }
+        public DateTime? LastModifiedTime { get; set; }
 
     }
 }

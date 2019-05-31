@@ -16,5 +16,17 @@ namespace DMS.DataGateway.DataModels
         public int ID { get; set; }
         public int ImageTypeCode { get; set; }
         public string ImageTypeDescription { get; set; }
+        public string CreatedBy
+        {
+            get;
+            set;
+        }
+        public DateTime? CreatedTime
+        {
+            get;
+            set;
+        }
+        public string LastModifiedBy { get; set; }
+        public DateTime? LastModifiedTime { get; set; }
     }
 }

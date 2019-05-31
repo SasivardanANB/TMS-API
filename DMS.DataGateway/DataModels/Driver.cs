@@ -36,11 +36,14 @@ namespace DMS.DataGateway.DataModels
         public string PICEmail { get; set; }
         public string CreatedBy
         {
-            get { return "SYSTEM"; }
-            set { }
+            get;
+            set;
         }
-        public DateTime? CreatedTime { get; set; }
-        
+        public DateTime? CreatedTime
+        {
+            get;
+            set;
+        }
         public string LastModifiedBy { get; set; }
         public DateTime? LastModifiedTime { get; set; }
     }

@@ -263,7 +263,9 @@ namespace DMS.DataGateway.Repositories
                                     CurrentTripStatusId = statusId,
                                     OrderType = trip.OrderType,
                                     TripDate = DateTime.Now,
-                                    BusinessAreaId = businessAreaId
+                                    BusinessAreaId = businessAreaId,
+                                    CreatedBy = "SYSTEM",
+                                    CreatedTime = DateTime.Now
                                 };
                                 context.TripHeaders.Add(tripRequest);
                                 context.SaveChanges();
@@ -289,16 +291,28 @@ namespace DMS.DataGateway.Repositories
 
                                     #region Check If Partners exists
                                     int locationId = 0;
-                                    var location = (from partner in context.Partners
-                                                    join ppt in context.PartnerPartnerTypes on partner.ID equals ppt.PartnerId
-                                                    where partner.PartnerNo == tripLocation.PartnerNo && ppt.PartnerTypeId == partnerTypeId
-                                                    select new
-                                                    {
-                                                        ID = partner.ID
-                                                    }).FirstOrDefault();
+                                    
+                                    var partner = context.Partners.FirstOrDefault(t => t.PartnerNo.Trim().Equals(tripLocation.PartnerNo));
+                                    if (partner != null)
+                                    {
+                                        var location = (from ppt in context.PartnerPartnerTypes
+                                                        where ppt.PartnerTypeId == partnerTypeId
+                                                        select new
+                                                        {
+                                                            ID = ppt.PartnerId
+                                                        }).FirstOrDefault();
 
-                                    if (location != null)
-                                        locationId = location.ID;
+                                        if (location != null)
+                                            locationId = location.ID;
+                                        else
+                                        {
+                                            transaction.Rollback();
+                                            response.Status = DomainObjects.Resource.ResourceData.Failure;
+                                            response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                            response.StatusMessage = tripLocation.PartnerNo + " is not available in DMS";
+                                            return response;
+                                        }
+                                    }
                                     else
                                     {
                                         transaction.Rollback();
@@ -307,6 +321,7 @@ namespace DMS.DataGateway.Repositories
                                         response.StatusMessage = tripLocation.PartnerNo + " is not available in DMS";
                                         return response;
                                     }
+                                    
                                     #endregion
 
                                     #region Create Trip Detail
