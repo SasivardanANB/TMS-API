@@ -92,6 +92,9 @@ namespace TMS.DataGateway.Repositories
                                 driverData.IsActive = true;
                                 tMSDBContext.Drivers.Add(driverData);
                                 tMSDBContext.SaveChanges();
+                                driverResponse.Data = new List<Domain.Driver>();
+                                driverResponse.Data = driverRequest.Requests;
+                                driverResponse.Data[driverObjectCount].DriverNo = driverData.DriverNo;
                                 driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.DriversCreated;
                                 driverResponse.StatusCode = (int)HttpStatusCode.OK;
                             }

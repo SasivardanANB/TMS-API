@@ -34,6 +34,11 @@ namespace DMS.DataGateway.DataModels
         public string PICPhone { get; set; }
         [MaxLength(50)]
         public string PICEmail { get; set; }
+        public string CreatedBy
+        {
+            get { return "SYSTEM"; }
+            set { }
+        }
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime CreatedTime
         {

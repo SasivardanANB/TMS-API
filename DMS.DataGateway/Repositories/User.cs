@@ -151,6 +151,7 @@ namespace DMS.DataGateway.Repositories
                         }
                         else //Create User
                         {
+                            userData.CreatedTime = DateTime.Now;
                             context.Drivers.Add(userData);
                             context.SaveChanges();
                             userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UsersCreated;

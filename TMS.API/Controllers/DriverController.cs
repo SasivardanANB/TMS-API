@@ -57,17 +57,25 @@ namespace TMS.API.Controllers
                 return BadRequest(ModelState);
 
             #region Creating Driver for DMS request
+            //TODO: Get PIC Detail for Driver
             UserRequest dmsRequest = new UserRequest()
             {
                 Requests = new List<User>()
                         {
                             new User()
                             {
-                                FirstName = driverRequest.Requests[0].FirstName,
-                                LastName = driverRequest.Requests[0].LastName,
+                                DriverNo = driverRequest.Requests[0].DriverNo,
                                 UserName = driverRequest.Requests[0].UserName,
                                 Password = driverRequest.Requests[0].Password,
-                                IsActive = true
+                                FirstName = driverRequest.Requests[0].FirstName,
+                                LastName = driverRequest.Requests[0].LastName,
+                                Email = driverRequest.Requests[0].Email,
+                                PhoneNumber = driverRequest.Requests[0].DriverPhone,
+                                PICName = "",
+                                PICEmail = "",
+                                PICPhone = "",
+                                IsActive = true,
+                                CreatedBy = "SYSTEM"
                             }
                         },
                 CreatedBy = "SYSTEM",
@@ -83,7 +91,7 @@ namespace TMS.API.Controllers
             if (driverResponse != null && driverResponse.StatusCode == (int)HttpStatusCode.OK && driverResponse.StatusMessage == DomainObjects.Resource.ResourceData.DriversCreated)
             {
                 #region Create Driver in DMS
-
+                dmsRequest.Requests[0].DriverNo = driverResponse.Data[0].DriverNo;
                 LoginRequest loginRequest = new LoginRequest();
                 string token = "";
 
