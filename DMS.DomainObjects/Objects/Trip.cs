@@ -14,6 +14,7 @@ namespace DMS.DomainObjects.Objects
         public string TripNumber { get; set; }
         public string TransporterName { get; set; }
         public string TransporterCode { get; set; }
+        public string DriverNo { get; set; }
         public string DriverName { get; set; }
         public string VehicleType { get; set; }
         public string VehicleNumber { get; set; }

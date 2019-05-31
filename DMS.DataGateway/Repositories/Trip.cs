@@ -95,7 +95,7 @@ namespace DMS.DataGateway.Repositories
                             int userId = 0;
                             int statusId = 0;
                             #region Check if Driver Exists
-                            var driver = context.Drivers.FirstOrDefault(t => t.DriverNo == trip.DriverName);
+                            var driver = context.Drivers.FirstOrDefault(t => t.DriverNo == trip.DriverNo);
                             if (driver != null)
                                 userId = driver.ID;
                             else
@@ -103,7 +103,7 @@ namespace DMS.DataGateway.Repositories
                                 transaction.Rollback();
                                 response.Status = DomainObjects.Resource.ResourceData.Failure;
                                 response.StatusCode = (int)HttpStatusCode.BadRequest;
-                                response.StatusMessage = "User " + trip.DriverName + " is not available in DMS";
+                                response.StatusMessage = "Driver Number " + trip.DriverName + " is not available in DMS";
                                 return response;
                             }
                             #endregion

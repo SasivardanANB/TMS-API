@@ -1651,7 +1651,7 @@ namespace TMS.DataGateway.Repositories
                     }
                     else
                     {
-                        string orderSequnceString = order.OrderNo.Substring(order.OrderNo.Length - 12);
+                        string orderSequnceString = order.OrderNo.Substring(order.OrderNo.Length - 8);
                         int orderSequnceNumber = Convert.ToInt32(orderSequnceString) + 1;
 
                         orderNo += orderSequnceNumber.ToString().PadLeft(12, '0');

@@ -270,6 +270,7 @@ namespace TMS.API.Controllers
                                 OrderNumber = request.OrderNo,
                                 TransporterName = request.PartnerName1,
                                 TransporterCode = request.PartnerNo1,
+                                DriverNo = request.DriverNo,
                                 DriverName = request.DriverName,
                                 VehicleType = request.VehicleShipmentType,
                                 VehicleNumber = request.VehicleNo,
