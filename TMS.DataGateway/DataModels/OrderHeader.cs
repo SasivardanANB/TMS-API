@@ -17,7 +17,7 @@ namespace TMS.DataGateway.DataModels
         [ForeignKey("BusinessArea")]
         public int BusinessAreaId { get; set; }
         public BusinessArea BusinessArea { get; set; }
-        [MaxLength(50)]
+        [MaxLength(10)]
         public string SOPONumber { get; set; }
         [Index("OrderHeader_OrderNo", IsUnique = true)]
         [Required]
