@@ -11,15 +11,19 @@ namespace OMS.DomainObjects.Objects
     {
         public int ID { get; set; }
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidUserName")]
+        [MaxLength(30)]
         public string UserName { get; set; }
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidUserPassword")]
+        [MaxLength(30)]
         public string Password { get; set; }
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidConfirmUserPassword")]
         [Compare("Password",ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "PasswordMismatch")]
         public string ConfirmPassword { get; set; }
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidFirstName")]
+        [MaxLength(30)]
         public string FirstName { get; set; }
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidLastName")]
+        [MaxLength(30)]
         public string LastName { get; set; }
         public List<int> Applications { get; set; }
         public bool IsActive { get; set; }
