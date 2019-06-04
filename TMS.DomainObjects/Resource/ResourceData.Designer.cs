@@ -304,6 +304,15 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Expeditor name should be 3-15 characters.
+        /// </summary>
+        public static string InvalidExpeditorNameLength {
+            get {
+                return ResourceManager.GetString("InvalidExpeditorNameLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid Expeditor TypeID.
         /// </summary>
         public static string InvalidExpeditorTypeID {
@@ -426,6 +435,24 @@ namespace TMS.DomainObjects.Resource {
         public static string InvalidMenuCode {
             get {
                 return ResourceManager.GetString("InvalidMenuCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Partner address should be 3-50 characters .
+        /// </summary>
+        public static string InvalidPartnerAddressLength {
+            get {
+                return ResourceManager.GetString("InvalidPartnerAddressLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Partner initial should be 3-15 characters.
+        /// </summary>
+        public static string InvalidPartnerInitialLength {
+            get {
+                return ResourceManager.GetString("InvalidPartnerInitialLength", resourceCulture);
             }
         }
         
@@ -822,6 +849,15 @@ namespace TMS.DomainObjects.Resource {
         public static string PoolsUpdated {
             get {
                 return ResourceManager.GetString("PoolsUpdated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Role code already exists.
+        /// </summary>
+        public static string RoleCodeExists {
+            get {
+                return ResourceManager.GetString("RoleCodeExists", resourceCulture);
             }
         }
         
