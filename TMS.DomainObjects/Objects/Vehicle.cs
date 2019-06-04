@@ -10,7 +10,7 @@ namespace TMS.DomainObjects.Objects
     public class Vehicle
     {
         public int ID { get; set; }
-        [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidPlateNumber")]
+        [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidPlateNumber"), MaxLength(12, ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidPlateNumberLength"), MinLength(3, ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidPlateNumberLength")]
         public string PlateNumber { get; set; }
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidVehicleTypeID")]
         [Range(minimum: 1, maximum: int.MaxValue, ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidVehicleTypeID")]
@@ -19,13 +19,14 @@ namespace TMS.DomainObjects.Objects
         //[Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidVehicleTypeName")]
         public string VehicleTypeName { get; set; }
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidPoliceNo")]
+        [MaxLength(12, ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidPoliceNoLength"), MinLength(3, ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidPoliceNoLength")]
         public string PoliceNo { get; set; }
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidMaxWeight")]
         [Range(minimum: 1, maximum: int.MaxValue, ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidMaxWeight")]
         public int MaxWeight { get; set; }
-        [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidMaxDimension")]
+        [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidMaxDimension"),MaxLength(12,ErrorMessageResourceType =typeof(Resource.ResourceData),ErrorMessageResourceName = "InvalidMaxDimensionLength"), MinLength(3, ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidMaxDimensionLength")]
         public string MaxDimension { get; set; }
-        [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidKIRNo")]
+        [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidKIRNo"), MaxLength(25, ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidKIRNoLength"),MinLength(3, ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidKIRNoLength")]
         public string KIRNo { get; set; }
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidExpireDate")]
         public DateTime? KIRExpiryDate { get; set; }

@@ -19,7 +19,7 @@ namespace TMS.DomainObjects.Resource {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class ResourceData {
@@ -376,6 +376,15 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to KIR No should be 3-25 characters.
+        /// </summary>
+        public static string InvalidKIRNoLength {
+            get {
+                return ResourceManager.GetString("InvalidKIRNoLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid Last Name.
         /// </summary>
         public static string InvalidLastName {
@@ -390,6 +399,15 @@ namespace TMS.DomainObjects.Resource {
         public static string InvalidMaxDimension {
             get {
                 return ResourceManager.GetString("InvalidMaxDimension", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dimension should be 3-12 characters.
+        /// </summary>
+        public static string InvalidMaxDimensionLength {
+            get {
+                return ResourceManager.GetString("InvalidMaxDimensionLength", resourceCulture);
             }
         }
         
@@ -448,11 +466,29 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Plate number  should be 3-12 characters.
+        /// </summary>
+        public static string InvalidPlateNumberLength {
+            get {
+                return ResourceManager.GetString("InvalidPlateNumberLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Provide valid police number.
         /// </summary>
         public static string InvalidPoliceNo {
             get {
                 return ResourceManager.GetString("InvalidPoliceNo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Police number  should be 3-12 characters.
+        /// </summary>
+        public static string InvalidPoliceNoLength {
+            get {
+                return ResourceManager.GetString("InvalidPoliceNoLength", resourceCulture);
             }
         }
         
