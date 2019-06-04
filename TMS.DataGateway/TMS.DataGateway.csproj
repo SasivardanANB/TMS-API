@@ -105,6 +105,7 @@
     <Compile Include="DataModels\G2G.cs" />
     <Compile Include="DataModels\Menu.cs" />
     <Compile Include="DataModels\MenuActivity.cs" />
+    <Compile Include="DataModels\ModelBase.cs" />
     <Compile Include="DataModels\OrderStatus.cs" />
     <Compile Include="DataModels\OrderDetail.cs" />
     <Compile Include="DataModels\OrderHeader.cs" />
