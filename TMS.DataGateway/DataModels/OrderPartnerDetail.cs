@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace TMS.DataGateway.DataModels
 {
     [Table("OrderPartnerDetail", Schema = "TMS")]
-    public class OrderPartnerDetail
+    public class OrderPartnerDetail : ModelBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -22,20 +22,6 @@ namespace TMS.DataGateway.DataModels
         public Partner Partner { get; set; }
         public bool IsParent { get; set; }
         public bool IsOriginal { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public string CreatedBy
-        {
-            get { return "SYSTEM"; }
-            set { }
-        }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime CreatedTime
-        {
-            get { return DateTime.Now; }
-            set { }
-        }
-        public string LastModifiedBy { get; set; }
-        public DateTime? LastModifiedTime { get; set; }
         [ForeignKey("PartnerType")]
         public int PartnerTypeId { get; set; }
         public PartnerType PartnerType { get; set; }

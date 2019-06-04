@@ -7,13 +7,13 @@ namespace TMS.DataGateway.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.2.0-61023")]
-    public sealed partial class Pendingchanges_v2 : IMigrationMetadata
+    public sealed partial class TMSDB_v10 : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(Pendingchanges_v2));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(TMSDB_v10));
         
         string IMigrationMetadata.Id
         {
-            get { return "201905071241321_Pendingchanges_v2"; }
+            get { return "201906041216531_TMSDB_v1.0"; }
         }
         
         string IMigrationMetadata.Source

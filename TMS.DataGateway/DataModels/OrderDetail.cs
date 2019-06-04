@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace TMS.DataGateway.DataModels
 {
     [Table("OrderDetail", Schema = "TMS")]
-    public class OrderDetail
+    public class OrderDetail : ModelBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -32,20 +32,6 @@ namespace TMS.DataGateway.DataModels
         public int TotalCollie { get; set; }
         public DateTime EstimationShipmentDate { get; set; }
         public DateTime ActualShipmentDate { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public string CreatedBy
-        {
-            get { return "SYSTEM"; }
-            set { }
-        }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime CreatedTime
-        {
-            get { return DateTime.Now; }
-            set { }
-        }
-        public string LastModifiedBy { get; set; }
         public string Katerangan { get; set; }
-        public DateTime? LastModifiedTime { get; set; }
     }
 }
