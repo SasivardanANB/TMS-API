@@ -115,6 +115,40 @@ namespace TMS.API.Controllers
 
                     if (string.IsNullOrEmpty(order.Requests[i].ShipmentSAPNo))
                         ModelState.AddModelError($"{nameof(order)}.{nameof(order.Requests)}.[{i}].{nameof(Order.ShipmentSAPNo)}", "Invalid Shipment SAP Number");
+                    if (order.UploadType == 1) // Upload Order
+                    {
+                        ModelState.Remove("order.Requests[" + i + "].BusinessAreaID");
+                        ModelState.Remove("order.Requests[" + i + "]");
+
+                        if (string.IsNullOrEmpty(order.Requests[i].ShippingListNo))
+                        {
+                            ModelState.AddModelError($"{nameof(order)}.{nameof(order.Requests)}.[{i}].{nameof(Order.ShippingListNo)}", "Invalid Shipping List Number");
+                        }
+                        if (string.IsNullOrEmpty(order.Requests[i].PackingSheetNo))
+                        {
+                            ModelState.AddModelError($"{nameof(order)}.{nameof(order.Requests)}.[{i}].{nameof(Order.PackingSheetNo)}", "Invalid Packing Sheet Number");
+                        }
+                        if (order.Requests[i].TotalCollie == 0)
+                        {
+                            ModelState.AddModelError($"{nameof(order)}.{nameof(order.Requests)}.[{i}].{nameof(Order.TotalCollie)}", "Invalid Total Collie");
+                        }
+                    }
+                    else if (order.UploadType == 2) // Create Order
+                    {
+                        ModelState.Remove("order.Requests[" + i + "].BusinessArea");
+                        ModelState.Remove("order.Requests[" + i + "].ShippingListNo");
+                        ModelState.Remove("order.Requests[" + i + "].PackingSheetNo");
+                        ModelState.Remove("order.Requests[" + i + "].TotalCollie");
+                        ModelState.Remove("order.Requests[" + i + "].PartnerName1");
+                        ModelState.Remove("order.Requests[" + i + "].PartnerName2");
+                        ModelState.Remove("order.Requests[" + i + "].PartnerName3");
+                        ModelState.Remove("order.Requests[" + i + "].Dimension");
+                        ModelState.Remove("order.Requests.[" + i + "].ShipmentSAPNo");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError($"{nameof(order)}.{nameof(order.Requests)}.[{i}].{nameof(Order.OrderType)}", "Invalid Upload Type");
+                    }
                 }
                 else
                 {

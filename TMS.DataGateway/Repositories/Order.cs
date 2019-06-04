@@ -153,7 +153,7 @@ namespace TMS.DataGateway.Repositories
                                 updatedOrderHeader.LastModifiedTime = DateTime.Now;
                                 updatedOrderHeader.OrderStatusID = orderStatusId;
                                 updatedOrderHeader.Harga = order.Harga;
-                                updatedOrderHeader.SOPONumber = soPoNumber;
+                                //updatedOrderHeader.SOPONumber = soPoNumber;
                                 Data.ImageGuid existingImageGuidDetails = null;
                                 string existingImageGUIDValue = string.Empty;
                                 int? shipmentScheduleImageID = null;

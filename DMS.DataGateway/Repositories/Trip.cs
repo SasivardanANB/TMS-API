@@ -483,7 +483,7 @@ namespace DMS.DataGateway.Repositories
                         var tripFilter = tripsByDriverRequest.Requests[0];
 
                         var tripsByUser = (from trip in context.TripHeaders
-                                           where trip.DriverId == tripFilter.UserId
+                                           where trip.DriverId == tripFilter.UserId orderby trip.TripDate ascending
                                            select new Domain.TripDetails
                                            {
                                                ID = trip.ID,
@@ -591,6 +591,42 @@ namespace DMS.DataGateway.Repositories
                                 };
                                 context.StopPointImages.Add(stopPointImages);
                                 context.SaveChanges();
+                            }
+                        }
+
+                        var tripCurrentStopPoint = context.TripDetails.Where(t => t.ID == tripStatusEventLogFilter.StopPointId).FirstOrDefault();
+                        if (tripCurrentStopPoint != null)
+                        {
+                            int tripId = tripCurrentStopPoint.TripID;
+                            var lstCurrentTripStopPoints = (from sp in context.TripDetails
+                                                            where sp.TripID == tripId
+                                                            select sp).ToList();
+
+                            if (lstCurrentTripStopPoints != null && lstCurrentTripStopPoints.Any())
+                            {
+                                var lstEventLogs = new List<Domain.TripStatusEventLog>();
+                                foreach (var sp in lstCurrentTripStopPoints)
+                                {
+                                    var location = (from loc in context.Partners
+                                                    where loc.ID == sp.PartnerId
+                                                    select loc).FirstOrDefault();
+
+                                    var eventLog = from tsEventLog in context.TripStatusHistories
+                                                   where sp.ID == tsEventLog.StopPointId
+                                                   select new Domain.TripStatusEventLog
+                                                   {
+                                                       ID = tsEventLog.ID,
+                                                       StopPointId = tsEventLog.StopPointId,
+                                                       Remarks = tsEventLog.Remarks,
+                                                       StatusDate = tsEventLog.StatusDate,
+                                                       TripStatusId = tsEventLog.TripStatusId,
+                                                       LocationName = location.PartnerName,
+                                                       ShipmentImageGuIds = context.ImageGuids.Where(i => i.ID == tsEventLog.ID).Select(i => i.ImageGuIdValue).ToList()
+                                                   };
+                                    lstEventLogs.AddRange(eventLog.ToList());
+                                }
+                                // Order By status date
+                                response.Data.AddRange(lstEventLogs.OrderByDescending(t => t.StatusDate));
                             }
                         }
 
