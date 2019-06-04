@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace OMS.DataGateway.DataModels
 {
     [Table("OrderDetail", Schema = "OMS")]
-    public class OrderDetail
+    public class OrderDetail : ModelBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -18,28 +18,20 @@ namespace OMS.DataGateway.DataModels
         public int OrderHeaderID { get; set; }
         public OrderHeader OrderHeader { get; set; }
         public int SequenceNo { get; set; }
+        [MaxLength(50)]
         public string Sender { get; set; }
+        [MaxLength(50)]
         public string Receiver { get; set; }
+        [MaxLength(11)]
         public string Dimension { get; set; }
         public int TotalPallet { get; set; }
+        [MaxLength(200)]
         public string Instruction { get; set; }
+        [MaxLength(20)]
         public string ShippingListNo { get; set; }
         public int TotalCollie { get; set; }
         public DateTime EstimationShipmentDate { get; set; }
         public DateTime ActualShipmentDate { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public string CreatedBy
-        {
-            get { return "SYSTEM"; }
-            set { }
-        }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime CreatedTime
-        {
-            get { return DateTime.Now; }
-            set { }
-        }
-        public string LastModifiedBy { get; set; }
-        public DateTime? LastModifiedTime { get; set; }
+       
     }
 }

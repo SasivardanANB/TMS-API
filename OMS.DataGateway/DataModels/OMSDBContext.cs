@@ -15,7 +15,6 @@ namespace OMS.DataGateway.DataModels
         public virtual DbSet<BusinessArea> BusinessAreas { get; set; }
         public virtual DbSet<City> Cities { get; set; }
         public virtual DbSet<CompanyCode> CompanyCodes { get; set; }
-        public virtual DbSet<FieldLabelMenu> FieldLabelMenus { get; set; }
         public virtual DbSet<Menu> Menus { get; set; }
         public virtual DbSet<PostalCode> PostalCodes { get; set; }
         public virtual DbSet<Province> Provinces { get; set; }

@@ -9,29 +9,17 @@ using System.Threading.Tasks;
 namespace OMS.DataGateway.DataModels
 {
     [Table("PartnerType", Schema = "OMS")]
-    public class PartnerType
+    public class PartnerType : ModelBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
         [Required(ErrorMessage = "")]
-        [MaxLength(10)]
+        [MaxLength(4)]
         [Index("PartnerType_PartnerTypeCode", IsUnique = true)]
         public string PartnerTypeCode { get; set; }
+        [MaxLength(50)]
         public string PartnerTypeDescription { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public string CreatedBy
-        {
-            get { return "SYSTEM"; }
-            set { }
-        }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime CreatedTime
-        {
-            get { return DateTime.Now; }
-            set { }
-        }
-        public string LastModifiedBy { get; set; }
-        public DateTime? LastModifiedTime { get; set; }
+        
     }
 }

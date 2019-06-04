@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace OMS.DataGateway.DataModels
 {
     [Table("Partner", Schema = "OMS")]
-    public class Partner
+    public class Partner :  ModelBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -17,21 +17,9 @@ namespace OMS.DataGateway.DataModels
         [MaxLength(10)]
         [Index("Partner_PartnerNo", IsUnique = true)]
         public string PartnerNo { get; set; }
+        [MaxLength(30)]
         public string PartnerName { get; set; }
         public bool IsActive { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public string CreatedBy
-        {
-            get { return "SYSTEM"; }
-            set { }
-        }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime CreatedTime
-        {
-            get { return DateTime.Now; }
-            set { }
-        }
-        public string LastModifiedBy { get; set; }
-        public DateTime? LastModifiedTime { get; set; }
+       
     }
 }

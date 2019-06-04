@@ -9,11 +9,12 @@ using System.Threading.Tasks;
 namespace OMS.DataGateway.DataModels
 {
     [Table("TokensManager", Schema = "OMS")]
-    public class TokensManager
+    public class TokensManager : ModelBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int TokenID { get; set; }
+        [MaxLength(200)]
         public string TokenKey { get; set; }
         public DateTime IssuedOn { get; set; }
         public DateTime ExpiresOn { get; set; }
@@ -21,20 +22,7 @@ namespace OMS.DataGateway.DataModels
         [ForeignKey("User")]
         public int UserID { get; set; }
         public User User { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public string CreatedBy
-        {
-            get { return "SYSTEM"; }
-            set { }
-        }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime CreatedTime
-        {
-            get { return DateTime.Now; }
-            set { }
-        }
-        public string LastModifiedBy { get; set; }
-        public DateTime? LastModifiedTime { get; set; }
+        
 
     }
 }
