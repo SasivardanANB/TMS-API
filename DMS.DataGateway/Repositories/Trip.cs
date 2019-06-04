@@ -655,8 +655,6 @@ namespace DMS.DataGateway.Repositories
             return response;
         }
 
-        
-
         public TripResponse UpdateEntireTripStatus(TripsByDriverRequest tripsByDriverRequest)
         {
             TripResponse tripResponse = new TripResponse()
