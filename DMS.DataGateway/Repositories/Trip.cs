@@ -498,13 +498,17 @@ namespace DMS.DataGateway.Repositories
                                                PoliceNumber = trip.PoliceNumber,
                                                TripStatus = trip.TripStatus.StatusName,
                                                TripStatusId = trip.CurrentTripStatusId,
-                                               OrderType = trip.OrderType
+                                               OrderType = trip.OrderType,
+                                               TripDate = trip.TripDate,
+                                               LastModifiedTime = trip.LastModifiedTime
                                            }).ToList();
 
                         if (tripFilter.OrderType != 0)
                         {
                             tripsByUser = tripsByUser.Where(t => t.OrderType == tripFilter.OrderType).ToList();
                         }
+                        else
+                            tripsByUser = tripsByUser.OrderByDescending(t => t.LastModifiedTime).ToList();
                         foreach (var trip in tripsByUser)
                         {
                             var stopPoints = (from sp in context.TripDetails
@@ -576,6 +580,8 @@ namespace DMS.DataGateway.Repositories
                         var tripID = context.TripDetails.Where(t => t.ID == tripStatusEventLogFilter.StopPointId).Select(t => t.TripID).FirstOrDefault();
                         var tripDetails = context.TripHeaders.Where(t => t.ID == tripID).FirstOrDefault();
                         tripDetails.CurrentTripStatusId = tripStatusEventLogFilter.TripStatusId;
+                        tripDetails.LastModifiedBy = "SYSTEM";
+                        tripDetails.LastModifiedTime = DateTime.Now;
 
                         context.TripStatusHistories.Add(dataTripStatusEventLog);
                         context.SaveChanges();
@@ -669,6 +675,8 @@ namespace DMS.DataGateway.Repositories
                         //For getting trip deatails and updating trip status
                         var tripDetails = context.TripHeaders.Where(t => t.ID == tripFilter.ID).FirstOrDefault();
                         tripDetails.CurrentTripStatusId = tripFilter.TripStatusId;
+                        tripDetails.LastModifiedBy = "SYSTEM";
+                        tripDetails.LastModifiedTime = DateTime.Now;
                         context.SaveChanges();
 
                         var tripsByUser = (from trip in context.TripHeaders
