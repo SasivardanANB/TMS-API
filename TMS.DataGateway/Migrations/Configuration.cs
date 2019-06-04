@@ -50,6 +50,9 @@ namespace TMS.DataGateway.Migrations
                 string fleetTypes = "TMS.DataGateway.SeedData.FleetTypes.csv";
                 string partnerTypes = "TMS.DataGateway.SeedData.PartnerTypes.csv";
                 string vehicleTypes = "TMS.DataGateway.SeedData.VehicleTypes.csv";
+                string users = "TMS.DataGateway.SeedData.Users.csv";
+                string roles = "TMS.DataGateway.SeedData.Roles.csv";
+                string userRoles = "TMS.DataGateway.SeedData.UserRoles.csv";
 
                 using (Stream stream = assembly.GetManifestResourceStream(applications))
                 {
@@ -59,9 +62,10 @@ namespace TMS.DataGateway.Migrations
                         csvReader.Configuration.HeaderValidated = null;
                         csvReader.Configuration.MissingFieldFound = null;
                         var applicationData = csvReader.GetRecords<DataModel.Application>().ToArray();
-                        context.Applications.AddOrUpdate(c => c.ID, applicationData);
+                        context.Applications.AddOrUpdate(c => c.ApplicationCode, applicationData);
                     }
                 }
+                context.SaveChanges();
 
                 #region "menus, activities & menuactivities"
 
@@ -73,9 +77,10 @@ namespace TMS.DataGateway.Migrations
                         csvReader.Configuration.HeaderValidated = null;
                         csvReader.Configuration.MissingFieldFound = null;
                         var menuData = csvReader.GetRecords<DataModel.Menu>().ToArray();
-                        context.Menus.AddOrUpdate(c => c.ID, menuData);
+                        context.Menus.AddOrUpdate(c => c.MenuCode, menuData);
                     }
                 }
+                context.SaveChanges();
 
                 using (Stream stream = assembly.GetManifestResourceStream(activities))
                 {
@@ -85,10 +90,9 @@ namespace TMS.DataGateway.Migrations
                         csvReader.Configuration.HeaderValidated = null;
                         csvReader.Configuration.MissingFieldFound = null;
                         var activitiesData = csvReader.GetRecords<DataModel.Activity>().ToArray();
-                        context.Activities.AddOrUpdate(c => c.ID, activitiesData);
+                        context.Activities.AddOrUpdate(c => c.ActivityCode, activitiesData);
                     }
                 }
-
                 context.SaveChanges();
 
                 using (Stream stream = assembly.GetManifestResourceStream(menuActivities))
@@ -109,6 +113,7 @@ namespace TMS.DataGateway.Migrations
                         }
                     }
                 }
+                context.SaveChanges();
 
                 #endregion
 
@@ -122,10 +127,9 @@ namespace TMS.DataGateway.Migrations
                         csvReader.Configuration.HeaderValidated = null;
                         csvReader.Configuration.MissingFieldFound = null;
                         var provincesData = csvReader.GetRecords<DataModel.Province>().ToArray();
-                        context.Provinces.AddOrUpdate(c => c.ID, provincesData);
+                        context.Provinces.AddOrUpdate(c => c.ProvinceCode, provincesData);
                     }
                 }
-
                 context.SaveChanges();
 
                 using (Stream stream = assembly.GetManifestResourceStream(cities))
@@ -138,7 +142,7 @@ namespace TMS.DataGateway.Migrations
                         var citiesData = csvReader.GetRecords<CitySeed>().ToArray();
                         foreach (CitySeed city in citiesData)
                         {
-                            context.Cities.AddOrUpdate(c => c.ID, new DataModel.City
+                            context.Cities.AddOrUpdate(c => c.CityCode, new DataModel.City
                             {
                                 CityCode = city.CityCode,
                                 CityDescription = city.CityName,
@@ -147,7 +151,6 @@ namespace TMS.DataGateway.Migrations
                         }
                     }
                 }
-
                 context.SaveChanges();
 
                 using (Stream stream = assembly.GetManifestResourceStream(subdistricts))
@@ -160,7 +163,7 @@ namespace TMS.DataGateway.Migrations
                         var subdistrictsData = csvReader.GetRecords<SubDistrictSeed>().ToArray();
                         foreach (SubDistrictSeed subDistrict in subdistrictsData)
                         {
-                            context.SubDistricts.AddOrUpdate(c => c.ID, new DataModel.SubDistrict
+                            context.SubDistricts.AddOrUpdate(c => c.SubdistrictCode, new DataModel.SubDistrict
                             {
                                 SubdistrictCode = subDistrict.SubdistrictCode,
                                 SubdistrictName = subDistrict.SubdistrictName,
@@ -169,7 +172,6 @@ namespace TMS.DataGateway.Migrations
                         }
                     }
                 }
-
                 context.SaveChanges();
 
                 using (Stream stream = assembly.GetManifestResourceStream(postalCodes))
@@ -182,7 +184,7 @@ namespace TMS.DataGateway.Migrations
                         var postalCodesData = csvReader.GetRecords<DataModel.PostalCode>().ToArray();
                         foreach (DataModel.PostalCode postalCode in postalCodesData)
                         {
-                            context.PostalCodes.AddOrUpdate(c => c.ID, new DataModel.PostalCode
+                            context.PostalCodes.AddOrUpdate(c => c.PostalCodeNo, new DataModel.PostalCode
                             {
                                 PostalCodeNo = postalCode.PostalCodeNo,
                                 SubDistrictID = postalCode.SubDistrictID
@@ -190,6 +192,7 @@ namespace TMS.DataGateway.Migrations
                         }
                     }
                 }
+                context.SaveChanges();
 
                 #endregion
 
@@ -203,10 +206,9 @@ namespace TMS.DataGateway.Migrations
                         csvReader.Configuration.HeaderValidated = null;
                         csvReader.Configuration.MissingFieldFound = null;
                         var companiesData = csvReader.GetRecords<DataModel.CompanyCode>().ToArray();
-                        context.CompanyCodes.AddOrUpdate(c => c.ID, companiesData);
+                        context.CompanyCodes.AddOrUpdate(c => c.CompanyCodeCode, companiesData);
                     }
                 }
-
                 context.SaveChanges();
 
                 using (Stream stream = assembly.GetManifestResourceStream(businessAreas))
@@ -219,7 +221,7 @@ namespace TMS.DataGateway.Migrations
                         var businessAreasData = csvReader.GetRecords<BusinessAreaSeed>().ToArray();
                         foreach (BusinessAreaSeed businessArea in businessAreasData)
                         {
-                            context.BusinessAreas.AddOrUpdate(c => c.ID, new DataModel.BusinessArea
+                            context.BusinessAreas.AddOrUpdate(c => c.BusinessAreaCode, new DataModel.BusinessArea
                             {
                                 BusinessAreaCode = businessArea.BusinessAreaCode,
                                 BusinessAreaDescription = businessArea.BusinessAreaDescription,
@@ -228,6 +230,7 @@ namespace TMS.DataGateway.Migrations
                         }
                     }
                 }
+                context.SaveChanges();
 
                 #endregion
 
@@ -239,9 +242,10 @@ namespace TMS.DataGateway.Migrations
                         csvReader.Configuration.HeaderValidated = null;
                         csvReader.Configuration.MissingFieldFound = null;
                         var orderStatusData = csvReader.GetRecords<DataModel.OrderStatus>().ToArray();
-                        context.OrderStatuses.AddOrUpdate(c => c.ID, orderStatusData);
+                        context.OrderStatuses.AddOrUpdate(c => c.OrderStatusCode, orderStatusData);
                     }
                 }
+                context.SaveChanges();
 
                 using (Stream stream = assembly.GetManifestResourceStream(fleetTypes))
                 {
@@ -254,6 +258,7 @@ namespace TMS.DataGateway.Migrations
                         context.FleetTypes.AddOrUpdate(c => c.ID, fleetTypeData);
                     }
                 }
+                context.SaveChanges();
 
                 using (Stream stream = assembly.GetManifestResourceStream(partnerTypes))
                 {
@@ -263,9 +268,10 @@ namespace TMS.DataGateway.Migrations
                         csvReader.Configuration.HeaderValidated = null;
                         csvReader.Configuration.MissingFieldFound = null;
                         var partnerTypeData = csvReader.GetRecords<DataModel.PartnerType>().ToArray();
-                        context.PartnerTypes.AddOrUpdate(c => c.ID, partnerTypeData);
+                        context.PartnerTypes.AddOrUpdate(c => c.PartnerTypeCode, partnerTypeData);
                     }
                 }
+                context.SaveChanges();
 
                 using (Stream stream = assembly.GetManifestResourceStream(vehicleTypes))
                 {
@@ -275,12 +281,61 @@ namespace TMS.DataGateway.Migrations
                         csvReader.Configuration.HeaderValidated = null;
                         csvReader.Configuration.MissingFieldFound = null;
                         var vehicleTypeData = csvReader.GetRecords<DataModel.VehicleType>().ToArray();
-                        context.VehicleTypes.AddOrUpdate(c => c.ID, vehicleTypeData);
+                        context.VehicleTypes.AddOrUpdate(c => c.VehicleTypeCode, vehicleTypeData);
                     }
                 }
-
-                // Uncomment below line while debugging seed method
                 context.SaveChanges();
+
+                #region "Users, Roles & UserRoles"
+
+                using (Stream stream = assembly.GetManifestResourceStream(users))
+                {
+                    using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                    {
+                        CsvReader csvReader = new CsvReader(reader);
+                        csvReader.Configuration.HeaderValidated = null;
+                        csvReader.Configuration.MissingFieldFound = null;
+                        var usersData = csvReader.GetRecords<DataModel.User>().ToArray();
+                        context.Users.AddOrUpdate(c => c.UserName, usersData);
+                    }
+                }
+                context.SaveChanges();
+
+                using (Stream stream = assembly.GetManifestResourceStream(roles))
+                {
+                    using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                    {
+                        CsvReader csvReader = new CsvReader(reader);
+                        csvReader.Configuration.HeaderValidated = null;
+                        csvReader.Configuration.MissingFieldFound = null;
+                        var rolesData = csvReader.GetRecords<DataModel.Role>().ToArray();
+                        context.Roles.AddOrUpdate(c => c.RoleCode, rolesData);
+                    }
+                }
+                context.SaveChanges();
+
+                using (Stream stream = assembly.GetManifestResourceStream(userRoles))
+                {
+                    using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                    {
+                        CsvReader csvReader = new CsvReader(reader);
+                        csvReader.Configuration.HeaderValidated = null;
+                        csvReader.Configuration.MissingFieldFound = null;
+                        var userRoleData = csvReader.GetRecords<UserRoleSeed>().ToArray();
+                        foreach (UserRoleSeed userRole in userRoleData)
+                        {
+                            context.UserRoles.AddOrUpdate(c => c.ID, new DataModel.UserRoles
+                            {
+                                UserID = context.Users.Where(u => u.UserName == userRole.UserName).Select(u => u.ID).FirstOrDefault(),
+                                RoleID = context.Roles.Where(r => r.RoleCode == userRole.RoleCode).Select(r => r.ID).FirstOrDefault(),
+                                BusinessAreaID = context.BusinessAreas.Where(b => b.BusinessAreaCode == userRole.BusinessAreaCode).Select(b => b.ID).FirstOrDefault()
+                            });
+                        }
+                    }
+                }
+                context.SaveChanges();
+
+                #endregion
             }
             catch (DbEntityValidationException dbEx)
             {
@@ -324,6 +379,13 @@ namespace TMS.DataGateway.Migrations
             public string BusinessAreaCode { get; set; }
             public string BusinessAreaDescription { get; set; }
             public string CompanyCodeCode { get; set; }
+        }
+
+        public class UserRoleSeed
+        {
+            public string UserName { get; set; }
+            public string RoleCode { get; set; }
+            public string BusinessAreaCode { get; set; }
         }
 
         internal class CustomSqlServerMigrationSqlGenerator : SqlServerMigrationSqlGenerator
