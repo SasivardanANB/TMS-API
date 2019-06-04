@@ -144,6 +144,9 @@
     <EmbeddedResource Include="SeedData\SubDistricts.csv" />
     <EmbeddedResource Include="SeedData\OrderStatus.csv" />
     <EmbeddedResource Include="SeedData\PartnerType.csv" />
+    <EmbeddedResource Include="SeedData\Users.csv" />
+    <EmbeddedResource Include="SeedData\Roles.csv" />
+    <EmbeddedResource Include="SeedData\UserRoles.csv" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
