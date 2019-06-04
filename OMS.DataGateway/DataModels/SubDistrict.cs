@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace OMS.DataGateway.DataModels
 {
     [Table("SubDistrict", Schema = "OMS")]
-    public class SubDistrict
+    public class SubDistrict : ModelBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -23,19 +23,6 @@ namespace OMS.DataGateway.DataModels
         [ForeignKey("City")]
         public int CityID { get; set; }
         public City City { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public string CreatedBy
-        {
-            get { return "SYSTEM"; }
-            set { }
-        }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime CreatedTime
-        {
-            get { return DateTime.Now; }
-            set { }
-        }
-        public string LastModifiedBy { get; set; }
-        public DateTime? LastModifiedTime { get; set; }
+       
     }
 }

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace OMS.DataGateway.DataModels
 {
     [Table("Activity", Schema = "OMS")]
-    public class Activity
+    public class Activity : ModelBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -20,19 +20,5 @@ namespace OMS.DataGateway.DataModels
         public string ActivityCode { get; set; }
         [MaxLength(225)]
         public string ActivityDescription { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public string CreatedBy
-        {
-            get { return "SYSTEM"; }
-            set { }
-        }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime CreatedTime
-        {
-            get { return DateTime.Now; }
-            set { }
-        }
-        public string LastModifiedBy { get; set; }
-        public DateTime? LastModifiedTime { get; set; }
     }
 }

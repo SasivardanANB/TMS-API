@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace OMS.DataGateway.DataModels
 {
     [Table("PartnerPartnerType", Schema = "OMS")]
-    public class PartnerPartnerType
+    public class PartnerPartnerType :ModelBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

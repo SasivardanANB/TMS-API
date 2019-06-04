@@ -75,6 +75,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataModels\ModelBase.cs" />
     <Compile Include="DataModels\PartnerPartnerType.cs" />
     <Compile Include="DataModels\ShipmentSAP.cs" />
     <Compile Include="DataModels\PackingSheet.cs" />
@@ -93,7 +94,6 @@
     <Compile Include="DataModels\BusinessArea.cs" />
     <Compile Include="DataModels\City.cs" />
     <Compile Include="DataModels\CompanyCode.cs" />
-    <Compile Include="DataModels\FieldLabelMenu.cs" />
     <Compile Include="DataModels\Menu.cs" />
     <Compile Include="DataModels\OMSDBContext.cs" />
     <Compile Include="DataModels\PostalCode.cs" />
@@ -104,33 +104,9 @@
     <Compile Include="DataModels\SubDistrict.cs" />
     <Compile Include="DataModels\UserRoles.cs" />
     <Compile Include="Encryption\EncryptionLibrary.cs" />
-    <Compile Include="Migrations\201904260626019_OMS_v1.0_AllInitial.cs" />
-    <Compile Include="Migrations\201904260626019_OMS_v1.0_AllInitial.Designer.cs">
-      <DependentUpon>201904260626019_OMS_v1.0_AllInitial.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201904260842134_OMS_V2.0.cs" />
-    <Compile Include="Migrations\201904260842134_OMS_V2.0.Designer.cs">
-      <DependentUpon>201904260842134_OMS_V2.0.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201905020648345_oms_v1.2_New.cs" />
-    <Compile Include="Migrations\201905020648345_oms_v1.2_New.Designer.cs">
-      <DependentUpon>201905020648345_oms_v1.2_New.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201905161011110_oms_v1.0_Business.cs" />
-    <Compile Include="Migrations\201905161011110_oms_v1.0_Business.Designer.cs">
-      <DependentUpon>201905161011110_oms_v1.0_Business.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201905230445106_UserNamechanges.cs" />
-    <Compile Include="Migrations\201905230445106_UserNamechanges.Designer.cs">
-      <DependentUpon>201905230445106_UserNamechanges.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201905280539574_oms_v1.0_PartnerPartnerType.cs" />
-    <Compile Include="Migrations\201905280539574_oms_v1.0_PartnerPartnerType.Designer.cs">
-      <DependentUpon>201905280539574_oms_v1.0_PartnerPartnerType.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201905300606566_oms_v1.0_EstimatedDateatDetaillevel.cs" />
-    <Compile Include="Migrations\201905300606566_oms_v1.0_EstimatedDateatDetaillevel.Designer.cs">
-      <DependentUpon>201905300606566_oms_v1.0_EstimatedDateatDetaillevel.cs</DependentUpon>
+    <Compile Include="Migrations\201906040646195_OMSDB_v1.0.cs" />
+    <Compile Include="Migrations\201906040646195_OMSDB_v1.0.Designer.cs">
+      <DependentUpon>201906040646195_OMSDB_v1.0.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -153,26 +129,8 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
-    <EmbeddedResource Include="Migrations\201904260626019_OMS_v1.0_AllInitial.resx">
-      <DependentUpon>201904260626019_OMS_v1.0_AllInitial.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201904260842134_OMS_V2.0.resx">
-      <DependentUpon>201904260842134_OMS_V2.0.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201905020648345_oms_v1.2_New.resx">
-      <DependentUpon>201905020648345_oms_v1.2_New.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201905161011110_oms_v1.0_Business.resx">
-      <DependentUpon>201905161011110_oms_v1.0_Business.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201905230445106_UserNamechanges.resx">
-      <DependentUpon>201905230445106_UserNamechanges.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201905280539574_oms_v1.0_PartnerPartnerType.resx">
-      <DependentUpon>201905280539574_oms_v1.0_PartnerPartnerType.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201905300606566_oms_v1.0_EstimatedDateatDetaillevel.resx">
-      <DependentUpon>201905300606566_oms_v1.0_EstimatedDateatDetaillevel.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201906040646195_OMSDB_v1.0.resx">
+      <DependentUpon>201906040646195_OMSDB_v1.0.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SeedData\applications.csv" />
     <EmbeddedResource Include="SeedData\Activities.csv" />
