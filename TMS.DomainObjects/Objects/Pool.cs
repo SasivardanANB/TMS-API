@@ -10,13 +10,18 @@ namespace TMS.DomainObjects.Objects
     public class Pool
     {
         public int ID { get; set; }
+        [MaxLength(15)]
         public string PoolNo { get; set; }
+        [MaxLength(10)]
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidPoolCode")]
         public string PoolName { get; set; }
+        [MaxLength(50)]
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidPoolName")]
         public string PoolDescription { get; set; }
+        [MaxLength(200)]
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidPhone")]
         public string Address { get; set; }
+        [MaxLength(15)]
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidPhone")]
         public string ContactNumber { get; set; }
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidCityID")]

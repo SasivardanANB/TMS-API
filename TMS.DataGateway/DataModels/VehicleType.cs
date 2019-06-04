@@ -17,6 +17,7 @@ namespace TMS.DataGateway.DataModels
         [MaxLength(10)]
         [Index("VehicleType_VehicleTypeCode", IsUnique = true)]
         public string VehicleTypeCode { get; set; }
+        [MaxLength(50)]
         public string VehicleTypeDescription { get; set; }
     }
 }

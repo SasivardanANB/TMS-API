@@ -17,6 +17,7 @@ namespace TMS.DataGateway.DataModels
         [ForeignKey("OrderDetail")]
         public int OrderDetailID { get; set; }
         public OrderDetail OrderDetail { get; set; }
+        [MaxLength(20)]
         public string ShipmentSAPNo { get; set; }
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public string CreatedBy

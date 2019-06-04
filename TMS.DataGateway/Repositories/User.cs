@@ -457,8 +457,6 @@ namespace TMS.DataGateway.Repositories
                             int roleId = role.Requests[0].ID;
                             roleDetails.RoleCode = role.Requests[0].RoleCode;
                             roleDetails.RoleDescription = role.Requests[0].RoleDescription;
-                            roleDetails.ValidFrom = role.Requests[0].ValidFrom;
-                            roleDetails.ValidTo = role.Requests[0].ValidTo;
                             context.Entry(roleDetails).State = System.Data.Entity.EntityState.Modified;
                             roleDetails.LastModifiedBy = role.LastModifiedBy;
                             roleDetails.LastModifiedTime = DateTime.Now;
@@ -541,59 +539,67 @@ namespace TMS.DataGateway.Repositories
                             roleObject.CreatedBy = role.CreatedBy;
                             roleObject.CreatedTime = DateTime.Now;
                             roleObject.LastModifiedTime = null;
-                            context.Roles.Add(roleObject);
-                            context.SaveChanges();
-                            foreach (var menuItem in item.RoleMenus)
+                            var checkRoleCode = context.Roles.Where(r => r.RoleCode == roleObject.RoleCode && !r.IsDelete).FirstOrDefault();
+                            if (checkRoleCode == null)
                             {
-                                Domain.RoleMenu roleMenuObj = new Domain.RoleMenu()
-                                {
-                                    ID = menuItem.ID,
-                                };
-                                var configmenu = new MapperConfiguration(cfg =>
-                                {
-                                    cfg.CreateMap<Domain.RoleMenu, DataModel.RoleMenu>().ReverseMap()
-                                    .ForMember(x => x.MenuCode, opt => opt.Ignore())
-                                    .ForMember(x => x.MenuDescription, opt => opt.Ignore())
-                                    .ForMember(x => x.MenuURL, opt => opt.Ignore())
-                                    .ForMember(x => x.RoleMenuActivities, opt => opt.Ignore());
-                                });
-                                IMapper mappermenu = configmenu.CreateMapper();
-                                var roleMenu = mappermenu.Map<Domain.RoleMenu, DataModel.RoleMenu>(roleMenuObj);
-                                roleMenu.RoleID = roleObject.ID;
-                                roleMenu.MenuID = menuItem.ID;
-                                roleMenu.CreatedBy = role.CreatedBy;
-                                roleMenu.CreatedTime = DateTime.Now;
-                                roleMenu.LastModifiedTime = null;
-                                context.RoleMenus.Add(roleMenu);
+                                context.Roles.Add(roleObject);
                                 context.SaveChanges();
-                                foreach (var menuactivity in menuItem.RoleMenuActivities)
+                                foreach (var menuItem in item.RoleMenus)
                                 {
-
-                                    Domain.RoleMenuActivity roleMenuActivityObj = new Domain.RoleMenuActivity()
+                                    Domain.RoleMenu roleMenuObj = new Domain.RoleMenu()
                                     {
-                                        ID = menuactivity.ID
+                                        ID = menuItem.ID,
                                     };
-                                    var configActivity = new MapperConfiguration(cfg =>
+                                    var configmenu = new MapperConfiguration(cfg =>
                                     {
-                                        cfg.CreateMap<Domain.RoleMenuActivity, DataModel.RoleMenuActivity>().ReverseMap()
-                                        .ForMember(x => x.ActivityCode, opt => opt.Ignore())
-                                        .ForMember(x => x.ActivityDescription, opt => opt.Ignore());
+                                        cfg.CreateMap<Domain.RoleMenu, DataModel.RoleMenu>().ReverseMap()
+                                        .ForMember(x => x.MenuCode, opt => opt.Ignore())
+                                        .ForMember(x => x.MenuDescription, opt => opt.Ignore())
+                                        .ForMember(x => x.MenuURL, opt => opt.Ignore())
+                                        .ForMember(x => x.RoleMenuActivities, opt => opt.Ignore());
                                     });
-
-                                    IMapper mapperActivity = configActivity.CreateMapper();
-                                    var roleact = mapperActivity.Map<Domain.RoleMenuActivity, DataModel.RoleMenuActivity>(roleMenuActivityObj);
-                                    roleact.ActivityID = menuactivity.ID;
-                                    roleact.RoleMenuID = roleMenu.ID;
-                                    roleact.CreatedBy = role.CreatedBy;
-                                    roleact.CreatedTime = DateTime.Now;
-                                    roleact.LastModifiedTime = null;
-                                    context.RoleMenuActivity.Add(roleact);
+                                    IMapper mappermenu = configmenu.CreateMapper();
+                                    var roleMenu = mappermenu.Map<Domain.RoleMenu, DataModel.RoleMenu>(roleMenuObj);
+                                    roleMenu.RoleID = roleObject.ID;
+                                    roleMenu.MenuID = menuItem.ID;
+                                    roleMenu.CreatedBy = role.CreatedBy;
+                                    roleMenu.CreatedTime = DateTime.Now;
+                                    roleMenu.LastModifiedTime = null;
+                                    context.RoleMenus.Add(roleMenu);
                                     context.SaveChanges();
-                                }
+                                    foreach (var menuactivity in menuItem.RoleMenuActivities)
+                                    {
 
+                                        Domain.RoleMenuActivity roleMenuActivityObj = new Domain.RoleMenuActivity()
+                                        {
+                                            ID = menuactivity.ID
+                                        };
+                                        var configActivity = new MapperConfiguration(cfg =>
+                                        {
+                                            cfg.CreateMap<Domain.RoleMenuActivity, DataModel.RoleMenuActivity>().ReverseMap()
+                                            .ForMember(x => x.ActivityCode, opt => opt.Ignore())
+                                            .ForMember(x => x.ActivityDescription, opt => opt.Ignore());
+                                        });
+
+                                        IMapper mapperActivity = configActivity.CreateMapper();
+                                        var roleact = mapperActivity.Map<Domain.RoleMenuActivity, DataModel.RoleMenuActivity>(roleMenuActivityObj);
+                                        roleact.ActivityID = menuactivity.ID;
+                                        roleact.RoleMenuID = roleMenu.ID;
+                                        roleact.CreatedBy = role.CreatedBy;
+                                        roleact.CreatedTime = DateTime.Now;
+                                        roleact.LastModifiedTime = null;
+                                        context.RoleMenuActivity.Add(roleact);
+                                        context.SaveChanges();
+                                    }
+
+                                }
+                                roleResponse.StatusMessage = DomainObjects.Resource.ResourceData.RolesCreated;
+                            }
+                            else
+                            {
+                                roleResponse.StatusMessage = DomainObjects.Resource.ResourceData.RoleCodeExists;
                             }
                         }
-                        roleResponse.StatusMessage = DomainObjects.Resource.ResourceData.RolesCreated;
                     }
                     role.Requests = mapper.Map<List<DataModel.Role>, List<Domain.Role>>(roles);
                     roleResponse.Data = role.Requests;
@@ -662,8 +668,6 @@ namespace TMS.DataGateway.Repositories
                         ID = role.ID,
                         RoleCode = role.RoleCode,
                         RoleDescription = role.RoleDescription,
-                        ValidFrom = role.ValidFrom,
-                        ValidTo = role.ValidTo,
                         IsActive = role.IsActive
                     }).ToList();
 
@@ -686,24 +690,6 @@ namespace TMS.DataGateway.Repositories
                         {
                             rolesList = rolesList.Where(s => s.RoleDescription.ToLower().Contains(filter.RoleDescription.ToLower())).ToList();
                         }
-
-                        if (filter.ValidFrom != DateTime.MinValue)
-                        {
-                            rolesList = rolesList.Where(s => s.ValidFrom >= filter.ValidFrom).ToList();
-                        }
-
-                        if (filter.ValidTo != DateTime.MinValue)
-                        {
-                            rolesList = rolesList.Where(s => s.ValidTo <= filter.ValidTo).ToList();
-                        }
-                        //if (!filter.IsActive)
-                        //{
-                        //    rolesList = rolesList.Where(s => s.IsActive == false).ToList();
-                        //}
-                        //else
-                        //{
-                        //    rolesList = rolesList.Where(s => s.IsActive).ToList();
-                        //}
                     }
 
                     // Sorting
@@ -728,18 +714,6 @@ namespace TMS.DataGateway.Repositories
                                 break;
                             case "roledescription_desc":
                                 rolesList = rolesList.OrderByDescending(s => s.RoleDescription).ToList();
-                                break;
-                            case "validfrom":
-                                rolesList = rolesList.OrderBy(s => s.ValidFrom).ToList();
-                                break;
-                            case "validfrom_desc":
-                                rolesList = rolesList.OrderByDescending(s => s.ValidFrom).ToList();
-                                break;
-                            case "validto":
-                                rolesList = rolesList.OrderBy(s => s.ValidTo).ToList();
-                                break;
-                            case "validto_desc":
-                                rolesList = rolesList.OrderByDescending(s => s.ValidTo).ToList();
                                 break;
                             default:  // ID Descending 
                                 rolesList = rolesList.OrderByDescending(s => s.ID).ToList();
@@ -797,8 +771,6 @@ namespace TMS.DataGateway.Repositories
                                      ID = role.ID,
                                      RoleCode = role.RoleCode,
                                      RoleDescription = role.RoleDescription,
-                                     ValidFrom = role.ValidFrom,
-                                     ValidTo = role.ValidTo,
                                      IsActive = role.IsActive
                                  }).FirstOrDefault();
 
@@ -809,8 +781,6 @@ namespace TMS.DataGateway.Repositories
                         userRole.ID = roles.ID;
                         userRole.RoleCode = roles.RoleCode;
                         userRole.RoleDescription = roles.RoleDescription;
-                        userRole.ValidFrom = roles.ValidFrom;
-                        userRole.ValidTo = roles.ValidTo;
                         userRole.IsActive = roles.IsActive;
                         var roleMenuData = (from roleMenu in context.RoleMenus
                                             where roleMenu.RoleID == roleId

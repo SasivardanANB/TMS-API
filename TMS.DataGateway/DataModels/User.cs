@@ -15,10 +15,13 @@ namespace TMS.DataGateway.DataModels
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
         [Required(ErrorMessage = "")]
-        [MaxLength(50)]
+        [MaxLength(30)]
         public string UserName { get; set; }
+        [MaxLength(30)]
         public string Password { get; set; }
+        [MaxLength(30)]
         public string FirstName { get; set; }
+        [MaxLength(30)]
         public string LastName { get; set; }
         public bool IsActive { get; set; }
         public bool IsDelete { get; set; }

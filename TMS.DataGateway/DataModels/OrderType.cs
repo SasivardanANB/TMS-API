@@ -18,7 +18,7 @@ namespace TMS.DataGateway.DataModels
         [MaxLength(4)]
         [Index("OrderType_OrderTypeCode", IsUnique = true)]
         public string OrderTypeCode { get; set; }
-        [MaxLength(30)]
+        [MaxLength(50)]
         public string OrderTypeDescription { get; set; }
     }
 }

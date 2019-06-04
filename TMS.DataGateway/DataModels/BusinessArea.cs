@@ -15,7 +15,7 @@ namespace TMS.DataGateway.DataModels
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
         [Required(ErrorMessage = "")]
-        [MaxLength(5)]
+        [MaxLength(4)]
         [Index("BusinessArea_BusinessAreaCode", IsUnique = true)]
         public string BusinessAreaCode { get; set; }
         [MaxLength(100)]

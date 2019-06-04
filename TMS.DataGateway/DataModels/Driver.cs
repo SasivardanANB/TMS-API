@@ -17,16 +17,16 @@ namespace TMS.DataGateway.DataModels
         [Index("Driver_DriverNo", IsUnique = true)]
         [MaxLength(12)]
         public string DriverNo { get; set; }
-        [MaxLength(15)]
+        [MaxLength(30)]
         [Required()]
         public string UserName { get; set; }
-        [MaxLength(15)]
+        [MaxLength(30)]
         [Required(ErrorMessage = "Enter first name")]
         public string FirstName { get; set; }
-        [MaxLength(15)]
+        [MaxLength(30)]
         [Required(ErrorMessage = "Enter last name")]
         public string LastName { get; set; }
-        [MaxLength(255)]
+        [MaxLength(200)]
         public string DriverAddress { get; set; }
         [MaxLength(15)]
         [Required(ErrorMessage = "Enter driver phone no")]
@@ -34,7 +34,7 @@ namespace TMS.DataGateway.DataModels
         public bool IsActive { get; set; }
         [MaxLength(50)]
         public string Email { get; set; }
-        [MaxLength(20)]
+        [MaxLength(30)]
         [Required(ErrorMessage = "Enter password")]
         public string Password { get; set; }
         [MaxLength(25)]

@@ -14,7 +14,9 @@ namespace TMS.DataGateway.DataModels
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
+        [MaxLength(4)]
         public string OrderStatusCode { get; set; }
+        [MaxLength(50)]
         public string OrderStatusValue { get; set; }
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public string CreatedBy

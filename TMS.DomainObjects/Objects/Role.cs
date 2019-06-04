@@ -10,11 +10,11 @@ namespace TMS.DomainObjects.Objects
     public class Role
     {
         public int ID { get; set; }
+        [MaxLength(4)]
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidRoleCode")]
         public string RoleCode { get; set; }
+        [MaxLength(30)]
         public string RoleDescription { get; set; }
-        public DateTime ValidFrom { get; set; }
-        public DateTime ValidTo { get; set; }
         public bool IsActive { get; set; }
         public List<RoleMenu> RoleMenus { get; set; }
     }

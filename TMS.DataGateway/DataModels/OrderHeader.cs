@@ -23,17 +23,23 @@ namespace TMS.DataGateway.DataModels
         [Required]
         [MaxLength(15)]
         public string OrderNo { get; set; }
+        [MaxLength(15)]
         public string LegecyOrderNo { get; set; }
         public DateTime OrderDate { get; set; }
         public int OrderType { get; set; }
         [ForeignKey("FleetType")]
         public int FleetTypeID { get; set; }
         public FleetType FleetType { get; set; }
+        [MaxLength(50)]
         public string VehicleShipment { get; set; }
+        [MaxLength(12)]
         public string DriverNo { get; set; }
+        [MaxLength(60)]
         public string DriverName { get; set; }
+        [MaxLength(12)]
         public string VehicleNo { get; set; }
         public decimal OrderWeight { get; set; }
+        [MaxLength(5)]
         public string OrderWeightUM { get; set; }
         
         //[ForeignKey("OrderStatus")]

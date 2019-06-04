@@ -21,6 +21,7 @@ namespace TMS.DataGateway.DataModels
         public int OrderStatusID { get; set; }
         public OrderStatus OrderStatus { get; set; }
         public DateTime StatusDate { get; set; }
+        [MaxLength(50)]
         public string Remarks { get; set; }
         public bool? IsLoad { get; set; }
     }

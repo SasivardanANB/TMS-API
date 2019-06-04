@@ -22,7 +22,7 @@ namespace TMS.DataGateway.DataModels
         public string PoolName { get; set; }
         [MaxLength(50)]
         public string PoolDescription { get; set; }
-        [MaxLength(255)]
+        [MaxLength(200)]
         public string Address { get; set; }
         [MaxLength(15)]
         public string ContactNumber { get; set; }
