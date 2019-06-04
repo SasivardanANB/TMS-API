@@ -429,4 +429,16 @@
   <data name="InvalidPoliceNoLength" xml:space="preserve">
     <value>Police number  should be 3-12 characters</value>
   </data>
+  <data name="RoleCodeExists" xml:space="preserve">
+    <value>Role code already exists</value>
+  </data>
+  <data name="InvalidExpeditorNameLength" xml:space="preserve">
+    <value>Expeditor name should be 3-15 characters</value>
+  </data>
+  <data name="InvalidPartnerAddressLength" xml:space="preserve">
+    <value>Partner address should be 3-50 characters </value>
+  </data>
+  <data name="InvalidPartnerInitialLength" xml:space="preserve">
+    <value>Partner initial should be 3-15 characters</value>
+  </data>
 </root>

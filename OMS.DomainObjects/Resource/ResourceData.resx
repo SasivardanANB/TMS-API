@@ -231,4 +231,7 @@
   <data name="InvalidToken" xml:space="preserve">
     <value>Invalid Token</value>
   </data>
+  <data name="RoleCodeExists" xml:space="preserve">
+    <value>Role code alredy exist</value>
+  </data>
 </root>
