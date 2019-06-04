@@ -96,6 +96,18 @@
     <Compile Include="Migrations\201905310902126_dms_v1.0_DriverCreatedBy.Designer.cs">
       <DependentUpon>201905310902126_dms_v1.0_DriverCreatedBy.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201905310931091_dms_v1.0_DriverCreatedDate.cs" />
+    <Compile Include="Migrations\201905310931091_dms_v1.0_DriverCreatedDate.Designer.cs">
+      <DependentUpon>201905310931091_dms_v1.0_DriverCreatedDate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201905310936567_dms_v1.0_DriverCreatedDateNull.cs" />
+    <Compile Include="Migrations\201905310936567_dms_v1.0_DriverCreatedDateNull.Designer.cs">
+      <DependentUpon>201905310936567_dms_v1.0_DriverCreatedDateNull.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201905311111257_dms_v1.0_LogColumnsAdded.cs" />
+    <Compile Include="Migrations\201905311111257_dms_v1.0_LogColumnsAdded.Designer.cs">
+      <DependentUpon>201905311111257_dms_v1.0_LogColumnsAdded.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\Authenticate.cs" />
@@ -113,6 +125,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201905310902126_dms_v1.0_DriverCreatedBy.resx">
       <DependentUpon>201905310902126_dms_v1.0_DriverCreatedBy.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905310931091_dms_v1.0_DriverCreatedDate.resx">
+      <DependentUpon>201905310931091_dms_v1.0_DriverCreatedDate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905310936567_dms_v1.0_DriverCreatedDateNull.resx">
+      <DependentUpon>201905310936567_dms_v1.0_DriverCreatedDateNull.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905311111257_dms_v1.0_LogColumnsAdded.resx">
+      <DependentUpon>201905311111257_dms_v1.0_LogColumnsAdded.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SeedData\Cities.csv" />
     <EmbeddedResource Include="SeedData\PostalCodes.csv" />

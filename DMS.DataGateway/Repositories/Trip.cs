@@ -95,7 +95,7 @@ namespace DMS.DataGateway.Repositories
                             int userId = 0;
                             int statusId = 0;
                             #region Check if Driver Exists
-                            var driver = context.Drivers.FirstOrDefault(t => t.DriverNo == trip.DriverName);
+                            var driver = context.Drivers.FirstOrDefault(t => t.DriverNo == trip.DriverNo);
                             if (driver != null)
                                 userId = driver.ID;
                             else
@@ -103,7 +103,7 @@ namespace DMS.DataGateway.Repositories
                                 transaction.Rollback();
                                 response.Status = DomainObjects.Resource.ResourceData.Failure;
                                 response.StatusCode = (int)HttpStatusCode.BadRequest;
-                                response.StatusMessage = "User " + trip.DriverName + " is not available in DMS";
+                                response.StatusMessage = "Driver Number " + trip.DriverName + " is not available in DMS";
                                 return response;
                             }
                             #endregion
@@ -263,7 +263,9 @@ namespace DMS.DataGateway.Repositories
                                     CurrentTripStatusId = statusId,
                                     OrderType = trip.OrderType,
                                     TripDate = DateTime.Now,
-                                    BusinessAreaId = businessAreaId
+                                    BusinessAreaId = businessAreaId,
+                                    CreatedBy = "SYSTEM",
+                                    CreatedTime = DateTime.Now
                                 };
                                 context.TripHeaders.Add(tripRequest);
                                 context.SaveChanges();
@@ -289,16 +291,28 @@ namespace DMS.DataGateway.Repositories
 
                                     #region Check If Partners exists
                                     int locationId = 0;
-                                    var location = (from partner in context.Partners
-                                                    join ppt in context.PartnerPartnerTypes on partner.ID equals ppt.PartnerId
-                                                    where partner.PartnerNo == tripLocation.PartnerNo && ppt.PartnerTypeId == partnerTypeId
-                                                    select new
-                                                    {
-                                                        ID = partner.ID
-                                                    }).FirstOrDefault();
+                                    
+                                    var partner = context.Partners.FirstOrDefault(t => t.PartnerNo.Trim().Equals(tripLocation.PartnerNo));
+                                    if (partner != null)
+                                    {
+                                        var location = (from ppt in context.PartnerPartnerTypes
+                                                        where ppt.PartnerTypeId == partnerTypeId
+                                                        select new
+                                                        {
+                                                            ID = ppt.PartnerId
+                                                        }).FirstOrDefault();
 
-                                    if (location != null)
-                                        locationId = location.ID;
+                                        if (location != null)
+                                            locationId = location.ID;
+                                        else
+                                        {
+                                            transaction.Rollback();
+                                            response.Status = DomainObjects.Resource.ResourceData.Failure;
+                                            response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                            response.StatusMessage = tripLocation.PartnerNo + " is not available in DMS";
+                                            return response;
+                                        }
+                                    }
                                     else
                                     {
                                         transaction.Rollback();
@@ -307,6 +321,7 @@ namespace DMS.DataGateway.Repositories
                                         response.StatusMessage = tripLocation.PartnerNo + " is not available in DMS";
                                         return response;
                                     }
+                                    
                                     #endregion
 
                                     #region Create Trip Detail
@@ -468,7 +483,7 @@ namespace DMS.DataGateway.Repositories
                         var tripFilter = tripsByDriverRequest.Requests[0];
 
                         var tripsByUser = (from trip in context.TripHeaders
-                                           where trip.DriverId == tripFilter.UserId
+                                           where trip.DriverId == tripFilter.UserId orderby trip.TripDate ascending
                                            select new Domain.TripDetails
                                            {
                                                ID = trip.ID,
@@ -576,6 +591,42 @@ namespace DMS.DataGateway.Repositories
                                 };
                                 context.StopPointImages.Add(stopPointImages);
                                 context.SaveChanges();
+                            }
+                        }
+
+                        var tripCurrentStopPoint = context.TripDetails.Where(t => t.ID == tripStatusEventLogFilter.StopPointId).FirstOrDefault();
+                        if (tripCurrentStopPoint != null)
+                        {
+                            int tripId = tripCurrentStopPoint.TripID;
+                            var lstCurrentTripStopPoints = (from sp in context.TripDetails
+                                                            where sp.TripID == tripId
+                                                            select sp).ToList();
+
+                            if (lstCurrentTripStopPoints != null && lstCurrentTripStopPoints.Any())
+                            {
+                                var lstEventLogs = new List<Domain.TripStatusEventLog>();
+                                foreach (var sp in lstCurrentTripStopPoints)
+                                {
+                                    var location = (from loc in context.Partners
+                                                    where loc.ID == sp.PartnerId
+                                                    select loc).FirstOrDefault();
+
+                                    var eventLog = from tsEventLog in context.TripStatusHistories
+                                                   where sp.ID == tsEventLog.StopPointId
+                                                   select new Domain.TripStatusEventLog
+                                                   {
+                                                       ID = tsEventLog.ID,
+                                                       StopPointId = tsEventLog.StopPointId,
+                                                       Remarks = tsEventLog.Remarks,
+                                                       StatusDate = tsEventLog.StatusDate,
+                                                       TripStatusId = tsEventLog.TripStatusId,
+                                                       LocationName = location.PartnerName,
+                                                       ShipmentImageGuIds = context.ImageGuids.Where(i => i.ID == tsEventLog.ID).Select(i => i.ImageGuIdValue).ToList()
+                                                   };
+                                    lstEventLogs.AddRange(eventLog.ToList());
+                                }
+                                // Order By status date
+                                response.Data.AddRange(lstEventLogs.OrderByDescending(t => t.StatusDate));
                             }
                         }
 

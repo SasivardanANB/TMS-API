@@ -417,4 +417,16 @@
   <data name="GateOutCreated" xml:space="preserve">
     <value>GateOut created successfully</value>
   </data>
+  <data name="InvalidKIRNoLength" xml:space="preserve">
+    <value>KIR No should be 3-25 characters</value>
+  </data>
+  <data name="InvalidMaxDimensionLength" xml:space="preserve">
+    <value>Dimension should be 3-12 characters</value>
+  </data>
+  <data name="InvalidPlateNumberLength" xml:space="preserve">
+    <value>Plate number  should be 3-12 characters</value>
+  </data>
+  <data name="InvalidPoliceNoLength" xml:space="preserve">
+    <value>Police number  should be 3-12 characters</value>
+  </data>
 </root>

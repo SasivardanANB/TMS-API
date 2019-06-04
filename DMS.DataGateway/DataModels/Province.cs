@@ -20,5 +20,17 @@ namespace DMS.DataGateway.DataModels
         public string ProvinceCode { get; set; }
         [MaxLength(50)]
         public string ProvinceDescription { get; set; }
+        public string CreatedBy
+        {
+            get;
+            set;
+        }
+        public DateTime? CreatedTime
+        {
+            get;
+            set;
+        }
+        public string LastModifiedBy { get; set; }
+        public DateTime? LastModifiedTime { get; set; }
     }
 }

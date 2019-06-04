@@ -20,5 +20,17 @@ namespace DMS.DataGateway.DataModels
         public int PartnerTypeId { get; set; }
         public PartnerType PartnerType { get; set; }
         public Partner Partner { get; set; }
+        public string CreatedBy
+        {
+            get;
+            set;
+        }
+        public DateTime? CreatedTime
+        {
+            get;
+            set;
+        }
+        public string LastModifiedBy { get; set; }
+        public DateTime? LastModifiedTime { get; set; }
     }
 }

@@ -25,14 +25,13 @@ namespace DMS.DataGateway.DataModels
         public bool IsActive { get; set; }
         public string CreatedBy
         {
-            get { return "SYSTEM"; }
-            set { }
+            get;
+            set;
         }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime CreatedTime
+        public DateTime? CreatedTime
         {
-            get { return DateTime.Now; }
-            set { }
+            get;
+            set;
         }
         public string LastModifiedBy { get; set; }
         public DateTime? LastModifiedTime { get; set; }

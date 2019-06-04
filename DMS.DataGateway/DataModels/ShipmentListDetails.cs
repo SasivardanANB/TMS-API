@@ -21,5 +21,17 @@ namespace DMS.DataGateway.DataModels
         public int StopPointId { get; set; }
 
         public TripDetail TripDetail { get; set; }
+        public string CreatedBy
+        {
+            get;
+            set;
+        }
+        public DateTime? CreatedTime
+        {
+            get;
+            set;
+        }
+        public string LastModifiedBy { get; set; }
+        public DateTime? LastModifiedTime { get; set; }
     }
 }

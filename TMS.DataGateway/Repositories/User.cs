@@ -38,31 +38,31 @@ namespace TMS.DataGateway.Repositories
                     if (login.IsSAMALogin)
                     {
                         userData = (from user in context.Users
-                                        where user.UserName == login.UserName
-                                        && !user.IsDelete
-                                        select new Domain.User()
-                                        {
-                                            ID = user.ID,
-                                            FirstName = user.FirstName,
-                                            LastName = user.LastName,
-                                            IsActive = user.IsActive,
-                                            UserName = user.UserName
-                                        }).FirstOrDefault();
+                                    where user.UserName == login.UserName
+                                    && !user.IsDelete
+                                    select new Domain.User()
+                                    {
+                                        ID = user.ID,
+                                        FirstName = user.FirstName,
+                                        LastName = user.LastName,
+                                        IsActive = user.IsActive,
+                                        UserName = user.UserName
+                                    }).FirstOrDefault();
                     }
                     else
                     {
                         string encryptedPassword = Encryption.EncryptionLibrary.EncryptPassword(login.UserPassword);
                         userData = (from user in context.Users
-                                        where user.UserName == login.UserName
-                                        && user.Password == encryptedPassword && !user.IsDelete
-                                        select new Domain.User()
-                                        {
-                                            ID = user.ID,
-                                            FirstName = user.FirstName,
-                                            LastName = user.LastName,
-                                            IsActive = user.IsActive,
-                                            UserName = user.UserName
-                                        }).FirstOrDefault();
+                                    where user.UserName == login.UserName
+                                    && user.Password == encryptedPassword && !user.IsDelete
+                                    select new Domain.User()
+                                    {
+                                        ID = user.ID,
+                                        FirstName = user.FirstName,
+                                        LastName = user.LastName,
+                                        IsActive = user.IsActive,
+                                        UserName = user.UserName
+                                    }).FirstOrDefault();
                     }
                     if (userData != null)
                     {
@@ -248,7 +248,7 @@ namespace TMS.DataGateway.Repositories
                 _logger.Log(LogLevel.Error, ex);
                 userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                 userResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                userResponse.StatusMessage = ex.Message + ex.InnerException == null ? "": ex.InnerException.Message;
+                userResponse.StatusMessage = ex.Message + ex.InnerException == null ? "" : ex.InnerException.Message;
             }
             return userResponse;
         }
@@ -310,7 +310,7 @@ namespace TMS.DataGateway.Repositories
                              FirstName = user.FirstName,
                              LastName = user.LastName,
                              IsActive = user.IsActive,
-                             Password=user.Password,
+                             Password = user.Password,
                              Applications = context.UserApplications.Where(userApp => userApp.UserID == user.ID).Select(userApp => userApp.ApplicationID).ToList(),
                              ApplicationNames = context.Applications.Where(a => (context.UserApplications.Where(userApp => userApp.UserID == user.ID).Select(userApp => userApp.ApplicationID).ToList()).Contains(a.ID)).Select(a => a.ApplicationName).ToList(),
                              Roles = context.Roles.Where(r => (context.UserRoles.Where(ur => ur.UserID == user.ID).Select(l => l.ID).ToList()).Contains(r.ID)).Select(fe => new Domain.Role
@@ -930,7 +930,7 @@ namespace TMS.DataGateway.Repositories
                                     }
                                 }
                                 tMSDBContext.SaveChanges();
-                                
+
                                 userRoleResponse.Status = DomainObjects.Resource.ResourceData.Success;
                             }
                             else
@@ -1493,25 +1493,94 @@ namespace TMS.DataGateway.Repositories
             {
                 using (var context = new TMSDBContext())
                 {
-                    dashboardResponse.AllOrderCount = context.OrderHeaders.Count();
-                    dashboardResponse.BookedCount = context.OrderHeaders.Where(o => o.OrderStatusID == 1).Count();   // For status booked
-                    dashboardResponse.ConfirmedCount = context.OrderHeaders.Where(o => o.OrderStatusID == 3).Count();   // For status confirmed
-                    dashboardResponse.Acceptedcount = context.OrderHeaders.Where(o => o.OrderStatusID == 15).Count();   // For status accepted
-                    dashboardResponse.PODCount = context.OrderHeaders.Where(o => o.OrderStatusID == 11).Count();   // For status pod
-                    dashboardResponse.CancelledCount = context.OrderHeaders.Where(o => o.OrderStatusID == 13).Count();   // For status cancelled
+                    #region Filter Data on the basis of request and Role
+                    var orders = context.OrderHeaders.ToList();
+                    #endregion
+
+                    dashboardResponse.AllOrderCount = orders.Count();
+                    dashboardResponse.BookedCount = orders.Where(o => o.OrderStatusID == 1).Count();   // For status booked
+                    dashboardResponse.ConfirmedCount = orders.Where(o => o.OrderStatusID == 2).Count();   // For status confirmed
+                    dashboardResponse.Acceptedcount = orders.Where(o => o.OrderStatusID == 15).Count();   // For status accepted
+                    dashboardResponse.PODCount = orders.Where(o => o.OrderStatusID == 11).Count();   // For status pod
+                    dashboardResponse.CancelledCount = orders.Where(o => o.OrderStatusID == 13).Count();   // For status cancelled
+                    dashboardResponse.LoadingCount = GetLoadingUnloadingCount(orders, "Load");
+                    dashboardResponse.UnloadingCount = GetLoadingUnloadingCount(orders, "Unload");
+                    dashboardResponse.LoadingCount = GetPrickupDropOffCount(orders, "Load");
+                    dashboardResponse.UnloadingCount = GetPrickupDropOffCount(orders, "Unload");
                 }
                 dashboardResponse.Status = DomainObjects.Resource.ResourceData.Success;
                 dashboardResponse.StatusCode = (int)HttpStatusCode.OK;
                 dashboardResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
             }
-            catch(Exception e)
+            catch (Exception ex)
             {
                 dashboardResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                 dashboardResponse.StatusCode = (int)HttpStatusCode.BadRequest;
-                dashboardResponse.StatusMessage = DomainObjects.Resource.ResourceData.Failure;
+                dashboardResponse.StatusMessage = ex.Message;
             }
-            
+
             return dashboardResponse;
+        }
+
+        private int GetLoadingUnloadingCount(List<OrderHeader> orders, string type)
+        {
+            int count = 0;
+            foreach (var item in orders)
+            {
+                using (var context = new TMSDBContext())
+                {
+                    int confirmArraive = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == "5").ID;
+                    var lastStatus = (from o in orders
+                                      join od in context.OrderDetails on o.ID equals od.OrderHeaderID
+                                      join h in context.OrderStatusHistories on od.ID equals h.OrderDetailID
+                                      where o.ID == item.ID && h.OrderStatusID != confirmArraive orderby h.StatusDate descending
+                                      select new
+                                      {
+                                          IsLoad = h.IsLoad,
+                                          StatusId = h.OrderStatusID,
+                                          OrderDetailId = h.OrderDetailID,
+                                          StatusDate = h.StatusDate
+                                      }).FirstOrDefault();
+
+                    if (lastStatus != null && type == "Load" && lastStatus.IsLoad == true)
+                        count++;
+                    else if (lastStatus != null && type == "Unload" && lastStatus.IsLoad == false)
+                        count++;
+                }
+            }
+            return count;
+
+        }
+
+        private int GetPrickupDropOffCount(List<OrderHeader> orders, string type)
+        {
+            int count = 0;
+            foreach (var item in orders)
+            {
+                using (var context = new TMSDBContext())
+                {
+                    int confirmArraive = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == "5").ID;
+                    var lastStatus = (from o in orders
+                                      join od in context.OrderDetails on o.ID equals od.OrderHeaderID
+                                      join h in context.OrderStatusHistories on od.ID equals h.OrderDetailID
+                                      where o.ID == item.ID && h.OrderStatusID == confirmArraive
+                                      orderby h.StatusDate descending
+                                      select new
+                                      {
+                                          IsLoad = h.IsLoad,
+                                          StatusId = h.OrderStatusID,
+                                          OrderDetailId = h.OrderDetailID,
+                                          StatusDate = h.StatusDate
+                                      }).FirstOrDefault();
+
+                    if (lastStatus != null && type == "Load" && lastStatus.IsLoad == true)
+                        count++;
+                    else if (lastStatus != null && type == "Unload" && lastStatus.IsLoad == false)
+                        count++;
+                }
+            }
+            return count;
+
         }
     }
 }

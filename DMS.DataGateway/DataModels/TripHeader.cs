@@ -13,11 +13,11 @@ namespace DMS.DataGateway.DataModels
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ID { get; set; }       
+        public int ID { get; set; }
         [MaxLength(50)]
         [Index("TripNumber", IsUnique = true)]
         public string TripNumber { get; set; }
-        [MaxLength(50)]       
+        [MaxLength(50)]
         public string OrderNumber { get; set; }
         [MaxLength(50)]
         public string TransporterName { get; set; }
@@ -38,17 +38,15 @@ namespace DMS.DataGateway.DataModels
         [ForeignKey("BusinessArea")]
         public int BusinessAreaId { get; set; }
         public BusinessArea BusinessArea { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public string CreatedBy
         {
-            get { return "SYSTEM"; }
-            set { }
+            get;
+            set;
         }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime CreatedTime
+        public DateTime? CreatedTime
         {
-            get { return DateTime.Now; }
-            set { }
+            get;
+            set;
         }
         public string LastModifiedBy { get; set; }
         public DateTime? LastModifiedTime { get; set; }

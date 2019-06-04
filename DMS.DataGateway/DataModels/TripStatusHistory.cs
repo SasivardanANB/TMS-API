@@ -22,5 +22,17 @@ namespace DMS.DataGateway.DataModels
         [ForeignKey("TripStatus")]
         public int TripStatusId { get; set; }
         public virtual TripStatus TripStatus { get; set; }
+        public string CreatedBy
+        {
+            get;
+            set;
+        }
+        public DateTime? CreatedTime
+        {
+            get;
+            set;
+        }
+        public string LastModifiedBy { get; set; }
+        public DateTime? LastModifiedTime { get; set; }
     }
 }

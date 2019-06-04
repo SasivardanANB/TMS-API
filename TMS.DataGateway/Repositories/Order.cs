@@ -37,7 +37,7 @@ namespace TMS.DataGateway.Repositories
                     {
                         try
                         {
-
+                            string soPoNumber = String.Empty;
                             DateTime estimationShipmentDate = DateTime.ParseExact(order.EstimationShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(order.EstimationShipmentTime);
                             DateTime actualShipmentDate = DateTime.ParseExact(order.ActualShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(order.ActualShipmentTime);
 
@@ -53,9 +53,21 @@ namespace TMS.DataGateway.Repositories
                                                         ID = ba.ID,
                                                         BusinessAreaCode = ba.BusinessAreaCode
                                                     }).FirstOrDefault();
-
-                                businessAreaId = businessArea.ID;
-                                businessAreaCode = businessArea.BusinessAreaCode;
+                                if (businessArea != null)
+                                {
+                                    businessAreaId = businessArea.ID;
+                                    businessAreaCode = businessArea.BusinessAreaCode;
+                                }
+                                else
+                                {
+                                    //Return with Business Area not found
+                                    transaction.Rollback();
+                                    response.Status = DomainObjects.Resource.ResourceData.Failure;
+                                    response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                    response.StatusMessage = order.BusinessAreaId + " Business Area ID not found in TMS.";
+                                    return response;
+                                }
+                                
                             }
                             else
                             {
@@ -117,7 +129,9 @@ namespace TMS.DataGateway.Repositories
                                 int driverId = Convert.ToInt32(order.DriverNo);
                                 order.DriverNo = context.Drivers.FirstOrDefault(t => t.ID == driverId).DriverNo;
                                 order.DriverName = context.Drivers.FirstOrDefault(t => t.ID == driverId).UserName;
+                                soPoNumber = order.OrderNo;
                                 order.OrderNo = GetOrderNumber(businessAreaId, businessAreaCode, "TMS", DateTime.Now.Year);
+                                order.LegecyOrderNo = order.OrderNo;
                             }
 
                             int orderDetailId = 0;
@@ -139,7 +153,7 @@ namespace TMS.DataGateway.Repositories
                                 updatedOrderHeader.LastModifiedTime = DateTime.Now;
                                 updatedOrderHeader.OrderStatusID = orderStatusId;
                                 updatedOrderHeader.Harga = order.Harga;
-
+                                //updatedOrderHeader.SOPONumber = soPoNumber;
                                 Data.ImageGuid existingImageGuidDetails = null;
                                 string existingImageGUIDValue = string.Empty;
                                 int? shipmentScheduleImageID = null;
@@ -511,6 +525,7 @@ namespace TMS.DataGateway.Repositories
                                     CreatedTime = DateTime.Now,
                                     LastModifiedBy = "",
                                     LastModifiedTime = null,
+                                    SOPONumber = soPoNumber
                                 };
                                 context.OrderHeaders.Add(orderHeader);
                                 context.SaveChanges();
@@ -961,7 +976,7 @@ namespace TMS.DataGateway.Repositories
                     //}
 
                     // Filter
-                    if (orderList != null && orderList.Count > 0 && orderSearchRequest.Requests.Count > 0)
+                    if (orderList != null && orderList.Count > 0 && orderSearchRequest.Requests != null && orderSearchRequest.Requests.Count > 0)
                     {
                         var orderFilter = orderSearchRequest.Requests[0];
 
@@ -1641,25 +1656,25 @@ namespace TMS.DataGateway.Repositories
             string orderNo = businessArea + applicationCode;
             using (var context = new Data.TMSDBContext())
             {
-                var order = context.OrderHeaders.Where(t => t.BusinessAreaId == businessAreaId).OrderByDescending(t => t.OrderNo).FirstOrDefault();
+                var order = context.OrderHeaders.Where(t => t.BusinessAreaId == businessAreaId && t.SOPONumber != string.Empty).OrderByDescending(t => t.OrderNo).FirstOrDefault();
                 if (order != null)
                 {
                     int lastOrderYear = order.OrderDate.Year;
                     if (year != lastOrderYear)
                     {
-                        orderNo += "000000000001";
+                        orderNo += "00000001";
                     }
                     else
                     {
-                        string orderSequnceString = order.OrderNo.Substring(order.OrderNo.Length - 12);
+                        string orderSequnceString = order.OrderNo.Substring(order.OrderNo.Length - 8);
                         int orderSequnceNumber = Convert.ToInt32(orderSequnceString) + 1;
 
-                        orderNo += orderSequnceNumber.ToString().PadLeft(12, '0');
+                        orderNo += orderSequnceNumber.ToString().PadLeft(8, '0');
                     }
                 }
                 else
                 {
-                    orderNo += "000000000001";
+                    orderNo += "00000001";
                 }
             }
             return orderNo;
@@ -1867,7 +1882,7 @@ namespace TMS.DataGateway.Repositories
                                          VehicleNo = oH.VehicleNo,
                                          VehicleShipmentType = oH.VehicleShipment,
                                          //OrderDate = oH.OrderDate,
-                                         OrderNo = oH.OrderNo,
+                                         OrderNo = oH.SOPONumber,
                                          OrderShipmentStatus = oH.OrderStatusID,
                                          OrderType = oH.OrderType,
                                          OrderWeight = oH.OrderWeight,
