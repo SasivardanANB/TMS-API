@@ -22,12 +22,16 @@ namespace TMS.DataGateway.DataModels
         [MaxLength(10)]
         //[Index("Partner_PartnerNo", IsUnique = true)]
         public string PartnerNo { get; set; }
+        [MaxLength(30)]
         public string PartnerName { get; set; }
+        [MaxLength(200)]
         public string PartnerAddress { get; set; }
         [ForeignKey("PostalCode")]
         public int? PostalCodeID { get; set; }
         public virtual PostalCode PostalCode { get; set; }
+        [MaxLength(30)]
         public string PartnerInitial { get; set; }
+        [MaxLength(50)]
         public string PartnerEmail { get; set; }
         [ForeignKey("PIC")]
         public int? PICID { get; set; }

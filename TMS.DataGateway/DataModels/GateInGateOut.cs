@@ -21,6 +21,7 @@ namespace TMS.DataGateway.DataModels
         [ForeignKey("GateType")]
         public int GateTypeId { get; set; }
         public virtual GateType GateType { get; set; }
+        [MaxLength(120)]
         public string Info { get; set; }
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public string CreatedBy

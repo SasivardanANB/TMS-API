@@ -9,8 +9,10 @@ namespace TMS.DomainObjects.Request
 {
     public class LoginRequest
     {
+        [MaxLength(30)]
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidUserName")]
         public string UserName { get; set; }
+        [MaxLength(30)]
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidUserPassword")]
         public string UserPassword { get; set; }
         public bool IsSAMALogin { get; set; }

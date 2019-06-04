@@ -25,7 +25,7 @@ namespace TMS.DataGateway.DataModels
         [MaxLength(12)]
         public string PoliceNo { get; set; }
         public int MaxWeight { get; set; }
-        [MaxLength(12)]
+        [MaxLength(11)]
         public string MaxDimension { get; set; }
         [MaxLength(25)]
         public string KIRNo { get; set; }

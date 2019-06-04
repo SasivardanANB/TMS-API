@@ -18,6 +18,7 @@ namespace TMS.DataGateway.DataModels
         [MaxLength(50)]
         [Index("Application_ApplicationCode", IsUnique = true)]
         public string ApplicationCode { get; set; }
+        [MaxLength(100)]
         public string ApplicationName { get; set; }
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public string CreatedBy

@@ -83,7 +83,6 @@
     <Compile Include="Objects\Partner.cs" />
     <Compile Include="Objects\TrackDetail.cs" />
     <Compile Include="Objects\TrackHeader.cs" />
-    <Compile Include="Objects\Transporter.cs" />
     <Compile Include="Objects\TripLocation.cs" />
     <Compile Include="Objects\User.cs" />
     <Compile Include="Objects\UserRole.cs" />
@@ -103,7 +102,6 @@
     <Compile Include="Request\PICRequest.cs" />
     <Compile Include="Request\RegionRequest.cs" />
     <Compile Include="Request\PartnerRequest.cs" />
-    <Compile Include="Request\TransporterRequest.cs" />
     <Compile Include="Request\LoginRequest.cs" />
     <Compile Include="Request\OrderRequest.cs" />
     <Compile Include="Request\RoleRequest.cs" />
@@ -141,7 +139,6 @@
     <Compile Include="Response\RoleResponse.cs" />
     <Compile Include="Response\PICResponse.cs" />
     <Compile Include="Response\PartnerResponse.cs" />
-    <Compile Include="Response\TransporterResponse.cs" />
     <Compile Include="Response\UserResponse.cs" />
     <Compile Include="Response\UserRoleResponse.cs" />
     <Compile Include="Response\GateResponse.cs" />

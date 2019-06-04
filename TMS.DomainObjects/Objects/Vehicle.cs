@@ -33,6 +33,7 @@ namespace TMS.DomainObjects.Objects
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidPoolID")]
         [Range(minimum: 1, maximum: int.MaxValue, ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidPoolID")]
         public int PoolID { get; set; }
+        [MaxLength(10)]
         public string PoolName { get; set; }
         public bool IsDedicated { get; set; }
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidShipperID")]
