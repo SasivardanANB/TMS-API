@@ -174,24 +174,24 @@ namespace TMS.API.Controllers
                 LastModifiedTime = user.LastModifiedTime
             };
 
-            UserRequest dmsRequest = new UserRequest()
-            {
-                Requests = new List<User>()
-                        {
-                            new User()
-                            {
-                                FirstName = user.Requests[0].FirstName,
-                                LastName = user.Requests[0].LastName,
-                                UserName = user.Requests[0].UserName,
-                                Password = user.Requests[0].Password,
-                                IsActive = true
-                            }
-                        },
-                CreatedBy = "SYSTEM",
-                LastModifiedBy = user.LastModifiedBy,
-                CreatedTime = user.CreatedTime,
-                LastModifiedTime = user.LastModifiedTime
-            };
+            //UserRequest dmsRequest = new UserRequest()
+            //{
+            //    Requests = new List<User>()
+            //            {
+            //                new User()
+            //                {
+            //                    FirstName = user.Requests[0].FirstName,
+            //                    LastName = user.Requests[0].LastName,
+            //                    UserName = user.Requests[0].UserName,
+            //                    Password = user.Requests[0].Password,
+            //                    IsActive = true
+            //                }
+            //            },
+            //    CreatedBy = "SYSTEM",
+            //    LastModifiedBy = user.LastModifiedBy,
+            //    CreatedTime = user.CreatedTime,
+            //    LastModifiedTime = user.LastModifiedTime
+            //};
 
             foreach (var application in user.Requests[0].Applications)
             {
@@ -219,45 +219,45 @@ namespace TMS.API.Controllers
                         + "/v1/user/createupdateuser", Method.POST, omsRequest, null));
                 }
 
-                if (application == 3) //For DMS Application - Integrate Azure API Gateway
-                {
-                    //Login to DMS and get Token
-                    loginRequest.UserName = ConfigurationManager.AppSettings["DMSLogin"];
-                    loginRequest.UserPassword = ConfigurationManager.AppSettings["DMSPassword"];
-                    var dmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
-                        + "/v1/user/login", Method.POST, loginRequest, null));
-                    if (dmsLoginResponse != null && dmsLoginResponse.Data.Count > 0)
-                    {
-                        token = dmsLoginResponse.TokenKey;
-                    }
+                //if (application == 3) //For DMS Application - Integrate Azure API Gateway
+                //{
+                //    //Login to DMS and get Token
+                //    loginRequest.UserName = ConfigurationManager.AppSettings["DMSLogin"];
+                //    loginRequest.UserPassword = ConfigurationManager.AppSettings["DMSPassword"];
+                //    var dmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
+                //        + "/v1/user/login", Method.POST, loginRequest, null));
+                //    if (dmsLoginResponse != null && dmsLoginResponse.Data.Count > 0)
+                //    {
+                //        token = dmsLoginResponse.TokenKey;
+                //    }
 
-                    userResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
-                        + "/v1/user/createupdateuser", Method.POST, dmsRequest, token));
+                //    userResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
+                //        + "/v1/user/createupdateuser", Method.POST, dmsRequest, token));
 
-                    #region Create Driver master data
-                    DriverRequest driverRequest = new DriverRequest()
-                    {
-                        Requests = new List<Driver>()
-                    };
+                //    #region Create Driver master data
+                //    DriverRequest driverRequest = new DriverRequest()
+                //    {
+                //        Requests = new List<Driver>()
+                //    };
 
-                    var dmsDriver = dmsRequest.Requests[0];
-                    //Driver driver = new Driver()
-                    //{
-                    //    IsActive = true,
-                    //    DriverAddress = "",
-                    //    DriverPhone = "",
-                    //    FirstName = dmsDriver.FirstName,
-                    //    LastName = dmsDriver.LastName,
-                    //    Email = "",
-                    //    UserName = dmsDriver.UserName,
-                    //    Password = dmsDriver.Password,
-                    //    DriverNo
-                    //};
+                //    var dmsDriver = dmsRequest.Requests[0];
+                //    //Driver driver = new Driver()
+                //    //{
+                //    //    IsActive = true,
+                //    //    DriverAddress = "",
+                //    //    DriverPhone = "",
+                //    //    FirstName = dmsDriver.FirstName,
+                //    //    LastName = dmsDriver.LastName,
+                //    //    Email = "",
+                //    //    UserName = dmsDriver.UserName,
+                //    //    Password = dmsDriver.Password,
+                //    //    DriverNo
+                //    //};
 
-                    IDriverTask driverTask = DependencyResolver.GetImplementationOf<ITaskGateway>().DriverTask;
-                    DriverResponse driverResponse = driverTask.CreateUpdateDriver(driverRequest);
-                    #endregion
-                }
+                //    IDriverTask driverTask = DependencyResolver.GetImplementationOf<ITaskGateway>().DriverTask;
+                //    DriverResponse driverResponse = driverTask.CreateUpdateDriver(driverRequest);
+                //    #endregion
+                //}
             }
 
             return Ok(userResponse);
