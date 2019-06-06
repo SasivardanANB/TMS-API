@@ -1,5 +1,12 @@
 ActivityCode,ActivityDescription
-A0001,View
-A0002,Create Master Data
-A0003,Edit Master Data
-A0004,Delete Master Data
+A0001,Create Order
+A0002,Edit Order
+A0003,View Order
+A0004,Create Master Data
+A0005,Edit Master Data
+A0006,View Master Data
+A0007,Delete Master Data
+A0008,Create
+A0009,Edit
+A0010,View
+A0011,Delete
