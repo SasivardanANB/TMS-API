@@ -63,10 +63,8 @@
     <Compile Include="Task\Interfaces\IPICTask.cs" />
     <Compile Include="Task\PIC.cs" />
     <Compile Include="Task\Partner.cs" />
-    <Compile Include="Task\Transporter.cs" />
     <Compile Include="Task\DriverTask.cs" />
     <Compile Include="Task\Interfaces\IAuthenticateTask.cs" />
-    <Compile Include="Task\Interfaces\ITransporterTask.cs" />
     <Compile Include="Task\Interfaces\IDriverTask.cs" />
     <Compile Include="Task\Interfaces\IOrderTask.cs" />
     <Compile Include="Task\Interfaces\IUserTask.cs" />

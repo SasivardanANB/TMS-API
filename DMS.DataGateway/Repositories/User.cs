@@ -175,7 +175,7 @@ namespace DMS.DataGateway.Repositories
             return userResponse;
         }
 
-        public UserResponse ChangePassword(ChangePasswordRequest changePasswordRequest,string type)
+        public UserResponse ChangePassword(ChangePasswordRequest changePasswordRequest, string type)
         {
             UserResponse userResponse = new UserResponse();
             try
@@ -187,8 +187,8 @@ namespace DMS.DataGateway.Repositories
                     {
                         if (type == "changepassword")
                         {
-                            var userPassword= Encryption.EncryptionLibrary.DecrypPassword(userDetails.Password);
-                            if(userPassword!= changePasswordRequest.OldPassword)
+                            var userPassword = Encryption.EncryptionLibrary.DecrypPassword(userDetails.Password);
+                            if (userPassword != changePasswordRequest.OldPassword)
                             {
                                 userResponse.Status = DomainObjects.Resource.ResourceData.Success;
                                 userResponse.StatusCode = (int)HttpStatusCode.NotAcceptable;
@@ -215,7 +215,7 @@ namespace DMS.DataGateway.Repositories
                                     userResponse.StatusMessage = DomainObjects.Resource.ResourceData.PasswordUpdated;
                                 }
                             }
-                            
+
                         }
                         if (type == "resetpassword")
                         {
@@ -236,7 +236,7 @@ namespace DMS.DataGateway.Repositories
                         userResponse.StatusCode = (int)HttpStatusCode.NotFound;
                         userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserDetailsNotFound;
                     }
-                }                
+                }
             }
             catch (Exception ex)
             {
@@ -255,14 +255,14 @@ namespace DMS.DataGateway.Repositories
                 using (var context = new DMSDBContext())
                 {
                     var userDetails = context.Drivers.Where(u => u.Email == forgotPasswordRequest.Email).FirstOrDefault();
-                    if(userDetails !=null)
+                    if (userDetails != null)
                     {
                         MailMessage mail = new MailMessage();
                         mail.To.Add(forgotPasswordRequest.Email);
                         string emailFrom = ConfigurationManager.AppSettings["EmailFrom"];
                         mail.From = new MailAddress(emailFrom);
                         mail.Subject = ConfigurationManager.AppSettings["EmailSubject"]; // "Test-case";
-                        string Body = "To reset your password click the link : " + ConfigurationManager.AppSettings["ResetPassword"]+"?userId="+userDetails.ID;
+                        string Body = "To reset your password click the link : " + ConfigurationManager.AppSettings["ResetPassword"] + "?userId=" + userDetails.ID;
                         mail.Body = Body;
                         mail.IsBodyHtml = true;
 
@@ -306,14 +306,16 @@ namespace DMS.DataGateway.Repositories
             {
                 using (var context = new DMSDBContext())
                 {
-                    var userDetails = context.Drivers.Where(i => i.ID == userID && i.IsActive).Select(user=>new Domain.User {
-                        ID=user.ID,
-                        UserName=user.UserName,
-                        FirstName=user.FirstName,
-                        LastName=user.LastName,
-                        Password=user.Password,
-                        Email=user.Email,
-                       PhoneNumber=user.PhoneNumber
+                    var userDetails = context.Drivers.Where(i => i.ID == userID && i.IsActive).Select(user => new Domain.User
+                    {
+                        ID = user.ID,
+                        UserName = user.UserName,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        Password = user.Password,
+                        Email = user.Email,
+                        PhoneNumber = user.PhoneNumber,
+                        Role = "Driver"
                     }).FirstOrDefault();
                     if (userDetails != null)
                     {
@@ -323,7 +325,7 @@ namespace DMS.DataGateway.Repositories
                         userResponse.Data = users;
                         userResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         userResponse.StatusCode = (int)HttpStatusCode.OK;
-                        userResponse.StatusMessage= DomainObjects.Resource.ResourceData.Success; 
+                        userResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
                     }
                     else
                     {
@@ -343,7 +345,7 @@ namespace DMS.DataGateway.Repositories
             return userResponse;
         }
     }
-    
+
 }
 
 

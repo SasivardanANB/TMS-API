@@ -26,5 +26,6 @@ namespace DMS.DomainObjects.Objects
         public string PICEmail { get; set; }
         public bool IsActive { get; set; }
         public string CreatedBy { get; set; }
+        public string Role { get; set; }
     }
 }

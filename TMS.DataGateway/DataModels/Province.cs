@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace TMS.DataGateway.DataModels
 {
     [Table("Province", Schema = "TMS")]
-    public class Province
+    public class Province : ModelBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -20,19 +20,6 @@ namespace TMS.DataGateway.DataModels
         public string ProvinceCode { get; set; }
         [MaxLength(50)]
         public string ProvinceDescription { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public string CreatedBy
-        {
-            get { return "SYSTEM"; }
-            set { }
-        }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime CreatedTime
-        {
-            get { return DateTime.Now; }
-            set { }
-        }
-        public string LastModifiedBy { get; set; }
-        public DateTime? LastModifiedTime { get; set; }
+       
     }
 }

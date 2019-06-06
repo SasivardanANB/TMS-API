@@ -17,8 +17,9 @@ namespace TMS.DataGateway.DataModels
         [Index("PartnerAddress_PartnerID", IsUnique = true)]
         public int PartnerID { get; set; }
         [MaxLength(200)]
-        [Index("PartnerAddress_Address", IsUnique = true)]
+        [Index("PartnerAddress_Address")]
         public string Address { get; set; }
+        [MaxLength(15)]
         public string Phone { get; set; }
         public int PostalCodeID { get; set; }
         public int IsDefault { get; set; }

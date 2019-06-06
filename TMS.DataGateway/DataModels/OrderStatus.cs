@@ -9,27 +9,16 @@ using System.Threading.Tasks;
 namespace TMS.DataGateway.DataModels
 {
     [Table("OrderStatus", Schema = "TMS")]
-    public class OrderStatus
+    public class OrderStatus : ModelBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
+        [MaxLength(4)]
         public string OrderStatusCode { get; set; }
+        [MaxLength(50)]
         public string OrderStatusValue { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public string CreatedBy
-        {
-            get { return "SYSTEM"; }
-            set { }
-        }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime CreatedTime
-        {
-            get { return DateTime.Now; }
-            set { }
-        }
-        public string LastModifiedBy { get; set; }
-        public DateTime? LastModifiedTime { get; set; }
+     
 
     }
 }

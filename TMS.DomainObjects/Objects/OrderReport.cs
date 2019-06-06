@@ -27,10 +27,12 @@ namespace TMS.DomainObjects.Objects
     {
         public int OrderId { get; set; }
         public int PartnerId { get; set; }
+        [MaxLength(15)]
         public string OrderNo { get; set; }
         public string Transporter { get; set; }
         public string Source { get; set; }
         public string Destination { get; set; }
+        [MaxLength(30)]
         public string Drivername { get; set; }
         public string Vehicle { get; set; }
         public string OrderCreatedDate { get; set; }

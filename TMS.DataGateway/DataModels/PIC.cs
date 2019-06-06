@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 namespace TMS.DataGateway.DataModels
 {
     [Table("PIC", Schema = "TMS")]
-    public class PIC
+    public class PIC : ModelBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
-        [MaxLength(50)]
+        [MaxLength(60)]
         public string PICName { get; set; }
         
         [MaxLength(15)]
@@ -23,24 +23,11 @@ namespace TMS.DataGateway.DataModels
         public string PICEmail { get; set; }
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
-        [MaxLength(50)]
+        [MaxLength(30)]
         public string PICPassword { get; set; }
         [ForeignKey("ImageGuid")]
         public int PhotoId { get; set; }
         public virtual ImageGuid ImageGuid { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public string CreatedBy
-        {
-            get { return "SYSTEM"; }
-            set { }
-        }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime CreatedTime
-        {
-            get { return DateTime.Now; }
-            set { }
-        }
-        public string LastModifiedBy { get; set; }
-        public DateTime? LastModifiedTime { get; set; }
+        
     }
 }

@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 namespace TMS.DataGateway.DataModels
 {
     [Table("BusinessArea", Schema = "TMS")]
-    public class BusinessArea
+    public class BusinessArea : ModelBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
         [Required(ErrorMessage = "")]
-        [MaxLength(5)]
+        [MaxLength(4)]
         [Index("BusinessArea_BusinessAreaCode", IsUnique = true)]
         public string BusinessAreaCode { get; set; }
         [MaxLength(100)]
@@ -28,19 +28,6 @@ namespace TMS.DataGateway.DataModels
         [ForeignKey("PostalCode")]
         public int? PostalCodeID { get; set; }
         public PostalCode PostalCode { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public string CreatedBy
-        {
-            get { return "SYSTEM"; }
-            set { }
-        }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime CreatedTime
-        {
-            get { return DateTime.Now; }
-            set { }
-        }
-        public string LastModifiedBy { get; set; }
-        public DateTime? LastModifiedTime { get; set; }
+        
     }
 }

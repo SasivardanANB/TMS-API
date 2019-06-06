@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace TMS.DataGateway.DataModels
 {
     [Table("Vehicle", Schema = "TMS")]
-    public class Vehicle
+    public class Vehicle : ModelBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -25,7 +25,7 @@ namespace TMS.DataGateway.DataModels
         [MaxLength(12)]
         public string PoliceNo { get; set; }
         public int MaxWeight { get; set; }
-        [MaxLength(12)]
+        [MaxLength(11)]
         public string MaxDimension { get; set; }
         [MaxLength(25)]
         public string KIRNo { get; set; }
@@ -38,19 +38,6 @@ namespace TMS.DataGateway.DataModels
         public int ShipperID { get; set; }
         public virtual Partner Partner { get; set; }
         public bool IsDelete { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public string CreatedBy
-        {
-            get { return "SYSTEM"; }
-            set { }
-        }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime CreatedTime
-        {
-            get { return DateTime.Now; }
-            set { }
-        }
-        public string LastModifiedBy { get; set; }
-        public DateTime? LastModifiedTime { get; set; }
+       
     }
 }

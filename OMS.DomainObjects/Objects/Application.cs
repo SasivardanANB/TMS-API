@@ -10,7 +10,9 @@ namespace OMS.DomainObjects.Objects
     public class Application
     {
         public int ID { get; set; }
+        [MaxLength(50)]
         public string ApplicationCode { get; set; }
+        [MaxLength(100)]
         public string ApplicationName { get; set; }
     }
 }

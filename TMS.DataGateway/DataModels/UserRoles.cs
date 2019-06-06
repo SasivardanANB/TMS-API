@@ -9,7 +9,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace TMS.DataGateway.DataModels
 {
     [Table("UserRoles", Schema = "TMS")]
-    public class UserRoles
+    public class UserRoles : ModelBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -24,19 +24,6 @@ namespace TMS.DataGateway.DataModels
         public int BusinessAreaID { get; set; }
         public BusinessArea BusinessArea { get; set; }
         public bool IsDelete { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public string CreatedBy
-        {
-            get { return "SYSTEM"; }
-            set { }
-        }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime CreatedTime
-        {
-            get { return DateTime.Now; }
-            set { }
-        }
-        public string LastModifiedBy { get; set; }
-        public DateTime? LastModifiedTime { get; set; }
+        
     }
 }
