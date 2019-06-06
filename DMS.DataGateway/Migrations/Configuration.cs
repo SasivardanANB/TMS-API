@@ -3,8 +3,11 @@ namespace DMS.DataGateway.Migrations
     using CsvHelper;
     using NLog;
     using System;
+    using System.Collections.Generic;
     using System.Data.Entity;
     using System.Data.Entity.Migrations;
+    using System.Data.Entity.Migrations.Model;
+    using System.Data.Entity.SqlServer;
     using System.Data.Entity.Validation;
     using System.IO;
     using System.Linq;
@@ -19,6 +22,7 @@ namespace DMS.DataGateway.Migrations
         {
             AutomaticMigrationsEnabled = false;
             ContextKey = "DMS.DataGateway.DataModels.DMSDBContext";
+            SetSqlGenerator("System.Data.SqlClient", new CustomSqlServerMigrationSqlGenerator());
         }
 
         protected override void Seed(DMS.DataGateway.DataModels.DMSDBContext context)
@@ -159,6 +163,43 @@ namespace DMS.DataGateway.Migrations
             public string SubdistrictCode { get; set; }
             public string SubdistrictName { get; set; }
             public string CityName { get; set; }
+        }
+
+        internal class CustomSqlServerMigrationSqlGenerator : SqlServerMigrationSqlGenerator
+        {
+            protected override void Generate(AddColumnOperation addColumnOperation)
+            {
+                SetCreatedUtcColumn(addColumnOperation.Column);
+
+                base.Generate(addColumnOperation);
+            }
+
+            protected override void Generate(CreateTableOperation createTableOperation)
+            {
+                SetCreatedUtcColumn(createTableOperation.Columns);
+
+                base.Generate(createTableOperation);
+            }
+
+            private static void SetCreatedUtcColumn(IEnumerable<ColumnModel> columns)
+            {
+                foreach (var columnModel in columns)
+                {
+                    SetCreatedUtcColumn(columnModel);
+                }
+            }
+
+            private static void SetCreatedUtcColumn(PropertyModel column)
+            {
+                if (column.Name == "CreatedTime")
+                {
+                    column.DefaultValueSql = "GETDATE()";
+                }
+                if (column.Name == "CreatedBy")
+                {
+                    column.DefaultValue = "SYSTEM";
+                }
+            }
         }
     }
 }

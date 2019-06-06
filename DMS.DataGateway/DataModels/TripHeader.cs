@@ -9,7 +9,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace DMS.DataGateway.DataModels
 {
     [Table("TripHeader", Schema = "DMS")]
-    public class TripHeader
+    public class TripHeader : ModelBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -17,7 +17,7 @@ namespace DMS.DataGateway.DataModels
         [MaxLength(50)]
         [Index("TripNumber", IsUnique = true)]
         public string TripNumber { get; set; }
-        [MaxLength(50)]
+        [MaxLength(15)]
         public string OrderNumber { get; set; }
         [MaxLength(50)]
         public string TransporterName { get; set; }
@@ -26,9 +26,11 @@ namespace DMS.DataGateway.DataModels
         public int DriverId { get; set; }
         public Driver Driver { get; set; }
         public string VehicleType { get; set; }
+        [MaxLength(12)]
         public string VehicleNumber { get; set; }
         public string TripType { get; set; }
         public decimal Weight { get; set; }
+        [MaxLength(12)]
         public string PoliceNumber { get; set; }
         [ForeignKey("TripStatus")]
         public int? CurrentTripStatusId { get; set; }
@@ -38,17 +40,6 @@ namespace DMS.DataGateway.DataModels
         [ForeignKey("BusinessArea")]
         public int BusinessAreaId { get; set; }
         public BusinessArea BusinessArea { get; set; }
-        public string CreatedBy
-        {
-            get;
-            set;
-        }
-        public DateTime? CreatedTime
-        {
-            get;
-            set;
-        }
-        public string LastModifiedBy { get; set; }
-        public DateTime? LastModifiedTime { get; set; }
+        
     }
 }

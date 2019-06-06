@@ -9,7 +9,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace DMS.DataGateway.DataModels
 {
     [Table("Partner", Schema = "DMS")]
-    public class Partner
+    public class Partner : ModelBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -21,19 +21,9 @@ namespace DMS.DataGateway.DataModels
         [MaxLength(10)]
         [Index("Partner_PartnerNo", IsUnique = true)]
         public string PartnerNo { get; set; }
+        [MaxLength(30)]
         public string PartnerName { get; set; }
         public bool IsActive { get; set; }
-        public string CreatedBy
-        {
-            get;
-            set;
-        }
-        public DateTime? CreatedTime
-        {
-            get;
-            set;
-        }
-        public string LastModifiedBy { get; set; }
-        public DateTime? LastModifiedTime { get; set; }
+        
     }
 }

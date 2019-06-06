@@ -3,7 +3,7 @@ namespace DMS.DataGateway.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class dms_v10_DatabaseRestructuring : DbMigration
+    public partial class DMS_DB_v10 : DbMigration
     {
         public override void Up()
         {
@@ -12,13 +12,13 @@ namespace DMS.DataGateway.Migrations
                 c => new
                     {
                         ID = c.Int(nullable: false, identity: true),
-                        BusinessAreaCode = c.String(nullable: false, maxLength: 5),
+                        BusinessAreaCode = c.String(nullable: false, maxLength: 4),
                         BusinessAreaDescription = c.String(maxLength: 100),
                         Address = c.String(maxLength: 200),
                         PostalCodeID = c.Int(),
-                        CreatedBy = c.String(),
-                        CreatedTime = c.DateTime(nullable: false),
-                        LastModifiedBy = c.String(),
+                        CreatedBy = c.String(maxLength: 100),
+                        CreatedTime = c.DateTime(),
+                        LastModifiedBy = c.String(maxLength: 100),
                         LastModifiedTime = c.DateTime(),
                     })
                 .PrimaryKey(t => t.ID)
@@ -33,6 +33,10 @@ namespace DMS.DataGateway.Migrations
                         ID = c.Int(nullable: false, identity: true),
                         PostalCodeNo = c.String(nullable: false, maxLength: 6),
                         SubDistrictID = c.Int(nullable: false),
+                        CreatedBy = c.String(maxLength: 100),
+                        CreatedTime = c.DateTime(),
+                        LastModifiedBy = c.String(maxLength: 100),
+                        LastModifiedTime = c.DateTime(),
                     })
                 .PrimaryKey(t => t.ID)
                 .ForeignKey("DMS.SubDistrict", t => t.SubDistrictID, cascadeDelete: true)
@@ -47,6 +51,10 @@ namespace DMS.DataGateway.Migrations
                         SubDistrictCode = c.String(nullable: false, maxLength: 4),
                         SubDistrictName = c.String(maxLength: 50),
                         CityID = c.Int(nullable: false),
+                        CreatedBy = c.String(maxLength: 100),
+                        CreatedTime = c.DateTime(),
+                        LastModifiedBy = c.String(maxLength: 100),
+                        LastModifiedTime = c.DateTime(),
                     })
                 .PrimaryKey(t => t.ID)
                 .ForeignKey("DMS.City", t => t.CityID, cascadeDelete: true)
@@ -61,9 +69,9 @@ namespace DMS.DataGateway.Migrations
                         CityCode = c.String(nullable: false, maxLength: 4),
                         CityDescription = c.String(maxLength: 50),
                         ProvinceID = c.Int(nullable: false),
-                        CreatedBy = c.String(),
-                        CreatedTime = c.DateTime(nullable: false),
-                        LastModifiedBy = c.String(),
+                        CreatedBy = c.String(maxLength: 100),
+                        CreatedTime = c.DateTime(),
+                        LastModifiedBy = c.String(maxLength: 100),
                         LastModifiedTime = c.DateTime(),
                     })
                 .PrimaryKey(t => t.ID)
@@ -78,6 +86,10 @@ namespace DMS.DataGateway.Migrations
                         ID = c.Int(nullable: false, identity: true),
                         ProvinceCode = c.String(maxLength: 4),
                         ProvinceDescription = c.String(maxLength: 50),
+                        CreatedBy = c.String(maxLength: 100),
+                        CreatedTime = c.DateTime(),
+                        LastModifiedBy = c.String(maxLength: 100),
+                        LastModifiedTime = c.DateTime(),
                     })
                 .PrimaryKey(t => t.ID)
                 .Index(t => t.ProvinceCode, unique: true, name: "Province_ProvinceCode");
@@ -88,18 +100,19 @@ namespace DMS.DataGateway.Migrations
                     {
                         ID = c.Int(nullable: false, identity: true),
                         DriverNo = c.String(maxLength: 12),
-                        UserName = c.String(nullable: false, maxLength: 50),
-                        Password = c.String(),
+                        UserName = c.String(nullable: false, maxLength: 30),
+                        Password = c.String(maxLength: 30),
                         IsActive = c.Boolean(nullable: false),
-                        FirstName = c.String(),
-                        LastName = c.String(),
-                        Email = c.String(),
-                        PhoneNumber = c.String(),
+                        FirstName = c.String(maxLength: 30),
+                        LastName = c.String(maxLength: 30),
+                        Email = c.String(maxLength: 50),
+                        PhoneNumber = c.String(maxLength: 15),
                         PICName = c.String(maxLength: 50),
                         PICPhone = c.String(maxLength: 15),
                         PICEmail = c.String(maxLength: 50),
-                        CreatedTime = c.DateTime(nullable: false),
-                        LastModifiedBy = c.String(),
+                        CreatedBy = c.String(maxLength: 100),
+                        CreatedTime = c.DateTime(),
+                        LastModifiedBy = c.String(maxLength: 100),
                         LastModifiedTime = c.DateTime(),
                     })
                 .PrimaryKey(t => t.ID)
@@ -111,11 +124,11 @@ namespace DMS.DataGateway.Migrations
                     {
                         ID = c.Int(nullable: false, identity: true),
                         ImageGuIdValue = c.String(maxLength: 1000),
-                        CreatedBy = c.String(),
-                        CreatedTime = c.DateTime(nullable: false),
-                        LastModifiedBy = c.String(),
-                        LastModifiedTime = c.DateTime(),
                         IsActive = c.Boolean(nullable: false),
+                        CreatedBy = c.String(maxLength: 100),
+                        CreatedTime = c.DateTime(),
+                        LastModifiedBy = c.String(maxLength: 100),
+                        LastModifiedTime = c.DateTime(),
                     })
                 .PrimaryKey(t => t.ID);
             
@@ -126,6 +139,10 @@ namespace DMS.DataGateway.Migrations
                         ID = c.Int(nullable: false, identity: true),
                         ImageTypeCode = c.Int(nullable: false),
                         ImageTypeDescription = c.String(),
+                        CreatedBy = c.String(maxLength: 100),
+                        CreatedTime = c.DateTime(),
+                        LastModifiedBy = c.String(maxLength: 100),
+                        LastModifiedTime = c.DateTime(),
                     })
                 .PrimaryKey(t => t.ID);
             
@@ -136,6 +153,10 @@ namespace DMS.DataGateway.Migrations
                         ID = c.Int(nullable: false, identity: true),
                         PartnerId = c.Int(nullable: false),
                         PartnerTypeId = c.Int(nullable: false),
+                        CreatedBy = c.String(maxLength: 100),
+                        CreatedTime = c.DateTime(),
+                        LastModifiedBy = c.String(maxLength: 100),
+                        LastModifiedTime = c.DateTime(),
                     })
                 .PrimaryKey(t => t.ID)
                 .ForeignKey("DMS.Partner", t => t.PartnerId, cascadeDelete: true)
@@ -150,11 +171,11 @@ namespace DMS.DataGateway.Migrations
                         ID = c.Int(nullable: false, identity: true),
                         PostalCodeId = c.Int(nullable: false),
                         PartnerNo = c.String(maxLength: 10),
-                        PartnerName = c.String(),
+                        PartnerName = c.String(maxLength: 30),
                         IsActive = c.Boolean(nullable: false),
-                        CreatedBy = c.String(),
-                        CreatedTime = c.DateTime(nullable: false),
-                        LastModifiedBy = c.String(),
+                        CreatedBy = c.String(maxLength: 100),
+                        CreatedTime = c.DateTime(),
+                        LastModifiedBy = c.String(maxLength: 100),
                         LastModifiedTime = c.DateTime(),
                     })
                 .PrimaryKey(t => t.ID)
@@ -168,10 +189,10 @@ namespace DMS.DataGateway.Migrations
                     {
                         ID = c.Int(nullable: false, identity: true),
                         PartnerTypeCode = c.String(nullable: false, maxLength: 10),
-                        PartnerTypeDescription = c.String(),
-                        CreatedBy = c.String(),
-                        CreatedTime = c.DateTime(nullable: false),
-                        LastModifiedBy = c.String(),
+                        PartnerTypeDescription = c.String(maxLength: 50),
+                        CreatedBy = c.String(maxLength: 100),
+                        CreatedTime = c.DateTime(),
+                        LastModifiedBy = c.String(maxLength: 100),
                         LastModifiedTime = c.DateTime(),
                     })
                 .PrimaryKey(t => t.ID)
@@ -183,9 +204,13 @@ namespace DMS.DataGateway.Migrations
                     {
                         ID = c.Int(nullable: false, identity: true),
                         NumberOfBoxes = c.Int(nullable: false),
-                        Note = c.String(),
-                        PackingSheetNumber = c.String(),
+                        Note = c.String(maxLength: 200),
+                        PackingSheetNumber = c.String(maxLength: 20),
                         StopPointId = c.Int(nullable: false),
+                        CreatedBy = c.String(maxLength: 100),
+                        CreatedTime = c.DateTime(),
+                        LastModifiedBy = c.String(maxLength: 100),
+                        LastModifiedTime = c.DateTime(),
                     })
                 .PrimaryKey(t => t.ID)
                 .ForeignKey("DMS.TripDetail", t => t.StopPointId, cascadeDelete: true)
@@ -201,9 +226,9 @@ namespace DMS.DataGateway.Migrations
                         SequenceNumber = c.Int(nullable: false),
                         ActualDeliveryDate = c.DateTime(nullable: false),
                         EstimatedDeliveryDate = c.DateTime(nullable: false),
-                        CreatedBy = c.String(),
-                        CreatedTime = c.DateTime(nullable: false),
-                        LastModifiedBy = c.String(),
+                        CreatedBy = c.String(maxLength: 100),
+                        CreatedTime = c.DateTime(),
+                        LastModifiedBy = c.String(maxLength: 100),
                         LastModifiedTime = c.DateTime(),
                     })
                 .PrimaryKey(t => t.ID)
@@ -218,22 +243,22 @@ namespace DMS.DataGateway.Migrations
                     {
                         ID = c.Int(nullable: false, identity: true),
                         TripNumber = c.String(maxLength: 50),
-                        OrderNumber = c.String(maxLength: 50),
+                        OrderNumber = c.String(maxLength: 15),
                         TransporterName = c.String(maxLength: 50),
                         TransporterCode = c.String(),
                         DriverId = c.Int(nullable: false),
                         VehicleType = c.String(),
-                        VehicleNumber = c.String(),
+                        VehicleNumber = c.String(maxLength: 12),
                         TripType = c.String(),
                         Weight = c.Decimal(nullable: false, precision: 18, scale: 2),
-                        PoliceNumber = c.String(),
+                        PoliceNumber = c.String(maxLength: 12),
                         CurrentTripStatusId = c.Int(),
                         OrderType = c.Int(nullable: false),
                         TripDate = c.DateTime(nullable: false),
                         BusinessAreaId = c.Int(nullable: false),
-                        CreatedBy = c.String(),
-                        CreatedTime = c.DateTime(nullable: false),
-                        LastModifiedBy = c.String(),
+                        CreatedBy = c.String(maxLength: 100),
+                        CreatedTime = c.DateTime(),
+                        LastModifiedBy = c.String(maxLength: 100),
                         LastModifiedTime = c.DateTime(),
                     })
                 .PrimaryKey(t => t.ID)
@@ -250,8 +275,12 @@ namespace DMS.DataGateway.Migrations
                 c => new
                     {
                         ID = c.Int(nullable: false, identity: true),
-                        StatusCode = c.String(),
-                        StatusName = c.String(),
+                        StatusCode = c.String(maxLength: 4),
+                        StatusName = c.String(maxLength: 30),
+                        CreatedBy = c.String(maxLength: 100),
+                        CreatedTime = c.DateTime(),
+                        LastModifiedBy = c.String(maxLength: 100),
+                        LastModifiedTime = c.DateTime(),
                     })
                 .PrimaryKey(t => t.ID);
             
@@ -263,6 +292,10 @@ namespace DMS.DataGateway.Migrations
                         StopPointId = c.Int(nullable: false),
                         ImageId = c.Int(nullable: false),
                         ImageTypeId = c.Int(nullable: false),
+                        CreatedBy = c.String(maxLength: 100),
+                        CreatedTime = c.DateTime(),
+                        LastModifiedBy = c.String(maxLength: 100),
+                        LastModifiedTime = c.DateTime(),
                     })
                 .PrimaryKey(t => t.ID)
                 .ForeignKey("DMS.ImageGuid", t => t.ImageId, cascadeDelete: true)
@@ -277,11 +310,15 @@ namespace DMS.DataGateway.Migrations
                 c => new
                     {
                         TokenID = c.Int(nullable: false, identity: true),
-                        TokenKey = c.String(),
+                        TokenKey = c.String(maxLength: 200),
                         IssuedOn = c.DateTime(nullable: false),
                         ExpiresOn = c.DateTime(nullable: false),
                         CreatedOn = c.DateTime(nullable: false),
                         DriverId = c.Int(nullable: false),
+                        CreatedBy = c.String(maxLength: 100),
+                        CreatedTime = c.DateTime(),
+                        LastModifiedBy = c.String(maxLength: 100),
+                        LastModifiedTime = c.DateTime(),
                     })
                 .PrimaryKey(t => t.TokenID)
                 .ForeignKey("DMS.Driver", t => t.DriverId, cascadeDelete: true)
@@ -294,8 +331,12 @@ namespace DMS.DataGateway.Migrations
                         ID = c.Int(nullable: false, identity: true),
                         StopPointId = c.Int(nullable: false),
                         StatusDate = c.DateTime(nullable: false),
-                        Remarks = c.String(),
+                        Remarks = c.String(maxLength: 200),
                         TripStatusId = c.Int(nullable: false),
+                        CreatedBy = c.String(maxLength: 100),
+                        CreatedTime = c.DateTime(),
+                        LastModifiedBy = c.String(maxLength: 100),
+                        LastModifiedTime = c.DateTime(),
                     })
                 .PrimaryKey(t => t.ID)
                 .ForeignKey("DMS.TripDetail", t => t.StopPointId, cascadeDelete: true)

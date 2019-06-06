@@ -11,8 +11,10 @@ namespace DMS.DomainObjects.Request
     {
         public int Id { set; get; }
         [Required]
+        [MaxLength(30)]
         public string OldPassword { set; get; }
         [Required]
+        [MaxLength(30)]
         public string NewPassword { set; get; }
     }
 }

@@ -72,6 +72,7 @@
     <Compile Include="DataModels\City.cs" />
     <Compile Include="DataModels\DMSDBContext.cs" />
     <Compile Include="DataModels\ImageType.cs" />
+    <Compile Include="DataModels\ModelBase.cs" />
     <Compile Include="DataModels\PartnerPartnerType.cs" />
     <Compile Include="DataModels\PartnerType.cs" />
     <Compile Include="DataModels\ImageGuId.cs" />
@@ -88,25 +89,9 @@
     <Compile Include="DataModels\TripStatusHistory.cs" />
     <Compile Include="DataModels\Driver.cs" />
     <Compile Include="Encryption\EncryptionLibrary.cs" />
-    <Compile Include="Migrations\201905310552000_dms_v1.0_DatabaseRestructuring.cs" />
-    <Compile Include="Migrations\201905310552000_dms_v1.0_DatabaseRestructuring.Designer.cs">
-      <DependentUpon>201905310552000_dms_v1.0_DatabaseRestructuring.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201905310902126_dms_v1.0_DriverCreatedBy.cs" />
-    <Compile Include="Migrations\201905310902126_dms_v1.0_DriverCreatedBy.Designer.cs">
-      <DependentUpon>201905310902126_dms_v1.0_DriverCreatedBy.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201905310931091_dms_v1.0_DriverCreatedDate.cs" />
-    <Compile Include="Migrations\201905310931091_dms_v1.0_DriverCreatedDate.Designer.cs">
-      <DependentUpon>201905310931091_dms_v1.0_DriverCreatedDate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201905310936567_dms_v1.0_DriverCreatedDateNull.cs" />
-    <Compile Include="Migrations\201905310936567_dms_v1.0_DriverCreatedDateNull.Designer.cs">
-      <DependentUpon>201905310936567_dms_v1.0_DriverCreatedDateNull.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201905311111257_dms_v1.0_LogColumnsAdded.cs" />
-    <Compile Include="Migrations\201905311111257_dms_v1.0_LogColumnsAdded.Designer.cs">
-      <DependentUpon>201905311111257_dms_v1.0_LogColumnsAdded.cs</DependentUpon>
+    <Compile Include="Migrations\201906060616206_DMS_DB_v1.0.cs" />
+    <Compile Include="Migrations\201906060616206_DMS_DB_v1.0.Designer.cs">
+      <DependentUpon>201906060616206_DMS_DB_v1.0.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -120,20 +105,8 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-    <EmbeddedResource Include="Migrations\201905310552000_dms_v1.0_DatabaseRestructuring.resx">
-      <DependentUpon>201905310552000_dms_v1.0_DatabaseRestructuring.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201905310902126_dms_v1.0_DriverCreatedBy.resx">
-      <DependentUpon>201905310902126_dms_v1.0_DriverCreatedBy.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201905310931091_dms_v1.0_DriverCreatedDate.resx">
-      <DependentUpon>201905310931091_dms_v1.0_DriverCreatedDate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201905310936567_dms_v1.0_DriverCreatedDateNull.resx">
-      <DependentUpon>201905310936567_dms_v1.0_DriverCreatedDateNull.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201905311111257_dms_v1.0_LogColumnsAdded.resx">
-      <DependentUpon>201905311111257_dms_v1.0_LogColumnsAdded.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201906060616206_DMS_DB_v1.0.resx">
+      <DependentUpon>201906060616206_DMS_DB_v1.0.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SeedData\Cities.csv" />
     <EmbeddedResource Include="SeedData\PostalCodes.csv" />
