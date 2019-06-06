@@ -156,6 +156,9 @@
   <data name="OldPasswordMismatch" xml:space="preserve">
     <value>OldPasswordMismatch</value>
   </data>
+  <data name="PasswordInvalid" xml:space="preserve">
+    <value>Passwords must be at least 8 characters and contain one upper case, one lower case, one number and special character</value>
+  </data>
   <data name="PasswordUpdated" xml:space="preserve">
     <value>PasswordUpdated</value>
   </data>
