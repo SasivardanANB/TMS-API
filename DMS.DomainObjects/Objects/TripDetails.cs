@@ -35,5 +35,6 @@ namespace DMS.DomainObjects.Objects
         public int OrderType { get; set; }
         public DateTime TripDate { get; set; }
         public DateTime? LastModifiedTime { get; set; }
+        public string ShipmentScheduleImageGUID { get; set; }
     }
 }

@@ -520,7 +520,8 @@ namespace DMS.DataGateway.Repositories
                                                TripStatusId = trip.CurrentTripStatusId,
                                                OrderType = trip.OrderType,
                                                TripDate = trip.TripDate,
-                                               LastModifiedTime = trip.LastModifiedTime
+                                               LastModifiedTime = trip.LastModifiedTime,
+                                               ShipmentScheduleImageGUID = trip.ImageGuId.ImageGuIdValue
                                            }).ToList();
 
                         if (tripFilter.OrderType != 0)
