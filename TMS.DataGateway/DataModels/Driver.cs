@@ -14,6 +14,9 @@ namespace TMS.DataGateway.DataModels
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
+        [ForeignKey("Partner")]
+        public int TransporterId { get; set; }
+        public virtual Partner Partner { get; set; }
         [Index("Driver_DriverNo", IsUnique = true)]
         [MaxLength(12)]
         public string DriverNo { get; set; }

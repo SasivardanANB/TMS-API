@@ -68,10 +68,8 @@ namespace TMS.DataGateway.Repositories
                         {
                             driverData.LastModifiedBy = driverRequest.LastModifiedBy;
                             driverData.LastModifiedTime = DateTime.Now;
-                            //driverData.Password= tMSDBContext.Drivers.Where(d => d.ID == driverData.ID).Select(p=>p.Password).FirstOrDefault();
                             tMSDBContext.Entry(driverData).State = System.Data.Entity.EntityState.Modified;
                             tMSDBContext.Entry(driverData).Property(d => d.DriverNo).IsModified = false;
-                            //tMSDBContext.Entry(driverData).Property(p => p.Password).IsModified = false;
                             tMSDBContext.SaveChanges();
                             driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.DriversUpdated;
                             driverResponse.StatusCode = (int)HttpStatusCode.OK;
@@ -90,6 +88,7 @@ namespace TMS.DataGateway.Repositories
 
                                 //Making ISActive true while creation
                                 driverData.IsActive = true;
+
                                 tMSDBContext.Drivers.Add(driverData);
                                 tMSDBContext.SaveChanges();
                                 driverResponse.Data = new List<Domain.Driver>();
@@ -174,6 +173,8 @@ namespace TMS.DataGateway.Repositories
                     driversList = tMSDBContext.Drivers.Where(d => !d.IsDelete).Select(driver => new Domain.Driver
                     {
                         ID = driver.ID,
+                        TransporterId=driver.TransporterId,
+                        TransporterName=driver.Partner.PartnerName,
                         DriverAddress = driver.DriverAddress,
                         FirstName = driver.FirstName,
                         LastName = driver.LastName,
@@ -217,6 +218,11 @@ namespace TMS.DataGateway.Repositories
                     if (!String.IsNullOrEmpty(driverFilter.DriverNo))
                     {
                         driversList = driversList.Where(s => s.DriverNo.ToLower().Contains(driverFilter.DriverNo.ToLower())).ToList();
+                    }
+
+                    if (!String.IsNullOrEmpty(driverFilter.TransporterName))
+                    {
+                        driversList = driversList.Where(s => s.TransporterName.ToLower().Contains(driverFilter.TransporterName.ToLower())).ToList();
                     }
 
                     if (!String.IsNullOrEmpty(driverFilter.FirstName))
@@ -279,6 +285,7 @@ namespace TMS.DataGateway.Repositories
                     || (s.DriverPhone != null && s.DriverPhone.Contains(globalSearch))
                     || (s.Email != null && s.Email.ToLower().Contains(globalSearch))
                     || (s.DrivingLicenseNo != null && s.DrivingLicenseNo.ToLower().Contains(globalSearch))
+                    || (s.TransporterName != null && s.TransporterName.ToLower().Contains(globalSearch))
                     ).ToList();
                 }
 
@@ -294,6 +301,12 @@ namespace TMS.DataGateway.Repositories
                             break;
                         case "drivernumber_desc":
                             driversList = driversList.OrderByDescending(s => s.DriverNo).ToList();
+                            break;
+                        case "transportername":
+                            driversList = driversList.OrderBy(s => s.TransporterName).ToList();
+                            break;
+                        case "transportername_desc":
+                            driversList = driversList.OrderByDescending(s => s.TransporterName).ToList();
                             break;
                         case "firstname":
                             driversList = driversList.OrderBy(s => s.FirstName).ToList();
