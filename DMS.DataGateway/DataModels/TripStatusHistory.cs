@@ -9,7 +9,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace DMS.DataGateway.DataModels
 {
     [Table("TripStatusHistory", Schema = "DMS")]
-    public class TripStatusHistory
+    public class TripStatusHistory : ModelBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -18,21 +18,11 @@ namespace DMS.DataGateway.DataModels
         public int StopPointId { get; set; }
         public virtual TripDetail TripDetail { get; set; }
         public DateTime StatusDate { get; set; }
+        [MaxLength(200)]
         public string Remarks { get; set; }
         [ForeignKey("TripStatus")]
         public int TripStatusId { get; set; }
         public virtual TripStatus TripStatus { get; set; }
-        public string CreatedBy
-        {
-            get;
-            set;
-        }
-        public DateTime? CreatedTime
-        {
-            get;
-            set;
-        }
-        public string LastModifiedBy { get; set; }
-        public DateTime? LastModifiedTime { get; set; }
+       
     }
 }

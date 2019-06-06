@@ -9,7 +9,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace DMS.DataGateway.DataModels
 {
     [Table("SubDistrict", Schema = "DMS")]
-    public class SubDistrict
+    public class SubDistrict : ModelBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -22,19 +22,7 @@ namespace DMS.DataGateway.DataModels
         public string SubDistrictName { get; set; }
         [ForeignKey("City")]
         public int CityID { get; set; }
-
         public City City { get; set; }
-        public string CreatedBy
-        {
-            get;
-            set;
-        }
-        public DateTime? CreatedTime
-        {
-            get;
-            set;
-        }
-        public string LastModifiedBy { get; set; }
-        public DateTime? LastModifiedTime { get; set; }
+       
     }
 }

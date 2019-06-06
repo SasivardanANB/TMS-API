@@ -51,16 +51,16 @@ namespace DMS.DataGateway.Repositories
             }
             return tripNo;
         }
-        private int GetLatestStopPointStatus(int stopPointId)
+        private string GetLatestStopPointStatus(int stopPointId)
         {
-            int lastStatus = 0;
+            string lastStatus = string.Empty;
             using (var context = new DataModel.DMSDBContext())
             {
                 var stopPointStatusHistories = context.TripStatusHistories.Where(t => t.StopPointId == stopPointId).OrderByDescending(t => t.StatusDate);
                 if (stopPointStatusHistories != null)
                 {
                     int statusId = stopPointStatusHistories.FirstOrDefault().TripStatusId;
-                    lastStatus = Convert.ToInt32(context.TripStatuses.FirstOrDefault(t => t.ID == statusId).StatusCode);
+                    lastStatus = context.TripStatuses.FirstOrDefault(t => t.ID == statusId).StatusCode;
                 }
             }
             return lastStatus;
@@ -137,6 +137,27 @@ namespace DMS.DataGateway.Repositories
                             }
                             #endregion
 
+                            #region Check if Shipment Schedule Image exists
+                            int? imageId = null;
+                            if (!string.IsNullOrEmpty(trip.ShipmentScheduleImageGUID))
+                            {
+                                var shipmentImageData = context.ImageGuids.FirstOrDefault(t => t.ImageGuIdValue == trip.ShipmentScheduleImageGUID);
+                                if (shipmentImageData != null)
+                                    imageId = shipmentImageData.ID;
+                                else
+                                {
+                                    DataModel.ImageGuId imageGuId = new ImageGuId()
+                                    {
+                                        ImageGuIdValue = trip.ShipmentScheduleImageGUID,
+                                        IsActive = true
+                                    };
+                                    context.ImageGuids.Add(imageGuId);
+                                    imageId = imageGuId.ID;
+                                }
+                            }
+
+                            #endregion
+
                             #region Check if OrderNumber already exists
                             int tripId = 0;
                             var existingTrip = context.TripHeaders.FirstOrDefault(t => t.OrderNumber == trip.OrderNumber);
@@ -155,6 +176,7 @@ namespace DMS.DataGateway.Repositories
                                 existingTrip.PoliceNumber = trip.PoliceNumber;
                                 existingTrip.CurrentTripStatusId = statusId;
                                 existingTrip.BusinessAreaId = businessAreaId;
+                                existingTrip.ShipmentScheduleImageID = imageId;
 
                                 context.Entry(existingTrip).State = System.Data.Entity.EntityState.Modified;
                                 context.SaveChanges();
@@ -264,8 +286,7 @@ namespace DMS.DataGateway.Repositories
                                     OrderType = trip.OrderType,
                                     TripDate = DateTime.Now,
                                     BusinessAreaId = businessAreaId,
-                                    CreatedBy = "SYSTEM",
-                                    CreatedTime = DateTime.Now
+                                    ShipmentScheduleImageID = imageId
                                 };
                                 context.TripHeaders.Add(tripRequest);
                                 context.SaveChanges();
@@ -291,7 +312,7 @@ namespace DMS.DataGateway.Repositories
 
                                     #region Check If Partners exists
                                     int locationId = 0;
-                                    
+
                                     var partner = context.Partners.FirstOrDefault(t => t.PartnerNo.Trim().Equals(tripLocation.PartnerNo));
                                     if (partner != null)
                                     {
@@ -321,7 +342,7 @@ namespace DMS.DataGateway.Repositories
                                         response.StatusMessage = tripLocation.PartnerNo + " is not available in DMS";
                                         return response;
                                     }
-                                    
+
                                     #endregion
 
                                     #region Create Trip Detail
@@ -483,7 +504,8 @@ namespace DMS.DataGateway.Repositories
                         var tripFilter = tripsByDriverRequest.Requests[0];
 
                         var tripsByUser = (from trip in context.TripHeaders
-                                           where trip.DriverId == tripFilter.UserId orderby trip.TripDate ascending
+                                           where trip.DriverId == tripFilter.UserId
+                                           orderby trip.TripDate ascending
                                            select new Domain.TripDetails
                                            {
                                                ID = trip.ID,
@@ -500,7 +522,8 @@ namespace DMS.DataGateway.Repositories
                                                TripStatusId = trip.CurrentTripStatusId,
                                                OrderType = trip.OrderType,
                                                TripDate = trip.TripDate,
-                                               LastModifiedTime = trip.LastModifiedTime
+                                               LastModifiedTime = trip.LastModifiedTime,
+                                               ShipmentScheduleImageGUID = trip.ImageGuId.ImageGuIdValue
                                            }).ToList();
 
                         if (tripFilter.OrderType != 0)
@@ -526,7 +549,7 @@ namespace DMS.DataGateway.Repositories
                             {
                                 foreach (var stopPoint in stopPoints)
                                 {
-                                    stopPoint.TripStatusCoded = GetLatestStopPointStatus(stopPoint.ID);
+                                    stopPoint.TripStatusCode = GetLatestStopPointStatus(stopPoint.ID);
                                 }
                             }
 
@@ -806,6 +829,46 @@ namespace DMS.DataGateway.Repositories
                 }
             }
             return sequnceNumber;
+        }
+        public StopPointsResponse GetLastTripStatusData(int stopPointId)
+        {
+            StopPointsResponse response = new StopPointsResponse()
+            {
+                Data = new List<StopPoints>()
+            };
+
+            using (var context = new DataModel.DMSDBContext())
+            {
+                try
+                {
+                    var statusData = (from status in context.TripStatusHistories
+                                      join td in context.TripDetails on status.StopPointId equals td.ID
+                                      where status.StopPointId == stopPointId orderby status.StatusDate descending
+                                      select new StopPoints
+                                      {
+                                          ID = status.StopPointId,
+                                          TripId = td.TripID,
+                                          LocationId = td.PartnerId,
+                                          LocationName = td.Partner.PartnerName,
+                                          SequenceNumber = td.SequenceNumber,
+                                          ActualDeliveryDate = td.ActualDeliveryDate,
+                                          EstimatedDeliveryDate = td.EstimatedDeliveryDate,
+                                          TripStatusCode = status.TripStatus.StatusCode
+                                      }).ToList();
+                    response.Data = statusData;
+                    response.Status = DomainObjects.Resource.ResourceData.Success;
+                    response.StatusCode = (int)HttpStatusCode.OK;
+                    response.StatusMessage = "Last status retrieved.";
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log(LogLevel.Error, ex);
+                    response.Status = DomainObjects.Resource.ResourceData.Failure;
+                    response.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                    response.StatusMessage = ex.Message;
+                }
+            }
+            return response;
         }
     }
 }

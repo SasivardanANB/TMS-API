@@ -15,6 +15,6 @@ namespace DMS.DomainObjects.Objects
         public int SequenceNumber  { get; set; }
         public DateTime ActualDeliveryDate { get; set; }
         public DateTime EstimatedDeliveryDate { get; set; }
-        public int TripStatusCoded { get; set; }
+        public string TripStatusCode { get; set; }
     }
 }

@@ -9,7 +9,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace DMS.DataGateway.DataModels
 {
     [Table("PostalCode", Schema = "DMS")]
-    public class PostalCode
+    public class PostalCode : ModelBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -20,19 +20,7 @@ namespace DMS.DataGateway.DataModels
         public string PostalCodeNo { get; set; }
         [ForeignKey("SubDistrict")]
         public int SubDistrictID { get; set; }
-
         public SubDistrict SubDistrict { get; set; }
-        public string CreatedBy
-        {
-            get;
-            set;
-        }
-        public DateTime? CreatedTime
-        {
-            get;
-            set;
-        }
-        public string LastModifiedBy { get; set; }
-        public DateTime? LastModifiedTime { get; set; }
+        
     }
 }
