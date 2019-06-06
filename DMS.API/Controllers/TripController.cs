@@ -254,5 +254,14 @@ namespace DMS.API.Controllers
 
             return Ok(tripData);
         }
+
+        [Route("getlasttripstatus")]
+        [HttpGet]
+        public IHttpActionResult GetLastTripStatusData(int stopPointId)
+        {
+            ITripTask tripTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().TripTask;
+            StopPointsResponse tripData = tripTask.GetLastTripStatusData(stopPointId);
+            return Ok(tripData);
+        }
     }
 }

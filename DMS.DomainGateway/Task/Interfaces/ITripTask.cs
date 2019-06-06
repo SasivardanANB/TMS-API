@@ -19,5 +19,6 @@ namespace DMS.DomainGateway.Task.Interfaces
         string GetOrderNumber(int stopPointId);
         string GetOrderStatusCode(int tripStatusId);
         int GetOrderSequnceNumber(int stopPointId);
+        StopPointsResponse GetLastTripStatusData(int stopPointId);
     }
 }
