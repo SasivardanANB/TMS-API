@@ -1440,7 +1440,7 @@ namespace OMS.DataGateway.Repositories
                          select new Domain.Common
                          {
                              Id = businessArea.ID,
-                             Value = businessArea.BusinessAreaCode
+                             Value = businessArea.BusinessAreaCode + (!string.IsNullOrEmpty(businessArea.BusinessAreaDescription) ? " : " + businessArea.BusinessAreaDescription : "")
                          }).ToList();
                 }
 
