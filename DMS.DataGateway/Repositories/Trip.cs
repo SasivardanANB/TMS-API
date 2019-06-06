@@ -175,6 +175,7 @@ namespace DMS.DataGateway.Repositories
                                 existingTrip.PoliceNumber = trip.PoliceNumber;
                                 existingTrip.CurrentTripStatusId = statusId;
                                 existingTrip.BusinessAreaId = businessAreaId;
+                                existingTrip.ShipmentScheduleImageID = imageId;
 
                                 context.Entry(existingTrip).State = System.Data.Entity.EntityState.Modified;
                                 context.SaveChanges();
@@ -283,7 +284,8 @@ namespace DMS.DataGateway.Repositories
                                     CurrentTripStatusId = statusId,
                                     OrderType = trip.OrderType,
                                     TripDate = DateTime.Now,
-                                    BusinessAreaId = businessAreaId
+                                    BusinessAreaId = businessAreaId,
+                                    ShipmentScheduleImageID = imageId
                                 };
                                 context.TripHeaders.Add(tripRequest);
                                 context.SaveChanges();
