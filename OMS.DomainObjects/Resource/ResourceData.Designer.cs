@@ -277,6 +277,15 @@ namespace OMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Passwords must be at least 8 characters and contain one upper case, one lower case, one number and special character.
+        /// </summary>
+        public static string PasswordInvalid {
+            get {
+                return ResourceManager.GetString("PasswordInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Password and confirm password must be same.
         /// </summary>
         public static string PasswordMismatch {
