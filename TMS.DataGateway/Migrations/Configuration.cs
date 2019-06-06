@@ -53,6 +53,7 @@ namespace TMS.DataGateway.Migrations
                 string users = "TMS.DataGateway.SeedData.Users.csv";
                 string roles = "TMS.DataGateway.SeedData.Roles.csv";
                 string userRoles = "TMS.DataGateway.SeedData.UserRoles.csv";
+                string userApplications = "TMS.DataGateway.SeedData.UserApplications.csv";
 
                 using (Stream stream = assembly.GetManifestResourceStream(applications))
                 {
@@ -335,6 +336,26 @@ namespace TMS.DataGateway.Migrations
                 }
                 context.SaveChanges();
 
+                using (Stream stream = assembly.GetManifestResourceStream(userApplications))
+                {
+                    using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                    {
+                        CsvReader csvReader = new CsvReader(reader);
+                        csvReader.Configuration.HeaderValidated = null;
+                        csvReader.Configuration.MissingFieldFound = null;
+                        var userApplicationData = csvReader.GetRecords<UserApplicationSeed>().ToArray();
+                        foreach (UserApplicationSeed userApplication in userApplicationData)
+                        {
+                            context.UserApplications.AddOrUpdate(c => c.ID, new DataModel.UserApplication
+                            {
+                                UserID = context.Users.Where(u => u.UserName == userApplication.UserName).Select(u => u.ID).FirstOrDefault(),
+                                ApplicationID = context.Applications.Where(a => a.ApplicationCode == userApplication.ApplicationCode).Select(a => a.ID).FirstOrDefault(),
+                            });
+                        }
+                    }
+                }
+                context.SaveChanges();
+
                 #endregion
             }
             catch (DbEntityValidationException dbEx)
@@ -392,6 +413,12 @@ namespace TMS.DataGateway.Migrations
         {
             public string MenuCode { get; set; }
             public string ActivityCode { get; set; }
+        }
+
+        public class UserApplicationSeed
+        {
+            public string UserName { get; set; }
+            public string ApplicationCode { get; set; }
         }
 
         internal class CustomSqlServerMigrationSqlGenerator : SqlServerMigrationSqlGenerator

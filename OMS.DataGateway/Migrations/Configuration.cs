@@ -49,6 +49,7 @@ namespace OMS.DataGateway.Migrations
                 string users = "OMS.DataGateway.SeedData.Users.csv";
                 string roles = "OMS.DataGateway.SeedData.Roles.csv";
                 string userRoles = "OMS.DataGateway.SeedData.UserRoles.csv";
+                string userApplications = "OMS.DataGateway.SeedData.UserApplications.csv";
 
                 using (Stream stream = assembly.GetManifestResourceStream(applications))
                 {
@@ -256,7 +257,7 @@ namespace OMS.DataGateway.Migrations
                 }
                 context.SaveChanges();
 
-                #region "Users, Roles & UserRoles"
+                #region "Users, Roles, UserRoles & UserApplications"
 
                 using (Stream stream = assembly.GetManifestResourceStream(users))
                 {
@@ -299,6 +300,26 @@ namespace OMS.DataGateway.Migrations
                                 UserID = context.Users.Where(u => u.UserName == userRole.UserName).Select(u => u.ID).FirstOrDefault(),
                                 RoleID = context.Roles.Where(r => r.RoleCode == userRole.RoleCode).Select(r => r.ID).FirstOrDefault(),
                                 BusinessAreaID = context.BusinessAreas.Where(b => b.BusinessAreaCode == userRole.BusinessAreaCode).Select(b => b.ID).FirstOrDefault()
+                            });
+                        }
+                    }
+                }
+                context.SaveChanges();
+
+                using (Stream stream = assembly.GetManifestResourceStream(userApplications))
+                {
+                    using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                    {
+                        CsvReader csvReader = new CsvReader(reader);
+                        csvReader.Configuration.HeaderValidated = null;
+                        csvReader.Configuration.MissingFieldFound = null;
+                        var userApplicationData = csvReader.GetRecords<UserApplicationSeed>().ToArray();
+                        foreach (UserApplicationSeed userApplication in userApplicationData)
+                        {
+                            context.UserApplications.AddOrUpdate(c => c.ID, new DataModel.UserApplication
+                            {
+                                UserID = context.Users.Where(u => u.UserName == userApplication.UserName).Select(u => u.ID).FirstOrDefault(),
+                                ApplicationID = context.Applications.Where(a => a.ApplicationCode == userApplication.ApplicationCode).Select(a => a.ID).FirstOrDefault(),
                             });
                         }
                     }
@@ -355,6 +376,12 @@ namespace OMS.DataGateway.Migrations
             public string UserName { get; set; }
             public string RoleCode { get; set; }
             public string BusinessAreaCode { get; set; }
+        }
+
+        public class UserApplicationSeed
+        {
+            public string UserName { get; set; }
+            public string ApplicationCode { get; set; }
         }
 
         public class MenuActivitiesSeed
