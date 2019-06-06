@@ -98,13 +98,13 @@ namespace OMS.DataGateway.Migrations
                         CsvReader csvReader = new CsvReader(reader);
                         csvReader.Configuration.HeaderValidated = null;
                         csvReader.Configuration.MissingFieldFound = null;
-                        var menuActivitiesData = csvReader.GetRecords<DataModel.MenuActivity>().ToArray();
-                        foreach (DataModel.MenuActivity menuActivity in menuActivitiesData)
+                        var menuActivitiesData = csvReader.GetRecords<MenuActivitiesSeed>().ToArray();
+                        foreach (MenuActivitiesSeed menuActivity in menuActivitiesData)
                         {
                             context.MenuActivities.AddOrUpdate(c => c.ID, new DataModel.MenuActivity
                             {
-                                MenuID = menuActivity.MenuID,
-                                ActivityID = menuActivity.ActivityID
+                                MenuID = context.Menus.Where(m => m.MenuCode == menuActivity.MenuCode).Select(m => m.ID).FirstOrDefault(),
+                                ActivityID = context.Activities.Where(a => a.ActivityCode == menuActivity.ActivityCode).Select(a => a.ID).FirstOrDefault()
                             });
                         }
                     }
@@ -355,6 +355,12 @@ namespace OMS.DataGateway.Migrations
             public string UserName { get; set; }
             public string RoleCode { get; set; }
             public string BusinessAreaCode { get; set; }
+        }
+
+        public class MenuActivitiesSeed
+        {
+            public string MenuCode { get; set; }
+            public string ActivityCode { get; set; }
         }
 
         internal class CustomSqlServerMigrationSqlGenerator : SqlServerMigrationSqlGenerator
