@@ -70,5 +70,9 @@ namespace DMS.BusinessGateway.Task
         {
             return _tripRepository.GetOrderSequnceNumber(stopPointId);
         }
+        public override StopPointsResponse GetLastTripStatusData(int stopPointId)
+        {
+            return _tripRepository.GetLastTripStatusData(stopPointId);
+        }
     }
 }
