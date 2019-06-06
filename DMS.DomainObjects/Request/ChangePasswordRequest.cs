@@ -12,7 +12,8 @@ namespace DMS.DomainObjects.Request
         public int Id { set; get; }
         [Required]
         public string OldPassword { set; get; }
-        [Required]
+        [RegularExpression("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$", ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "PasswordInvalid")]
+        [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidUserPassword")]
         public string NewPassword { set; get; }
     }
 }

@@ -222,73 +222,80 @@ namespace TMS.DataGateway.Repositories
                 }
 
                 // Sorting
-                if (vehiclesList.Count>0 &&!string.IsNullOrEmpty(vehicleRequest.SortOrder))
+                if (vehiclesList.Count > 0)
                 {
-                    switch (vehicleRequest.SortOrder.ToLower())
+                    if (!string.IsNullOrEmpty(vehicleRequest.SortOrder))
                     {
-                        case "vehicletype":
-                            vehiclesList = vehiclesList.OrderBy(s => s.VehicleTypeName).ToList();
-                            break;
-                        case "vehicletype_desc":
-                            vehiclesList = vehiclesList.OrderByDescending(s => s.VehicleTypeName).ToList();
-                            break;
-                        case "kirnumber":
-                            vehiclesList = vehiclesList.OrderBy(s => s.KIRNo).ToList();
-                            break;
-                        case "kirnumber_desc":
-                            vehiclesList = vehiclesList.OrderByDescending(s => s.KIRNo).ToList();
-                            break;
-                        case "kirexpirydate":
-                            vehiclesList = vehiclesList.OrderBy(s => s.KIRExpiryDate).ToList();
-                            break;
-                        case "kirexpirydate_desc":
-                            vehiclesList = vehiclesList.OrderByDescending(s => s.KIRExpiryDate).ToList();
-                            break;
-                        case "maxdimension":
-                            vehiclesList = vehiclesList.OrderBy(s => s.MaxDimension).ToList();
-                            break;
-                        case "maxdimension_desc":
-                            vehiclesList = vehiclesList.OrderByDescending(s => s.MaxDimension).ToList();
-                            break;
-                        case "maxweight":
-                            vehiclesList = vehiclesList.OrderBy(s => s.MaxWeight).ToList();
-                            break;
-                        case "maxweight_desc":
-                            vehiclesList = vehiclesList.OrderByDescending(s => s.MaxWeight).ToList();
-                            break;
-                        case "platenumber":
-                            vehiclesList = vehiclesList.OrderBy(s => s.PlateNumber).ToList();
-                            break;
-                        case "platenumber_desc":
-                            vehiclesList = vehiclesList.OrderByDescending(s => s.PlateNumber).ToList();
-                            break;
-                        case "policenumber":
-                            vehiclesList = vehiclesList.OrderBy(s => s.PoliceNo).ToList();
-                            break;
-                        case "policenumber_desc":
-                            vehiclesList = vehiclesList.OrderByDescending(s => s.PoliceNo).ToList();
-                            break;
-                        case "pool":
-                            vehiclesList = vehiclesList.OrderBy(s => s.PoolName).ToList();
-                            break;
-                        case "pool_desc":
-                            vehiclesList = vehiclesList.OrderByDescending(s => s.PoolName).ToList();
-                            break;
-                        case "shippername":
-                            vehiclesList = vehiclesList.OrderBy(s => s.ShipperName).ToList();
-                            break;
-                        case "shippername_desc":
-                            vehiclesList = vehiclesList.OrderByDescending(s => s.ShipperName).ToList();
-                            break;
-                        case "vehicletypedescription":
-                            vehiclesList = vehiclesList.OrderBy(s => s.VehicleTypeDescription).ToList();
-                            break;
-                        case "vehicletypedescription_desc":
-                            vehiclesList = vehiclesList.OrderByDescending(s => s.VehicleTypeDescription).ToList();
-                            break;
-                        default:  // ID Descending 
-                            vehiclesList = vehiclesList.OrderByDescending(s => s.ID).ToList();
-                            break;
+                        switch (vehicleRequest.SortOrder.ToLower())
+                        {
+                            case "vehicletype":
+                                vehiclesList = vehiclesList.OrderBy(s => s.VehicleTypeName).ToList();
+                                break;
+                            case "vehicletype_desc":
+                                vehiclesList = vehiclesList.OrderByDescending(s => s.VehicleTypeName).ToList();
+                                break;
+                            case "kirnumber":
+                                vehiclesList = vehiclesList.OrderBy(s => s.KIRNo).ToList();
+                                break;
+                            case "kirnumber_desc":
+                                vehiclesList = vehiclesList.OrderByDescending(s => s.KIRNo).ToList();
+                                break;
+                            case "kirexpirydate":
+                                vehiclesList = vehiclesList.OrderBy(s => s.KIRExpiryDate).ToList();
+                                break;
+                            case "kirexpirydate_desc":
+                                vehiclesList = vehiclesList.OrderByDescending(s => s.KIRExpiryDate).ToList();
+                                break;
+                            case "maxdimension":
+                                vehiclesList = vehiclesList.OrderBy(s => s.MaxDimension).ToList();
+                                break;
+                            case "maxdimension_desc":
+                                vehiclesList = vehiclesList.OrderByDescending(s => s.MaxDimension).ToList();
+                                break;
+                            case "maxweight":
+                                vehiclesList = vehiclesList.OrderBy(s => s.MaxWeight).ToList();
+                                break;
+                            case "maxweight_desc":
+                                vehiclesList = vehiclesList.OrderByDescending(s => s.MaxWeight).ToList();
+                                break;
+                            case "platenumber":
+                                vehiclesList = vehiclesList.OrderBy(s => s.PlateNumber).ToList();
+                                break;
+                            case "platenumber_desc":
+                                vehiclesList = vehiclesList.OrderByDescending(s => s.PlateNumber).ToList();
+                                break;
+                            case "policenumber":
+                                vehiclesList = vehiclesList.OrderBy(s => s.PoliceNo).ToList();
+                                break;
+                            case "policenumber_desc":
+                                vehiclesList = vehiclesList.OrderByDescending(s => s.PoliceNo).ToList();
+                                break;
+                            case "pool":
+                                vehiclesList = vehiclesList.OrderBy(s => s.PoolName).ToList();
+                                break;
+                            case "pool_desc":
+                                vehiclesList = vehiclesList.OrderByDescending(s => s.PoolName).ToList();
+                                break;
+                            case "shippername":
+                                vehiclesList = vehiclesList.OrderBy(s => s.ShipperName).ToList();
+                                break;
+                            case "shippername_desc":
+                                vehiclesList = vehiclesList.OrderByDescending(s => s.ShipperName).ToList();
+                                break;
+                            case "vehicletypedescription":
+                                vehiclesList = vehiclesList.OrderBy(s => s.VehicleTypeDescription).ToList();
+                                break;
+                            case "vehicletypedescription_desc":
+                                vehiclesList = vehiclesList.OrderByDescending(s => s.VehicleTypeDescription).ToList();
+                                break;
+                            default:  // ID Descending 
+                                vehiclesList = vehiclesList.OrderByDescending(s => s.ID).ToList();
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        vehiclesList = vehiclesList.OrderByDescending(s => s.ID).ToList();
                     }
                 }
 

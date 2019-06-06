@@ -199,27 +199,35 @@ namespace TMS.DataGateway.Repositories
                 }
 
                 // Sorting
-                if(picList.Count>0 && !string.IsNullOrEmpty(picRequest.SortOrder))
+                if (picList.Count > 0)
                 {
-                    switch (picRequest.SortOrder.ToLower())
+                    if (!string.IsNullOrEmpty(picRequest.SortOrder))
                     {
-                        case "picname":
-                            picList = picList.OrderBy(s => s.PICName).ToList();
-                            break;
-                        case "picname_desc":
-                            picList = picList.OrderByDescending(s => s.PICName).ToList();
-                            break;
-                        case "picemail":
-                            picList = picList.OrderBy(s => s.PICEmail).ToList();
-                            break;
-                        case "picemail_Desc":
-                            picList = picList.OrderByDescending(s => s.PICEmail).ToList();
-                            break;
-                        default:  // ID Descending 
-                            picList = picList.OrderByDescending(s => s.ID).ToList();
-                            break;
+                        switch (picRequest.SortOrder.ToLower())
+                        {
+                            case "picname":
+                                picList = picList.OrderBy(s => s.PICName).ToList();
+                                break;
+                            case "picname_desc":
+                                picList = picList.OrderByDescending(s => s.PICName).ToList();
+                                break;
+                            case "picemail":
+                                picList = picList.OrderBy(s => s.PICEmail).ToList();
+                                break;
+                            case "picemail_Desc":
+                                picList = picList.OrderByDescending(s => s.PICEmail).ToList();
+                                break;
+                            default:  // ID Descending 
+                                picList = picList.OrderByDescending(s => s.ID).ToList();
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        picList = picList.OrderByDescending(s => s.ID).ToList();
                     }
                 }
+
 
                 // Total NumberOfRecords
                 picResponse.NumberOfRecords = picList.Count;

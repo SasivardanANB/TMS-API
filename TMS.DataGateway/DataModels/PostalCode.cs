@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace TMS.DataGateway.DataModels
 {
     [Table("PostalCode", Schema = "TMS")]
-    public class PostalCode
+    public class PostalCode : ModelBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -21,19 +21,6 @@ namespace TMS.DataGateway.DataModels
         [ForeignKey("SubDistrict")]
         public int SubDistrictID { get; set; }
         public SubDistrict SubDistrict { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public string CreatedBy
-        {
-            get { return "SYSTEM"; }
-            set { }
-        }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime CreatedTime
-        {
-            get { return DateTime.Now; }
-            set { }
-        }
-        public string LastModifiedBy { get; set; }
-        public DateTime? LastModifiedTime { get; set; }
+       
     }
 }

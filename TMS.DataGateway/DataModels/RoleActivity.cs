@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace TMS.DataGateway.DataModels
 {
     [Table("RoleActivity", Schema = "TMS")]
-    public class RoleActivity
+    public class RoleActivity 
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

@@ -285,67 +285,74 @@ namespace TMS.DataGateway.Repositories
 
 
                 // Sorting
-                if (!string.IsNullOrEmpty(driverRequest.SortOrder) && driversList.Count > 0)
+                if (driversList.Count > 0)
                 {
-                    switch (driverRequest.SortOrder.ToLower())
+                    if (!string.IsNullOrEmpty(driverRequest.SortOrder))
                     {
-                        case "drivernumber":
-                            driversList = driversList.OrderBy(s => s.DriverNo).ToList();
-                            break;
-                        case "drivernumber_desc":
-                            driversList = driversList.OrderByDescending(s => s.DriverNo).ToList();
-                            break;
-                        case "firstname":
-                            driversList = driversList.OrderBy(s => s.FirstName).ToList();
-                            break;
-                        case "firstname_desc":
-                            driversList = driversList.OrderByDescending(s => s.FirstName).ToList();
-                            break;
-                        case "lastname":
-                            driversList = driversList.OrderBy(s => s.LastName).ToList();
-                            break;
-                        case "lastname_desc":
-                            driversList = driversList.OrderByDescending(s => s.LastName).ToList();
-                            break;
-                        case "email":
-                            driversList = driversList.OrderBy(s => s.Email).ToList();
-                            break;
-                        case "email_desc":
-                            driversList = driversList.OrderByDescending(s => s.Email).ToList();
-                            break;
-                        case "phone":
-                            driversList = driversList.OrderBy(s => s.DriverPhone).ToList();
-                            break;
-                        case "phone_desc":
-                            driversList = driversList.OrderByDescending(s => s.DriverPhone).ToList();
-                            break;
-                        case "address":
-                            driversList = driversList.OrderBy(s => s.DriverAddress).ToList();
-                            break;
-                        case "address_desc":
-                            driversList = driversList.OrderByDescending(s => s.DriverAddress).ToList();
-                            break;
-                        case "identitynumber":
-                            driversList = driversList.OrderBy(s => s.IdentityNo).ToList();
-                            break;
-                        case "identitynumber_desc":
-                            driversList = driversList.OrderByDescending(s => s.IdentityNo).ToList();
-                            break;
-                        case "drivinglicensenumber":
-                            driversList = driversList.OrderBy(s => s.DrivingLicenseNo).ToList();
-                            break;
-                        case "drivinglicensenumber_desc":
-                            driversList = driversList.OrderByDescending(s => s.DrivingLicenseNo).ToList();
-                            break;
-                        case "drivinglicenseexpiredate":
-                            driversList = driversList.OrderBy(s => s.DrivingLicenseExpiredDate).ToList();
-                            break;
-                        case "drivinglicenseexpiredate_desc":
-                            driversList = driversList.OrderByDescending(s => s.DrivingLicenseExpiredDate).ToList();
-                            break;
-                        default:  // ID Descending 
-                            driversList = driversList.OrderByDescending(s => s.ID).ToList();
-                            break;
+                        switch (driverRequest.SortOrder.ToLower())
+                        {
+                            case "drivernumber":
+                                driversList = driversList.OrderBy(s => s.DriverNo).ToList();
+                                break;
+                            case "drivernumber_desc":
+                                driversList = driversList.OrderByDescending(s => s.DriverNo).ToList();
+                                break;
+                            case "firstname":
+                                driversList = driversList.OrderBy(s => s.FirstName).ToList();
+                                break;
+                            case "firstname_desc":
+                                driversList = driversList.OrderByDescending(s => s.FirstName).ToList();
+                                break;
+                            case "lastname":
+                                driversList = driversList.OrderBy(s => s.LastName).ToList();
+                                break;
+                            case "lastname_desc":
+                                driversList = driversList.OrderByDescending(s => s.LastName).ToList();
+                                break;
+                            case "email":
+                                driversList = driversList.OrderBy(s => s.Email).ToList();
+                                break;
+                            case "email_desc":
+                                driversList = driversList.OrderByDescending(s => s.Email).ToList();
+                                break;
+                            case "phone":
+                                driversList = driversList.OrderBy(s => s.DriverPhone).ToList();
+                                break;
+                            case "phone_desc":
+                                driversList = driversList.OrderByDescending(s => s.DriverPhone).ToList();
+                                break;
+                            case "address":
+                                driversList = driversList.OrderBy(s => s.DriverAddress).ToList();
+                                break;
+                            case "address_desc":
+                                driversList = driversList.OrderByDescending(s => s.DriverAddress).ToList();
+                                break;
+                            case "identitynumber":
+                                driversList = driversList.OrderBy(s => s.IdentityNo).ToList();
+                                break;
+                            case "identitynumber_desc":
+                                driversList = driversList.OrderByDescending(s => s.IdentityNo).ToList();
+                                break;
+                            case "drivinglicensenumber":
+                                driversList = driversList.OrderBy(s => s.DrivingLicenseNo).ToList();
+                                break;
+                            case "drivinglicensenumber_desc":
+                                driversList = driversList.OrderByDescending(s => s.DrivingLicenseNo).ToList();
+                                break;
+                            case "drivinglicenseexpiredate":
+                                driversList = driversList.OrderBy(s => s.DrivingLicenseExpiredDate).ToList();
+                                break;
+                            case "drivinglicenseexpiredate_desc":
+                                driversList = driversList.OrderByDescending(s => s.DrivingLicenseExpiredDate).ToList();
+                                break;
+                            default:  // ID Descending 
+                                driversList = driversList.OrderByDescending(s => s.ID).ToList();
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        driversList = driversList.OrderByDescending(s => s.ID).ToList();
                     }
                 }
 

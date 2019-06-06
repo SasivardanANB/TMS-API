@@ -367,32 +367,40 @@ namespace TMS.DataGateway.Repositories
                 }
 
                 // Sorting
-                if (userReq.SortOrder != null)
+                if (usersList.Count > 0)
                 {
-
-                    switch (userReq.SortOrder.ToLower())
+                    if (!string.IsNullOrEmpty(userReq.SortOrder))
                     {
-                        case "username":
-                            usersList = usersList.OrderBy(s => s.UserName).ToList();
-                            break;
-                        case "username_desc":
-                            usersList = usersList.OrderByDescending(s => s.UserName).ToList();
-                            break;
-                        case "firstname":
-                            usersList = usersList.OrderBy(s => s.FirstName).ToList();
-                            break;
-                        case "firstname_desc":
-                            usersList = usersList.OrderByDescending(s => s.FirstName).ToList();
-                            break;
-                        case "lastname":
-                            usersList = usersList.OrderBy(s => s.LastName).ToList();
-                            break;
-                        case "lastname_desc":
-                            usersList = usersList.OrderByDescending(s => s.LastName).ToList();
-                            break;
-                        default:  // ID Descending 
-                            usersList = usersList.OrderByDescending(s => s.ID).ToList();
-                            break;
+
+
+                        switch (userReq.SortOrder.ToLower())
+                        {
+                            case "username":
+                                usersList = usersList.OrderBy(s => s.UserName).ToList();
+                                break;
+                            case "username_desc":
+                                usersList = usersList.OrderByDescending(s => s.UserName).ToList();
+                                break;
+                            case "firstname":
+                                usersList = usersList.OrderBy(s => s.FirstName).ToList();
+                                break;
+                            case "firstname_desc":
+                                usersList = usersList.OrderByDescending(s => s.FirstName).ToList();
+                                break;
+                            case "lastname":
+                                usersList = usersList.OrderBy(s => s.LastName).ToList();
+                                break;
+                            case "lastname_desc":
+                                usersList = usersList.OrderByDescending(s => s.LastName).ToList();
+                                break;
+                            default:  // ID Descending 
+                                usersList = usersList.OrderByDescending(s => s.ID).ToList();
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        usersList = usersList.OrderByDescending(s => s.ID).ToList();
                     }
                 }
 
@@ -693,31 +701,38 @@ namespace TMS.DataGateway.Repositories
                     }
 
                     // Sorting
-                    if (!string.IsNullOrEmpty(roles.SortOrder))
+                    if (rolesList.Count > 0)
                     {
-                        switch (roles.SortOrder.ToLower())
+                        if (!string.IsNullOrEmpty(roles.SortOrder))
                         {
-                            case "isactive":
-                                rolesList = rolesList.OrderBy(s => s.IsActive).ToList();
-                                break;
-                            case "isactive_desc":
-                                rolesList = rolesList.OrderByDescending(s => s.IsActive).ToList();
-                                break;
-                            case "rolecode":
-                                rolesList = rolesList.OrderBy(s => s.RoleCode).ToList();
-                                break;
-                            case "rolecode_desc":
-                                rolesList = rolesList.OrderByDescending(s => s.RoleCode).ToList();
-                                break;
-                            case "roledescription":
-                                rolesList = rolesList.OrderBy(s => s.RoleDescription).ToList();
-                                break;
-                            case "roledescription_desc":
-                                rolesList = rolesList.OrderByDescending(s => s.RoleDescription).ToList();
-                                break;
-                            default:  // ID Descending 
-                                rolesList = rolesList.OrderByDescending(s => s.ID).ToList();
-                                break;
+                            switch (roles.SortOrder.ToLower())
+                            {
+                                case "isactive":
+                                    rolesList = rolesList.OrderBy(s => s.IsActive).ToList();
+                                    break;
+                                case "isactive_desc":
+                                    rolesList = rolesList.OrderByDescending(s => s.IsActive).ToList();
+                                    break;
+                                case "rolecode":
+                                    rolesList = rolesList.OrderBy(s => s.RoleCode).ToList();
+                                    break;
+                                case "rolecode_desc":
+                                    rolesList = rolesList.OrderByDescending(s => s.RoleCode).ToList();
+                                    break;
+                                case "roledescription":
+                                    rolesList = rolesList.OrderBy(s => s.RoleDescription).ToList();
+                                    break;
+                                case "roledescription_desc":
+                                    rolesList = rolesList.OrderByDescending(s => s.RoleDescription).ToList();
+                                    break;
+                                default:  // ID Descending 
+                                    rolesList = rolesList.OrderByDescending(s => s.ID).ToList();
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            rolesList = rolesList.OrderByDescending(s => s.ID).ToList();
                         }
                     }
 
@@ -1022,31 +1037,38 @@ namespace TMS.DataGateway.Repositories
                     }
 
                     // Sorting
-                    if (!string.IsNullOrEmpty(userRoleRequest.SortOrder))
+                    if (userRoleList.Count > 0)
                     {
-                        switch (userRoleRequest.SortOrder.ToLower())
+                        if (!string.IsNullOrEmpty(userRoleRequest.SortOrder))
                         {
-                            case "rolename":
-                                userRoleList = userRoleList.OrderBy(s => s.RoleName).ToList();
-                                break;
-                            case "rolename_desc":
-                                userRoleList = userRoleList.OrderByDescending(s => s.RoleName).ToList();
-                                break;
-                            case "username":
-                                userRoleList = userRoleList.OrderBy(s => s.UserName).ToList();
-                                break;
-                            case "username_desc":
-                                userRoleList = userRoleList.OrderByDescending(s => s.UserName).ToList();
-                                break;
-                            case "businessarea":
-                                userRoleList = userRoleList.OrderBy(s => s.BusinessArea).ToList();
-                                break;
-                            case "businessarea_desc":
-                                userRoleList = userRoleList.OrderByDescending(s => s.BusinessArea).ToList();
-                                break;
-                            default:  // ID Descending 
-                                userRoleList = userRoleList.OrderByDescending(s => s.ID).ToList();
-                                break;
+                            switch (userRoleRequest.SortOrder.ToLower())
+                            {
+                                case "rolename":
+                                    userRoleList = userRoleList.OrderBy(s => s.RoleName).ToList();
+                                    break;
+                                case "rolename_desc":
+                                    userRoleList = userRoleList.OrderByDescending(s => s.RoleName).ToList();
+                                    break;
+                                case "username":
+                                    userRoleList = userRoleList.OrderBy(s => s.UserName).ToList();
+                                    break;
+                                case "username_desc":
+                                    userRoleList = userRoleList.OrderByDescending(s => s.UserName).ToList();
+                                    break;
+                                case "businessarea":
+                                    userRoleList = userRoleList.OrderBy(s => s.BusinessArea).ToList();
+                                    break;
+                                case "businessarea_desc":
+                                    userRoleList = userRoleList.OrderByDescending(s => s.BusinessArea).ToList();
+                                    break;
+                                default:  // ID Descending 
+                                    userRoleList = userRoleList.OrderByDescending(s => s.ID).ToList();
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            userRoleList = userRoleList.OrderByDescending(s => s.ID).ToList();
                         }
                     }
 
@@ -1422,7 +1444,7 @@ namespace TMS.DataGateway.Repositories
                          select new Domain.Common
                          {
                              Id = businessArea.ID,
-                             Value = businessArea.BusinessAreaCode
+                             Value = businessArea.BusinessAreaCode +(!string.IsNullOrEmpty(businessArea.BusinessAreaDescription) ? " : "+businessArea.BusinessAreaDescription:"")
                          }).ToList();
                 }
 

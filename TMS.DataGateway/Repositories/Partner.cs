@@ -209,45 +209,56 @@ namespace TMS.DataGateway.Repositories
                 }
 
                 //Sorting
-                if (partnerRequest.SortOrder == null)
+                //if (partnerRequest.SortOrder == null)
+                //{
+                //    partnerRequest.SortOrder = "ID";
+                //}
+                if (partnerList.Count > 0)
                 {
-                    partnerRequest.SortOrder = "ID";
-                }
-                switch (partnerRequest.SortOrder.ToLower())
-                {
-                    case "partnername":
-                        partnerList = partnerList.OrderBy(s => s.PartnerName).ToList();
-                        break;
-                    case "partnername_desc":
-                        partnerList = partnerList.OrderByDescending(s => s.PartnerName).ToList();
-                        break;
-                    case "partneraddress":
-                        partnerList = partnerList.OrderBy(s => s.PartnerAddress).ToList();
-                        break;
-                    case "partneraddress_desc":
-                        partnerList = partnerList.OrderByDescending(s => s.PartnerAddress).ToList();
-                        break;
-                    case "picname":
-                        partnerList = partnerList.OrderBy(s => s.PICName).ToList();
-                        break;
-                    case "picname_desc":
-                        partnerList = partnerList.OrderByDescending(s => s.PICName).ToList();
-                        break;
-                    case "partneremail":
-                        partnerList = partnerList.OrderBy(s => s.PartnerEmail).ToList();
-                        break;
-                    case "partneremail_desc":
-                        partnerList = partnerList.OrderByDescending(s => s.PartnerEmail).ToList();
-                        break;
-                    case "initial":
-                        partnerList = partnerList.OrderBy(s => s.PartnerInitial).ToList();
-                        break;
-                    case "initial_desc":
-                        partnerList = partnerList.OrderByDescending(s => s.PartnerInitial).ToList();
-                        break;
-                    default:  // ID Descending 
+
+                    if (!string.IsNullOrEmpty(partnerRequest.SortOrder))
+                    {
+                        switch (partnerRequest.SortOrder.ToLower())
+                        {
+                            case "partnername":
+                                partnerList = partnerList.OrderBy(s => s.PartnerName).ToList();
+                                break;
+                            case "partnername_desc":
+                                partnerList = partnerList.OrderByDescending(s => s.PartnerName).ToList();
+                                break;
+                            case "partneraddress":
+                                partnerList = partnerList.OrderBy(s => s.PartnerAddress).ToList();
+                                break;
+                            case "partneraddress_desc":
+                                partnerList = partnerList.OrderByDescending(s => s.PartnerAddress).ToList();
+                                break;
+                            case "picname":
+                                partnerList = partnerList.OrderBy(s => s.PICName).ToList();
+                                break;
+                            case "picname_desc":
+                                partnerList = partnerList.OrderByDescending(s => s.PICName).ToList();
+                                break;
+                            case "partneremail":
+                                partnerList = partnerList.OrderBy(s => s.PartnerEmail).ToList();
+                                break;
+                            case "partneremail_desc":
+                                partnerList = partnerList.OrderByDescending(s => s.PartnerEmail).ToList();
+                                break;
+                            case "initial":
+                                partnerList = partnerList.OrderBy(s => s.PartnerInitial).ToList();
+                                break;
+                            case "initial_desc":
+                                partnerList = partnerList.OrderByDescending(s => s.PartnerInitial).ToList();
+                                break;
+                            default:  // ID Descending 
+                                partnerList = partnerList.OrderByDescending(s => s.ID).ToList();
+                                break;
+                        }
+                    }
+                    else
+                    {
                         partnerList = partnerList.OrderByDescending(s => s.ID).ToList();
-                        break;
+                    }
                 }
 
                 // Total NumberOfRecords
