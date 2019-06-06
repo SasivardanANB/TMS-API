@@ -3,8 +3,11 @@ namespace DMS.DataGateway.Migrations
     using CsvHelper;
     using NLog;
     using System;
+    using System.Collections.Generic;
     using System.Data.Entity;
     using System.Data.Entity.Migrations;
+    using System.Data.Entity.Migrations.Model;
+    using System.Data.Entity.SqlServer;
     using System.Data.Entity.Validation;
     using System.IO;
     using System.Linq;
@@ -19,6 +22,7 @@ namespace DMS.DataGateway.Migrations
         {
             AutomaticMigrationsEnabled = false;
             ContextKey = "DMS.DataGateway.DataModels.DMSDBContext";
+            SetSqlGenerator("System.Data.SqlClient", new CustomSqlServerMigrationSqlGenerator());
         }
 
         protected override void Seed(DMS.DataGateway.DataModels.DMSDBContext context)
@@ -35,6 +39,7 @@ namespace DMS.DataGateway.Migrations
                 string postalCodes = "DMS.DataGateway.SeedData.PostalCodes.csv";
                 string subdistricts = "DMS.DataGateway.SeedData.SubDistricts.csv";
                 string imageTypes = "DMS.DataGateway.SeedData.ImageTypes.csv";
+                string businessAreas = "DMS.DataGateway.SeedData.BusinessAreas.csv";
 
                 using (Stream stream = assembly.GetManifestResourceStream(provinces))
                 {
@@ -44,7 +49,7 @@ namespace DMS.DataGateway.Migrations
                         csvReader.Configuration.HeaderValidated = null;
                         csvReader.Configuration.MissingFieldFound = null;
                         var provincesData = csvReader.GetRecords<DMS.DataGateway.DataModels.Province>().ToArray();
-                        context.Provinces.AddOrUpdate(c => c.ID, provincesData);
+                        context.Provinces.AddOrUpdate(c => c.ProvinceCode, provincesData);
                     }
                 }
                 context.SaveChanges();
@@ -59,7 +64,7 @@ namespace DMS.DataGateway.Migrations
                         var citiesData = csvReader.GetRecords<CitySeed>().ToArray();
                         foreach (CitySeed city in citiesData)
                         {
-                            context.Cities.AddOrUpdate(c => c.ID, new DMS.DataGateway.DataModels.City
+                            context.Cities.AddOrUpdate(c => c.CityCode, new DMS.DataGateway.DataModels.City
                             {
                                 CityCode = city.CityCode,
                                 CityDescription = city.CityName,
@@ -80,7 +85,7 @@ namespace DMS.DataGateway.Migrations
                         var subdistrictsData = csvReader.GetRecords<SubDistrictSeed>().ToArray();
                         foreach (SubDistrictSeed subDistrict in subdistrictsData)
                         {
-                            context.SubDistricts.AddOrUpdate(c => c.ID, new DMS.DataGateway.DataModels.SubDistrict
+                            context.SubDistricts.AddOrUpdate(c => c.SubDistrictCode, new DMS.DataGateway.DataModels.SubDistrict
                             {
                                 SubDistrictCode = subDistrict.SubdistrictCode,
                                 SubDistrictName = subDistrict.SubdistrictName,
@@ -101,7 +106,7 @@ namespace DMS.DataGateway.Migrations
                         var postalCodesData = csvReader.GetRecords<DMS.DataGateway.DataModels.PostalCode>().ToArray();
                         foreach (DMS.DataGateway.DataModels.PostalCode postalCode in postalCodesData)
                         {
-                            context.PostalCodes.AddOrUpdate(c => c.ID, new DMS.DataGateway.DataModels.PostalCode
+                            context.PostalCodes.AddOrUpdate(c => c.PostalCodeNo, new DMS.DataGateway.DataModels.PostalCode
                             {
                                 PostalCodeNo = postalCode.PostalCodeNo,
                                 SubDistrictID = postalCode.SubDistrictID
@@ -119,7 +124,27 @@ namespace DMS.DataGateway.Migrations
                         csvReader.Configuration.HeaderValidated = null;
                         csvReader.Configuration.MissingFieldFound = null;
                         var imageTypesData = csvReader.GetRecords<DMS.DataGateway.DataModels.ImageType>().ToArray();
-                        context.ImageTypes.AddOrUpdate(c => c.ID, imageTypesData);
+                        context.ImageTypes.AddOrUpdate(c => c.ImageTypeCode, imageTypesData);
+                    }
+                }
+                context.SaveChanges();
+
+                using (Stream stream = assembly.GetManifestResourceStream(businessAreas))
+                {
+                    using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                    {
+                        CsvReader csvReader = new CsvReader(reader);
+                        csvReader.Configuration.HeaderValidated = null;
+                        csvReader.Configuration.MissingFieldFound = null;
+                        var businessAreasData = csvReader.GetRecords<BusinessAreaSeed>().ToArray();
+                        foreach (BusinessAreaSeed businessArea in businessAreasData)
+                        {
+                            context.BusinessAreas.AddOrUpdate(c => c.BusinessAreaCode, new DMS.DataGateway.DataModels.BusinessArea
+                            {
+                                BusinessAreaCode = businessArea.BusinessAreaCode,
+                                BusinessAreaDescription = businessArea.BusinessAreaDescription
+                            });
+                        }
                     }
                 }
                 context.SaveChanges();
@@ -159,6 +184,49 @@ namespace DMS.DataGateway.Migrations
             public string SubdistrictCode { get; set; }
             public string SubdistrictName { get; set; }
             public string CityName { get; set; }
+        }
+
+        public class BusinessAreaSeed
+        {
+            public string BusinessAreaCode { get; set; }
+            public string BusinessAreaDescription { get; set; }
+        }
+
+        internal class CustomSqlServerMigrationSqlGenerator : SqlServerMigrationSqlGenerator
+        {
+            protected override void Generate(AddColumnOperation addColumnOperation)
+            {
+                SetCreatedUtcColumn(addColumnOperation.Column);
+
+                base.Generate(addColumnOperation);
+            }
+
+            protected override void Generate(CreateTableOperation createTableOperation)
+            {
+                SetCreatedUtcColumn(createTableOperation.Columns);
+
+                base.Generate(createTableOperation);
+            }
+
+            private static void SetCreatedUtcColumn(IEnumerable<ColumnModel> columns)
+            {
+                foreach (var columnModel in columns)
+                {
+                    SetCreatedUtcColumn(columnModel);
+                }
+            }
+
+            private static void SetCreatedUtcColumn(PropertyModel column)
+            {
+                if (column.Name == "CreatedTime")
+                {
+                    column.DefaultValueSql = "GETDATE()";
+                }
+                if (column.Name == "CreatedBy")
+                {
+                    column.DefaultValue = "SYSTEM";
+                }
+            }
         }
     }
 }

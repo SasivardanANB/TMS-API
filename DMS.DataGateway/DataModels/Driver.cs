@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace DMS.DataGateway.DataModels
 {
     [Table("Driver", Schema = "DMS")]
-    public class Driver
+    public class Driver : ModelBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -18,33 +18,25 @@ namespace DMS.DataGateway.DataModels
         [MaxLength(12)]
         public string DriverNo { get; set; }
         [Required(ErrorMessage = "")]
-        [MaxLength(50)]
+        [MaxLength(30)]
         public string UserName { get; set; }
-        [MinLength(8)]
+        [MaxLength(30)]
         public string Password { get; set; }
         public bool IsActive { get; set; }
+        [MaxLength(30)]
         public string FirstName { get; set; }
+        [MaxLength(30)]
         public string LastName { get; set; }
+        [MaxLength(50)]
         public string Email { get; set; }
+        [MaxLength(15)]
         public string PhoneNumber { get; set; }
         [MaxLength(50)]
         public string PICName { get; set; }
-
         [MaxLength(15)]
         public string PICPhone { get; set; }
         [MaxLength(50)]
         public string PICEmail { get; set; }
-        public string CreatedBy
-        {
-            get;
-            set;
-        }
-        public DateTime? CreatedTime
-        {
-            get;
-            set;
-        }
-        public string LastModifiedBy { get; set; }
-        public DateTime? LastModifiedTime { get; set; }
+        
     }
 }

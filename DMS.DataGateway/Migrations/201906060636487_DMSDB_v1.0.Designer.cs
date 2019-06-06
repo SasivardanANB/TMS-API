@@ -7,13 +7,13 @@ namespace DMS.DataGateway.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.2.0-61023")]
-    public sealed partial class dms_v10_DriverCreatedBy : IMigrationMetadata
+    public sealed partial class DMSDB_v10 : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(dms_v10_DriverCreatedBy));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(DMSDB_v10));
         
         string IMigrationMetadata.Id
         {
-            get { return "201905310902126_dms_v1.0_DriverCreatedBy"; }
+            get { return "201906060636487_DMSDB_v1.0"; }
         }
         
         string IMigrationMetadata.Source

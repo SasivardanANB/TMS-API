@@ -387,6 +387,10 @@ namespace OMS.DataGateway.Migrations
                 {
                     column.DefaultValueSql = "GETDATE()";
                 }
+                if (column.Name == "CreatedBy")
+                {
+                    column.DefaultValue = "SYSTEM";
+                }
             }
         }
     }

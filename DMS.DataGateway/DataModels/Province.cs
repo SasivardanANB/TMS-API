@@ -10,7 +10,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace DMS.DataGateway.DataModels
 {
     [Table("Province", Schema = "DMS")]
-    public class Province
+    public class Province : ModelBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -20,17 +20,6 @@ namespace DMS.DataGateway.DataModels
         public string ProvinceCode { get; set; }
         [MaxLength(50)]
         public string ProvinceDescription { get; set; }
-        public string CreatedBy
-        {
-            get;
-            set;
-        }
-        public DateTime? CreatedTime
-        {
-            get;
-            set;
-        }
-        public string LastModifiedBy { get; set; }
-        public DateTime? LastModifiedTime { get; set; }
+       
     }
 }
