@@ -30,5 +30,6 @@ namespace TMS.DomainObjects.Objects
         [MaxLength(4)]
         public string BusinessAreaCode { get; set; }
         public List<TripLocation> TripLocations { get; set; }
+        public string ShipmentScheduleImageGUID { get; set; }
     }
 }

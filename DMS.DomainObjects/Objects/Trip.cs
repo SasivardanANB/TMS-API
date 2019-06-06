@@ -25,5 +25,6 @@ namespace DMS.DomainObjects.Objects
         public int OrderType { get; set; }
         public string BusinessAreaCode { get; set; }
         public List<TripLocation> TripLocations { get; set; }
+        public string ShipmentScheduleImageGUID { get; set; }
     }
 }

@@ -137,6 +137,26 @@ namespace DMS.DataGateway.Repositories
                             }
                             #endregion
 
+                            #region Check if Shipment Schedule Image exists
+                            int? imageId = null;
+                            if (!string.IsNullOrEmpty(trip.ShipmentScheduleImageGUID))
+                            {
+                                var shipmentImageData = context.ImageGuids.FirstOrDefault(t => t.ImageGuIdValue == trip.ShipmentScheduleImageGUID);
+                                if (shipmentImageData != null)
+                                    imageId = shipmentImageData.ID;
+                                else
+                                {
+                                    DataModel.ImageGuId imageGuId = new ImageGuId() {
+                                        ImageGuIdValue = trip.ShipmentScheduleImageGUID,
+                                        IsActive = true
+                                    };
+                                    context.ImageGuids.Add(imageGuId);
+                                    imageId = imageGuId.ID;
+                                }
+                            }
+                            
+                            #endregion
+
                             #region Check if OrderNumber already exists
                             int tripId = 0;
                             var existingTrip = context.TripHeaders.FirstOrDefault(t => t.OrderNumber == trip.OrderNumber);
@@ -263,9 +283,7 @@ namespace DMS.DataGateway.Repositories
                                     CurrentTripStatusId = statusId,
                                     OrderType = trip.OrderType,
                                     TripDate = DateTime.Now,
-                                    BusinessAreaId = businessAreaId,
-                                    CreatedBy = "SYSTEM",
-                                    CreatedTime = DateTime.Now
+                                    BusinessAreaId = businessAreaId
                                 };
                                 context.TripHeaders.Add(tripRequest);
                                 context.SaveChanges();
