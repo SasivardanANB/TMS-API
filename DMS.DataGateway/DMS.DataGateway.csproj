@@ -89,9 +89,9 @@
     <Compile Include="DataModels\TripStatusHistory.cs" />
     <Compile Include="DataModels\Driver.cs" />
     <Compile Include="Encryption\EncryptionLibrary.cs" />
-    <Compile Include="Migrations\201906060616206_DMS_DB_v1.0.cs" />
-    <Compile Include="Migrations\201906060616206_DMS_DB_v1.0.Designer.cs">
-      <DependentUpon>201906060616206_DMS_DB_v1.0.cs</DependentUpon>
+    <Compile Include="Migrations\201906060636487_DMSDB_v1.0.cs" />
+    <Compile Include="Migrations\201906060636487_DMSDB_v1.0.Designer.cs">
+      <DependentUpon>201906060636487_DMSDB_v1.0.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -105,8 +105,8 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-    <EmbeddedResource Include="Migrations\201906060616206_DMS_DB_v1.0.resx">
-      <DependentUpon>201906060616206_DMS_DB_v1.0.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201906060636487_DMSDB_v1.0.resx">
+      <DependentUpon>201906060636487_DMSDB_v1.0.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SeedData\Cities.csv" />
     <EmbeddedResource Include="SeedData\PostalCodes.csv" />

@@ -7,13 +7,13 @@ namespace DMS.DataGateway.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.2.0-61023")]
-    public sealed partial class DMS_DB_v10 : IMigrationMetadata
+    public sealed partial class DMSDB_v10 : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(DMS_DB_v10));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(DMSDB_v10));
         
         string IMigrationMetadata.Id
         {
-            get { return "201906060616206_DMS_DB_v1.0"; }
+            get { return "201906060636487_DMSDB_v1.0"; }
         }
         
         string IMigrationMetadata.Source

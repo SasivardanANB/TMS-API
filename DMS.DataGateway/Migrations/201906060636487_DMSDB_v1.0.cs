@@ -3,7 +3,7 @@ namespace DMS.DataGateway.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class DMS_DB_v10 : DbMigration
+    public partial class DMSDB_v10 : DbMigration
     {
         public override void Up()
         {
@@ -256,6 +256,7 @@ namespace DMS.DataGateway.Migrations
                         OrderType = c.Int(nullable: false),
                         TripDate = c.DateTime(nullable: false),
                         BusinessAreaId = c.Int(nullable: false),
+                        ShipmentScheduleImageID = c.Int(),
                         CreatedBy = c.String(maxLength: 100),
                         CreatedTime = c.DateTime(),
                         LastModifiedBy = c.String(maxLength: 100),
@@ -264,11 +265,13 @@ namespace DMS.DataGateway.Migrations
                 .PrimaryKey(t => t.ID)
                 .ForeignKey("DMS.BusinessArea", t => t.BusinessAreaId, cascadeDelete: true)
                 .ForeignKey("DMS.Driver", t => t.DriverId, cascadeDelete: true)
+                .ForeignKey("DMS.ImageGuid", t => t.ShipmentScheduleImageID)
                 .ForeignKey("DMS.TripStatus", t => t.CurrentTripStatusId)
                 .Index(t => t.TripNumber, unique: true, name: "TripNumber")
                 .Index(t => t.DriverId)
                 .Index(t => t.CurrentTripStatusId)
-                .Index(t => t.BusinessAreaId);
+                .Index(t => t.BusinessAreaId)
+                .Index(t => t.ShipmentScheduleImageID);
             
             CreateTable(
                 "DMS.TripStatus",
@@ -357,6 +360,7 @@ namespace DMS.DataGateway.Migrations
             DropForeignKey("DMS.ShipmentList", "StopPointId", "DMS.TripDetail");
             DropForeignKey("DMS.TripDetail", "TripID", "DMS.TripHeader");
             DropForeignKey("DMS.TripHeader", "CurrentTripStatusId", "DMS.TripStatus");
+            DropForeignKey("DMS.TripHeader", "ShipmentScheduleImageID", "DMS.ImageGuid");
             DropForeignKey("DMS.TripHeader", "DriverId", "DMS.Driver");
             DropForeignKey("DMS.TripHeader", "BusinessAreaId", "DMS.BusinessArea");
             DropForeignKey("DMS.TripDetail", "PartnerId", "DMS.Partner");
@@ -373,6 +377,7 @@ namespace DMS.DataGateway.Migrations
             DropIndex("DMS.StopPointImages", new[] { "ImageTypeId" });
             DropIndex("DMS.StopPointImages", new[] { "ImageId" });
             DropIndex("DMS.StopPointImages", new[] { "StopPointId" });
+            DropIndex("DMS.TripHeader", new[] { "ShipmentScheduleImageID" });
             DropIndex("DMS.TripHeader", new[] { "BusinessAreaId" });
             DropIndex("DMS.TripHeader", new[] { "CurrentTripStatusId" });
             DropIndex("DMS.TripHeader", new[] { "DriverId" });

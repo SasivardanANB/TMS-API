@@ -40,6 +40,9 @@ namespace DMS.DataGateway.DataModels
         [ForeignKey("BusinessArea")]
         public int BusinessAreaId { get; set; }
         public BusinessArea BusinessArea { get; set; }
-        
+        [ForeignKey("ImageGuId")]
+        public int? ShipmentScheduleImageID { get; set; }
+        public ImageGuId ImageGuId { get; set; }
+
     }
 }
