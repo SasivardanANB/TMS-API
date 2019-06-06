@@ -50,5 +50,8 @@ namespace DMS.DataGateway.DataModels
         }
         public string LastModifiedBy { get; set; }
         public DateTime? LastModifiedTime { get; set; }
+        [ForeignKey("ImageGuId")]
+        public int? ShipmentScheduleImageID { get; set; }
+        public ImageGuId ImageGuId { get; set; }
     }
 }
