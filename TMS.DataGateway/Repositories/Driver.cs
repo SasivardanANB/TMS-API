@@ -292,7 +292,7 @@ namespace TMS.DataGateway.Repositories
 
 
                 // Sorting
-                if (driversList.Count > 0)
+                if (driversList.Count > 0 && !string.IsNullOrEmpty(driverRequest.SortOrder))
                 {
                     switch (driverRequest.SortOrder.ToLower())
                     {
