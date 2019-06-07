@@ -106,5 +106,7 @@ namespace TMS.DomainObjects.Objects
         public decimal Harga { get; set; }
         public int? ShipmentScheduleImageID { get; set; }
         public string ShipmentScheduleImageGUID { get; set; }
+        [MaxLength(10)]
+        public string SOPONumber { get; set; }
     }
 }

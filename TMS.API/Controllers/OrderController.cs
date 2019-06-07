@@ -102,6 +102,7 @@ namespace TMS.API.Controllers
                         ModelState.Remove("order.Requests[" + i + "].PartnerName2");
                         ModelState.Remove("order.Requests[" + i + "].PartnerName3");
                         ModelState.Remove("order.Requests[" + i + "].Dimension");
+                        ModelState.Remove("order.Requests[" + i + "].OrderNo");
                     }
                     else
                     {
@@ -144,6 +145,7 @@ namespace TMS.API.Controllers
                         ModelState.Remove("order.Requests[" + i + "].PartnerName3");
                         ModelState.Remove("order.Requests[" + i + "].Dimension");
                         ModelState.Remove("order.Requests.[" + i + "].ShipmentSAPNo");
+                        ModelState.Remove("order.Requests[" + i + "].OrderNo");
                     }
                     else
                     {

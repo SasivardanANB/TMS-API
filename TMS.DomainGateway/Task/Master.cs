@@ -13,7 +13,7 @@ namespace TMS.DomainGateway.Task
     {
         public abstract PartnerSearchResponse GetPartners(PartnerSearchRequest partnerSearchRequest);
         public abstract PartnerDetilasResponse GetPartnersDetails(int partnerId);
-        public abstract CommonResponse GetDriverNames();
+        public abstract CommonCodeResponse GetDriverNames();
         public abstract CommonResponse GetVehicleTypeNames();
         public abstract CommonResponse GetFleetTypeNames();
         public abstract SubDistrictDetailsResponse GetSubDistrictDetails(string searchText);

@@ -87,14 +87,14 @@ namespace TMS.DataGateway.Repositories
         }
 
 
-        public CommonResponse GetDriverNames()
+        public CommonCodeResponse GetDriverNames()
         {
-            CommonResponse commonResponse = new CommonResponse();
+            CommonCodeResponse commonResponse = new CommonCodeResponse();
             using (var context = new TMSDBContext())
             {
-                var driversList = context.Drivers.Where(driver => !driver.IsDelete && driver.IsActive).Select(response => new Domain.Common()
+                var driversList = context.Drivers.Where(driver => !driver.IsDelete && driver.IsActive).Select(response => new Domain.CommonCode()
                 {
-                    Id = response.ID,
+                    Id = response.DriverNo,
                     Value = response.UserName
                 }).ToList();
 

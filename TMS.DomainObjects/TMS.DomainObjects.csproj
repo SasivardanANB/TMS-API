@@ -116,6 +116,7 @@
     </Compile>
     <Compile Include="Response\ApplicationResponse.cs" />
     <Compile Include="Response\AssignUserRoleResponse.cs" />
+    <Compile Include="Response\CommonCodeResponse.cs" />
     <Compile Include="Response\CommonResponse.cs" />
     <Compile Include="Response\DashboardResponse.cs" />
     <Compile Include="Response\DriverResponse.cs" />

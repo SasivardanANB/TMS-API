@@ -25,9 +25,9 @@ namespace TMS.BusinessGateway.Task
             return partnerSearchResponse;
         }
 
-        public override CommonResponse GetDriverNames()
+        public override CommonCodeResponse GetDriverNames()
         {
-            CommonResponse commonResponse = _masterRepository.GetDriverNames();
+            CommonCodeResponse commonResponse = _masterRepository.GetDriverNames();
             return commonResponse;
         }
 

@@ -13,7 +13,7 @@ namespace TMS.DataGateway.Repositories.Iterfaces
     {
         PartnerSearchResponse GetPartners(PartnerSearchRequest partnerSearchRequest);
         PartnerDetilasResponse GetPartnersDetails(int partnerId);
-        CommonResponse GetDriverNames();
+        CommonCodeResponse GetDriverNames();
         CommonResponse GetVehicleTypeNames();
         CommonResponse GetFleetTypeNames();
         SubDistrictDetailsResponse GetSubDistrictDetails(string searchText);

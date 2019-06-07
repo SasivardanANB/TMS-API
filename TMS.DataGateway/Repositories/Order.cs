@@ -129,7 +129,7 @@ namespace TMS.DataGateway.Repositories
                                 int driverId = Convert.ToInt32(order.DriverNo);
                                 order.DriverNo = context.Drivers.FirstOrDefault(t => t.ID == driverId).DriverNo;
                                 order.DriverName = context.Drivers.FirstOrDefault(t => t.ID == driverId).UserName;
-                                soPoNumber = order.OrderNo;
+                                soPoNumber = order.SOPONumber;
                                 order.OrderNo = GetOrderNumber(businessAreaId, businessAreaCode, "TMS", DateTime.Now.Year);
                                 order.LegecyOrderNo = order.OrderNo;
                             }
@@ -1947,7 +1947,8 @@ namespace TMS.DataGateway.Repositories
                                          VehicleNo = oH.VehicleNo,
                                          VehicleShipmentType = oH.VehicleShipment,
                                          //OrderDate = oH.OrderDate,
-                                         OrderNo = oH.SOPONumber,
+                                         SOPONumber = oH.SOPONumber,
+                                         OrderNo = oH.OrderNo,
                                          OrderShipmentStatus = oH.OrderStatusID,
                                          OrderType = oH.OrderType,
                                          OrderWeight = oH.OrderWeight,

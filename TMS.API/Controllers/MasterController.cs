@@ -40,7 +40,7 @@ namespace TMS.API.Controllers
         public IHttpActionResult GetDriverNames()
         {
             IMasterTask masterTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().MasterTask;
-            CommonResponse commonResponse = masterTask.GetDriverNames();
+            CommonCodeResponse commonResponse = masterTask.GetDriverNames();
             return Ok(commonResponse);
         }
 

@@ -9,6 +9,7 @@ namespace TMS.DomainObjects.Response
 {
     public class OrderDetailsResponse : Message
     {
+        public string SOPONumber { get; set; }
         public string LegecyOrderNo { get; set; }
         public int ID { get; set; }
         public string BusinessArea { get; set; }
