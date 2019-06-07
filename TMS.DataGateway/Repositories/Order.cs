@@ -126,9 +126,8 @@ namespace TMS.DataGateway.Repositories
                                                       ).FirstOrDefault();
                             if (request.UploadType == 2)
                             {
-                                int driverId = Convert.ToInt32(order.DriverNo);
-                                order.DriverNo = context.Drivers.FirstOrDefault(t => t.ID == driverId).DriverNo;
-                                order.DriverName = context.Drivers.FirstOrDefault(t => t.ID == driverId).UserName;
+                                order.DriverNo = order.DriverNo;
+                                order.DriverName = context.Drivers.FirstOrDefault(t => t.DriverNo == order.DriverNo).UserName;
                                 soPoNumber = order.SOPONumber;
                                 order.OrderNo = GetOrderNumber(businessAreaId, businessAreaCode, "TMS", DateTime.Now.Year);
                                 order.LegecyOrderNo = order.OrderNo;
