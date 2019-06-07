@@ -89,7 +89,6 @@ namespace TMS.DomainObjects.Objects
         public string Instructions { get; set; }
         [MaxLength(20)]
         public string ShippingListNo { get; set; }
-        [MaxLength(20)]
         public string PackingSheetNo { get; set; }
         public int TotalCollie { get; set; }
         [MaxLength(20)]

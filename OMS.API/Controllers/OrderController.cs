@@ -82,6 +82,17 @@ namespace OMS.API.Controllers
                     {
                         ModelState.AddModelError($"{nameof(request)}.{nameof(request.Requests)}.[{i}].{nameof(Order.PackingSheetNo)}", "Invalid Packing Sheet Number");
                     }
+                    if (!string.IsNullOrEmpty(request.Requests[i].PackingSheetNo))
+                    {
+                        string[] packingSheets = request.Requests[i].PackingSheetNo.Split(',');
+                        foreach (string packingSheet in packingSheets)
+                        {
+                            if (packingSheet.Length > 20)
+                            {
+                                ModelState.AddModelError($"{nameof(request)}.{nameof(request.Requests)}.[{i}].{nameof(Order.PackingSheetNo)}", "Packing Sheet Number should not exceed 20 characters");
+                            }
+                        }
+                    }
                     if (request.Requests[i].TotalCollie == 0)
                     {
                         ModelState.AddModelError($"{nameof(request)}.{nameof(request.Requests)}.[{i}].{nameof(Order.TotalCollie)}", "Invalid Total Collie");

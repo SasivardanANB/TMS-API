@@ -87,6 +87,17 @@ namespace TMS.API.Controllers
                         {
                             ModelState.AddModelError($"{nameof(order)}.{nameof(order.Requests)}.[{i}].{nameof(Order.PackingSheetNo)}", "Invalid Packing Sheet Number");
                         }
+                        if (!string.IsNullOrEmpty(order.Requests[i].PackingSheetNo))
+                        {
+                            string[] packingSheets = order.Requests[i].PackingSheetNo.Split(',');
+                            foreach (string packingSheet in packingSheets)
+                            {
+                                if(packingSheet.Length > 20)
+                                {
+                                    ModelState.AddModelError($"{nameof(order)}.{nameof(order.Requests)}.[{i}].{nameof(Order.PackingSheetNo)}", "Packing Sheet Number should not exceed 20 characters");
+                                }
+                            }
+                        }
                         if (order.Requests[i].TotalCollie == 0)
                         {
                             ModelState.AddModelError($"{nameof(order)}.{nameof(order.Requests)}.[{i}].{nameof(Order.TotalCollie)}", "Invalid Total Collie");
@@ -128,6 +139,17 @@ namespace TMS.API.Controllers
                         if (string.IsNullOrEmpty(order.Requests[i].PackingSheetNo))
                         {
                             ModelState.AddModelError($"{nameof(order)}.{nameof(order.Requests)}.[{i}].{nameof(Order.PackingSheetNo)}", "Invalid Packing Sheet Number");
+                        }
+                        if (!string.IsNullOrEmpty(order.Requests[i].PackingSheetNo))
+                        {
+                            string[] packingSheets = order.Requests[i].PackingSheetNo.Split(',');
+                            foreach (string packingSheet in packingSheets)
+                            {
+                                if (packingSheet.Length > 20)
+                                {
+                                    ModelState.AddModelError($"{nameof(order)}.{nameof(order.Requests)}.[{i}].{nameof(Order.PackingSheetNo)}", "Packing Sheet Number should not exceed 20 characters");
+                                }
+                            }
                         }
                         if (order.Requests[i].TotalCollie == 0)
                         {
