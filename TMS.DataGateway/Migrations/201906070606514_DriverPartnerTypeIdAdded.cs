@@ -7,7 +7,7 @@ namespace TMS.DataGateway.Migrations
     {
         public override void Up()
         {
-            AddColumn("TMS.Driver", "TransporterId", c => c.Int(nullable: false));
+            AddColumn("TMS.Driver", "TransporterId", c => c.Int(nullable: true));
             CreateIndex("TMS.Driver", "TransporterId");
             AddForeignKey("TMS.Driver", "TransporterId", "TMS.Partner", "ID", cascadeDelete: true);
         }
