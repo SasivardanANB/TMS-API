@@ -53,6 +53,7 @@ namespace TMS.DataGateway.Migrations
                 string users = "TMS.DataGateway.SeedData.Users.csv";
                 string roles = "TMS.DataGateway.SeedData.Roles.csv";
                 string userRoles = "TMS.DataGateway.SeedData.UserRoles.csv";
+                string userApplications = "TMS.DataGateway.SeedData.UserApplications.csv";
 
                 using (Stream stream = assembly.GetManifestResourceStream(applications))
                 {
@@ -95,25 +96,28 @@ namespace TMS.DataGateway.Migrations
                 }
                 context.SaveChanges();
 
-                using (Stream stream = assembly.GetManifestResourceStream(menuActivities))
+                if (context.MenuActivities.ToList().Count == 0)
                 {
-                    using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                    using (Stream stream = assembly.GetManifestResourceStream(menuActivities))
                     {
-                        CsvReader csvReader = new CsvReader(reader);
-                        csvReader.Configuration.HeaderValidated = null;
-                        csvReader.Configuration.MissingFieldFound = null;
-                        var menuActivitiesData = csvReader.GetRecords<DataModel.MenuActivity>().ToArray();
-                        foreach (DataModel.MenuActivity menuActivity in menuActivitiesData)
+                        using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
                         {
-                            context.MenuActivities.AddOrUpdate(c => c.ID, new DataModel.MenuActivity
+                            CsvReader csvReader = new CsvReader(reader);
+                            csvReader.Configuration.HeaderValidated = null;
+                            csvReader.Configuration.MissingFieldFound = null;
+                            var menuActivitiesData = csvReader.GetRecords<MenuActivitiesSeed>().ToArray();
+                            foreach (MenuActivitiesSeed menuActivity in menuActivitiesData)
                             {
-                                MenuID = menuActivity.MenuID,
-                                ActivityID = menuActivity.ActivityID
-                            });
+                                context.MenuActivities.AddOrUpdate(c => c.ID, new DataModel.MenuActivity
+                                {
+                                    MenuID = context.Menus.Where(m => m.MenuCode == menuActivity.MenuCode).Select(m => m.ID).FirstOrDefault(),
+                                    ActivityID = context.Activities.Where(a => a.ActivityCode == menuActivity.ActivityCode).Select(a => a.ID).FirstOrDefault()
+                                });
+                            }
                         }
                     }
+                    context.SaveChanges();
                 }
-                context.SaveChanges();
 
                 #endregion
 
@@ -247,18 +251,21 @@ namespace TMS.DataGateway.Migrations
                 }
                 context.SaveChanges();
 
-                using (Stream stream = assembly.GetManifestResourceStream(fleetTypes))
+                if (context.FleetTypes.ToList().Count == 0)
                 {
-                    using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                    using (Stream stream = assembly.GetManifestResourceStream(fleetTypes))
                     {
-                        CsvReader csvReader = new CsvReader(reader);
-                        csvReader.Configuration.HeaderValidated = null;
-                        csvReader.Configuration.MissingFieldFound = null;
-                        var fleetTypeData = csvReader.GetRecords<DataModel.FleetType>().ToArray();
-                        context.FleetTypes.AddOrUpdate(c => c.ID, fleetTypeData);
+                        using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                        {
+                            CsvReader csvReader = new CsvReader(reader);
+                            csvReader.Configuration.HeaderValidated = null;
+                            csvReader.Configuration.MissingFieldFound = null;
+                            var fleetTypeData = csvReader.GetRecords<DataModel.FleetType>().ToArray();
+                            context.FleetTypes.AddOrUpdate(c => c.ID, fleetTypeData);
+                        }
                     }
+                    context.SaveChanges();
                 }
-                context.SaveChanges();
 
                 using (Stream stream = assembly.GetManifestResourceStream(partnerTypes))
                 {
@@ -314,26 +321,52 @@ namespace TMS.DataGateway.Migrations
                 }
                 context.SaveChanges();
 
-                using (Stream stream = assembly.GetManifestResourceStream(userRoles))
+                if (context.UserRoles.ToList().Count == 0)
                 {
-                    using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                    using (Stream stream = assembly.GetManifestResourceStream(userRoles))
                     {
-                        CsvReader csvReader = new CsvReader(reader);
-                        csvReader.Configuration.HeaderValidated = null;
-                        csvReader.Configuration.MissingFieldFound = null;
-                        var userRoleData = csvReader.GetRecords<UserRoleSeed>().ToArray();
-                        foreach (UserRoleSeed userRole in userRoleData)
+                        using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
                         {
-                            context.UserRoles.AddOrUpdate(c => c.ID, new DataModel.UserRoles
+                            CsvReader csvReader = new CsvReader(reader);
+                            csvReader.Configuration.HeaderValidated = null;
+                            csvReader.Configuration.MissingFieldFound = null;
+                            var userRoleData = csvReader.GetRecords<UserRoleSeed>().ToArray();
+                            foreach (UserRoleSeed userRole in userRoleData)
                             {
-                                UserID = context.Users.Where(u => u.UserName == userRole.UserName).Select(u => u.ID).FirstOrDefault(),
-                                RoleID = context.Roles.Where(r => r.RoleCode == userRole.RoleCode).Select(r => r.ID).FirstOrDefault(),
-                                BusinessAreaID = context.BusinessAreas.Where(b => b.BusinessAreaCode == userRole.BusinessAreaCode).Select(b => b.ID).FirstOrDefault()
-                            });
+                                context.UserRoles.AddOrUpdate(c => c.ID, new DataModel.UserRoles
+                                {
+                                    UserID = context.Users.Where(u => u.UserName == userRole.UserName).Select(u => u.ID).FirstOrDefault(),
+                                    RoleID = context.Roles.Where(r => r.RoleCode == userRole.RoleCode).Select(r => r.ID).FirstOrDefault(),
+                                    BusinessAreaID = context.BusinessAreas.Where(b => b.BusinessAreaCode == userRole.BusinessAreaCode).Select(b => b.ID).FirstOrDefault()
+                                });
+                            }
                         }
                     }
+                    context.SaveChanges();
                 }
-                context.SaveChanges();
+
+                if (context.UserApplications.ToList().Count == 0)
+                {
+                    using (Stream stream = assembly.GetManifestResourceStream(userApplications))
+                    {
+                        using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                        {
+                            CsvReader csvReader = new CsvReader(reader);
+                            csvReader.Configuration.HeaderValidated = null;
+                            csvReader.Configuration.MissingFieldFound = null;
+                            var userApplicationData = csvReader.GetRecords<UserApplicationSeed>().ToArray();
+                            foreach (UserApplicationSeed userApplication in userApplicationData)
+                            {
+                                context.UserApplications.AddOrUpdate(c => c.ID, new DataModel.UserApplication
+                                {
+                                    UserID = context.Users.Where(u => u.UserName == userApplication.UserName).Select(u => u.ID).FirstOrDefault(),
+                                    ApplicationID = context.Applications.Where(a => a.ApplicationCode == userApplication.ApplicationCode).Select(a => a.ID).FirstOrDefault(),
+                                });
+                            }
+                        }
+                    }
+                    context.SaveChanges();
+                }
 
                 #endregion
             }
@@ -386,6 +419,18 @@ namespace TMS.DataGateway.Migrations
             public string UserName { get; set; }
             public string RoleCode { get; set; }
             public string BusinessAreaCode { get; set; }
+        }
+
+        public class MenuActivitiesSeed
+        {
+            public string MenuCode { get; set; }
+            public string ActivityCode { get; set; }
+        }
+
+        public class UserApplicationSeed
+        {
+            public string UserName { get; set; }
+            public string ApplicationCode { get; set; }
         }
 
         internal class CustomSqlServerMigrationSqlGenerator : SqlServerMigrationSqlGenerator
