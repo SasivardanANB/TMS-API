@@ -1,5 +1,5 @@
 ActivityCode,ActivityDescription
-A0001,View
-A0002,Create Master Data
-A0003,Edit Master Data
-A0004,Delete Master Data
+A0001,Create
+A0002,Edit
+A0003,View
+A0004,Delete

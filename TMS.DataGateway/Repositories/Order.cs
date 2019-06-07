@@ -1001,55 +1001,63 @@ namespace TMS.DataGateway.Repositories
                     }
 
                     // Sorting
-                    if (orderList.Count > 0 && !string.IsNullOrEmpty(orderSearchRequest.SortOrder))
+                    if (orderList.Count > 0)
                     {
-                        switch (orderSearchRequest.SortOrder.ToLower())
+
+                        if (!string.IsNullOrEmpty(orderSearchRequest.SortOrder))
                         {
-                            case "ordernumber":
-                                orderList = orderList.OrderBy(o => o.OrderNumber).ToList();
-                                break;
-                            case "ordernumber_desc":
-                                orderList = orderList.OrderByDescending(o => o.OrderNumber).ToList();
-                                break;
-                            case "source":
-                                orderList = orderList.OrderBy(o => o.Source).ToList();
-                                break;
-                            case "source_desc":
-                                orderList = orderList.OrderByDescending(o => o.Source).ToList();
-                                break;
-                            case "destination":
-                                orderList = orderList.OrderBy(o => o.Destination).ToList();
-                                break;
-                            case "destination_desc":
-                                orderList = orderList.OrderByDescending(o => o.Destination).ToList();
-                                break;
-                            case "vehicletype":
-                                orderList = orderList.OrderBy(o => o.VehicleType).ToList();
-                                break;
-                            case "vehicletype_desc":
-                                orderList = orderList.OrderByDescending(o => o.VehicleType).ToList();
-                                break;
-                            case "expiditionname":
-                                orderList = orderList.OrderBy(o => o.ExpeditionName).ToList();
-                                break;
-                            case "expiditionname_desc":
-                                orderList = orderList.OrderByDescending(o => o.ExpeditionName).ToList();
-                                break;
-                            case "policenumber":
-                                orderList = orderList.OrderBy(o => o.PoliceNumber).ToList();
-                                break;
-                            case "policenumber_desc":
-                                orderList = orderList.OrderByDescending(o => o.PoliceNumber).ToList();
-                                break;
-                            case "orderstatus":
-                                orderList = orderList.OrderBy(o => o.OrderStatus).ToList();
-                                break;
-                            case "orderstatus_desc":
-                                orderList = orderList.OrderByDescending(o => o.OrderStatus).ToList();
-                                break;
-                            default:  // ID Descending 
-                                orderList = orderList.OrderByDescending(o => o.OrderId).ToList();
-                                break;
+                            switch (orderSearchRequest.SortOrder.ToLower())
+                            {
+                                case "ordernumber":
+                                    orderList = orderList.OrderBy(o => o.OrderNumber).ToList();
+                                    break;
+                                case "ordernumber_desc":
+                                    orderList = orderList.OrderByDescending(o => o.OrderNumber).ToList();
+                                    break;
+                                case "source":
+                                    orderList = orderList.OrderBy(o => o.Source).ToList();
+                                    break;
+                                case "source_desc":
+                                    orderList = orderList.OrderByDescending(o => o.Source).ToList();
+                                    break;
+                                case "destination":
+                                    orderList = orderList.OrderBy(o => o.Destination).ToList();
+                                    break;
+                                case "destination_desc":
+                                    orderList = orderList.OrderByDescending(o => o.Destination).ToList();
+                                    break;
+                                case "vehicletype":
+                                    orderList = orderList.OrderBy(o => o.VehicleType).ToList();
+                                    break;
+                                case "vehicletype_desc":
+                                    orderList = orderList.OrderByDescending(o => o.VehicleType).ToList();
+                                    break;
+                                case "expiditionname":
+                                    orderList = orderList.OrderBy(o => o.ExpeditionName).ToList();
+                                    break;
+                                case "expiditionname_desc":
+                                    orderList = orderList.OrderByDescending(o => o.ExpeditionName).ToList();
+                                    break;
+                                case "policenumber":
+                                    orderList = orderList.OrderBy(o => o.PoliceNumber).ToList();
+                                    break;
+                                case "policenumber_desc":
+                                    orderList = orderList.OrderByDescending(o => o.PoliceNumber).ToList();
+                                    break;
+                                case "orderstatus":
+                                    orderList = orderList.OrderBy(o => o.OrderStatus).ToList();
+                                    break;
+                                case "orderstatus_desc":
+                                    orderList = orderList.OrderByDescending(o => o.OrderStatus).ToList();
+                                    break;
+                                default:  // ID Descending 
+                                    orderList = orderList.OrderByDescending(o => o.OrderId).ToList();
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            orderList = orderList.OrderByDescending(o => o.OrderId).ToList();
                         }
                     }
 

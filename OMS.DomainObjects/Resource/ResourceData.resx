@@ -234,4 +234,7 @@
   <data name="RoleCodeExists" xml:space="preserve">
     <value>Role code alredy exist</value>
   </data>
+  <data name="PasswordInvalid" xml:space="preserve">
+    <value>Passwords must be at least 8 characters and contain one upper case, one lower case, one number and special character</value>
+  </data>
 </root>

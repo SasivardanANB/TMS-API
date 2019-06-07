@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace TMS.DataGateway.DataModels
 {
     [Table("OrderHeader", Schema = "TMS")]
-    public class OrderHeader
+    public class OrderHeader : ModelBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -23,17 +23,23 @@ namespace TMS.DataGateway.DataModels
         [Required]
         [MaxLength(15)]
         public string OrderNo { get; set; }
+        [MaxLength(15)]
         public string LegecyOrderNo { get; set; }
         public DateTime OrderDate { get; set; }
         public int OrderType { get; set; }
         [ForeignKey("FleetType")]
         public int FleetTypeID { get; set; }
         public FleetType FleetType { get; set; }
+        [MaxLength(50)]
         public string VehicleShipment { get; set; }
+        [MaxLength(12)]
         public string DriverNo { get; set; }
+        [MaxLength(60)]
         public string DriverName { get; set; }
+        [MaxLength(12)]
         public string VehicleNo { get; set; }
         public decimal OrderWeight { get; set; }
+        [MaxLength(5)]
         public string OrderWeightUM { get; set; }
         
         //[ForeignKey("OrderStatus")]
@@ -43,19 +49,6 @@ namespace TMS.DataGateway.DataModels
         [ForeignKey("ImageGuid")]
         public int? ShipmentScheduleImageID { get; set; }
         public ImageGuid ImageGuid { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public string CreatedBy
-        {
-            get { return "SYSTEM"; }
-            set { }
-        }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime CreatedTime
-        {
-            get { return DateTime.Now; }
-            set { }
-        }
-        public string LastModifiedBy { get; set; }
-        public DateTime? LastModifiedTime { get; set; }
+        
     }
 }

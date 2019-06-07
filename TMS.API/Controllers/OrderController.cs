@@ -259,6 +259,7 @@ namespace TMS.API.Controllers
                                     TripStatusCode = "3",
                                     OrderType = request.OrderType,
                                     BusinessAreaCode = businessArea,
+                                    ShipmentScheduleImageGUID = request.ShipmentScheduleImageGUID,
                                     TripLocations = new List<TripLocation>()
                                 };
 
@@ -314,6 +315,7 @@ namespace TMS.API.Controllers
                                 TripStatusCode = "3",
                                 OrderType = request.OrderType,
                                 BusinessAreaCode = businessArea,
+                                ShipmentScheduleImageGUID = request.ShipmentScheduleImageGUID,
                                 TripLocations = new List<TripLocation>()
                             };
 

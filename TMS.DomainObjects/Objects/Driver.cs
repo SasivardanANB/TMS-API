@@ -11,29 +11,40 @@ namespace TMS.DomainObjects.Objects
     {
         public int ID { get; set; }
         //[Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidDriverNo")]
+        [MaxLength(12)]
         public string DriverNo { get; set; }
+        [MaxLength(30)]
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidUserName")]
         public string UserName { get; set; }
+        [MaxLength(30)]
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidFirstName")]
         public string FirstName { get; set; }
+        [MaxLength(30)]
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidLastName")]
         public string LastName { get; set; }
+        [MaxLength(200)]
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidAddress")]        
         public string DriverAddress { get; set; }
+        [MaxLength(15)]
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidPhone")]
         public string DriverPhone { get; set; }
         public bool IsActive { get; set; }
+        [MaxLength(50)]
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidEmail")]
         public string Email { get; set; }
         [DataType(DataType.Password)]
-        [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidPassword")]
+        [MaxLength(30)]
+        [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "PasswordInvalid")]
+        [RegularExpression("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$", ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "PasswordInvalid")]
         public string Password { get; set; }
         //[DataType(DataType.Password)]
         //[Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidConfirmPassword")]
         //[Compare("Password", ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "PasswordMismatch")]
         //public string ConfirmPassword { get; set; }
+        [MaxLength(20)]
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidIdentityNo")]
         public string IdentityNo { get; set; }
+        [MaxLength(20)]
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidDrivingLicenseNo")]
         public string DrivingLicenseNo { get; set; }
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidExpireDate")]

@@ -10,17 +10,22 @@ namespace TMS.DomainObjects.Objects
     public class User
     {
         public int ID { get; set; }
+        [MaxLength(30)]
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidUserName")]
         public string UserName { get; set; }
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidUserPassword")]
-        [MinLength(8)]
+        [MaxLength(30)]
+        [RegularExpression("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$", ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "PasswordInvalid")]
         public string Password { get; set; }
+        [MaxLength(30)]
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidConfirmUserPassword")]
         [Compare("Password", ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "PasswordMismatch")]
         public string ConfirmPassword { get; set; }
+        [MaxLength(30)]
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidFirstName")]
         public string FirstName { get; set; }
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidLastName")]
+        [MaxLength(30)]
         public string LastName { get; set; }
         public List<int> Applications { get; set; }
         public bool IsActive { get; set; }
@@ -30,10 +35,15 @@ namespace TMS.DomainObjects.Objects
 
         [MaxLength(12)]
         public string DriverNo { get; set; }
+        [MaxLength(50)]
         public string Email { get; set; }
+        [MaxLength(15)]
         public string PhoneNumber { get; set; }
+        [MaxLength(30)]
         public string PICName { get; set; }
+        [MaxLength(15)]
         public string PICPhone { get; set; }
+        [MaxLength(50)]
         public string PICEmail { get; set; }
         public string CreatedBy { get; set; }
     }

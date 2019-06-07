@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace TMS.DataGateway.DataModels
 {
     [Table("Driver", Schema = "TMS")]
-    public class Driver
+    public class Driver : ModelBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -17,16 +17,16 @@ namespace TMS.DataGateway.DataModels
         [Index("Driver_DriverNo", IsUnique = true)]
         [MaxLength(12)]
         public string DriverNo { get; set; }
-        [MaxLength(15)]
+        [MaxLength(30)]
         [Required()]
         public string UserName { get; set; }
-        [MaxLength(15)]
+        [MaxLength(30)]
         [Required(ErrorMessage = "Enter first name")]
         public string FirstName { get; set; }
-        [MaxLength(15)]
+        [MaxLength(30)]
         [Required(ErrorMessage = "Enter last name")]
         public string LastName { get; set; }
-        [MaxLength(255)]
+        [MaxLength(200)]
         public string DriverAddress { get; set; }
         [MaxLength(15)]
         [Required(ErrorMessage = "Enter driver phone no")]
@@ -34,7 +34,7 @@ namespace TMS.DataGateway.DataModels
         public bool IsActive { get; set; }
         [MaxLength(50)]
         public string Email { get; set; }
-        [MaxLength(20)]
+        [MaxLength(30)]
         [Required(ErrorMessage = "Enter password")]
         public string Password { get; set; }
         [MaxLength(25)]
@@ -50,19 +50,6 @@ namespace TMS.DataGateway.DataModels
         public int DriverImageId { get; set; }
         public virtual ImageGuid ImageGuid { get; set; }
         public bool IsDelete { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public string CreatedBy
-        {
-            get { return "SYSTEM"; }
-            set { }
-        }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime CreatedTime
-        {
-            get { return DateTime.Now; }
-            set { }
-        }
-        public string LastModifiedBy { get; set; }
-        public DateTime? LastModifiedTime { get; set; }
+        
     }
 }

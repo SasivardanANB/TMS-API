@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace TMS.DataGateway.DataModels
 {
     [Table("Partner", Schema = "TMS")]
-    public class Partner
+    public class Partner : ModelBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -22,32 +22,23 @@ namespace TMS.DataGateway.DataModels
         [MaxLength(10)]
         //[Index("Partner_PartnerNo", IsUnique = true)]
         public string PartnerNo { get; set; }
+        [MaxLength(30)]
         public string PartnerName { get; set; }
+        [MaxLength(200)]
         public string PartnerAddress { get; set; }
         [ForeignKey("PostalCode")]
         public int? PostalCodeID { get; set; }
         public virtual PostalCode PostalCode { get; set; }
+        [MaxLength(30)]
         public string PartnerInitial { get; set; }
+        [MaxLength(50)]
         public string PartnerEmail { get; set; }
         [ForeignKey("PIC")]
         public int? PICID { get; set; }
         public virtual PIC PIC { get; set; }
         public bool IsDeleted { get; set; }
         public bool IsActive { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public string CreatedBy
-        {
-            get { return "SYSTEM"; }
-            set { }
-        }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime CreatedTime
-        {
-            get { return DateTime.Now; }
-            set { }
-        }
-        public string LastModifiedBy { get; set; }
-        public DateTime? LastModifiedTime { get; set; }
+       
 
     }
 }

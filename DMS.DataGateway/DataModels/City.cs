@@ -10,7 +10,7 @@ using DMS.DomainObjects.Objects;
 namespace DMS.DataGateway.DataModels
 {
     [Table("City", Schema = "DMS")]
-    public class City
+    public class City : ModelBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -23,20 +23,8 @@ namespace DMS.DataGateway.DataModels
         public string CityDescription { get; set; }
         [ForeignKey("Province")]
         public int ProvinceID { get; set; }
-
         public Province Province { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public string CreatedBy
-        {
-            get;
-            set;
-        }
-        public DateTime? CreatedTime
-        {
-            get;
-            set;
-        }
-        public string LastModifiedBy { get; set; }
-        public DateTime? LastModifiedTime { get; set; }
+        
+        
     }
 }

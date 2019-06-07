@@ -17,6 +17,7 @@ namespace TMS.DataGateway.DataModels
         [ForeignKey("BusinessArea")]
         public int BusinessAreaId { get; set; }
         public virtual BusinessArea BusinessArea { get; set; }
+        [MaxLength(50)]
         public string G2GName { get; set; }
         [ForeignKey("GateType")]
         public int GateTypeId { get; set; }

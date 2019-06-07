@@ -9,7 +9,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace DMS.DataGateway.DataModels
 {
     [Table("TripDetail", Schema = "DMS")]
-    public class TripDetail
+    public class TripDetail : ModelBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -24,18 +24,6 @@ namespace DMS.DataGateway.DataModels
         public DateTime ActualDeliveryDate { get; set; }    
         public DateTime EstimatedDeliveryDate { get; set; }
 
-        public string CreatedBy
-        {
-            get;
-            set;
-        }
-        public DateTime? CreatedTime
-        {
-            get;
-            set;
-        }
-        public string LastModifiedBy { get; set; }
-        public DateTime? LastModifiedTime { get; set; }
-
+       
     }
 }

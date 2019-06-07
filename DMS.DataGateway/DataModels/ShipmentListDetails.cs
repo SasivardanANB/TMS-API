@@ -9,29 +9,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace DMS.DataGateway.DataModels
 {
     [Table("ShipmentList", Schema = "DMS")]
-    public class ShipmentListDetails
+    public class ShipmentListDetails : ModelBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
         public int NumberOfBoxes { get; set; }
+        [MaxLength(200)]
         public string Note { get; set; }
+        [MaxLength(20)]
         public string PackingSheetNumber { get; set; }
         [ForeignKey("TripDetail")]
         public int StopPointId { get; set; }
-
         public TripDetail TripDetail { get; set; }
-        public string CreatedBy
-        {
-            get;
-            set;
-        }
-        public DateTime? CreatedTime
-        {
-            get;
-            set;
-        }
-        public string LastModifiedBy { get; set; }
-        public DateTime? LastModifiedTime { get; set; }
+       
     }
 }

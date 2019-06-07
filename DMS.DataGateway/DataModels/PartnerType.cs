@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace DMS.DataGateway.DataModels
 {
     [Table("PartnerType", Schema = "DMS")]
-    public class PartnerType
+    public class PartnerType : ModelBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -18,19 +18,9 @@ namespace DMS.DataGateway.DataModels
         [MaxLength(10)]
         [Index("PartnerType_PartnerTypeCode", IsUnique = true)]
         public string PartnerTypeCode { get; set; }
+        [MaxLength(50)]
         public string PartnerTypeDescription { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public string CreatedBy
-        {
-            get;
-            set;
-        }
-        public DateTime? CreatedTime
-        {
-            get;
-            set;
-        }
-        public string LastModifiedBy { get; set; }
-        public DateTime? LastModifiedTime { get; set; }
+       
+        
     }
 }

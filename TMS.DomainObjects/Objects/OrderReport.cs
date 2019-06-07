@@ -14,7 +14,8 @@ namespace TMS.DomainObjects.Objects
         public int Month { get; set; }
         public int Year { get; set; }
         public List<OrdersByDate> OrdersByDates { get; set; }
-        public List<OrderProgress> orderProgresses { get; set; }
+        public List<OrderProgress> OrderProgresses { get; set; }
+        public List<LoadUnloacOrdersByDate> LoadUnloacOrdersByDates { get; set; }
 
     }
     public class OrdersByDate
@@ -25,14 +26,24 @@ namespace TMS.DomainObjects.Objects
     public class OrderProgress
     {
         public int OrderId { get; set; }
+        public int PartnerId { get; set; }
+        [MaxLength(15)]
         public string OrderNo { get; set; }
         public string Transporter { get; set; }
         public string Source { get; set; }
         public string Destination { get; set; }
+        [MaxLength(30)]
         public string Drivername { get; set; }
         public string Vehicle { get; set; }
         public string OrderCreatedDate { get; set; }
         public int OrderStatusId { get; set; }
         public string OrderStatus { get; set; }
+    }
+    public class LoadUnloacOrdersByDate
+    {
+        public int Day { get; set; }
+        public int OrderCount { get; set; }
+        public int TotlLoadingTime { get; set; }
+        public int AvgTotlLoadingTime { get; set; }
     }
 }

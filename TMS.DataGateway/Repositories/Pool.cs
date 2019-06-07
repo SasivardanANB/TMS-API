@@ -180,51 +180,57 @@ namespace TMS.DataGateway.Repositories
                     || (s.Address != null && s.Address.ToLower().Contains(globalSearch))
                     ).ToList();
                 }
-
-                if (poolsList.Count > 0 && !string.IsNullOrEmpty(poolRequest.SortOrder))
+                if (poolsList.Count > 0)
                 {
-                    // Sorting
-                    switch (poolRequest.SortOrder.ToLower())
+                    if (!string.IsNullOrEmpty(poolRequest.SortOrder))
                     {
-                        case "poolno":
-                            poolsList = poolsList.OrderBy(s => s.PoolNo).ToList();
-                            break;
-                        case "poolno_desc":
-                            poolsList = poolsList.OrderByDescending(s => s.PoolNo).ToList();
-                            break;
-                        case "poolname":
-                            poolsList = poolsList.OrderBy(s => s.PoolName).ToList();
-                            break;
-                        case "poolname_desc":
-                            poolsList = poolsList.OrderByDescending(s => s.PoolName).ToList();
-                            break;
-                        case "pooldescription":
-                            poolsList = poolsList.OrderBy(s => s.PoolDescription).ToList();
-                            break;
-                        case "pooldescription_desc":
-                            poolsList = poolsList.OrderByDescending(s => s.PoolDescription).ToList();
-                            break;
-                        case "contactnumber":
-                            poolsList = poolsList.OrderBy(s => s.ContactNumber).ToList();
-                            break;
-                        case "contactnumber_desc":
-                            poolsList = poolsList.OrderByDescending(s => s.ContactNumber).ToList();
-                            break;
-                        case "address":
-                            poolsList = poolsList.OrderBy(s => s.Address).ToList();
-                            break;
-                        case "address_desc":
-                            poolsList = poolsList.OrderByDescending(s => s.Address).ToList();
-                            break;
-                        case "city":
-                            poolsList = poolsList.OrderBy(s => s.CityName).ToList();
-                            break;
-                        case "city_desc":
-                            poolsList = poolsList.OrderByDescending(s => s.CityName).ToList();
-                            break;
-                        default:  // ID Descending 
-                            poolsList = poolsList.OrderByDescending(s => s.ID).ToList();
-                            break;
+                        // Sorting
+                        switch (poolRequest.SortOrder.ToLower())
+                        {
+                            case "poolno":
+                                poolsList = poolsList.OrderBy(s => s.PoolNo).ToList();
+                                break;
+                            case "poolno_desc":
+                                poolsList = poolsList.OrderByDescending(s => s.PoolNo).ToList();
+                                break;
+                            case "poolname":
+                                poolsList = poolsList.OrderBy(s => s.PoolName).ToList();
+                                break;
+                            case "poolname_desc":
+                                poolsList = poolsList.OrderByDescending(s => s.PoolName).ToList();
+                                break;
+                            case "pooldescription":
+                                poolsList = poolsList.OrderBy(s => s.PoolDescription).ToList();
+                                break;
+                            case "pooldescription_desc":
+                                poolsList = poolsList.OrderByDescending(s => s.PoolDescription).ToList();
+                                break;
+                            case "contactnumber":
+                                poolsList = poolsList.OrderBy(s => s.ContactNumber).ToList();
+                                break;
+                            case "contactnumber_desc":
+                                poolsList = poolsList.OrderByDescending(s => s.ContactNumber).ToList();
+                                break;
+                            case "address":
+                                poolsList = poolsList.OrderBy(s => s.Address).ToList();
+                                break;
+                            case "address_desc":
+                                poolsList = poolsList.OrderByDescending(s => s.Address).ToList();
+                                break;
+                            case "city":
+                                poolsList = poolsList.OrderBy(s => s.CityName).ToList();
+                                break;
+                            case "city_desc":
+                                poolsList = poolsList.OrderByDescending(s => s.CityName).ToList();
+                                break;
+                            default:  // ID Descending 
+                                poolsList = poolsList.OrderByDescending(s => s.ID).ToList();
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        poolsList = poolsList.OrderByDescending(s => s.ID).ToList();
                     }
                 }
 

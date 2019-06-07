@@ -10,7 +10,7 @@ namespace TMS.DomainObjects.Objects
     public class PIC
     {
         public long ID { get; set; }
-        [MaxLength(50)]
+        [MaxLength(30)]
         public string PICName { get; set; }
         [MaxLength(15)]
         public string PICPhone { get; set; }
@@ -18,7 +18,9 @@ namespace TMS.DomainObjects.Objects
         public string PICEmail { get; set; }
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
-        [MaxLength(50)]
+        [MaxLength(30)]
+        [RegularExpression("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$", ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "PasswordInvalid")]
+        [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "PasswordInvalid")]
         public string PICPassword { get; set; }
         public int PhotoId { get; set; }
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidImage")]
