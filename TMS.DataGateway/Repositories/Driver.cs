@@ -173,7 +173,7 @@ namespace TMS.DataGateway.Repositories
                     driversList = tMSDBContext.Drivers.Where(d => !d.IsDelete).Select(driver => new Domain.Driver
                     {
                         ID = driver.ID,
-                        TransporterId=driver.TransporterId.Value,
+                        TransporterId=driver.TransporterId,
                         TransporterName=driver.Partner.PartnerName,
                         DriverAddress = driver.DriverAddress,
                         FirstName = driver.FirstName,
