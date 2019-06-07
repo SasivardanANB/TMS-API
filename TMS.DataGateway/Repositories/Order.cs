@@ -67,7 +67,7 @@ namespace TMS.DataGateway.Repositories
                                     response.StatusMessage = order.BusinessAreaId + " Business Area ID not found in TMS.";
                                     return response;
                                 }
-                                
+
                             }
                             else
                             {
@@ -1747,6 +1747,62 @@ namespace TMS.DataGateway.Repositories
             return packingSheetResponse;
         }
 
+        public PackingSheetResponse GetPackingSheetDetails(int orderId)
+        {
+            PackingSheetResponse packingSheetResponse = new PackingSheetResponse();
+            List<PackingSheet> packingSheets = new List<PackingSheet>();
+            try
+            {
+                using (var context = new Data.TMSDBContext())
+                {
+                    var orderDetailsData = context.OrderDetails.Where(x => x.ID == orderId).ToList();
+                    if (orderDetailsData != null)
+                    {
+                        foreach (var item in orderDetailsData)
+                        {
+                            PackingSheet pack = new PackingSheet();
+                            pack.Collie = item.TotalCollie;
+                            pack.Katerangan = item.Katerangan;
+                            pack.Notes = item.Instruction;
+                            pack.OrderDetailId = item.ID;
+                            pack.ShippingListNo = item.ShippingListNo;
+                            var packingSheetNos = context.PackingSheets.Where(ps => ps.ShippingListNo == item.ShippingListNo).Select(i => new Common { Id = i.ID, Value = i.PackingSheetNo }).ToList();
+                            if(packingSheetNos.Count > 0)
+                            {
+                                pack.PackingSheetNumbers = packingSheetNos;
+                            }
+                            packingSheets.Add(pack);
+                        }
+                        packingSheetResponse.Data = packingSheets;
+                        packingSheetResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        packingSheetResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                        packingSheetResponse.StatusCode = (int)HttpStatusCode.OK;
+                        packingSheetResponse.NumberOfRecords = packingSheets.Count;
+                    }
+                    else
+                    {
+                        packingSheetResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        packingSheetResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
+                        packingSheetResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                        packingSheetResponse.NumberOfRecords = 0;
+                    }
+
+
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+                packingSheetResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                packingSheetResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                packingSheetResponse.StatusMessage = ex.Message;
+            }
+            return packingSheetResponse;
+        }
+
+
         public CommonResponse GetOrderIds()
         {
             CommonResponse commonResponse = new CommonResponse();
@@ -1755,6 +1811,7 @@ namespace TMS.DataGateway.Repositories
                 using (var context = new Data.TMSDBContext())
                 {
                     var orderData = (from orderHeader in context.OrderHeaders
+                                     where orderHeader.OrderType == (context.OrderTypes.Where(ot => ot.OrderTypeCode == "INBD").Select(p => p.ID).FirstOrDefault())
                                      select new Domain.Common
                                      {
                                          Id = orderHeader.ID,
@@ -1807,7 +1864,7 @@ namespace TMS.DataGateway.Repositories
                         delearData = (from orderHeader in context.OrderHeaders
                                       join orderDetails in context.OrderDetails on orderHeader.ID equals orderDetails.OrderHeaderID
                                       join opd in context.OrderPartnerDetails on orderDetails.ID equals opd.OrderDetailID
-                                      where orderHeader.ID == orderId && opd.PartnerTypeId == context.PartnerTypes.FirstOrDefault(t => t.PartnerTypeCode == "1").ID
+                                      where orderHeader.ID == orderId && opd.PartnerTypeId == context.PartnerTypes.FirstOrDefault(t => t.PartnerTypeCode == "2").ID
                                       && opd.Partner.PartnerName.Contains(searchText)
                                       select new Domain.DealerDetails
                                       {

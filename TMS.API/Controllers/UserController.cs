@@ -492,5 +492,14 @@ namespace TMS.API.Controllers
             DashboardResponse userDashboard = userTask.GetUserDashboard(user);
             return Ok(userDashboard);
         }
+
+        [Route("getusermenus")]
+        [HttpGet]
+        public IHttpActionResult GetUserMenus(int userId)
+        {
+            IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
+            RoleResponse roleResponse = userTask.GetUserMenus(userId);
+            return Ok(roleResponse);
+        }
     }
 }

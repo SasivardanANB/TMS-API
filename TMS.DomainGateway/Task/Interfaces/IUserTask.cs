@@ -36,5 +36,6 @@ namespace TMS.DomainGateway.Task.Interfaces
         CommonResponse GetRoleCodes();
         CommonResponse GetRegionCodes();
         DashboardResponse GetUserDashboard(UserRequest user);
+        RoleResponse GetUserMenus(int userId);
     }
 }

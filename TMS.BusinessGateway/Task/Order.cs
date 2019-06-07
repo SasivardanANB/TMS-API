@@ -44,6 +44,11 @@ namespace TMS.BusinessGateway.Task
             return packingSheetResponse;
         }
 
+        public override PackingSheetResponse GetPackingSheetDetails(int orderId)
+        {
+            PackingSheetResponse packingSheetResponse = _orderRepository.GetPackingSheetDetails(orderId);
+            return packingSheetResponse;
+        }
         public override OrderTrackResponse TrackOrder(int orderId)
         {
             //If needed write business logic here for request.

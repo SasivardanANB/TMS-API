@@ -151,5 +151,10 @@ namespace TMS.BusinessGateway.Task
             DashboardResponse userDashboard = _userRepository.GetUserDashboard(user);
             return userDashboard;
         }
+        public override RoleResponse GetUserMenus(int userId)
+        {
+            RoleResponse roleResponse = _userRepository.GetUserMenus(userId);
+            return roleResponse;
+        }
     }
 }
