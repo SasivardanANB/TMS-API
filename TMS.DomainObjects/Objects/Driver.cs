@@ -10,6 +10,10 @@ namespace TMS.DomainObjects.Objects
     public class Driver
     {
         public int ID { get; set; }
+        [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidTransporterId")]
+        [Range(minimum: 1, maximum: int.MaxValue, ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidTransporterId")]
+        public int TransporterId { get; set; }
+        public string TransporterName { get; set; }
         //[Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidDriverNo")]
         [MaxLength(12)]
         public string DriverNo { get; set; }

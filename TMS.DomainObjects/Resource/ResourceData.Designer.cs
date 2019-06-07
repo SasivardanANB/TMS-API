@@ -907,6 +907,15 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid Transporter Id.
+        /// </summary>
+        public static string TransporterId {
+            get {
+                return ResourceManager.GetString("TransporterId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Trip assigned successfully.
         /// </summary>
         public static string TripAssigned {
