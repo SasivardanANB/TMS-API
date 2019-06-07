@@ -1667,8 +1667,6 @@ namespace TMS.DataGateway.Repositories
                 _logger.Log(LogLevel.Error, ex);
             }
             return roleResponse;
-
-
         }
     }
 }
