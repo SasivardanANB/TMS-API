@@ -397,6 +397,16 @@ namespace TMS.API.Controllers
             return Ok(packingSheetResponse);
         }
 
+        [Route("getpackingsheetdetails")]
+        [HttpGet]
+        public IHttpActionResult GetPackingSheetDetails(int orderId)
+        {
+            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            PackingSheetResponse packingSheetResponse = orderTask.GetPackingSheetDetails(orderId);
+            return Ok(packingSheetResponse);
+        }
+
+
         [Route("trackorder")]
         [HttpGet]
         public IHttpActionResult TrackOrder(int orderId)
