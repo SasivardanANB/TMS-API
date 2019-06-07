@@ -28,8 +28,8 @@ namespace DMS.DataGateway.Migrations
         protected override void Seed(DMS.DataGateway.DataModels.DMSDBContext context)
         {
             //// Uncomment below code to debug while running Update-Database Command
-            //if (!System.Diagnostics.Debugger.IsAttached)
-            //    System.Diagnostics.Debugger.Launch();
+            if (!System.Diagnostics.Debugger.IsAttached)
+                System.Diagnostics.Debugger.Launch();
 
             try
             {
@@ -40,6 +40,8 @@ namespace DMS.DataGateway.Migrations
                 string subdistricts = "DMS.DataGateway.SeedData.SubDistricts.csv";
                 string imageTypes = "DMS.DataGateway.SeedData.ImageTypes.csv";
                 string businessAreas = "DMS.DataGateway.SeedData.BusinessAreas.csv";
+                string partnerTypes = "DMS.DataGateway.SeedData.PartnerTypes.csv";
+                string tripStatuses = "DMS.DataGateway.SeedData.TripStatus.csv";
 
                 using (Stream stream = assembly.GetManifestResourceStream(provinces))
                 {
@@ -145,6 +147,32 @@ namespace DMS.DataGateway.Migrations
                                 BusinessAreaDescription = businessArea.BusinessAreaDescription
                             });
                         }
+                    }
+                }
+                context.SaveChanges();
+
+                using (Stream stream = assembly.GetManifestResourceStream(partnerTypes))
+                {
+                    using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                    {
+                        CsvReader csvReader = new CsvReader(reader);
+                        csvReader.Configuration.HeaderValidated = null;
+                        csvReader.Configuration.MissingFieldFound = null;
+                        var partnerTypesData = csvReader.GetRecords<DMS.DataGateway.DataModels.PartnerType>().ToArray();
+                        context.PartnerTypes.AddOrUpdate(c => c.PartnerTypeCode, partnerTypesData);
+                    }
+                }
+                context.SaveChanges();
+
+                using (Stream stream = assembly.GetManifestResourceStream(tripStatuses))
+                {
+                    using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                    {
+                        CsvReader csvReader = new CsvReader(reader);
+                        csvReader.Configuration.HeaderValidated = null;
+                        csvReader.Configuration.MissingFieldFound = null;
+                        var tripStatusData = csvReader.GetRecords<DMS.DataGateway.DataModels.TripStatus>().ToArray();
+                        context.TripStatuses.AddOrUpdate(c => c.StatusCode, tripStatusData);
                     }
                 }
                 context.SaveChanges();
