@@ -196,22 +196,30 @@ namespace OMS.API.Controllers
                     userResponse = userTask.CreateUpdateUser(user);
                 }
 
-                LoginRequest loginRequest = new LoginRequest();
-                string token = "";
-                if (application == 2) //For TMS Application - Integrate Azure API Gateway
+                if (userResponse.StatusCode == (int)HttpStatusCode.OK && userResponse.Status == DomainObjects.Resource.ResourceData.Success)
                 {
-                    //Login to TMS and get Token
-                    loginRequest.UserName = ConfigurationManager.AppSettings["TMSLogin"];
-                    loginRequest.UserPassword = ConfigurationManager.AppSettings["TMSPassword"];
-                    var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
-                        + "/v1/user/login", Method.POST, loginRequest, null));
-                    if (tmsLoginResponse != null && tmsLoginResponse.Data.Count > 0)
+                    LoginRequest loginRequest = new LoginRequest();
+                    string token = "";
+                    if (application == 2) //For TMS Application - Integrate Azure API Gateway
                     {
-                        token = tmsLoginResponse.TokenKey;
-                    }
+                        //Login to TMS and get Token
+                        loginRequest.UserName = ConfigurationManager.AppSettings["TMSLogin"];
+                        loginRequest.UserPassword = ConfigurationManager.AppSettings["TMSPassword"];
+                        var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                            + "/v1/user/login", Method.POST, loginRequest, null));
+                        if (tmsLoginResponse != null && tmsLoginResponse.Data.Count > 0)
+                        {
+                            token = tmsLoginResponse.TokenKey;
+                        }
 
-                    userResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
-                        + "/v1/user/createupdateuser", Method.POST, tmsRequest, token));
+                        UserResponse tmsUserResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                            + "/v1/user/createupdateuser", Method.POST, tmsRequest, token));
+
+                        if (tmsUserResponse.StatusCode == (int)HttpStatusCode.OK && tmsUserResponse.Status == DomainObjects.Resource.ResourceData.Success)
+                        {
+                            userResponse.StatusMessage = userResponse.StatusMessage + ". " + tmsUserResponse.StatusMessage;
+                        }
+                    }
                 }
 
                 //if (application == 3) //For DMS Application - Integrate Azure API Gateway
