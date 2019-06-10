@@ -129,7 +129,10 @@ namespace TMS.DataGateway.Repositories
                                 order.DriverNo = order.DriverNo;
                                 order.DriverName = context.Drivers.FirstOrDefault(t => t.DriverNo == order.DriverNo).UserName;
                                 soPoNumber = order.SOPONumber;
-                                order.OrderNo = GetOrderNumber(businessAreaId, businessAreaCode, "TMS", DateTime.Now.Year);
+                                if(persistedOrderDataID == 0)
+                                {
+                                    order.OrderNo = GetOrderNumber(businessAreaId, businessAreaCode, "TMS", DateTime.Now.Year);
+                                }
                                 order.LegecyOrderNo = order.OrderNo;
                             }
 
