@@ -229,7 +229,7 @@ namespace TMS.API.Controllers
                                     TripLocation sourceLocation = new TripLocation()
                                     {
                                         PartnerType = request.PartnerType2,
-                                        PartnerNo = request.PartnerNo2,
+                                        PartnerNo = sourcePartnerDetail.PartnerNo, //request.PartnerNo2, 
                                         PartnerName = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
                                         SequnceNumber = request.SequenceNo,
                                         ActualDeliveryDate = actualShipmentDate,
@@ -249,7 +249,7 @@ namespace TMS.API.Controllers
                                     TripLocation destinationLocation = new TripLocation()
                                     {
                                         PartnerType = request.PartnerType3,
-                                        PartnerNo = request.PartnerNo3,
+                                        PartnerNo = destinationPartnerDetail.PartnerNo ,//request.PartnerNo3,
                                         PartnerName = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
                                         SequnceNumber = request.SequenceNo,
                                         ActualDeliveryDate = actualShipmentDate,
@@ -348,7 +348,7 @@ namespace TMS.API.Controllers
                             TripLocation sourceLocation = new TripLocation()
                             {
                                 PartnerType = request.PartnerType2,
-                                PartnerNo = request.PartnerNo2,
+                                PartnerNo = sourcePartnerDetail.PartnerNo,// request.PartnerNo2,
                                 PartnerName = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
                                 SequnceNumber = request.OrderType == 1 ? request.SequenceNo : 0,
                                 ActualDeliveryDate = actualShipmentDate,
@@ -362,7 +362,7 @@ namespace TMS.API.Controllers
                             TripLocation destinationLocation = new TripLocation()
                             {
                                 PartnerType = request.PartnerType3,
-                                PartnerNo = request.PartnerNo3,
+                                PartnerNo = destinationPartnerDetail.PartnerNo,// request.PartnerNo3,
                                 PartnerName = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
                                 SequnceNumber = request.OrderType == 1 ? 0 : request.SequenceNo,
                                 ActualDeliveryDate = actualShipmentDate,
