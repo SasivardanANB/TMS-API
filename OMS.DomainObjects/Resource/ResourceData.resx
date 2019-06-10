@@ -199,10 +199,10 @@
     <value>User already assigned with this role and region</value>
   </data>
   <data name="OrderCreated" xml:space="preserve">
-    <value>Order created successfully</value>
+    <value>Order Created Successfully in OMS</value>
   </data>
   <data name="OrderUpdated" xml:space="preserve">
-    <value>Order updated successfully</value>
+    <value>Order updated successfully </value>
   </data>
   <data name="NoOrders" xml:space="preserve">
     <value>No Orders</value>

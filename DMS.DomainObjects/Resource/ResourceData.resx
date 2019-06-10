@@ -154,19 +154,22 @@
     <value>New Password Must be Different</value>
   </data>
   <data name="OldPasswordMismatch" xml:space="preserve">
-    <value>OldPasswordMismatch</value>
+    <value>Old Password Mismatch</value>
   </data>
   <data name="PasswordInvalid" xml:space="preserve">
     <value>Passwords must be at least 8 characters and contain one upper case, one lower case, one number and special character</value>
   </data>
   <data name="PasswordUpdated" xml:space="preserve">
-    <value>PasswordUpdated</value>
+    <value>Password Updated Succefully in DMS</value>
   </data>
   <data name="Success" xml:space="preserve">
     <value>Success</value>
   </data>
+  <data name="TripCreated" xml:space="preserve">
+    <value>Trip(s) created/updated successfully in TMS</value>
+  </data>
   <data name="TripStatusUpdated" xml:space="preserve">
-    <value>Trip Status Updated</value>
+    <value>Trip Status Updated Succefully in DMS</value>
   </data>
   <data name="UserDetailsNotFound" xml:space="preserve">
     <value>UserDetailsNotFound</value>
@@ -175,9 +178,9 @@
     <value>User In-Active</value>
   </data>
   <data name="UsersCreated" xml:space="preserve">
-    <value>Users Created</value>
+    <value>User(s) Created Succefully in DMS</value>
   </data>
   <data name="UsersUpdated" xml:space="preserve">
-    <value>Users Updated</value>
+    <value>User(s) Updated Succefully in DMS</value>
   </data>
 </root>

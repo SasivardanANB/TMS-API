@@ -383,7 +383,7 @@ namespace DMS.DataGateway.Repositories
                         transaction.Commit();
                         response.Status = DomainObjects.Resource.ResourceData.Success;
                         response.StatusCode = (int)HttpStatusCode.OK;
-                        response.StatusMessage = "Trip(s) created/updated successfully";
+                        response.StatusMessage = DomainObjects.Resource.ResourceData.TripCreated;
                         return response;
                         #endregion
                     }

@@ -169,7 +169,7 @@ namespace DMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to OldPasswordMismatch.
+        ///   Looks up a localized string similar to Old Password Mismatch.
         /// </summary>
         public static string OldPasswordMismatch {
             get {
@@ -187,7 +187,7 @@ namespace DMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PasswordUpdated.
+        ///   Looks up a localized string similar to Password Updated Succefully in DMS.
         /// </summary>
         public static string PasswordUpdated {
             get {
@@ -205,7 +205,16 @@ namespace DMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Trip Status Updated.
+        ///   Looks up a localized string similar to Trip(s) created/updated successfully in TMS.
+        /// </summary>
+        public static string TripCreated {
+            get {
+                return ResourceManager.GetString("TripCreated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Trip Status Updated Succefully in DMS.
         /// </summary>
         public static string TripStatusUpdated {
             get {
@@ -232,7 +241,7 @@ namespace DMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Users Created.
+        ///   Looks up a localized string similar to User(s) Created Succefully in DMS.
         /// </summary>
         public static string UsersCreated {
             get {
@@ -241,7 +250,7 @@ namespace DMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Users Updated.
+        ///   Looks up a localized string similar to User(s) Updated Succefully in DMS.
         /// </summary>
         public static string UsersUpdated {
             get {

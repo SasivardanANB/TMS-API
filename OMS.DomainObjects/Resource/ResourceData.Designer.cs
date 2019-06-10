@@ -19,7 +19,7 @@ namespace OMS.DomainObjects.Resource {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class ResourceData {
@@ -241,7 +241,7 @@ namespace OMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Order created successfully.
+        ///   Looks up a localized string similar to Order Created Successfully in OMS.
         /// </summary>
         public static string OrderCreated {
             get {
@@ -268,7 +268,7 @@ namespace OMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Order updated successfully.
+        ///   Looks up a localized string similar to Order updated successfully .
         /// </summary>
         public static string OrderUpdated {
             get {

@@ -709,7 +709,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Order Created.
+        ///   Looks up a localized string similar to Order Created Succefully in TMS.
         /// </summary>
         public static string OrderCreated {
             get {
@@ -718,7 +718,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Order(s) created successfully.
+        ///   Looks up a localized string similar to Order(s) created successfully in TMS.
         /// </summary>
         public static string OrdersCreated {
             get {
@@ -727,7 +727,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Order(s) updated successfully.
+        ///   Looks up a localized string similar to Order(s) updated successfully in TMS.
         /// </summary>
         public static string OrdersUpdated {
             get {
@@ -736,7 +736,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Order Updated.
+        ///   Looks up a localized string similar to Order Updated Succefully in TMS.
         /// </summary>
         public static string OrderUpdated {
             get {

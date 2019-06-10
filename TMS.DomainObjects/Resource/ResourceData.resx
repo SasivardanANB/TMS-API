@@ -268,10 +268,10 @@
     <value>User Logged In Successfully</value>
   </data>
   <data name="OrdersCreated" xml:space="preserve">
-    <value>Order(s) created successfully</value>
+    <value>Order(s) created successfully in TMS</value>
   </data>
   <data name="OrdersUpdated" xml:space="preserve">
-    <value>Order(s) updated successfully</value>
+    <value>Order(s) updated successfully in TMS</value>
   </data>
   <data name="PoolActivated" xml:space="preserve">
     <value>Pool activated successfully</value>
@@ -370,10 +370,10 @@
     <value>Password and confirm password must be same</value>
   </data>
   <data name="OrderUpdated" xml:space="preserve">
-    <value>Order Updated</value>
+    <value>Order Updated Succefully in TMS</value>
   </data>
   <data name="OrderCreated" xml:space="preserve">
-    <value>Order Created</value>
+    <value>Order Created Succefully in TMS</value>
   </data>
   <data name="NoRecords" xml:space="preserve">
     <value>No Record(s) found</value>
