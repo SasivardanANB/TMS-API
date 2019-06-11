@@ -268,12 +268,12 @@ namespace TMS.API.Controllers
                                     businessArea = GetBusinessAreaCode(request.BusinessAreaId);
                                 else
                                     businessArea = request.BusinessArea;
-
+                                Partner transporterPartnerDetail = GetPartnerDetail(request.PartnerNo1, order.UploadType);
                                 TripDMS tripDMS = new TripDMS()
                                 {
                                     OrderNumber = request.OrderNo,
-                                    TransporterName = request.PartnerName1,
-                                    TransporterCode = request.PartnerNo1,
+                                    TransporterName = transporterPartnerDetail.PartnerName,
+                                    TransporterCode = transporterPartnerDetail.PartnerNo,
                                     DriverName = request.DriverName,
                                     VehicleType = request.VehicleShipmentType,
                                     VehicleNumber = request.VehicleNo,
@@ -323,12 +323,13 @@ namespace TMS.API.Controllers
                                 businessArea = GetBusinessAreaCode(request.BusinessAreaId);
                             else
                                 businessArea = request.BusinessArea;
+                            Partner transporterPartnerDetail = GetPartnerDetail(request.PartnerNo1, order.UploadType);
 
                             TripDMS tripDMS = new TripDMS()
                             {
                                 OrderNumber = request.OrderNo,
-                                TransporterName = request.PartnerName1,
-                                TransporterCode = request.PartnerNo1,
+                                TransporterName = transporterPartnerDetail.PartnerName,
+                                TransporterCode = transporterPartnerDetail.PartnerNo,
                                 DriverNo = request.DriverNo,
                                 DriverName = request.DriverName,
                                 VehicleType = request.VehicleShipmentType,
