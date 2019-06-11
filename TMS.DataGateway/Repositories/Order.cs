@@ -129,7 +129,7 @@ namespace TMS.DataGateway.Repositories
                                 order.DriverNo = order.DriverNo;
                                 order.DriverName = context.Drivers.FirstOrDefault(t => t.DriverNo == order.DriverNo).UserName;
                                 soPoNumber = order.SOPONumber;
-                                if(persistedOrderDataID == 0)
+                                if (persistedOrderDataID == 0)
                                 {
                                     order.OrderNo = GetOrderNumber(businessAreaId, businessAreaCode, "TMS", DateTime.Now.Year);
                                 }
@@ -238,7 +238,9 @@ namespace TMS.DataGateway.Repositories
                                         CreatedBy = request.CreatedBy,
                                         CreatedTime = DateTime.Now,
                                         LastModifiedBy = "",
-                                        LastModifiedTime = null
+                                        LastModifiedTime = null,
+                                        EstimationShipmentDate = estimationShipmentDate,
+                                        ActualShipmentDate = actualShipmentDate
                                     };
                                     context.OrderDetails.Add(orderDetail);
                                     context.SaveChanges();
@@ -1769,7 +1771,7 @@ namespace TMS.DataGateway.Repositories
                             pack.OrderDetailId = item.ID;
                             pack.ShippingListNo = item.ShippingListNo;
                             var packingSheetNos = context.PackingSheets.Where(ps => ps.ShippingListNo == item.ShippingListNo).Select(i => new Common { Id = i.ID, Value = i.PackingSheetNo }).ToList();
-                            if(packingSheetNos.Count > 0)
+                            if (packingSheetNos.Count > 0)
                             {
                                 pack.PackingSheetNumbers = packingSheetNos;
                             }
@@ -2101,8 +2103,8 @@ namespace TMS.DataGateway.Repositories
                                         CityCode = subDistrict.City.CityCode,
                                         ProvinceCode = subDistrict.City.Province.ProvinceCode,
                                         PartnerName = partner.PartnerName,
-                                        PartnerNo=partner.PartnerNo
-                                        
+                                        PartnerNo = partner.PartnerNo
+
                                     }).FirstOrDefault();
                     }
                     else
