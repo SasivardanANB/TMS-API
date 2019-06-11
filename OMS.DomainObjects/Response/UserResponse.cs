@@ -10,5 +10,6 @@ namespace OMS.DomainObjects.Response
     public class UserResponse : Message
     {
         public List<User> Data { get; set; }
+        public List<Role> RoleData { get; set; }
     }
 }

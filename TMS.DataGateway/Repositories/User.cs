@@ -104,6 +104,9 @@ namespace TMS.DataGateway.Repositories
                                                  ExpiresOn = tokens.ExpiresOn,
                                              }).FirstOrDefault();
 
+                            //Sending Role details
+                            userResponse.RoleData = GetUserRoleMenus(userData.ID);
+
 
                             userResponse.TokenKey = tokenData.TokenKey;
                             userResponse.TokenIssuedOn = tokenData.IssuedOn;
@@ -1667,6 +1670,86 @@ namespace TMS.DataGateway.Repositories
                 _logger.Log(LogLevel.Error, ex);
             }
             return roleResponse;
+        }
+
+        public List<Domain.Role> GetUserRoleMenus(int userId)
+        {
+            List<Domain.Role> userRoles = new List<Domain.Role>();
+            try
+            {
+                using (var context = new TMSDBContext())
+                {
+                    var roles = (from role in context.Roles
+                                 join user in context.UserRoles on role.ID equals user.RoleID
+                                 where user.UserID == userId
+                                 select new Domain.Role()
+                                 {
+                                     ID = role.ID,
+                                     RoleCode = role.RoleCode,
+                                     RoleDescription = role.RoleDescription,
+                                     IsActive = role.IsActive
+                                 }).FirstOrDefault();
+
+                    if (roles != null)
+                    {
+                        List<Domain.RoleMenu> roleMenus = new List<Domain.RoleMenu>();
+                        Domain.Role userRole = new Domain.Role();
+                        userRole.ID = roles.ID;
+                        userRole.RoleCode = roles.RoleCode;
+                        userRole.RoleDescription = roles.RoleDescription;
+                        userRole.IsActive = roles.IsActive;
+                        var roleMenuData = (from roleMenu in context.RoleMenus
+                                            where roleMenu.RoleID == roles.ID
+                                            select new Domain.RoleMenu()
+                                            {
+                                                ID = roleMenu.ID,
+                                                MenuCode = roleMenu.Menu.MenuCode,
+                                                MenuDescription = roleMenu.Menu.MenuDescription,
+                                                MenuURL = roleMenu.Menu.MenuURL
+                                            }).ToList();
+                        if (roleMenuData != null)
+                        {
+                            foreach (var roleMenu in roleMenuData)
+                            {
+                                Domain.RoleMenu obj = new Domain.RoleMenu();
+                                obj.ID = roleMenu.ID;
+                                obj.MenuCode = roleMenu.MenuCode;
+                                obj.MenuDescription = roleMenu.MenuDescription;
+                                var roleMenuActivities = (from roleMenuActivity in context.RoleMenuActivity
+                                                          join roleMenud in context.RoleMenus on roleMenuActivity.RoleMenuID equals roleMenud.ID
+                                                          where roleMenuActivity.RoleMenuID == roleMenu.ID
+                                                          select new Domain.RoleMenuActivity()
+                                                          {
+                                                              ID = roleMenuActivity.Activity.ID,
+                                                              ActivityCode = roleMenuActivity.Activity.ActivityCode,
+                                                              ActivityDescription = roleMenuActivity.Activity.ActivityDescription
+                                                          }).ToList();
+                                if (roleMenuActivities != null)
+                                {
+                                    List<Domain.RoleMenuActivity> roleMenuActiviti = new List<Domain.RoleMenuActivity>();
+                                    foreach (var activ in roleMenuActivities)
+                                    {
+                                        Domain.RoleMenuActivity roleMenuActivity = new Domain.RoleMenuActivity();
+                                        roleMenuActivity.ActivityCode = activ.ActivityCode;
+                                        roleMenuActivity.ID = activ.ID;
+                                        roleMenuActivity.ActivityDescription = activ.ActivityDescription;
+                                        roleMenuActiviti.Add(roleMenuActivity);
+                                    }
+                                    obj.RoleMenuActivities = roleMenuActivities;
+                                }
+                                roleMenus.Add(obj);
+                            }
+                        }
+                        userRole.RoleMenus = roleMenus;
+                        userRoles.Add(userRole);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+            }
+            return userRoles;
         }
     }
 }
