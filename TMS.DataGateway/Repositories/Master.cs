@@ -37,7 +37,7 @@ namespace TMS.DataGateway.Repositories
                         partnerList =
                                                 (from partner in context.Partners
                                                  join ppt in context.PartnerPartnerTypes on partner.ID equals ppt.PartnerId
-                                                 where ppt.PartnerTypeId == partnerSearch.PartnerTypeId
+                                                 where ppt.PartnerTypeId == partnerSearch.PartnerTypeId && partner.IsActive == true
                                                  select new Domain.Common
                                                  {
                                                      Id = partner.ID,
@@ -49,7 +49,7 @@ namespace TMS.DataGateway.Repositories
                         partnerList =
                             (from partner in context.Partners
                              join ppt in context.PartnerPartnerTypes on partner.ID equals ppt.PartnerId
-                             where partner.PartnerName.Contains(partnerSearch.SearchText) && ppt.PartnerTypeId == partnerSearch.PartnerTypeId
+                             where partner.PartnerName.Contains(partnerSearch.SearchText) && ppt.PartnerTypeId == partnerSearch.PartnerTypeId && partner.IsActive == true
                              select new Domain.Common
                              {
                                  Id = partner.ID,
