@@ -908,6 +908,7 @@ namespace OMS.DataGateway.Repositories
                             response.Data.Add(common);
                         }
                     }
+                    response.NumberOfRecords = response.Data.Count;
                     response.Data = response.Data.OrderBy(t => t.Id).ToList();
                     response.Status = DomainObjects.Resource.ResourceData.Success;
                     response.StatusCode = (int)HttpStatusCode.OK;
