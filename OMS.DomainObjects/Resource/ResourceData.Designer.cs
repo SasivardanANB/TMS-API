@@ -295,6 +295,15 @@ namespace OMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Role yang dipilih sudah di assign ke username tertentu.
+        /// </summary>
+        public static string RoleCannontBeDeleted {
+            get {
+                return ResourceManager.GetString("RoleCannontBeDeleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Role code alredy exist.
         /// </summary>
         public static string RoleCodeExists {

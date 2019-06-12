@@ -447,4 +447,7 @@
   <data name="TransporterId" xml:space="preserve">
     <value>Invalid Transporter Id</value>
   </data>
+  <data name="RoleCannontBeDeleted" xml:space="preserve">
+    <value>Role yang dipilih sudah di assign ke username tertentu</value>
+  </data>
 </root>

@@ -23,7 +23,7 @@ namespace TMS.DataGateway.Repositories
         public GateResponse CreateGateInGateOut(GateRequest gateRequest)
         {
             GateResponse gateResponse = new GateResponse();
-            List<GateInGateOut> gateInGateOuts=new List<GateInGateOut>();
+            List<GateInGateOut> gateInGateOuts = new List<GateInGateOut>();
             try
             {
                 using (var tMSDBContext = new TMSDBContext())
@@ -62,7 +62,7 @@ namespace TMS.DataGateway.Repositories
                 gateResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
                 gateResponse.StatusMessage = ex.Message;
             }
-            return gateResponse; 
+            return gateResponse;
         }
 
         public GateResponse GetGateList(GateRequest gateRequest)
@@ -77,16 +77,22 @@ namespace TMS.DataGateway.Repositories
 
                     gateList = tMSDBContext.OrderHeaders.Select(orderHeader => new Domain.Gate
                     {
-                        OrderId=orderHeader.ID,
+                        OrderId = orderHeader.ID,
                         VehicleNumber = orderHeader.VehicleNo,
                         OrderType = orderHeader.OrderType == 1 ? "Bongkar" : "Muat",
-                        BusinessArea=orderHeader.BusinessArea.BusinessAreaDescription,
+                        BusinessArea = orderHeader.BusinessArea.BusinessAreaDescription,
                         VehicleTypeName = tMSDBContext.VehicleTypes.Where(v => v.ID.ToString() == orderHeader.VehicleShipment).Select(i => i.VehicleTypeDescription).FirstOrDefault(),
-                        ID= tMSDBContext.GateInGateOuts.Any(g => g.OrderId == orderHeader.ID) ? tMSDBContext.GateInGateOuts.Where(g => g.OrderId == orderHeader.ID).Select(i=>i.ID).FirstOrDefault():0,
-                        Status = tMSDBContext.GateInGateOuts.Any(g=>g.OrderId==orderHeader.ID)?tMSDBContext.GateTypes.Where(g => g.ID == tMSDBContext.GateInGateOuts.Where(ga => ga.OrderId == orderHeader.ID).OrderByDescending(id=>id.ID).Select(i=>i.GateTypeId).FirstOrDefault()).Select(i=>i.GateTypeDescription).FirstOrDefault() :"NOT ARRIVED",
-                        BusinessAreaId= orderHeader.BusinessAreaId,
+                        ID = tMSDBContext.GateInGateOuts.Any(g => g.OrderId == orderHeader.ID) ? tMSDBContext.GateInGateOuts.Where(g => g.OrderId == orderHeader.ID).Select(i => i.ID).FirstOrDefault() : 0,
+                        Status = tMSDBContext.GateInGateOuts.Any(g => g.OrderId == orderHeader.ID) ? tMSDBContext.GateTypes.Where(g => g.ID == tMSDBContext.GateInGateOuts.Where(ga => ga.OrderId == orderHeader.ID).OrderByDescending(id => id.ID).Select(i => i.GateTypeId).FirstOrDefault()).Select(i => i.GateTypeDescription).FirstOrDefault() : "NOT ARRIVED",
+                        BusinessAreaId = orderHeader.BusinessAreaId,
                         GateName = tMSDBContext.GateInGateOuts.Any(g => g.OrderId == orderHeader.ID) ? (tMSDBContext.G2Gs.Where(g => g.ID == (tMSDBContext.GateInGateOuts.Where(ga => ga.OrderId == orderHeader.ID).OrderByDescending(id => id.ID).Select(i => i.G2GId).FirstOrDefault())).Select(i => i.G2GName).FirstOrDefault()) : "",
                     }).ToList();
+
+                    //For filtering Gate Out records from list
+                    if (gateList != null && gateList.Count > 0)
+                    {
+                        gateList = gateList.Where(s => s.Status != "GATE OUT").ToList();
+                    }
                 }
 
                 // Filter

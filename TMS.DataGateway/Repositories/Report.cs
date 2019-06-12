@@ -28,7 +28,7 @@ namespace TMS.DataGateway.Repositories
                 using (var tMSDBContext = new TMSDBContext())
                 {
                     var orderReports = (from oh in tMSDBContext.OrderHeaders
-                                        join opd in tMSDBContext.OrderPartnerDetails on tMSDBContext.OrderDetails.Where(i => i.OrderHeaderID == oh.ID).Select(od => od.ID).Take(1).FirstOrDefault() equals opd.OrderDetailID
+                                        join opd in tMSDBContext.OrderPartnerDetails on orderReportRequest.Request.OrderTypeId == 1 ? tMSDBContext.OrderDetails.Where(i => i.OrderHeaderID == oh.ID).Select(od => od.ID).Take(1).FirstOrDefault() : tMSDBContext.OrderDetails.Where(i => i.OrderHeaderID == oh.ID).OrderByDescending(d => d.ID).Select(od => od.ID).Take(1).FirstOrDefault() equals opd.OrderDetailID
                                         join p in tMSDBContext.Partners on opd.PartnerID equals p.ID
                                         where opd.PartnerID == orderReportRequest.Request.MainDealerId && oh.OrderDate.Month == orderReportRequest.Request.Month && oh.OrderDate.Year == orderReportRequest.Request.Year
                                         group oh by new { oh.OrderDate.Day } into ord
@@ -37,9 +37,28 @@ namespace TMS.DataGateway.Repositories
                                             Day = ord.Key.Day,
                                             OrderCount = ord.Count()
                                         }).ToList();
+
+                    List<Domain.OrdersByDate> ordersByDates = new List<Domain.OrdersByDate>();
+
+                    for (int dayValue = 1; dayValue <= DateTime.DaysInMonth(orderReportRequest.Request.Year, orderReportRequest.Request.Month); dayValue++)
+                    {
+                        Domain.OrdersByDate ordersByDate = new Domain.OrdersByDate();
+                        if (orderReports.Any(i => i.Day == dayValue))
+                        {
+                            ordersByDate.Day = dayValue;
+                            ordersByDate.OrderCount = orderReports.Where(i => i.Day == dayValue).Select(d => d.OrderCount).FirstOrDefault();
+                        }
+                        else
+                        {
+                            ordersByDate.Day = dayValue;
+                            ordersByDate.OrderCount = 0;
+                        }
+                        ordersByDates.Add(ordersByDate);
+                    }
+
                     orderReportResponse.Data = new Domain.OrderReport()
                     {
-                        OrdersByDates = orderReports,
+                        OrdersByDates = ordersByDates,
                         Month = orderReportRequest.Request.Month,
                         Year = orderReportRequest.Request.Year,
                         OrderTypeId = orderReportRequest.Request.OrderTypeId,

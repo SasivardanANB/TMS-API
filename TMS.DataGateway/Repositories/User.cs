@@ -641,11 +641,21 @@ namespace TMS.DataGateway.Repositories
                         var role = context.Roles.Where(x => x.ID == id).FirstOrDefault();
                         if (role != null)
                         {
-                            role.IsDelete = true;
-                            context.SaveChanges();
-                            roleResponse.StatusMessage = DomainObjects.Resource.ResourceData.RolesDeleted;
-                            roleResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                            roleResponse.StatusCode = (int)HttpStatusCode.OK;
+                            var userRole = context.UserRoles.Where(ur => ur.RoleID == id && ur.IsDelete == false).FirstOrDefault();
+                            if(userRole == null)
+                            {
+                                role.IsDelete = true;
+                                context.SaveChanges();
+                                roleResponse.StatusMessage = DomainObjects.Resource.ResourceData.RolesDeleted;
+                                roleResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                                roleResponse.StatusCode = (int)HttpStatusCode.OK;
+                            }
+                            else
+                            {
+                                roleResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                                roleResponse.StatusCode = (int)HttpStatusCode.OK;
+                                roleResponse.StatusMessage = DomainObjects.Resource.ResourceData.RoleCannontBeDeleted;
+                            }
                         }
                         else
                         {
