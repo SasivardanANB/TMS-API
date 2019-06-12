@@ -34,6 +34,35 @@ namespace TMS.API.Controllers
             OrderReportResponse orderReportResponse = reportTask.OrdersProgress(orderReportRequest);
             return Ok(orderReportResponse);
         }
-        
+
+        [Route("finishedorderreports")]
+        [HttpPost]
+        public IHttpActionResult FinishedOrderReports(OrderReportRequest orderReportRequest)
+        {
+            IReportTask reportTask = DependencyResolver.GetImplementationOf<ITaskGateway>().ReportTask;
+            OrderReportResponse orderReportResponse = reportTask.FinishedOrderReports(orderReportRequest);
+            return Ok(orderReportResponse);
+        }
+
+        [Route("avgloadingperdayreport")]
+        [HttpPost]
+        public IHttpActionResult AvgLoadingPerDayReport(OrderReportRequest orderReportRequest)
+        {
+            orderReportRequest.Request.OrderAvgLoadingTypeId = 1;
+
+            IReportTask reportTask = DependencyResolver.GetImplementationOf<ITaskGateway>().ReportTask;
+            OrderReportResponse orderReportResponse = reportTask.OrdersLoadAndUnloadAvgDayWiseReport(orderReportRequest);
+            return Ok(orderReportResponse);
+        }
+
+        [Route("avgunloadingperdayreport")]
+        [HttpPost]
+        public IHttpActionResult AvgUnloadingPerDayReport(OrderReportRequest orderReportRequest)
+        {
+            orderReportRequest.Request.OrderAvgLoadingTypeId = 2;
+            IReportTask reportTask = DependencyResolver.GetImplementationOf<ITaskGateway>().ReportTask;
+            OrderReportResponse orderReportResponse = reportTask.OrdersLoadAndUnloadAvgDayWiseReport(orderReportRequest);
+            return Ok(orderReportResponse);
+        }
     }
 }

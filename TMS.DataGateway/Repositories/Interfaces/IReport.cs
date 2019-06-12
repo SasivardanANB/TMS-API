@@ -12,5 +12,7 @@ namespace TMS.DataGateway.Repositories.Interfaces
     {
         OrderReportResponse OrdersDayWiseReport(OrderReportRequest orderReportRequest);
         OrderReportResponse OrdersProgress(OrderReportRequest orderReportRequest);
+        OrderReportResponse FinishedOrderReports(OrderReportRequest orderReportRequest);
+        OrderReportResponse OrdersLoadAndUnloadAvgDayWiseReport(OrderReportRequest orderReportRequest);
     }
 }

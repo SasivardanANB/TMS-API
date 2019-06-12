@@ -30,6 +30,17 @@ namespace TMS.BusinessGateway.Task
             OrderReportResponse orderReportResponse = _reportRepository.OrdersProgress(orderReportRequest);
             return orderReportResponse;
         }
-        
+
+        public override OrderReportResponse FinishedOrderReports(OrderReportRequest orderReportRequest)
+        {
+            OrderReportResponse orderReportResponse = _reportRepository.FinishedOrderReports(orderReportRequest);
+            return orderReportResponse;
+        }
+
+        public override OrderReportResponse OrdersLoadAndUnloadAvgDayWiseReport(OrderReportRequest orderReportRequest)
+        {
+            OrderReportResponse orderReportResponse = _reportRepository.OrdersLoadAndUnloadAvgDayWiseReport(orderReportRequest);
+            return orderReportResponse;
+        }        
     }
 }

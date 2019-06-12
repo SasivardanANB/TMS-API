@@ -13,10 +13,11 @@ namespace TMS.DomainObjects.Objects
         public int MainDealerId { get; set; }
         public int Month { get; set; }
         public int Year { get; set; }
+        public int OrderAvgLoadingTypeId { get; set; }
         public List<OrdersByDate> OrdersByDates { get; set; }
         public List<OrderProgress> OrderProgresses { get; set; }
         public List<LoadUnloacOrdersByDate> LoadUnloacOrdersByDates { get; set; }
-
+        public List<OrderCompletedDates> OrderCompletedDates { get; set; }
     }
     public class OrdersByDate
     {
@@ -39,11 +40,21 @@ namespace TMS.DomainObjects.Objects
         public int OrderStatusId { get; set; }
         public string OrderStatus { get; set; }
     }
+    public class OrderCompletedDates : OrderProgress
+    {
+        public DateTime ShippingTime { get; set; }
+        public DateTime LoadingTime { get; set; }
+        public DateTime TravellingTime { get; set; }
+        public DateTime UnloadingTime { get; set; }
+        public DateTime ETA { get; set; }
+        public DateTime FinishDelivery { get; set; }
+        public string ServiceRate { get; set; }
+    }
     public class LoadUnloacOrdersByDate
     {
         public int Day { get; set; }
         public int OrderCount { get; set; }
-        public int TotlLoadingTime { get; set; }
-        public int AvgTotlLoadingTime { get; set; }
+        public string TotlLoadingTime { get; set; }
+        public string AvgTotlLoadingTime { get; set; }
     }
 }
