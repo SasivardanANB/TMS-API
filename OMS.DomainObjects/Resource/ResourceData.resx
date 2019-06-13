@@ -193,7 +193,7 @@
     <value>User(s) updated successfully</value>
   </data>
   <data name="DataBaseException" xml:space="preserve">
-    <value>Some exception occrued in database</value>
+    <value>Some exception occured in database</value>
   </data>
   <data name="UserRoleAlreadyAssigned" xml:space="preserve">
     <value>User already assigned with this role and region</value>
@@ -223,7 +223,7 @@
     <value>No record(s) found</value>
   </data>
   <data name="UserNameExisted" xml:space="preserve">
-    <value>User name alredy exist</value>
+    <value>User name already exists</value>
   </data>
   <data name="MenuActivityRetrieved" xml:space="preserve">
     <value>Menu Activities Retrieved</value>
@@ -232,10 +232,10 @@
     <value>Invalid Token</value>
   </data>
   <data name="RoleCodeExists" xml:space="preserve">
-    <value>Role code alredy exist</value>
+    <value>Role code already exists</value>
   </data>
   <data name="PasswordInvalid" xml:space="preserve">
-    <value>Passwords must be at least 8 characters and contain one upper case, one lower case, one number and special character</value>
+    <value>Password must be at least 8 characters and contain one upper case, one lower case, one number and special character</value>
   </data>
   <data name="RoleCannontBeDeleted" xml:space="preserve">
     <value>Role yang dipilih sudah di assign ke username tertentu</value>

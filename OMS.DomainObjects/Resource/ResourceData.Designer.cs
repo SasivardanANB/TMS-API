@@ -61,7 +61,7 @@ namespace OMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Some exception occrued in database.
+        ///   Looks up a localized string similar to Some exception occured in database.
         /// </summary>
         public static string DataBaseException {
             get {
@@ -277,7 +277,7 @@ namespace OMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Passwords must be at least 8 characters and contain one upper case, one lower case, one number and special character.
+        ///   Looks up a localized string similar to Password must be at least 8 characters and contain one upper case, one lower case, one number and special character.
         /// </summary>
         public static string PasswordInvalid {
             get {
@@ -304,7 +304,7 @@ namespace OMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Role code alredy exist.
+        ///   Looks up a localized string similar to Role code already exists.
         /// </summary>
         public static string RoleCodeExists {
             get {
@@ -358,7 +358,7 @@ namespace OMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to User name alredy exist.
+        ///   Looks up a localized string similar to User name already exists.
         /// </summary>
         public static string UserNameExisted {
             get {

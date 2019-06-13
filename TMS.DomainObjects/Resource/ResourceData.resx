@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="DataBaseException" xml:space="preserve">
-    <value>Some exception occrued in database</value>
+    <value>Some exception occured in database</value>
   </data>
   <data name="DriverActivated" xml:space="preserve">
     <value>Driver activated successfully</value>
@@ -163,7 +163,7 @@
     <value>Provide valid email</value>
   </data>
   <data name="InvalidExpireDate" xml:space="preserve">
-    <value>Provide valid expire date</value>
+    <value>Provide valid expiry date</value>
   </data>
   <data name="InvalidExpeditorEmail" xml:space="preserve">
     <value>Invalid Expeditor Email</value>
@@ -223,7 +223,7 @@
     <value>Provide valid pool name</value>
   </data>
   <data name="InvalidPICID" xml:space="preserve">
-    <value>Invalid PICID</value>
+    <value>Invalid PIC ID</value>
   </data>
   <data name="InvalidPostalCodeID" xml:space="preserve">
     <value>Invalid Postalcode ID</value>
@@ -283,7 +283,7 @@
     <value>Pool(s) created successfully</value>
   </data>
   <data name="PoolsUpdated" xml:space="preserve">
-    <value>Pools(s) updated successfully</value>
+    <value>Pool(s) updated successfully</value>
   </data>
   <data name="RolesCreated" xml:space="preserve">
     <value>Role(s) created successfully</value>
@@ -334,10 +334,10 @@
     <value>User already assigned with this role and region</value>
   </data>
   <data name="PicCreated" xml:space="preserve">
-    <value>Pic(s) created successfully</value>
+    <value>PIC(s) created successfully</value>
   </data>
   <data name="PicUpdated" xml:space="preserve">
-    <value>Pic(s) updated successfully</value>
+    <value>PIC(s) updated successfully</value>
   </data>
   <data name="InvalidConfirmPassword" xml:space="preserve">
     <value>Provide valid confirm password</value>
@@ -361,7 +361,7 @@
     <value>File uploaded successfully</value>
   </data>
   <data name="InvalidFileFormat" xml:space="preserve">
-    <value>Only jpeg and png are supported</value>
+    <value>Only JPEG and PNG are supported</value>
   </data>
   <data name="InvalidConfirmUserPassword" xml:space="preserve">
     <value>Invalid User Confirm Password</value>
@@ -370,10 +370,10 @@
     <value>Password and confirm password must be same</value>
   </data>
   <data name="OrderUpdated" xml:space="preserve">
-    <value>Order Updated Succefully in TMS</value>
+    <value>Order Updated Successfully in TMS</value>
   </data>
   <data name="OrderCreated" xml:space="preserve">
-    <value>Order Created Succefully in TMS</value>
+    <value>Order Created Successfully in TMS</value>
   </data>
   <data name="NoRecords" xml:space="preserve">
     <value>No Record(s) found</value>
@@ -382,7 +382,7 @@
     <value>User name already exists</value>
   </data>
   <data name="DriverNoExisted" xml:space="preserve">
-    <value>Driver no already exist</value>
+    <value>Driver No. already exists</value>
   </data>
   <data name="DrivingLicenseNoExisted" xml:space="preserve">
     <value>License number already exists</value>
@@ -397,7 +397,7 @@
     <value>Partner number already exists</value>
   </data>
   <data name="PicDeleted" xml:space="preserve">
-    <value>Pic deleted successfully</value>
+    <value>PIC deleted successfully</value>
   </data>
   <data name="TripAssigned" xml:space="preserve">
     <value>Trip assigned successfully</value>
@@ -442,7 +442,7 @@
     <value>Partner initial should be 3-15 characters</value>
   </data>
   <data name="PasswordInvalid" xml:space="preserve">
-    <value>Passwords must be at least 8 characters and contain one upper case, one lower case, one number and special character</value>
+    <value>Password must be at least 8 characters and contain one upper case, one lower case, one number and special character</value>
   </data>
   <data name="TransporterId" xml:space="preserve">
     <value>Invalid Transporter Id</value>
