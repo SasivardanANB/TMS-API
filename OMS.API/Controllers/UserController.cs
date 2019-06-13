@@ -114,6 +114,7 @@ namespace OMS.API.Controllers
             return Ok(samaUserResponse);
         }
 
+        
         #region "User Application"
 
         [Route("createupdateuser")]
@@ -159,6 +160,7 @@ namespace OMS.API.Controllers
                         FirstName = user.Requests[0].FirstName,
                         LastName = user.Requests[0].LastName,
                         UserName = user.Requests[0].UserName,
+                        Email    = user.Requests[0].Email,
                         Password = user.Requests[0].Password,
                         ConfirmPassword = user.Requests[0].ConfirmPassword
                     }
@@ -169,28 +171,29 @@ namespace OMS.API.Controllers
                 LastModifiedTime = user.LastModifiedTime
             };
 
-            //UserRequest dmsRequest = new UserRequest()
-            //{
-            //    Requests = new List<User>()
-            //            {
-            //                new User()
-            //                {
-            //                    FirstName = user.Requests[0].FirstName,
-            //                    LastName = user.Requests[0].LastName,
-            //                    UserName = user.Requests[0].UserName,
-            //                    Password = user.Requests[0].Password,
-            //                    IsActive = true
-            //                }
-            //            },
-            //    CreatedBy = "SYSTEM",
-            //    LastModifiedBy = user.LastModifiedBy,
-            //    CreatedTime = user.CreatedTime,
-            //    LastModifiedTime = user.LastModifiedTime
-            //};
+            UserRequest dmsRequest = new UserRequest()
+            {
+                Requests = new List<User>()
+                        {
+                            new User()
+                            {
+                                FirstName = user.Requests[0].FirstName,
+                                LastName = user.Requests[0].LastName,
+                                UserName = user.Requests[0].UserName,
+                                Email    = user.Requests[0].Email,
+                                Password = user.Requests[0].Password,
+                                IsActive = true
+                            }
+                        },
+                CreatedBy = "SYSTEM",
+                LastModifiedBy = user.LastModifiedBy,
+                CreatedTime = user.CreatedTime,
+                LastModifiedTime = user.LastModifiedTime
+            };
 
             foreach (var application in user.Requests[0].Applications)
             {
-                if (application == 1)
+                if (application == 1) 
                 {
                     IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
                     userResponse = userTask.CreateUpdateUser(user);
@@ -265,6 +268,7 @@ namespace OMS.API.Controllers
             for (int i = 0; i < user.Requests.Count; i++)
             {
                 ModelState.Remove("user.Requests[" + i + "].UserName");
+                ModelState.Remove("user.Requests[" + i + "].Email");
                 ModelState.Remove("user.Requests[" + i + "].Password");
                 ModelState.Remove("user.Requests[" + i + "].ConfirmPassword");
                 ModelState.Remove("user.Requests[" + i + "].FirstName");

@@ -320,6 +320,7 @@ namespace OMS.DataGateway.Repositories
                              UserName = user.UserName,
                              FirstName = user.FirstName,
                              LastName = user.LastName,
+                             Email    = user.Email,
                              Password = user.Password,
                              IsActive = user.IsActive,
                              Applications = context.UserApplications.Where(userApp => userApp.UserID == user.ID).Select(userApp => userApp.ApplicationID).ToList(),
@@ -360,6 +361,10 @@ namespace OMS.DataGateway.Repositories
                     {
                         usersList = usersList.Where(s => s.UserName.ToLower().Contains(userFilter.UserName.ToLower())).ToList();
                     }
+                    if (!String.IsNullOrEmpty(userFilter.Email))
+                    {
+                        usersList = usersList.Where(s => s.Email.ToLower().Contains(userFilter.Email.ToLower())).ToList();
+                    }
 
                     if (!String.IsNullOrEmpty(userFilter.FirstName))
                     {
@@ -380,39 +385,38 @@ namespace OMS.DataGateway.Repositories
                 // Sorting
                 if (usersList.Count > 0)
                 {
-                    if (!String.IsNullOrEmpty(userReq.SortOrder))
+                    switch (userReq.SortOrder.ToLower())
                     {
-                        switch (userReq.SortOrder.ToLower())
-                        {
-                            case "username":
-                                usersList = usersList.OrderBy(s => s.UserName).ToList();
-                                break;
-                            case "username_desc":
-                                usersList = usersList.OrderByDescending(s => s.UserName).ToList();
-                                break;
-                            case "firstname":
-                                usersList = usersList.OrderBy(s => s.FirstName).ToList();
-                                break;
-                            case "firstname_desc":
-                                usersList = usersList.OrderByDescending(s => s.FirstName).ToList();
-                                break;
-                            case "lastname":
-                                usersList = usersList.OrderBy(s => s.LastName).ToList();
-                                break;
-                            case "lastname_desc":
-                                usersList = usersList.OrderByDescending(s => s.LastName).ToList();
-                                break;
-                            default:  // ID Descending 
-                                usersList = usersList.OrderByDescending(s => s.ID).ToList();
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        usersList = usersList.OrderByDescending(s => s.ID).ToList();
+                        case "username":
+                            usersList = usersList.OrderBy(s => s.UserName).ToList();
+                            break;
+                        case "username_desc":
+                            usersList = usersList.OrderByDescending(s => s.UserName).ToList();
+                            break;
+                        case "email":
+                            usersList = usersList.OrderBy(s => s.Email).ToList();
+                            break;
+                        case "email_desc":
+                            usersList = usersList.OrderByDescending(s => s.Email).ToList();
+                            break;
+                        case "firstname":
+                            usersList = usersList.OrderBy(s => s.FirstName).ToList();
+                            break;
+                        case "firstname_desc":
+                            usersList = usersList.OrderByDescending(s => s.FirstName).ToList();
+                            break;
+                        case "lastname":
+                            usersList = usersList.OrderBy(s => s.LastName).ToList();
+                            break;
+                        case "lastname_desc":
+                            usersList = usersList.OrderByDescending(s => s.LastName).ToList();
+                            break;
+                        default:  // ID Descending 
+                            usersList = usersList.OrderByDescending(s => s.ID).ToList();
+                            break;
                     }
                 }
-
+                 
                 // Total NumberOfRecords
                 userResponse.NumberOfRecords = usersList.Count;
 

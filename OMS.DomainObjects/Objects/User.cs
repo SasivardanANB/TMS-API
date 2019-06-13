@@ -26,6 +26,8 @@ namespace OMS.DomainObjects.Objects
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidLastName")]
         [MaxLength(30)]
         public string LastName { get; set; }
+        [Required(ErrorMessageResourceType =typeof(Resource.ResourceData),ErrorMessageResourceName ="InvalidEmail")]
+        public string Email { get; set; }
         public List<int> Applications { get; set; }
         public bool IsActive { get; set; }
         public List<string> ApplicationNames { get; set; }

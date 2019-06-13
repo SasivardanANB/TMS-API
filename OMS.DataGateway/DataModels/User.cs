@@ -17,6 +17,8 @@ namespace OMS.DataGateway.DataModels
         [Required(ErrorMessage = "")]
         [MaxLength(30)]
         public string UserName { get; set; }
+        [MaxLength(25)]
+        public string Email { get; set; }
         [MaxLength(30)]
         public string Password { get; set; }
         [MaxLength(30)]
