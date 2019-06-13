@@ -215,8 +215,9 @@ namespace TMS.API.Controllers
                         token = OmsLoginResponse.TokenKey;
                     }
 
-                    userResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
-                        + "/v1/user/createupdateuser", Method.POST, omsRequest, null));
+                    UserResponse omsUserResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                        + "/v1/user/createupdateuser", Method.POST, omsRequest, token));
+                    userResponse.StatusMessage += " " + omsUserResponse.StatusMessage;
                 }
 
                 //if (application == 3) //For DMS Application - Integrate Azure API Gateway

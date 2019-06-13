@@ -230,8 +230,52 @@ namespace TMS.DataGateway.Repositories
                          unloadStatusCode = tMSDBContext.OrderStatuses.Where(o => o.OrderStatusCode == "10").Select(i => i.ID).FirstOrDefault();
                     }
 
-                    var avgLoadOrderReports = (from od in tMSDBContext.OrderDetails
-                                               join opd in tMSDBContext.OrderPartnerDetails on orderReportRequest.Request.OrderTypeId == 1 ? tMSDBContext.OrderDetails.Where(i => i.OrderHeaderID == od.OrderHeaderID).Select(odetails => odetails.ID).Take(1).FirstOrDefault() : tMSDBContext.OrderDetails.Where(i => i.OrderHeaderID == od.OrderHeaderID).OrderByDescending(d => d.ID).Select(odetails => odetails.ID).Take(1).FirstOrDefault() equals opd.OrderDetailID
+                    //var avgLoadOrderReports = (from od in tMSDBContext.OrderDetails
+                    //                           join opd in tMSDBContext.OrderPartnerDetails on orderReportRequest.Request.OrderTypeId == 1 ? tMSDBContext.OrderDetails.Where(i => i.OrderHeaderID == od.OrderHeaderID).Select(odetails => odetails.ID).Take(1).FirstOrDefault() : tMSDBContext.OrderDetails.Where(i => i.OrderHeaderID == od.OrderHeaderID).OrderByDescending(d => d.ID).Select(odetails => odetails.ID).Take(1).FirstOrDefault() equals opd.OrderDetailID
+                    //                           join E in (
+                    //                               (from B in (
+                    //                                   (from osh in tMSDBContext.OrderStatusHistories
+                    //                                    where
+                    //                  osh.OrderStatusID == unloadStatusCode
+                    //                                    select new
+                    //                                    {
+                    //                                        osh.OrderDetailID,
+                    //                                        osh.OrderStatusID,
+                    //                                        osh.StatusDate
+                    //                                    }))
+                    //                                join C in (
+                    //                (from osh in tMSDBContext.OrderStatusHistories
+                    //                 where
+                    //      osh.OrderStatusID == loadStatusCode
+                    //                 select new
+                    //                 {
+                    //                     cd = osh.OrderDetailID,
+                    //                     csid = osh.OrderStatusID,
+                    //                     cdate = osh.StatusDate
+                    //                 })) on new { OrderDetailID = B.OrderDetailID } equals new { OrderDetailID = C.cd }
+                    //                                select new
+                    //                                {
+                    //                                    B,
+                    //                                    C
+                    //                                })) on new { ID = od.ID } equals new { ID = E.B.OrderDetailID }
+                    //                           where
+                    //                           opd.PartnerID == orderReportRequest.Request.MainDealerId &&
+                    //                             od.OrderHeader.OrderDate.Month == orderReportRequest.Request.Month &&
+                    //                             od.OrderHeader.OrderDate.Year == orderReportRequest.Request.Year
+                    //                           group new { od.OrderHeader.ID, E } by new
+                    //                           {
+                    //                               Column1 = (int?)od.OrderHeader.OrderDate.Day
+                    //                           } into g
+                    //                           select new Domain.LoadUnloacOrdersByDate
+                    //                           {
+                    //                               OrderCount = g.Count(),
+                    //                               TotlLoadingTime = g.Sum(p => DbFunctions.DiffHours(p.E.C.cdate, p.E.B.StatusDate)).ToString(),
+                    //                               Day = g.Key.Column1.Value,
+                    //                               AvgTotlLoadingTime = g.Sum(p => (DbFunctions.DiffHours(p.E.C.cdate, p.E.B.StatusDate)) / g.Count()).ToString()
+                    //                           }).Distinct().ToList();
+
+
+                    var avgLoadOrderReports = (from opd in tMSDBContext.OrderPartnerDetails
                                                join E in (
                                                    (from B in (
                                                        (from osh in tMSDBContext.OrderStatusHistories
@@ -246,7 +290,7 @@ namespace TMS.DataGateway.Repositories
                                                     join C in (
                                     (from osh in tMSDBContext.OrderStatusHistories
                                      where
-                          osh.OrderStatusID == loadStatusCode
+                                        osh.OrderStatusID == loadStatusCode
                                      select new
                                      {
                                          cd = osh.OrderDetailID,
@@ -257,14 +301,14 @@ namespace TMS.DataGateway.Repositories
                                                     {
                                                         B,
                                                         C
-                                                    })) on new { ID = od.ID } equals new { ID = E.B.OrderDetailID }
+                                                    })) on new { ID = opd.OrderDetail.ID } equals new { ID = E.B.OrderDetailID }
                                                where
-                                               opd.PartnerID == orderReportRequest.Request.MainDealerId &&
-                                                 od.OrderHeader.OrderDate.Month == orderReportRequest.Request.Month &&
-                                                 od.OrderHeader.OrderDate.Year == orderReportRequest.Request.Year
-                                               group new { od.OrderHeader, E } by new
+                                                 opd.OrderDetail.OrderHeader.OrderDate.Month == orderReportRequest.Request.Month &&
+                                                 opd.OrderDetail.OrderHeader.OrderDate.Year == orderReportRequest.Request.Year &&
+                                                 opd.PartnerID == orderReportRequest.Request.MainDealerId
+                                               group new { opd.OrderDetail.OrderHeader, E } by new
                                                {
-                                                   Column1 = (int?)od.OrderHeader.OrderDate.Day
+                                                   Column1 = (int?)opd.OrderDetail.OrderHeader.OrderDate.Day
                                                } into g
                                                select new Domain.LoadUnloacOrdersByDate
                                                {
@@ -272,7 +316,9 @@ namespace TMS.DataGateway.Repositories
                                                    TotlLoadingTime = g.Sum(p => DbFunctions.DiffHours(p.E.C.cdate, p.E.B.StatusDate)).ToString(),
                                                    Day = g.Key.Column1.Value,
                                                    AvgTotlLoadingTime = g.Sum(p => (DbFunctions.DiffHours(p.E.C.cdate, p.E.B.StatusDate)) / g.Count()).ToString()
-                                               }).Distinct().ToList();
+                                               }).ToList();
+
+
 
                     List<Domain.LoadUnloacOrdersByDate> loadUnloacOrdersByDates = new List<Domain.LoadUnloacOrdersByDate>();
 
