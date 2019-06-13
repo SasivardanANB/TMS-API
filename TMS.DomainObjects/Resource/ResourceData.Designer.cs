@@ -61,7 +61,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Some exception occrued in database.
+        ///   Looks up a localized string similar to Some exception occured in database.
         /// </summary>
         public static string DataBaseException {
             get {
@@ -97,7 +97,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Driver no already exist.
+        ///   Looks up a localized string similar to Driver No. already exists.
         /// </summary>
         public static string DriverNoExisted {
             get {
@@ -322,7 +322,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Provide valid expire date.
+        ///   Looks up a localized string similar to Provide valid expiry date.
         /// </summary>
         public static string InvalidExpireDate {
             get {
@@ -331,7 +331,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Only jpeg and png are supported.
+        ///   Looks up a localized string similar to Only JPEG and PNG are supported.
         /// </summary>
         public static string InvalidFileFormat {
             get {
@@ -475,7 +475,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid PICID.
+        ///   Looks up a localized string similar to Invalid PIC ID.
         /// </summary>
         public static string InvalidPICID {
             get {
@@ -709,7 +709,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Order Created Succefully in TMS.
+        ///   Looks up a localized string similar to Order Created Successfully in TMS.
         /// </summary>
         public static string OrderCreated {
             get {
@@ -736,7 +736,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Order Updated Succefully in TMS.
+        ///   Looks up a localized string similar to Order Updated Successfully in TMS.
         /// </summary>
         public static string OrderUpdated {
             get {
@@ -772,7 +772,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Passwords must be at least 8 characters and contain one upper case, one lower case, one number and special character.
+        ///   Looks up a localized string similar to Password must be at least 8 characters and contain one upper case, one lower case, one number and special character.
         /// </summary>
         public static string PasswordInvalid {
             get {
@@ -790,7 +790,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Pic(s) created successfully.
+        ///   Looks up a localized string similar to PIC(s) created successfully.
         /// </summary>
         public static string PicCreated {
             get {
@@ -799,7 +799,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Pic deleted successfully.
+        ///   Looks up a localized string similar to PIC deleted successfully.
         /// </summary>
         public static string PicDeleted {
             get {
@@ -808,7 +808,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Pic(s) updated successfully.
+        ///   Looks up a localized string similar to PIC(s) updated successfully.
         /// </summary>
         public static string PicUpdated {
             get {
@@ -853,7 +853,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Pools(s) updated successfully.
+        ///   Looks up a localized string similar to Pool(s) updated successfully.
         /// </summary>
         public static string PoolsUpdated {
             get {

@@ -130,7 +130,7 @@
     <value>File uploaded successfully</value>
   </data>
   <data name="InvalidFileFormat" xml:space="preserve">
-    <value>Only jpeg and png are supported</value>
+    <value>Only JPEG and PNG are supported</value>
   </data>
   <data name="InvalidFirstName" xml:space="preserve">
     <value>Invalid First Name</value>
@@ -145,7 +145,7 @@
     <value>Invalid User Password</value>
   </data>
   <data name="LoginFail" xml:space="preserve">
-    <value>Login Fail</value>
+    <value>Login Failed</value>
   </data>
   <data name="LoginSuccess" xml:space="preserve">
     <value>Login Success</value>
@@ -157,7 +157,7 @@
     <value>Old Password Mismatch</value>
   </data>
   <data name="PasswordInvalid" xml:space="preserve">
-    <value>Passwords must be at least 8 characters and contain one upper case, one lower case, one number and special character</value>
+    <value>Password must be at least 8 characters and contain one upper case, one lower case, one number and special character</value>
   </data>
   <data name="PasswordUpdated" xml:space="preserve">
     <value>Password Updated Succefully in DMS</value>
@@ -169,18 +169,18 @@
     <value>Trip(s) created/updated successfully in TMS</value>
   </data>
   <data name="TripStatusUpdated" xml:space="preserve">
-    <value>Trip Status Updated Succefully in DMS</value>
+    <value>Trip Status Updated Successfully in DMS</value>
   </data>
   <data name="UserDetailsNotFound" xml:space="preserve">
-    <value>UserDetailsNotFound</value>
+    <value>User Details Not Found</value>
   </data>
   <data name="UserInActive" xml:space="preserve">
-    <value>User In-Active</value>
+    <value>User is In-Active</value>
   </data>
   <data name="UsersCreated" xml:space="preserve">
-    <value>User(s) Created Succefully in DMS</value>
+    <value>User(s) Created Successfully in DMS</value>
   </data>
   <data name="UsersUpdated" xml:space="preserve">
-    <value>User(s) Updated Succefully in DMS</value>
+    <value>User(s) Updated Successfully in DMS</value>
   </data>
 </root>

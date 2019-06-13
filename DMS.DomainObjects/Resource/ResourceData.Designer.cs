@@ -97,7 +97,7 @@ namespace DMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Only jpeg and png are supported.
+        ///   Looks up a localized string similar to Only JPEG and PNG are supported.
         /// </summary>
         public static string InvalidFileFormat {
             get {
@@ -142,7 +142,7 @@ namespace DMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Login Fail.
+        ///   Looks up a localized string similar to Login Failed.
         /// </summary>
         public static string LoginFail {
             get {
@@ -178,7 +178,7 @@ namespace DMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Passwords must be at least 8 characters and contain one upper case, one lower case, one number and special character.
+        ///   Looks up a localized string similar to Password must be at least 8 characters and contain one upper case, one lower case, one number and special character.
         /// </summary>
         public static string PasswordInvalid {
             get {
@@ -214,7 +214,7 @@ namespace DMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Trip Status Updated Succefully in DMS.
+        ///   Looks up a localized string similar to Trip Status Updated Successfully in DMS.
         /// </summary>
         public static string TripStatusUpdated {
             get {
@@ -223,7 +223,7 @@ namespace DMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to UserDetailsNotFound.
+        ///   Looks up a localized string similar to User Details Not Found.
         /// </summary>
         public static string UserDetailsNotFound {
             get {
@@ -232,7 +232,7 @@ namespace DMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to User In-Active.
+        ///   Looks up a localized string similar to User is In-Active.
         /// </summary>
         public static string UserInActive {
             get {
@@ -241,7 +241,7 @@ namespace DMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to User(s) Created Succefully in DMS.
+        ///   Looks up a localized string similar to User(s) Created Successfully in DMS.
         /// </summary>
         public static string UsersCreated {
             get {
@@ -250,7 +250,7 @@ namespace DMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to User(s) Updated Succefully in DMS.
+        ///   Looks up a localized string similar to User(s) Updated Successfully in DMS.
         /// </summary>
         public static string UsersUpdated {
             get {
