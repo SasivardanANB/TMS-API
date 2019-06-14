@@ -90,6 +90,7 @@
     <Compile Include="Objects\Vehicle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Request\AssignUserRoleRequest.cs" />
+    <Compile Include="Request\ChangePasswordRequest.cs" />
     <Compile Include="Request\DriverRequest.cs" />
     <Compile Include="Request\OrderStatusRequest.cs" />
     <Compile Include="Request\PackingSheetRequest.cs" />

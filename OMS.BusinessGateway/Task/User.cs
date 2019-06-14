@@ -54,6 +54,12 @@ namespace OMS.BusinessGateway.Task
             return usersList;
         }
 
+        public override UserResponse ChangePassword(ChangePasswordRequest changePasswordRequest)
+        {
+            UserResponse userResponse = _userRepository.ChangePassword(changePasswordRequest);
+            return userResponse;
+        }
+
         #endregion
 
         #region "Role Management"
@@ -103,6 +109,7 @@ namespace OMS.BusinessGateway.Task
             UserRoleResponse userRoleResponse = _userRepository.GetUserRoles(userRoleRequest);
             return userRoleResponse;
         }
+       
 
         #endregion
 

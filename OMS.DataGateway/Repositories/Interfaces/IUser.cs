@@ -28,6 +28,7 @@ namespace OMS.DataGateway.Repositories.Iterfaces
         UserRoleResponse CreateUpdateUserRole(UserRoleRequest userRoleRequest);
         UserResponse DeleteUserRole(int userRoleID);
         UserRoleResponse GetUserRoles(UserRoleRequest userRoleRequest);
+        UserResponse ChangePassword(ChangePasswordRequest changePasswordRequest);
 
         // Master Data Operations
         RegionResponse GetRegions(RegionRequest regions);

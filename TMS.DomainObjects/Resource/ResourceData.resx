@@ -450,4 +450,13 @@
   <data name="RoleCannontBeDeleted" xml:space="preserve">
     <value>Role yang dipilih sudah di assign ke username tertentu</value>
   </data>
+  <data name="PasswordUpdated" xml:space="preserve">
+    <value>Password updated successfully</value>
+  </data>
+  <data name="NewPasswordMustbeDifferent" xml:space="preserve">
+    <value>New password cannot be same as old password</value>
+  </data>
+  <data name="IncorrectOldPassword" xml:space="preserve">
+    <value>Incorrect Old Password</value>
+  </data>
 </root>

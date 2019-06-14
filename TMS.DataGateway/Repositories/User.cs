@@ -441,6 +441,59 @@ namespace TMS.DataGateway.Repositories
             return userResponse;
         }
 
+        public UserResponse ChangePassword(ChangePasswordRequest changePasswordRequest)
+        {
+            UserResponse userResponse = new UserResponse();
+            try
+            {
+                using (var context = new TMSDBContext())
+                {
+                    var userdetails = context.Users.Where(u => u.ID == changePasswordRequest.Id).FirstOrDefault();
+                    if (userdetails != null)
+                    {
+                        var userpassword = Encryption.EncryptionLibrary.DecrypPassword(userdetails.Password);
+                        if (userpassword != changePasswordRequest.OldPassword)
+                        {
+                            userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                            userResponse.StatusCode = (int)HttpStatusCode.OK;
+                            userResponse.StatusMessage = DomainObjects.Resource.ResourceData.IncorrectOldPassword;
+
+                        }
+                        else
+                        {
+                            if (userpassword == changePasswordRequest.NewPassword)
+                            {
+                                userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                                userResponse.StatusCode = (int)HttpStatusCode.OK;
+                                userResponse.StatusMessage = DomainObjects.Resource.ResourceData.NewPasswordMustbeDifferent;
+                            }
+                            else
+                            {
+                                if (!string.IsNullOrEmpty(changePasswordRequest.NewPassword))
+                                {
+                                    changePasswordRequest.NewPassword = Encryption.EncryptionLibrary.EncryptPassword(changePasswordRequest.NewPassword);
+                                }
+                                userdetails.Password = changePasswordRequest.NewPassword;
+                                userdetails.LastModifiedBy = userdetails.UserName;
+                                context.SaveChanges();
+                                userResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                                userResponse.StatusCode = (int)HttpStatusCode.OK;
+                                userResponse.StatusMessage = DomainObjects.Resource.ResourceData.PasswordUpdated;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+                userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                userResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                userResponse.StatusMessage = ex.Message;
+            }
+            return userResponse;
+        }
+
         #endregion
 
         #region "Role Management"
@@ -642,7 +695,7 @@ namespace TMS.DataGateway.Repositories
                         if (role != null)
                         {
                             var userRole = context.UserRoles.Where(ur => ur.RoleID == id && ur.IsDelete == false).FirstOrDefault();
-                            if(userRole == null)
+                            if (userRole == null)
                             {
                                 role.IsDelete = true;
                                 context.SaveChanges();
@@ -1457,7 +1510,7 @@ namespace TMS.DataGateway.Repositories
                          select new Domain.Common
                          {
                              Id = businessArea.ID,
-                             Value = businessArea.BusinessAreaCode +(!string.IsNullOrEmpty(businessArea.BusinessAreaDescription) ? " : "+businessArea.BusinessAreaDescription:"")
+                             Value = businessArea.BusinessAreaCode + (!string.IsNullOrEmpty(businessArea.BusinessAreaDescription) ? " : " + businessArea.BusinessAreaDescription : "")
                          }).ToList();
                 }
 
@@ -1538,7 +1591,8 @@ namespace TMS.DataGateway.Repositories
                     var lastStatus = (from o in orders
                                       join od in context.OrderDetails on o.ID equals od.OrderHeaderID
                                       join h in context.OrderStatusHistories on od.ID equals h.OrderDetailID
-                                      where o.ID == item.ID && h.OrderStatusID != confirmArraive orderby h.StatusDate descending
+                                      where o.ID == item.ID && h.OrderStatusID != confirmArraive
+                                      orderby h.StatusDate descending
                                       select new
                                       {
                                           IsLoad = h.IsLoad,
@@ -1761,5 +1815,6 @@ namespace TMS.DataGateway.Repositories
             }
             return userRoles;
         }
+
     }
 }

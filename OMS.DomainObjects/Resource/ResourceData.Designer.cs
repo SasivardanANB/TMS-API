@@ -79,6 +79,15 @@ namespace OMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Incorrect Old Password.
+        /// </summary>
+        public static string IncorrectOldPassword {
+            get {
+                return ResourceManager.GetString("IncorrectOldPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid Application ID.
         /// </summary>
         public static string InvalidApplication {
@@ -223,6 +232,15 @@ namespace OMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to New password cannot be same as old password.
+        /// </summary>
+        public static string NewPasswordMustbeDifferent {
+            get {
+                return ResourceManager.GetString("NewPasswordMustbeDifferent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No Orders.
         /// </summary>
         public static string NoOrders {
@@ -291,6 +309,15 @@ namespace OMS.DomainObjects.Resource {
         public static string PasswordMismatch {
             get {
                 return ResourceManager.GetString("PasswordMismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password updated successfully.
+        /// </summary>
+        public static string PasswordUpdated {
+            get {
+                return ResourceManager.GetString("PasswordUpdated", resourceCulture);
             }
         }
         

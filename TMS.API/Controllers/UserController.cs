@@ -301,6 +301,17 @@ namespace TMS.API.Controllers
             return Ok(usersList);
         }
 
+        [Route("changepassword")]
+        [HttpPost]
+        public IHttpActionResult ChangePassword(ChangePasswordRequest changePasswordRequest)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
+            UserResponse userResponse = userTask.ChangePassword(changePasswordRequest);
+            return Ok(userResponse);
+        }
+
         #endregion
 
         #region "Role Management"
@@ -417,6 +428,7 @@ namespace TMS.API.Controllers
             UserRoleResponse userRoleResponse = userTask.GetUserRoles(userRoleRequest);
             return Ok(userRoleResponse);
         }
+        
 
         #endregion
 
@@ -502,5 +514,6 @@ namespace TMS.API.Controllers
             RoleResponse roleResponse = userTask.GetUserMenus(userId);
             return Ok(roleResponse);
         }
+        
     }
 }

@@ -54,6 +54,12 @@ namespace TMS.BusinessGateway.Task
             return usersList;
         }
 
+        public override UserResponse ChangePassword(ChangePasswordRequest changePasswordRequest)
+        {
+            UserResponse userResponse = _userRepository.ChangePassword(changePasswordRequest);
+            return userResponse;
+        }
+
         #endregion
 
         #region "Role Management"
@@ -156,5 +162,7 @@ namespace TMS.BusinessGateway.Task
             RoleResponse roleResponse = _userRepository.GetUserMenus(userId);
             return roleResponse;
         }
+
+       
     }
 }

@@ -16,6 +16,7 @@ namespace OMS.DomainGateway.Task.Interfaces
         UserResponse CreateUpdateUser(UserRequest user);
         UserResponse DeleteUser(int userID);
         UserResponse GetUsers(UserRequest userReq);
+        UserResponse ChangePassword(ChangePasswordRequest changePasswordRequest);
 
         // Role Management
         RoleResponse CreateUpdateRole(RoleRequest role);
@@ -27,6 +28,7 @@ namespace OMS.DomainGateway.Task.Interfaces
         UserRoleResponse CreateUpdateUserRole(UserRoleRequest assignUserRoleRequest);
         UserResponse DeleteUserRole(int userRoleID);
         UserRoleResponse GetUserRoles(UserRoleRequest userRoleRequest);
+        
 
         // Master Data Operations
         RegionResponse GetRegions(RegionRequest regions);

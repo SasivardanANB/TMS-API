@@ -279,6 +279,18 @@ namespace OMS.API.Controllers
             return Ok(usersList);
         }
 
+        [HttpPost]
+        [Route("changepassword")]
+        public IHttpActionResult ChangePassword(ChangePasswordRequest changePasswordRequest)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
+            UserResponse userResponse = userTask.ChangePassword(changePasswordRequest);
+            return Ok(userResponse);
+        }
+
         #endregion
 
         #region "Role Management"
@@ -395,7 +407,7 @@ namespace OMS.API.Controllers
             UserRoleResponse userRoleResponse = userTask.GetUserRoles(userRoleRequest);
             return Ok(userRoleResponse);
         }
-
+        
         #endregion
 
         #region "Master Data Operations"
