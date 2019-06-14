@@ -53,6 +53,11 @@ namespace TMS.BusinessGateway.Task
             UserResponse usersList = _userRepository.GetUsers(userReq);
             return usersList;
         }
+        public override UserResponse UpdateUserProfile(UserRequest user)
+        {
+            UserResponse usersList = _userRepository.UpdateUserProfile(user);
+            return usersList;
+        }
 
         #endregion
 

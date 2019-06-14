@@ -174,8 +174,6 @@ namespace OMS.DataGateway.Repositories
 
                         if (userDataModel.ID > 0) //Update User
                         {
-
-
                             userDataModel.LastModifiedBy = user.LastModifiedBy;
                             userDataModel.LastModifiedTime = DateTime.Now;
                             userDataModel.Password = context.Users.Where(d => d.ID == userDataModel.ID).Select(p => p.Password).FirstOrDefault();
@@ -320,7 +318,8 @@ namespace OMS.DataGateway.Repositories
                              UserName = user.UserName,
                              FirstName = user.FirstName,
                              LastName = user.LastName,
-                             Email    = user.Email,
+                             Email = user.Email,
+                             PhoneNumber = user.PhoneNumber,
                              Password = user.Password,
                              IsActive = user.IsActive,
                              Applications = context.UserApplications.Where(userApp => userApp.UserID == user.ID).Select(userApp => userApp.ApplicationID).ToList(),
@@ -399,6 +398,12 @@ namespace OMS.DataGateway.Repositories
                         case "email_desc":
                             usersList = usersList.OrderByDescending(s => s.Email).ToList();
                             break;
+                        case "phonenumber":
+                            usersList = usersList.OrderBy(s => s.PhoneNumber).ToList();
+                            break;
+                        case "phonenumber_desc":
+                            usersList = usersList.OrderByDescending(s => s.PhoneNumber).ToList();
+                            break;
                         case "firstname":
                             usersList = usersList.OrderBy(s => s.FirstName).ToList();
                             break;
@@ -416,7 +421,7 @@ namespace OMS.DataGateway.Repositories
                             break;
                     }
                 }
-                 
+
                 // Total NumberOfRecords
                 userResponse.NumberOfRecords = usersList.Count;
 
@@ -452,6 +457,58 @@ namespace OMS.DataGateway.Repositories
             return userResponse;
         }
 
+        public UserResponse UpdateUserProfile(UserRequest user)
+        {
+            UserResponse userResponse = new UserResponse();
+            try
+            {
+                Domain.User userData = user.Requests[0];
+
+                using (var context = new OMSDBContext())
+                {
+                    var userDataModelList = new List<DataModel.User>();
+
+                    var config = new MapperConfiguration(cfg =>
+                    {
+                        cfg.CreateMap<Domain.User, DataModel.User>().ReverseMap()
+                        .ForMember(x => x.ApplicationNames, opt => opt.Ignore());
+                    });
+
+                    IMapper mapper = config.CreateMapper();
+
+                    var userDetails = context.Users.Where(u => u.ID == userData.ID).FirstOrDefault();
+                    if (userDetails != null)
+                    {
+                        userDetails.FirstName = userData.FirstName;
+                        userDetails.LastName = userData.LastName;
+                        userDetails.Email = userData.Email;
+                        userDetails.PhoneNumber = userData.PhoneNumber;
+                        userDetails.LastModifiedBy = user.LastModifiedBy;
+                        userDetails.LastModifiedTime = DateTime.Now;
+
+                        context.SaveChanges();
+
+                        userDataModelList.Add(userDetails);
+
+                        user.Requests = mapper.Map<List<DataModel.User>, List<Domain.User>>(userDataModelList);
+                        userResponse.Data = user.Requests;
+
+                        userResponse.StatusCode = (int)HttpStatusCode.OK;
+                        userResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UsersUpdated;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+                userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                userResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                userResponse.StatusMessage = ex.Message;
+            }
+
+            return userResponse;
+        }
         #endregion
 
         #region "Role Management"

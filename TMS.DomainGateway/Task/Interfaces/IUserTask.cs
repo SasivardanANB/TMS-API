@@ -16,6 +16,7 @@ namespace TMS.DomainGateway.Task.Interfaces
         UserResponse CreateUpdateUser(UserRequest user);
         UserResponse DeleteUser(int userID);
         UserResponse GetUsers(UserRequest userReq);
+        UserResponse UpdateUserProfile(UserRequest user);
 
         // Role Management
         RoleResponse CreateUpdateRole(RoleRequest role);

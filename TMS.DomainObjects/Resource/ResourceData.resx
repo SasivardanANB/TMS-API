@@ -160,7 +160,7 @@
     <value>Provide valid driving license number</value>
   </data>
   <data name="InvalidEmail" xml:space="preserve">
-    <value>Provide valid email</value>
+    <value>Please provide valid email</value>
   </data>
   <data name="InvalidExpireDate" xml:space="preserve">
     <value>Provide valid expiry date</value>
@@ -449,5 +449,8 @@
   </data>
   <data name="RoleCannontBeDeleted" xml:space="preserve">
     <value>Role yang dipilih sudah di assign ke username tertentu</value>
+  </data>
+  <data name="UsersUpdateProfile" xml:space="preserve">
+    <value>User(s) Profile updated successfully in TMS</value>
   </data>
 </root>

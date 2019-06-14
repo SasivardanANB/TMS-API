@@ -164,6 +164,8 @@ namespace TMS.API.Controllers
                         FirstName = user.Requests[0].FirstName,
                         LastName = user.Requests[0].LastName,
                         UserName = user.Requests[0].UserName,
+                        Email    = user.Requests[0].Email,
+                        PhoneNumber= user.Requests[0].PhoneNumber,
                         Password = user.Requests[0].Password,
                         ConfirmPassword = user.Requests[0].ConfirmPassword
                     }
@@ -287,6 +289,8 @@ namespace TMS.API.Controllers
             for (int i = 0; i < user.Requests.Count; i++)
             {
                 ModelState.Remove("user.Requests[" + i + "].UserName");
+                ModelState.Remove("user.Requests[" + i + "].Email");
+                ModelState.Remove("user.Requests[" + i + "].PhoneNumber");
                 ModelState.Remove("user.Requests[" + i + "].Password");
                 ModelState.Remove("user.Requests[" + i + "].ConfirmPassword");
                 ModelState.Remove("user.Requests[" + i + "].FirstName");
@@ -299,6 +303,74 @@ namespace TMS.API.Controllers
             IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
             UserResponse usersList = userTask.GetUsers(user);
             return Ok(usersList);
+        }
+
+        [Route("updateuserprofile")]
+        [HttpPost]
+        public IHttpActionResult UpdateUserProfile(UserRequest user)
+        {
+            User userProfile = user.Requests[0];
+
+            if (userProfile.ID > 0)
+            {
+                ModelState.Remove("user.Requests[0].UserName");
+                ModelState.Remove("user.Requests[0].FirstName");
+                ModelState.Remove("user.Requests[0].LastName");
+                ModelState.Remove("user.Requests[0].Password");
+                ModelState.Remove("user.Requests[0].ConfirmPassword");
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            // Update User Profile in OMS
+            IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
+            UserResponse userResponse = userTask.UpdateUserProfile(user);
+
+            // Prepare TMS Request
+            UserRequest omsRequest = new UserRequest()
+            {
+                Requests = new List<User>() {
+                    new User(){
+                        FirstName = userProfile.FirstName,
+                        LastName = userProfile.LastName,
+                        UserName = userResponse.Data[0].UserName,
+                        Email    = userProfile.Email,
+                        PhoneNumber    = userProfile.PhoneNumber,
+                    }
+                },
+                LastModifiedBy = user.LastModifiedBy,
+            };
+
+            // Update UserProfile in OMS if user exists
+            if (userResponse.StatusCode == (int)HttpStatusCode.OK && userResponse.Status == DomainObjects.Resource.ResourceData.Success)
+            {
+                LoginRequest loginRequest = new LoginRequest();
+                string token = "";
+                if (userResponse.Data[0].Applications != null && userResponse.Data[0].Applications.Contains(2)) //For TMS Application - Integrate Azure API Gateway
+                {
+                    //Login to OMS and get Token
+                    loginRequest.UserName = ConfigurationManager.AppSettings["OMSLogin"];
+                    loginRequest.UserPassword = ConfigurationManager.AppSettings["OMSPassword"];
+                    var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                        + "/v1/user/login", Method.POST, loginRequest, null));
+                    if (tmsLoginResponse != null && tmsLoginResponse.Data.Count > 0)
+                    {
+                        token = tmsLoginResponse.TokenKey;
+                    }
+
+                    // Update UserProfile in TMS
+                    UserResponse tmsUserResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                        + "/v1/user/updateuserprofile", Method.POST, omsRequest, token));
+
+                    if (tmsUserResponse.StatusCode == (int)HttpStatusCode.OK && tmsUserResponse.Status == DomainObjects.Resource.ResourceData.Success)
+                    {
+                        userResponse.StatusMessage = userResponse.StatusMessage + ". " + tmsUserResponse.StatusMessage;
+                    }
+                }
+            }
+
+            return Ok(userResponse);
         }
 
         #endregion

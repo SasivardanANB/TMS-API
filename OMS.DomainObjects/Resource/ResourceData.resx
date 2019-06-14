@@ -240,4 +240,10 @@
   <data name="RoleCannontBeDeleted" xml:space="preserve">
     <value>Role yang dipilih sudah di assign ke username tertentu</value>
   </data>
+  <data name="InvalidEmail" xml:space="preserve">
+    <value>Please provide valid email</value>
+  </data>
+  <data name="UsersUpdatedProfile" xml:space="preserve">
+    <value>User(s) Profile updated successfully in OMS</value>
+  </data>
 </root>

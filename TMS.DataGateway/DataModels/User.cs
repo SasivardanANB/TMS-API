@@ -17,6 +17,11 @@ namespace TMS.DataGateway.DataModels
         [Required(ErrorMessage = "")]
         [MaxLength(30)]
         public string UserName { get; set; }
+        [Required]
+        [MaxLength(50)]
+        public string Email { get; set; }
+        [MaxLength(15)]
+        public string PhoneNumber { get; set; }
         [MaxLength(30)]
         public string Password { get; set; }
         [MaxLength(30)]

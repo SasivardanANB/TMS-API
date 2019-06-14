@@ -310,6 +310,8 @@ namespace TMS.DataGateway.Repositories
                          {
                              ID = user.ID,
                              UserName = user.UserName,
+                             Email    = user.Email,
+                             PhoneNumber= user.PhoneNumber,
                              FirstName = user.FirstName,
                              LastName = user.LastName,
                              IsActive = user.IsActive,
@@ -352,6 +354,10 @@ namespace TMS.DataGateway.Repositories
                     {
                         usersList = usersList.Where(s => s.UserName.ToLower().Contains(userFilter.UserName.ToLower())).ToList();
                     }
+                    if (!String.IsNullOrEmpty(userFilter.Email))
+                    {
+                        usersList = usersList.Where(s => s.Email.ToLower().Contains(userFilter.Email.ToLower())).ToList();
+                    }
 
                     if (!String.IsNullOrEmpty(userFilter.FirstName))
                     {
@@ -383,6 +389,18 @@ namespace TMS.DataGateway.Repositories
                                 break;
                             case "username_desc":
                                 usersList = usersList.OrderByDescending(s => s.UserName).ToList();
+                                break;
+                            case "email":
+                                usersList = usersList.OrderBy(s => s.Email).ToList();
+                                break;
+                            case "email_desc":
+                                usersList = usersList.OrderByDescending(s => s.Email).ToList();
+                                break;
+                            case "phonenumber":
+                                usersList = usersList.OrderBy(s => s.PhoneNumber).ToList();
+                                break;
+                            case "phonenumber_desc":
+                                usersList = usersList.OrderByDescending(s => s.PhoneNumber).ToList();
                                 break;
                             case "firstname":
                                 usersList = usersList.OrderBy(s => s.FirstName).ToList();
@@ -440,6 +458,64 @@ namespace TMS.DataGateway.Repositories
             }
             return userResponse;
         }
+
+        public UserResponse UpdateUserProfile(UserRequest user)
+        {
+            UserResponse userResponse = new UserResponse();
+            try
+            {
+                Domain.User userData = user.Requests[0];
+
+                using (var context = new TMSDBContext())
+                {
+                    var userDataModelList = new List<DataModel.User>();
+
+                    var config = new MapperConfiguration(cfg =>
+                    {
+                        cfg.CreateMap<Domain.User, DataModel.User>().ReverseMap()
+                        .ForMember(x => x.ApplicationNames, opt => opt.Ignore());
+                    });
+
+                    IMapper mapper = config.CreateMapper();
+                    var userDetails = context.Users.Where(u => u.ID == userData.ID).FirstOrDefault();
+                    if (userDetails != null)
+                    {
+
+                        if (userData.ID > 0) //Update User
+                        {
+
+                            userDetails.FirstName = userData.FirstName;
+                            userDetails.LastName = userData.LastName;
+                            userDetails.Email = userData.Email;
+                            userDetails.PhoneNumber = userData.PhoneNumber;
+                            userDetails.LastModifiedBy = user.LastModifiedBy;
+                            userDetails.LastModifiedTime = DateTime.Now;
+
+                            context.SaveChanges();
+
+                            userDataModelList.Add(userDetails);
+                        }
+
+                        user.Requests = mapper.Map<List<DataModel.User>, List<Domain.User>>(userDataModelList);
+                        userResponse.Data = user.Requests;
+
+                        userResponse.StatusCode = (int)HttpStatusCode.OK;
+                        userResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UsersUpdated;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+                userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                userResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                userResponse.StatusMessage = ex.Message;
+            }
+
+            return userResponse;
+        }
+
 
         #endregion
 

@@ -32,10 +32,10 @@ namespace TMS.DomainObjects.Objects
         public List<string> ApplicationNames { get; set; }
         public List<Role> Roles { get; set; }
         public List<Region> Regions { get; set; }
-
         [MaxLength(12)]
         public string DriverNo { get; set; }
         [MaxLength(50)]
+        [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidEmail")]
         public string Email { get; set; }
         [MaxLength(15)]
         public string PhoneNumber { get; set; }

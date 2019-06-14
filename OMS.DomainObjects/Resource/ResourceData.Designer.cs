@@ -97,6 +97,15 @@ namespace OMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Please provide valid email.
+        /// </summary>
+        public static string InvalidEmail {
+            get {
+                return ResourceManager.GetString("InvalidEmail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid First Name.
         /// </summary>
         public static string InvalidFirstName {
@@ -426,6 +435,15 @@ namespace OMS.DomainObjects.Resource {
         public static string UsersUpdated {
             get {
                 return ResourceManager.GetString("UsersUpdated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User(s) Profile updated successfully in OMS.
+        /// </summary>
+        public static string UsersUpdatedProfile {
+            get {
+                return ResourceManager.GetString("UsersUpdatedProfile", resourceCulture);
             }
         }
     }
