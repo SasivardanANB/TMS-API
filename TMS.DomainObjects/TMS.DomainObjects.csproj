@@ -97,6 +97,7 @@
     <Compile Include="Request\PartnerSearchRequest.cs" />
     <Compile Include="Request\OrderSearchRequest.cs" />
     <Compile Include="Request\OrderReportRequest.cs" />
+    <Compile Include="Request\SAMAUserRequest.cs" />
     <Compile Include="Request\TripRequestDMS.cs" />
     <Compile Include="Request\TripRequest.cs" />
     <Compile Include="Request\PoolRequest.cs" />
