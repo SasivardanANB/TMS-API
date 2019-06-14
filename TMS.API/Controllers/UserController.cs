@@ -167,7 +167,9 @@ namespace TMS.API.Controllers
                         {
                             new User()
                             {
-                                Applications = userDetails.Applications,
+                                Applications = new List<int>(){
+                                    1
+                                },
                                 FirstName = userDetails.FirstName,
                                 LastName = userDetails.LastName,
                                 UserName = userDetails.UserName,

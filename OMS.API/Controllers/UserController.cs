@@ -171,7 +171,9 @@ namespace OMS.API.Controllers
                         {
                             new User()
                             {
-                                Applications = userDetails.Applications,
+                                Applications = new List<int>(){
+                                    2
+                                },
                                 FirstName = userDetails.FirstName,
                                 LastName = userDetails.LastName,
                                 UserName = userDetails.UserName,
