@@ -1,2 +1,2 @@
-UserName,Password,FirstName,LastName,IsActive
-oms1,b21zMQ==,OmsUser,One,1
+UserName,Password,FirstName,LastName,IsActive,Email
+oms1,b21zMQ==,OmsUser,One,1,SuperAdmin@astra.com
