@@ -149,6 +149,10 @@
     <Compile Include="Migrations\201906071121007_201906070606514_DriverPartnerTypeIdAdded.Designer.cs">
       <DependentUpon>201906071121007_201906070606514_DriverPartnerTypeIdAdded.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201906140923284_UserEmailPhoneNumber.cs" />
+    <Compile Include="Migrations\201906140923284_UserEmailPhoneNumber.Designer.cs">
+      <DependentUpon>201906140923284_UserEmailPhoneNumber.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\Authenticate.cs" />
@@ -187,6 +191,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201906071121007_201906070606514_DriverPartnerTypeIdAdded.resx">
       <DependentUpon>201906071121007_201906070606514_DriverPartnerTypeIdAdded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201906140923284_UserEmailPhoneNumber.resx">
+      <DependentUpon>201906140923284_UserEmailPhoneNumber.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SeedData\Activities.csv" />
     <EmbeddedResource Include="SeedData\applications.csv" />
