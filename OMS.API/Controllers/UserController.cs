@@ -176,7 +176,9 @@ namespace OMS.API.Controllers
                                 LastName = userDetails.LastName,
                                 UserName = userDetails.UserName,
                                 Password = userDetails.Password,
-                                ConfirmPassword = userDetails.ConfirmPassword
+                                ConfirmPassword = userDetails.ConfirmPassword,
+                                Email = userDetails.Email,
+                                PhoneNumber = userDetails.PhoneNumber
                             }
                         },
                         CreatedBy = "SYSTEM",

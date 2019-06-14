@@ -172,7 +172,9 @@ namespace TMS.API.Controllers
                                 LastName = userDetails.LastName,
                                 UserName = userDetails.UserName,
                                 Password = userDetails.Password,
-                                ConfirmPassword = userDetails.ConfirmPassword
+                                ConfirmPassword = userDetails.ConfirmPassword,
+                                Email = userDetails.Email,
+                                PhoneNumber = userDetails.PhoneNumber
                             }
                         },
                         CreatedBy = "SYSTEM",
@@ -324,7 +326,7 @@ namespace TMS.API.Controllers
                     var client2 = new RestClient(ConfigurationManager.AppSettings["SAMAApiGatewayBaseURL"]);
                     RestRequest request2 = new RestRequest("token", Method.POST);
                     request2.AddParameter("Authorization", "Basic NDFFNTBEM0ItMDU5Ni00REY5LUE5OUItNTVCN0JDM0VCNDFCOndUN2VVRFpLM1VFWlNOeGR1YXl4dzFzdWRnenN3VHdNOTBNOHMrUVJaYk09", ParameterType.HttpHeader);
-                    request2.AddParameter("text/xml", "grant_type=password&username="+ ConfigurationManager.AppSettings["SAMALogin"] + "&password=" + encryptedDefaultPassword, ParameterType.RequestBody);
+                    request2.AddParameter("text/xml", "grant_type=password&username=" + ConfigurationManager.AppSettings["SAMALogin"] + "&password=" + encryptedDefaultPassword, ParameterType.RequestBody);
                     IRestResponse response2 = client.Execute(request2);
                     dynamic data2 = JObject.Parse(response2.Content);
                     var defaultUserBearerToken = data2.access_token;
@@ -642,7 +644,7 @@ namespace TMS.API.Controllers
             UserRoleResponse userRoleResponse = userTask.GetUserRoles(userRoleRequest);
             return Ok(userRoleResponse);
         }
-        
+
 
         #endregion
 
@@ -728,6 +730,6 @@ namespace TMS.API.Controllers
             RoleResponse roleResponse = userTask.GetUserMenus(userId);
             return Ok(roleResponse);
         }
-        
+
     }
 }
