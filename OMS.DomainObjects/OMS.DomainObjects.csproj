@@ -81,6 +81,7 @@
     <Compile Include="Request\RoleRequest.cs" />
     <Compile Include="Request\AssignUserRoleRequest.cs" />
     <Compile Include="Request\ApplicationRequest.cs" />
+    <Compile Include="Request\SAMAUserRequest.cs" />
     <Compile Include="Request\UserRequest.cs" />
     <Compile Include="Objects\Message.cs" />
     <Compile Include="Request\UserRoleRequest.cs" />
