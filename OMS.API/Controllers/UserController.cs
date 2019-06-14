@@ -432,6 +432,17 @@ namespace OMS.API.Controllers
             return Ok(usersList);
         }
 
+        [Route("changepassword")]
+        [HttpPost]
+        public IHttpActionResult ChangePassword(ChangePasswordRequest changePasswordRequest)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
+            UserResponse userResponse = userTask.ChangePassword(changePasswordRequest);
+            return Ok(userResponse);
+        }
+
         [Route("updateuserprofile")]
         [HttpPost]
         public IHttpActionResult UpdateUserProfile(UserRequest user)
