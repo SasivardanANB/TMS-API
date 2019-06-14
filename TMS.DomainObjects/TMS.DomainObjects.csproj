@@ -90,12 +90,14 @@
     <Compile Include="Objects\Vehicle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Request\AssignUserRoleRequest.cs" />
+    <Compile Include="Request\ChangePasswordRequest.cs" />
     <Compile Include="Request\DriverRequest.cs" />
     <Compile Include="Request\OrderStatusRequest.cs" />
     <Compile Include="Request\PackingSheetRequest.cs" />
     <Compile Include="Request\PartnerSearchRequest.cs" />
     <Compile Include="Request\OrderSearchRequest.cs" />
     <Compile Include="Request\OrderReportRequest.cs" />
+    <Compile Include="Request\SAMAUserRequest.cs" />
     <Compile Include="Request\TripRequestDMS.cs" />
     <Compile Include="Request\TripRequest.cs" />
     <Compile Include="Request\PoolRequest.cs" />

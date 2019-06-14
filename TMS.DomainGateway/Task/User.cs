@@ -17,6 +17,7 @@ namespace TMS.DomainGateway.Task
         public abstract UserResponse CreateUpdateUser(UserRequest user);
         public abstract UserResponse DeleteUser(int UserID);
         public abstract UserResponse GetUsers(UserRequest userReq);
+        public abstract UserResponse ChangePassword(ChangePasswordRequest changePasswordRequest);
         public abstract UserResponse UpdateUserProfile(UserRequest user);
 
         // Role Management
@@ -39,5 +40,6 @@ namespace TMS.DomainGateway.Task
         public abstract CommonResponse GetRegionCodes();
         public abstract DashboardResponse GetUserDashboard(UserRequest user);
         public abstract RoleResponse GetUserMenus(int userId);
+      
     }
 }

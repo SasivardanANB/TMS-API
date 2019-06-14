@@ -196,6 +196,15 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Incorrect Old Password.
+        /// </summary>
+        public static string IncorrectOldPassword {
+            get {
+                return ResourceManager.GetString("IncorrectOldPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Provide valid address.
         /// </summary>
         public static string InvalidAddress {
@@ -700,6 +709,15 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to New password cannot be same as old password.
+        /// </summary>
+        public static string NewPasswordMustbeDifferent {
+            get {
+                return ResourceManager.GetString("NewPasswordMustbeDifferent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No Record(s) found.
         /// </summary>
         public static string NoRecords {
@@ -786,6 +804,15 @@ namespace TMS.DomainObjects.Resource {
         public static string PasswordMismatch {
             get {
                 return ResourceManager.GetString("PasswordMismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password updated successfully.
+        /// </summary>
+        public static string PasswordUpdated {
+            get {
+                return ResourceManager.GetString("PasswordUpdated", resourceCulture);
             }
         }
         

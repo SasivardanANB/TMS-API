@@ -73,6 +73,7 @@
     <Compile Include="Objects\Role.cs" />
     <Compile Include="Objects\UserRole.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Request\ChangePasswordRequest.cs" />
     <Compile Include="Request\LoginRequest.cs" />
     <Compile Include="Request\AuthenticateRequest.cs" />
     <Compile Include="Request\DownloadOrderRequest.cs" />
@@ -81,6 +82,7 @@
     <Compile Include="Request\RoleRequest.cs" />
     <Compile Include="Request\AssignUserRoleRequest.cs" />
     <Compile Include="Request\ApplicationRequest.cs" />
+    <Compile Include="Request\SAMAUserRequest.cs" />
     <Compile Include="Request\UserRequest.cs" />
     <Compile Include="Objects\Message.cs" />
     <Compile Include="Request\UserRoleRequest.cs" />
@@ -113,6 +115,7 @@
     <EmbeddedResource Include="Resource\ResourceData.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ResourceData.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

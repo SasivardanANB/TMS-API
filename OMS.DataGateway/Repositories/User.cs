@@ -457,6 +457,57 @@ namespace OMS.DataGateway.Repositories
             return userResponse;
         }
 
+        public UserResponse ChangePassword(ChangePasswordRequest changePasswordRequest)
+        {
+            UserResponse userResponse = new UserResponse();
+            try
+            {
+                using (var context = new OMSDBContext())
+                {
+                    var userdetails = context.Users.Where(u => u.ID == changePasswordRequest.Id).FirstOrDefault();
+                    if (userdetails != null)
+                    {
+                        var userpassword = Encryption.EncryptionLibrary.DecrypPassword(userdetails.Password);
+                        if (userpassword != changePasswordRequest.OldPassword)
+                        {
+                            userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                            userResponse.StatusCode = (int)HttpStatusCode.OK;
+                            userResponse.StatusMessage = DomainObjects.Resource.ResourceData.IncorrectOldPassword;
+                        }
+                        else
+                        {
+                            if (userpassword == changePasswordRequest.NewPassword)
+                            {
+                                userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                                userResponse.StatusCode = (int)HttpStatusCode.OK;
+                                userResponse.StatusMessage = DomainObjects.Resource.ResourceData.NewPasswordMustbeDifferent;
+                            }
+                            else
+                            {
+                                changePasswordRequest.NewPassword = Encryption.EncryptionLibrary.EncryptPassword(changePasswordRequest.NewPassword);
+                                userdetails.Password = changePasswordRequest.NewPassword;
+                                userdetails.LastModifiedBy = userdetails.UserName;
+                                context.SaveChanges();
+                                userResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                                userResponse.StatusCode = (int)HttpStatusCode.OK;
+                                userResponse.StatusMessage = DomainObjects.Resource.ResourceData.PasswordUpdated;
+                            }
+                        }
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+                userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                userResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                userResponse.StatusMessage = ex.Message;
+            }
+            return userResponse;
+
+        }
+
         public UserResponse UpdateUserProfile(UserRequest user)
         {
             UserResponse userResponse = new UserResponse();
@@ -1198,6 +1249,7 @@ namespace OMS.DataGateway.Repositories
 
             return userRoleResponse;
         }
+
 
         #endregion
 

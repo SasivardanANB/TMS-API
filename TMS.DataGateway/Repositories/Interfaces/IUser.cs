@@ -16,16 +16,20 @@ namespace TMS.DataGateway.Repositories.Iterfaces
         UserResponse CreateUpdateUser(UserRequest user);
         UserResponse DeleteUser(int userId);
         UserResponse GetUsers(UserRequest userReq);
+        UserResponse ChangePassword(ChangePasswordRequest changePasswordRequest);
+
         UserResponse UpdateUserProfile(UserRequest user);
         // Role Management
         RoleResponse CreateUpdateRole(RoleRequest role);
         RoleResponse DeleteRole(int id);
         RoleResponse GetRoles(RoleRequest roles);
         RoleResponse GetRoleDetails(int roleId);
+
         // User Role
         UserRoleResponse CreateUpdateUserRole(UserRoleRequest userRoleRequest);
         UserResponse DeleteUserRole(int userRoleID);
         UserRoleResponse GetUserRoles(UserRoleRequest userRoleRequest);
+
         // Master Data Operations
         RegionResponse GetRegions(RegionRequest regions);
         RoleMenuResponse GetMenuWithActivities();
@@ -35,5 +39,6 @@ namespace TMS.DataGateway.Repositories.Iterfaces
         CommonResponse GetRegionCodes();
         DashboardResponse GetUserDashboard(UserRequest user);
         RoleResponse GetUserMenus(int userId);
+       
     }
 }

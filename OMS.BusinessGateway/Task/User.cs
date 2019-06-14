@@ -54,6 +54,12 @@ namespace OMS.BusinessGateway.Task
             return usersList;
         }
 
+        public override UserResponse ChangePassword(ChangePasswordRequest changePasswordRequest)
+        {
+            UserResponse userResponse = _userRepository.ChangePassword(changePasswordRequest);
+            return userResponse;
+        }
+
         public override UserResponse UpdateUserProfile(UserRequest user)
         {
             UserResponse usersList = _userRepository.UpdateUserProfile(user);
