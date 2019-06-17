@@ -2,15 +2,12 @@
 using NLog;
 using TMS.DataGateway.Repositories.Iterfaces;
 using TMS.DataGateway.DataModels;
-using TMS.DomainObjects.Objects;
 using TMS.DomainObjects.Request;
 using TMS.DomainObjects.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using DataModel = TMS.DataGateway.DataModels;
 using Domain = TMS.DomainObjects.Objects;
 using System.Configuration;
@@ -310,8 +307,8 @@ namespace TMS.DataGateway.Repositories
                          {
                              ID = user.ID,
                              UserName = user.UserName,
-                             Email    = user.Email,
-                             PhoneNumber= user.PhoneNumber,
+                             Email = user.Email,
+                             PhoneNumber = user.PhoneNumber,
                              FirstName = user.FirstName,
                              LastName = user.LastName,
                              IsActive = user.IsActive,
@@ -516,7 +513,7 @@ namespace TMS.DataGateway.Repositories
             return userResponse;
         }
 
-        public UserResponse ChangePassword(ChangePasswordRequest changePasswordRequest)
+        public UserResponse ChangePassword(ChangePasswordRequest changePasswordRequest, string type)
         {
             UserResponse userResponse = new UserResponse();
             try
@@ -526,36 +523,103 @@ namespace TMS.DataGateway.Repositories
                     var userdetails = context.Users.Where(u => u.ID == changePasswordRequest.Id).FirstOrDefault();
                     if (userdetails != null)
                     {
-                        var userpassword = Encryption.EncryptionLibrary.DecrypPassword(userdetails.Password);
-                        if (userpassword != changePasswordRequest.OldPassword)
+                        if (type == "changepassword")
                         {
-                            userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
-                            userResponse.StatusCode = (int)HttpStatusCode.OK;
-                            userResponse.StatusMessage = DomainObjects.Resource.ResourceData.IncorrectOldPassword;
-
-                        }
-                        else
-                        {
-                            if (userpassword == changePasswordRequest.NewPassword)
+                            var userpassword = Encryption.EncryptionLibrary.DecrypPassword(userdetails.Password);
+                            if (userpassword != changePasswordRequest.OldPassword)
                             {
                                 userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                                 userResponse.StatusCode = (int)HttpStatusCode.OK;
-                                userResponse.StatusMessage = DomainObjects.Resource.ResourceData.NewPasswordMustbeDifferent;
+                                userResponse.StatusMessage = DomainObjects.Resource.ResourceData.IncorrectOldPassword;
                             }
                             else
                             {
-                                if (!string.IsNullOrEmpty(changePasswordRequest.NewPassword))
+                                if (userpassword == changePasswordRequest.NewPassword)
                                 {
-                                    changePasswordRequest.NewPassword = Encryption.EncryptionLibrary.EncryptPassword(changePasswordRequest.NewPassword);
+                                    userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                                    userResponse.StatusCode = (int)HttpStatusCode.OK;
+                                    userResponse.StatusMessage = DomainObjects.Resource.ResourceData.NewPasswordMustbeDifferent;
                                 }
-                                userdetails.Password = changePasswordRequest.NewPassword;
-                                userdetails.LastModifiedBy = userdetails.UserName;
-                                context.SaveChanges();
-                                userResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                                userResponse.StatusCode = (int)HttpStatusCode.OK;
-                                userResponse.StatusMessage = DomainObjects.Resource.ResourceData.PasswordUpdated;
+                                else
+                                {
+                                    if (!string.IsNullOrEmpty(changePasswordRequest.NewPassword))
+                                    {
+                                        changePasswordRequest.NewPassword = Encryption.EncryptionLibrary.EncryptPassword(changePasswordRequest.NewPassword);
+                                    }
+                                    userdetails.Password = changePasswordRequest.NewPassword;
+                                    userdetails.LastModifiedBy = userdetails.UserName;
+                                    context.SaveChanges();
+                                    userResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                                    userResponse.StatusCode = (int)HttpStatusCode.OK;
+                                    userResponse.StatusMessage = DomainObjects.Resource.ResourceData.PasswordUpdated;
+                                }
                             }
                         }
+                        if (type == "resetpassword")
+                        {
+                            if (!string.IsNullOrEmpty(changePasswordRequest.NewPassword))
+                            {
+                                changePasswordRequest.NewPassword = Encryption.EncryptionLibrary.EncryptPassword(changePasswordRequest.NewPassword);
+                            }
+                            userdetails.Password = changePasswordRequest.NewPassword;
+                            userdetails.LastModifiedBy = userdetails.UserName;
+                            context.SaveChanges();
+                            userResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                            userResponse.StatusCode = (int)HttpStatusCode.OK;
+                            userResponse.StatusMessage = DomainObjects.Resource.ResourceData.PasswordUpdated;
+                        }
+                    }
+                    else
+                    {
+                        userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                        userResponse.StatusCode = (int)HttpStatusCode.OK;
+                        userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserDetailsNotFound;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+                userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                userResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                userResponse.StatusMessage = ex.Message;
+            }
+            return userResponse;
+        }
+
+        public UserResponse ForgotPassword(ForgotPasswordRequest forgotPasswordRequest)
+        {
+            UserResponse userResponse = new UserResponse();
+            try
+            {
+                using (var context = new TMSDBContext())
+                {
+                    var userdetails = context.Users
+                      .Where(u => String.IsNullOrEmpty(forgotPasswordRequest.Email) || u.Email.ToLower().Contains(forgotPasswordRequest.Email.ToLower()))
+                      .Where(u => String.IsNullOrEmpty(forgotPasswordRequest.UserName) || u.UserName.ToLower().Contains(forgotPasswordRequest.UserName.ToLower())).FirstOrDefault();
+
+                    if (userdetails != null)
+                    {
+                        List<Domain.User> userData = new List<Domain.User>()
+                        {
+                            new Domain.User()
+                            {
+                                ID=userdetails.ID,
+                                UserName = userdetails.UserName,
+                                Email = userdetails.Email
+                            }
+                        };
+
+                        userResponse.Data = userData;
+                        userResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        userResponse.StatusCode = (int)HttpStatusCode.OK;
+                        userResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                    }
+                    else
+                    {
+                        userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                        userResponse.StatusCode = (int)HttpStatusCode.OK;
+                        userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserDetailsNotFound;
                     }
                 }
             }

@@ -961,6 +961,15 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to User details not found.
+        /// </summary>
+        public static string UserDetailsNotFound {
+            get {
+                return ResourceManager.GetString("UserDetailsNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to User is In-Active.
         /// </summary>
         public static string UserInActive {
