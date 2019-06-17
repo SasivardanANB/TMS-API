@@ -49,6 +49,7 @@ namespace TMS.DataGateway.DataModels
         [ForeignKey("ImageGuid")]
         public int? ShipmentScheduleImageID { get; set; }
         public ImageGuid ImageGuid { get; set; }
+        public int UploadType { get; set; }
         
     }
 }
