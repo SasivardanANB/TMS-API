@@ -462,4 +462,7 @@
   <data name="UsersUpdateProfile" xml:space="preserve">
     <value>User(s) Profile updated successfully in TMS</value>
   </data>
+  <data name="UserDetailsNotFound" xml:space="preserve">
+    <value>User details not found</value>
+  </data>
 </root>

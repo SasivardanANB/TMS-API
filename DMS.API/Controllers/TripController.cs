@@ -66,32 +66,36 @@ namespace DMS.API.Controllers
             ITripTask tripTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().TripTask;
             TripResponse tripData = tripTask.CreateUpdateTrip(request);
 
-            if (tripData.StatusCode == 200 && tripData.Status == "Success")
+            if (tripData.StatusCode == 200 && tripData.Status == "Success" && request.Requests.Count >0)
             {
-                IEnumerable<string> headerValues = Request.Headers.GetValues("Token");
-                var token = headerValues.FirstOrDefault();
-                string deviceId = tripTask.GetDeviceId(token);
-                if (!string.IsNullOrEmpty(deviceId))
+                foreach (var reqObj in request.Requests)
                 {
-                    var client = new RestClient("https://fcm.googleapis.com/");
-                    client.AddDefaultHeader("Content-Type", "application/json");
-                    client.AddDefaultHeader("Authorization", "key=AAAASlr9K0Y:APA91bEpVYc3duC6fq7w38AGljxFkKXMMUHrSMF18fXRBHnVU-RWWyymfrGRX3D0H_zwflmJtjAtrcBosSt4sQxvrkuUZ6wjWP2ZvGwWzyxnYYjue-sIs7466OA1DWL6_X4UJ5gZcgPD");
-                    var req = new RestRequest("fcm/send", Method.POST) { RequestFormat = DataFormat.Json };
-                    req.Timeout = 500000;
-                    object onj = new object();
-                    NotificationRequest notificationRequest = new NotificationRequest();
-                    notificationRequest.to = "cFaYBS5Rn_w:APA91bEcu9Q_wqSASgXZ1nAUUvpelCTOw6eF5g0RmdNIrIi7GlJl-mTezk9Tb7lVkzzBH3wabznQ6GMkws2Br9XV8OvpilwSmMjcE3MKe9LrEtYZ8eAodgbx12-Az0NU6_IKbIfB0POu";
-
-                    notificationRequest.data = new Notification()
+                    IEnumerable<string> headerValues = Request.Headers.GetValues("Token");
+                    var token = reqObj.DriverNo;
+                    string deviceId = tripTask.GetDeviceId(token);
+                    if (!string.IsNullOrEmpty(deviceId))
                     {
-                        title = "DMS",
-                        message = "A trip (" + tripData.Data[0].TripNumber + ") has been assigned to you.",
-                        click_action = "NOTIFICATIONACTIVITY",
-                    };
+                        var client = new RestClient("https://fcm.googleapis.com/");
+                        client.AddDefaultHeader("Content-Type", "application/json");
+                        client.AddDefaultHeader("Authorization", ConfigurationManager.AppSettings["FCM_Authorization"]);
+                        var req = new RestRequest("fcm/send", Method.POST) { RequestFormat = DataFormat.Json };
+                        req.Timeout = 500000;
+                        object onj = new object();
+                        NotificationRequest notificationRequest = new NotificationRequest();
+                        notificationRequest.to = deviceId;// "cFaYBS5Rn_w:APA91bEcu9Q_wqSASgXZ1nAUUvpelCTOw6eF5g0RmdNIrIi7GlJl-mTezk9Tb7lVkzzBH3wabznQ6GMkws2Br9XV8OvpilwSmMjcE3MKe9LrEtYZ8eAodgbx12-Az0NU6_IKbIfB0POu";
 
-                    req.AddJsonBody(notificationRequest);
-                    var result = client.Execute(req);
+                        notificationRequest.data = new Notification()
+                        {
+                            title = "DMS",
+                            message = "A trip (" + tripData.Data[0].TripNumber + ") has been assigned to you.",
+                            click_action = "NOTIFICATIONACTIVITY",
+                        };
+
+                        req.AddJsonBody(notificationRequest);
+                        var result = client.Execute(req);
+                    }
                 }
+
             }
             return Ok(tripData);
 

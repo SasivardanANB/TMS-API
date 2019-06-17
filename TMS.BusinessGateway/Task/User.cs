@@ -30,7 +30,6 @@ namespace TMS.BusinessGateway.Task
         }
 
         #region "User Application"
-
         public override UserResponse CreateUpdateUser(UserRequest user)
         {
             //If needed write business logic here for request.
@@ -59,9 +58,15 @@ namespace TMS.BusinessGateway.Task
             return usersList;
         }
 
-        public override UserResponse ChangePassword(ChangePasswordRequest changePasswordRequest)
+        public override UserResponse ChangePassword(ChangePasswordRequest changePasswordRequest,string type)
         {
-            UserResponse userResponse = _userRepository.ChangePassword(changePasswordRequest);
+            UserResponse userResponse = _userRepository.ChangePassword(changePasswordRequest,type);
+            return userResponse;
+        }
+
+        public override UserResponse ForgotPassword(ForgotPasswordRequest forgotPasswordRequest)
+        {
+            UserResponse userResponse = _userRepository.ForgotPassword(forgotPasswordRequest);
             return userResponse;
         }
 

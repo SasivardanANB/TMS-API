@@ -86,11 +86,11 @@ namespace DMS.DataGateway.Repositories
             TripResponse response = new TripResponse();
             using (var context = new DMSDBContext())
             {
-                using (DbContextTransaction transaction = context.Database.BeginTransaction())
+                foreach (var trip in request.Requests)
                 {
-                    try
+                    using (DbContextTransaction transaction = context.Database.BeginTransaction())
                     {
-                        foreach (var trip in request.Requests)
+                        try
                         {
                             int userId = 0;
                             int statusId = 0;
@@ -103,7 +103,7 @@ namespace DMS.DataGateway.Repositories
                                 transaction.Rollback();
                                 response.Status = DomainObjects.Resource.ResourceData.Failure;
                                 response.StatusCode = (int)HttpStatusCode.BadRequest;
-                                response.StatusMessage = "Driver Number " + trip.DriverName + " is not available in DMS";
+                                response.StatusMessage = "Driver Number " + trip.DriverNo + " is not available in DMS";
                                 return response;
                             }
                             #endregion
@@ -378,25 +378,25 @@ namespace DMS.DataGateway.Repositories
                                 }
                             }
                             #endregion
+                            transaction.Commit();
                         }
-                        #region Return Response with Success and Commit Changes
-                        transaction.Commit();
-                        response.Status = DomainObjects.Resource.ResourceData.Success;
-                        response.StatusCode = (int)HttpStatusCode.OK;
-                        response.StatusMessage = DomainObjects.Resource.ResourceData.TripCreated;
-                        return response;
-                        #endregion
-                    }
-                    catch (Exception ex)
-                    {
-                        transaction.Rollback();
-                        _logger.Log(LogLevel.Error, ex);
-                        response.Status = DomainObjects.Resource.ResourceData.Failure;
-                        response.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                        response.StatusMessage = ex.Message;
+                        catch (Exception ex)
+                        {
+                            transaction.Rollback();
+                            _logger.Log(LogLevel.Error, ex);
+                            response.Status = DomainObjects.Resource.ResourceData.Failure;
+                            response.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                            response.StatusMessage = ex.Message;
+                        }
                     }
                 }
+                #region Return Response with Success and Commit Changes
+                response.Status = DomainObjects.Resource.ResourceData.Success;
+                response.StatusCode = (int)HttpStatusCode.OK;
+                response.StatusMessage = DomainObjects.Resource.ResourceData.TripCreated;
+                #endregion
             }
+
             return response;
         }
 
@@ -843,12 +843,14 @@ namespace DMS.DataGateway.Repositories
                 {
                     var statusData = (from status in context.TripStatusHistories
                                       join td in context.TripDetails on status.StopPointId equals td.ID
-                                      where status.StopPointId == stopPointId orderby status.StatusDate descending
+                                      where status.StopPointId == stopPointId
+                                      orderby status.StatusDate descending
                                       select new StopPoints
                                       {
                                           ID = status.StopPointId,
                                           TripId = td.TripID,
                                           LocationId = td.PartnerId,
+                                          StatusDate=status.StatusDate,
                                           LocationName = td.Partner.PartnerName,
                                           SequenceNumber = td.SequenceNumber,
                                           ActualDeliveryDate = td.ActualDeliveryDate,
@@ -877,8 +879,8 @@ namespace DMS.DataGateway.Repositories
             {
                 try
                 {
-                    var driverId = context.TokenManagers.Where(u => u.TokenKey == token).Select(x=>x.DriverId).FirstOrDefault();
-                    if(driverId > 0)
+                    var driverId = context.Drivers.Where(u => u.DriverNo == token).Select(x => x.ID).FirstOrDefault();
+                    if (driverId > 0)
                     {
                         deviceId = context.DeviceTokens.Where(x => x.DriverId == driverId).Select(d => d.DeviceKey).FirstOrDefault();
                         if (string.IsNullOrEmpty(deviceId))
