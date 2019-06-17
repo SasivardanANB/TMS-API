@@ -86,5 +86,27 @@ namespace TMS.API.Controllers
             GoodsReceiveOrIssueResponse orderReportResponse = reportTask.GoodsReceiveOrGoodsIssueReport(goodsReceiveOrIssueRequest);
             return Ok(orderReportResponse);
         }
+
+        [Route("inboundboardadminreprt")]
+        [HttpGet]
+        public IHttpActionResult InBoundBoardAdminReprt()
+        {
+            //Making OrderType = 1 (OutBound), bcoz at only outbound goods receive done
+            int orderTypeId = 1;
+            IReportTask reportTask = DependencyResolver.GetImplementationOf<ITaskGateway>().ReportTask;
+            AdminBoardReportResponse orderReportResponse = reportTask.BoardAdminReprt(orderTypeId);
+            return Ok(orderReportResponse);
+        }
+
+        [Route("outboundboardadminreprt")]
+        [HttpGet]
+        public IHttpActionResult OutBoundBoardAdminReprt()
+        {
+            //Making OrderType = 2 (OutBound), bcoz at only outbound goods receive done
+            int orderTypeId = 2;
+            IReportTask reportTask = DependencyResolver.GetImplementationOf<ITaskGateway>().ReportTask;
+            AdminBoardReportResponse orderReportResponse = reportTask.BoardAdminReprt(orderTypeId);
+            return Ok(orderReportResponse);
+        }
     }
 }

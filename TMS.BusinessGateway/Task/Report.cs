@@ -47,6 +47,12 @@ namespace TMS.BusinessGateway.Task
         {
             GoodsReceiveOrIssueResponse goodsReceiveOrIssueResponse = _reportRepository.GoodsReceiveOrGoodsIssueReport(goodsReceiveOrIssueRequest);
             return goodsReceiveOrIssueResponse;
-        }        
+        }
+
+        public override AdminBoardReportResponse BoardAdminReprt(int orderTypeId)
+        {
+            AdminBoardReportResponse adminBoardReportResponse = _reportRepository.BoardAdminReprt(orderTypeId);
+            return adminBoardReportResponse;
+        }
     }
 }
