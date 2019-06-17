@@ -16,5 +16,6 @@ namespace DMS.DomainObjects.Objects
         public DateTime ActualDeliveryDate { get; set; }
         public DateTime EstimatedDeliveryDate { get; set; }
         public string TripStatusCode { get; set; }
+        public DateTime StatusDate { get; set; }
     }
 }
