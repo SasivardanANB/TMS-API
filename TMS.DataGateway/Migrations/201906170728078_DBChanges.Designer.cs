@@ -7,13 +7,13 @@ namespace TMS.DataGateway.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.2.0-61023")]
-    public sealed partial class UploadTypeAddedToOrederhTable : IMigrationMetadata
+    public sealed partial class DBChanges : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(UploadTypeAddedToOrederhTable));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(DBChanges));
         
         string IMigrationMetadata.Id
         {
-            get { return "201906140528267_UploadTypeAddedToOrederhTable"; }
+            get { return "201906170728078_DBChanges"; }
         }
         
         string IMigrationMetadata.Source

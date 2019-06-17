@@ -3,7 +3,7 @@ namespace TMS.DataGateway.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class UploadTypeAddedToOrederhTable : DbMigration
+    public partial class DBChanges : DbMigration
     {
         public override void Up()
         {

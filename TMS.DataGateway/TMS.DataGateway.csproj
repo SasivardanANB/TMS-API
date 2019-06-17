@@ -153,9 +153,9 @@
     <Compile Include="Migrations\201906140923284_UserEmailPhoneNumber.Designer.cs">
       <DependentUpon>201906140923284_UserEmailPhoneNumber.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201906140528267_UploadTypeAddedToOrederhTable.cs" />
-    <Compile Include="Migrations\201906140528267_UploadTypeAddedToOrederhTable.Designer.cs">
-      <DependentUpon>201906140528267_UploadTypeAddedToOrederhTable.cs</DependentUpon>
+    <Compile Include="Migrations\201906170728078_DBChanges.cs" />
+    <Compile Include="Migrations\201906170728078_DBChanges.Designer.cs">
+      <DependentUpon>201906170728078_DBChanges.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -199,8 +199,8 @@
     <EmbeddedResource Include="Migrations\201906140923284_UserEmailPhoneNumber.resx">
       <DependentUpon>201906140923284_UserEmailPhoneNumber.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201906140528267_UploadTypeAddedToOrederhTable.resx">
-      <DependentUpon>201906140528267_UploadTypeAddedToOrederhTable.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201906170728078_DBChanges.resx">
+      <DependentUpon>201906170728078_DBChanges.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SeedData\Activities.csv" />
     <EmbeddedResource Include="SeedData\applications.csv" />
