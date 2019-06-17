@@ -310,8 +310,8 @@ namespace TMS.DataGateway.Repositories
                          {
                              ID = user.ID,
                              UserName = user.UserName,
-                             Email    = user.Email,
-                             PhoneNumber= user.PhoneNumber,
+                             Email = user.Email,
+                             PhoneNumber = user.PhoneNumber,
                              FirstName = user.FirstName,
                              LastName = user.LastName,
                              IsActive = user.IsActive,
@@ -1018,61 +1018,49 @@ namespace TMS.DataGateway.Repositories
                 {
                     foreach (var userRoleDetail in userRoleRequest.Requests)
                     {
-                        if (userRoleDetail.UserID > 0)
+                        if (userRoleDetail.ID == 0) // Create
                         {
-                            var isUserRoleAlreadyAssigned = tMSDBContext.UserRoles.Any(userRole => userRole.UserID == userRoleDetail.UserID && userRole.RoleID == userRoleDetail.RoleID && userRole.BusinessAreaID == userRoleDetail.BusinessAreaID && userRole.ID != userRoleDetail.ID);
+                            var isUserRoleAlreadyAssigned = tMSDBContext.UserRoles.Any(userRole => userRole.UserID == userRoleDetail.UserID && userRole.RoleID == userRoleDetail.RoleID && userRole.BusinessAreaID == userRoleDetail.BusinessAreaID && userRole.IsDelete == false);
                             if (!isUserRoleAlreadyAssigned)
                             {
-                                if (userRoleDetail.ID == 0)
+                                DataModel.UserRoles userRoleObject = new UserRoles()
                                 {
-                                    DataModel.UserRoles userRoleObject = new UserRoles()
-                                    {
-                                        UserID = userRoleDetail.UserID,
-                                        RoleID = userRoleDetail.RoleID,
-                                        BusinessAreaID = userRoleDetail.BusinessAreaID,
-                                        CreatedBy = userRoleRequest.CreatedBy,
-                                        CreatedTime = DateTime.Now
-                                    };
-                                    tMSDBContext.UserRoles.Add(userRoleObject);
-                                    userRoleResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserRoleCreated;
-                                    userRoleResponse.StatusCode = (int)HttpStatusCode.OK;
-                                }
-                                else
-                                {
-                                    var userAssignedRoleDetails = tMSDBContext.UserRoles.Where(userRole => userRole.ID == userRoleDetail.ID).FirstOrDefault();
-                                    if (userAssignedRoleDetails != null)
-                                    {
-                                        userAssignedRoleDetails.RoleID = userRoleDetail.RoleID;
-                                        userAssignedRoleDetails.BusinessAreaID = userRoleDetail.BusinessAreaID;
-                                        userAssignedRoleDetails.LastModifiedBy = userRoleRequest.LastModifiedBy;
-                                        userAssignedRoleDetails.LastModifiedTime = DateTime.Now;
-                                        userRoleResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserRoleUpdated;
-                                        userRoleResponse.StatusCode = (int)HttpStatusCode.OK;
-                                    }
-                                    else
-                                    {
-                                        userRoleResponse.StatusCode = (int)HttpStatusCode.NotFound;
-                                        userRoleResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
-                                    }
-                                }
+                                    UserID = userRoleDetail.UserID,
+                                    RoleID = userRoleDetail.RoleID,
+                                    BusinessAreaID = userRoleDetail.BusinessAreaID,
+                                    CreatedBy = userRoleRequest.CreatedBy,
+                                    CreatedTime = DateTime.Now
+                                };
+                                tMSDBContext.UserRoles.Add(userRoleObject);
                                 tMSDBContext.SaveChanges();
+                                userRoleResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserRoleCreated;
+                                userRoleResponse.StatusCode = (int)HttpStatusCode.OK;
+                                userRoleResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
 
-                                userRoleResponse.Status = DomainObjects.Resource.ResourceData.Success;
                             }
                             else
                             {
-                                userRoleResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                                userRoleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                                 userRoleResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserRoleAlreadyAssigned;
-                                userRoleResponse.StatusCode = (int)HttpStatusCode.NotAcceptable;
+                                userRoleResponse.StatusCode = (int)HttpStatusCode.OK;
                             }
                         }
-                        else
+                        else // Update
                         {
-                            userRoleResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                            userRoleResponse.StatusMessage = DomainObjects.Resource.ResourceData.InvalidUserID;
-                            userRoleResponse.StatusCode = (int)HttpStatusCode.NotAcceptable;
+                            var userAssignedRoleDetails = tMSDBContext.UserRoles.Where(userRole => userRole.ID == userRoleDetail.ID).FirstOrDefault();
+                            if (userAssignedRoleDetails != null)
+                            {
+                                userAssignedRoleDetails.RoleID = userRoleDetail.RoleID;
+                                userAssignedRoleDetails.BusinessAreaID = userRoleDetail.BusinessAreaID;
+                                userAssignedRoleDetails.LastModifiedBy = userRoleRequest.LastModifiedBy;
+                                userAssignedRoleDetails.LastModifiedTime = DateTime.Now;
+
+                                tMSDBContext.SaveChanges();
+                                userRoleResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserRoleUpdated;
+                                userRoleResponse.StatusCode = (int)HttpStatusCode.OK;
+                                userRoleResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                            }
                         }
-                        userRoleResponse.Data = userRoleRequest.Requests;
                     }
                 }
             }
