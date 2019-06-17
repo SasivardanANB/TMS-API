@@ -74,5 +74,9 @@ namespace DMS.BusinessGateway.Task
         {
             return _tripRepository.GetLastTripStatusData(stopPointId);
         }
+        public override string GetDeviceId(string token)
+        {
+            return _tripRepository.GetDeviceId(token);
+        }
     }
 }

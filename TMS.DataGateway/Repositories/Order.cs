@@ -529,7 +529,8 @@ namespace TMS.DataGateway.Repositories
                                     CreatedTime = DateTime.Now,
                                     LastModifiedBy = "",
                                     LastModifiedTime = null,
-                                    SOPONumber = soPoNumber
+                                    SOPONumber = soPoNumber,
+                                    UploadType=request.UploadType
                                 };
                                 context.OrderHeaders.Add(orderHeader);
                                 context.SaveChanges();
@@ -1668,7 +1669,7 @@ namespace TMS.DataGateway.Repositories
             string orderNo = businessArea + applicationCode;
             using (var context = new Data.TMSDBContext())
             {
-                var order = context.OrderHeaders.Where(t => t.BusinessAreaId == businessAreaId && t.SOPONumber != string.Empty).OrderByDescending(t => t.OrderNo).FirstOrDefault();
+                var order = context.OrderHeaders.Where(t => t.BusinessAreaId == businessAreaId && t.UploadType == 2).OrderByDescending(t => t.OrderNo).FirstOrDefault();
                 if (order != null)
                 {
                     int lastOrderYear = order.OrderDate.Year;

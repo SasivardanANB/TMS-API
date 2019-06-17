@@ -313,6 +313,7 @@ namespace TMS.API.Controllers
                                     EstimatedDeliveryDate = estimationShipmentDate
                                 };
                                 tripDMS.TripLocations.Add(destinationLocation);
+                                requestDMS.Requests.Add(tripDMS);
                                 #endregion
                             }
                         }
