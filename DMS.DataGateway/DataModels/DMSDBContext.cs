@@ -28,6 +28,6 @@ namespace DMS.DataGateway.DataModels
         public virtual DbSet<TripStatusHistory> TripStatusHistories { get; set; }
         public virtual DbSet<Driver> Drivers { get; set; }
         public virtual DbSet<ImageType> ImageTypes { get; set; }
-
+        public virtual DbSet<DeviceToken> DeviceTokens { get; set; }
     }
 }

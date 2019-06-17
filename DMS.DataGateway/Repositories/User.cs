@@ -84,7 +84,25 @@ namespace DMS.DataGateway.Repositories
                                                  ExpiresOn = tokens.ExpiresOn,
                                              }).FirstOrDefault();
 
-
+                            //Device Token Insertion
+                            if(!string.IsNullOrEmpty(login.DeviceToken))
+                            {
+                                var deviceData = context.DeviceTokens.Where(x => x.DriverId == userData.ID).FirstOrDefault();
+                                if(deviceData != null)
+                                {
+                                    deviceData.DeviceKey = login.DeviceToken;
+                                    deviceData.LastModifiedTime = System.DateTime.Now;
+                                    context.SaveChanges();
+                                }
+                                else
+                                {
+                                    DeviceToken deviceToken = new DeviceToken();
+                                    deviceToken.DriverId = userData.ID;
+                                    deviceToken.DeviceKey = login.DeviceToken;
+                                    context.DeviceTokens.Add(deviceToken);
+                                    context.SaveChanges();
+                                }
+                            }
                             userResponse.TokenKey = tokenData.TokenKey;
                             userResponse.TokenIssuedOn = tokenData.IssuedOn;
                             userResponse.TokenExpiresOn = tokenData.ExpiresOn;

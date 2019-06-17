@@ -870,5 +870,36 @@ namespace DMS.DataGateway.Repositories
             }
             return response;
         }
+        public string GetDeviceId(string token)
+        {
+            string deviceId = "";
+            using (var context = new DataModel.DMSDBContext())
+            {
+                try
+                {
+                    var driverId = context.TokenManagers.Where(u => u.TokenKey == token).Select(x=>x.DriverId).FirstOrDefault();
+                    if(driverId > 0)
+                    {
+                        deviceId = context.DeviceTokens.Where(x => x.DriverId == driverId).Select(d => d.DeviceKey).FirstOrDefault();
+                        if (string.IsNullOrEmpty(deviceId))
+                        {
+                            deviceId = "";
+                        }
+                    }
+                    else
+                    {
+                        deviceId = "";
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log(LogLevel.Error, ex);
+                    deviceId = "";
+                }
+            }
+            return deviceId;
+        }
+
     }
 }

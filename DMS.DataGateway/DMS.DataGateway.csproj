@@ -81,6 +81,7 @@
     <Compile Include="DataModels\Province.cs" />
     <Compile Include="DataModels\ShipmentListDetails.cs" />
     <Compile Include="DataModels\StopPointImages.cs" />
+    <Compile Include="DataModels\DeviceToken.cs" />
     <Compile Include="DataModels\TripDetail.cs" />
     <Compile Include="DataModels\SubDistrict.cs" />
     <Compile Include="DataModels\TokenManager.cs" />
@@ -92,6 +93,10 @@
     <Compile Include="Migrations\201906060636487_DMSDB_v1.0.cs" />
     <Compile Include="Migrations\201906060636487_DMSDB_v1.0.Designer.cs">
       <DependentUpon>201906060636487_DMSDB_v1.0.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201906120925370_DeviceTokenTableAdded.cs" />
+    <Compile Include="Migrations\201906120925370_DeviceTokenTableAdded.Designer.cs">
+      <DependentUpon>201906120925370_DeviceTokenTableAdded.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -107,6 +112,9 @@
     <None Include="packages.config" />
     <EmbeddedResource Include="Migrations\201906060636487_DMSDB_v1.0.resx">
       <DependentUpon>201906060636487_DMSDB_v1.0.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201906120925370_DeviceTokenTableAdded.resx">
+      <DependentUpon>201906120925370_DeviceTokenTableAdded.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SeedData\Cities.csv" />
     <EmbeddedResource Include="SeedData\PostalCodes.csv" />
