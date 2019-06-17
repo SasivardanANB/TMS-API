@@ -878,7 +878,7 @@ namespace DMS.DataGateway.Repositories
             {
                 try
                 {
-                    var driverId = context.TokenManagers.Where(u => u.TokenKey == token).Select(x => x.DriverId).FirstOrDefault();
+                    var driverId = context.Drivers.Where(u => u.DriverNo == token).Select(x => x.ID).FirstOrDefault();
                     if (driverId > 0)
                     {
                         deviceId = context.DeviceTokens.Where(x => x.DriverId == driverId).Select(d => d.DeviceKey).FirstOrDefault();
