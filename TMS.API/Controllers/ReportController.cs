@@ -64,5 +64,27 @@ namespace TMS.API.Controllers
             OrderReportResponse orderReportResponse = reportTask.OrdersLoadAndUnloadAvgDayWiseReport(orderReportRequest);
             return Ok(orderReportResponse);
         }
+
+        [Route("getgoodsreceivereport")]
+        [HttpPost]
+        public IHttpActionResult GetGoodsReceiveReport(GoodsReceiveOrIssueRequest goodsReceiveOrIssueRequest)
+        {
+            //Making OrderType = 1 (InBound), bcoz at only inbound goods receive done
+            goodsReceiveOrIssueRequest.Request.OrderTypeId = 1;
+            IReportTask reportTask = DependencyResolver.GetImplementationOf<ITaskGateway>().ReportTask;
+            GoodsReceiveOrIssueResponse orderReportResponse = reportTask.GoodsReceiveOrGoodsIssueReport(goodsReceiveOrIssueRequest);
+            return Ok(orderReportResponse);
+        }
+
+        [Route("getgoodsissuereport")]
+        [HttpPost]
+        public IHttpActionResult GetGoodsIssueReport(GoodsReceiveOrIssueRequest goodsReceiveOrIssueRequest)
+        {
+            //Making OrderType = 2 (OutBound), bcoz at only outbound goods receive done
+            goodsReceiveOrIssueRequest.Request.OrderTypeId = 2;
+            IReportTask reportTask = DependencyResolver.GetImplementationOf<ITaskGateway>().ReportTask;
+            GoodsReceiveOrIssueResponse orderReportResponse = reportTask.GoodsReceiveOrGoodsIssueReport(goodsReceiveOrIssueRequest);
+            return Ok(orderReportResponse);
+        }
     }
 }

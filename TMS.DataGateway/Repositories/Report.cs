@@ -367,5 +367,57 @@ namespace TMS.DataGateway.Repositories
             }
             return orderReportResponse;
         }
+
+        // For generating either goods issue and goods receive reports based on request
+        public GoodsReceiveOrIssueResponse GoodsReceiveOrGoodsIssueReport(GoodsReceiveOrIssueRequest goodsReceiveOrIssueRequest)
+        {
+            GoodsReceiveOrIssueResponse goodsReceiveOrIssueResponse = new GoodsReceiveOrIssueResponse();
+            try
+            {
+                using (var tMSDBContext = new TMSDBContext())
+                {
+                    var goodsReceiveOrIssueData = (from opd in tMSDBContext.OrderPartnerDetails
+                                                   where
+                                                     opd.OrderDetail.OrderHeader.OrderType == goodsReceiveOrIssueRequest.Request.OrderTypeId &&
+                                                     opd.PartnerID == goodsReceiveOrIssueRequest.Request.PartnerId &&
+                                                     DbFunctions.TruncateTime(opd.OrderDetail.OrderHeader.OrderDate) >= DbFunctions.TruncateTime(goodsReceiveOrIssueRequest.Request.StartDate) &&
+                                                     DbFunctions.TruncateTime(opd.OrderDetail.OrderHeader.OrderDate) <= DbFunctions.TruncateTime(goodsReceiveOrIssueRequest.Request.EndDate)
+                                                   group new { opd.OrderDetail.OrderHeader, opd.OrderDetail } by new
+                                                   {
+                                                       //Column1 = (DateTime?)Convert.ToDateTime(opd.OrderDetail.OrderHeader.OrderDate.Date)
+                                                       Column1 = DbFunctions.TruncateTime(opd.OrderDetail.OrderHeader.OrderDate)
+                                                   } into g
+                                                   select new Domain.GoodsReceiveOrIssue
+                                                   {
+                                                       OrderQty = g.Sum(p => p.OrderDetail.TotalCollie).ToString(),
+                                                       GRQty = goodsReceiveOrIssueRequest.Request.OrderTypeId == 1 ? g.Where(o => o.OrderHeader.OrderStatusID == 12).Sum(p => p.OrderDetail.TotalCollie).ToString() : string.Empty,
+                                                       GIQty = goodsReceiveOrIssueRequest.Request.OrderTypeId == 2 ? g.Where(o => o.OrderHeader.OrderStatusID == 12).Sum(p => p.OrderDetail.TotalCollie).ToString() : string.Empty,
+                                                       Date = g.Key.Column1.Value,
+                                                       Percentage = ((g.Sum(p => p.OrderDetail.TotalCollie) / g.Where(o => o.OrderHeader.OrderStatusID == 12).Sum(p => p.OrderDetail.TotalCollie)) * 100).ToString()
+                                                   }).ToList();
+
+                    goodsReceiveOrIssueResponse.NumberOfRecords = goodsReceiveOrIssueData.Count;
+                    goodsReceiveOrIssueResponse.Data = new Domain.GoodsReceiveOrIssueReport()
+                    {
+                        StartDate = goodsReceiveOrIssueRequest.Request.StartDate,
+                        EndDate = goodsReceiveOrIssueRequest.Request.EndDate,
+                        GoodsReceiveOrIssues = goodsReceiveOrIssueData,
+                        OrderTypeId= goodsReceiveOrIssueRequest.Request.OrderTypeId,
+                        PartnerId= goodsReceiveOrIssueRequest.Request.PartnerId
+                    };
+                    goodsReceiveOrIssueResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                    goodsReceiveOrIssueResponse.StatusCode = (int)HttpStatusCode.OK;
+                    goodsReceiveOrIssueResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+                goodsReceiveOrIssueResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                goodsReceiveOrIssueResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                goodsReceiveOrIssueResponse.StatusMessage = ex.Message;
+            }
+            return goodsReceiveOrIssueResponse;
+        }
     }
 }

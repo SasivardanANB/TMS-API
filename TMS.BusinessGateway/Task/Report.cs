@@ -41,6 +41,12 @@ namespace TMS.BusinessGateway.Task
         {
             OrderReportResponse orderReportResponse = _reportRepository.OrdersLoadAndUnloadAvgDayWiseReport(orderReportRequest);
             return orderReportResponse;
+        }
+
+        public override GoodsReceiveOrIssueResponse GoodsReceiveOrGoodsIssueReport(GoodsReceiveOrIssueRequest goodsReceiveOrIssueRequest)
+        {
+            GoodsReceiveOrIssueResponse goodsReceiveOrIssueResponse = _reportRepository.GoodsReceiveOrGoodsIssueReport(goodsReceiveOrIssueRequest);
+            return goodsReceiveOrIssueResponse;
         }        
     }
 }

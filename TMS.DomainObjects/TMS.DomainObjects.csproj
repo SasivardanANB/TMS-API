@@ -58,6 +58,7 @@
     <Compile Include="Objects\Driver.cs" />
     <Compile Include="Objects\Error.cs" />
     <Compile Include="Objects\Message.cs" />
+    <Compile Include="Objects\GoodsReceiveOrIssueReport.cs" />
     <Compile Include="Objects\OrderReport.cs" />
     <Compile Include="Objects\OrderSearch.cs" />
     <Compile Include="Objects\Order.cs" />
@@ -92,6 +93,7 @@
     <Compile Include="Request\AssignUserRoleRequest.cs" />
     <Compile Include="Request\ChangePasswordRequest.cs" />
     <Compile Include="Request\DriverRequest.cs" />
+    <Compile Include="Request\GoodsReceiveOrIssueRequest.cs" />
     <Compile Include="Request\OrderStatusRequest.cs" />
     <Compile Include="Request\PackingSheetRequest.cs" />
     <Compile Include="Request\PartnerSearchRequest.cs" />
@@ -124,6 +126,7 @@
     <Compile Include="Response\DriverResponse.cs" />
     <Compile Include="Response\ErrorResponse.cs" />
     <Compile Include="Response\OrderDetailsResponse.cs" />
+    <Compile Include="Response\GoodsReceiveOrIssueResponse.cs" />
     <Compile Include="Response\OrderSearchResponse.cs" />
     <Compile Include="Response\OrderResponse.cs" />
     <Compile Include="Response\OrderStatusResponse.cs" />
