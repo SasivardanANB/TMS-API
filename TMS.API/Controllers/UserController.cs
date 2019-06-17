@@ -22,6 +22,7 @@ using System.Text;
 using System.Runtime.Serialization.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
+using System.Net.Mail;
 
 namespace TMS.API.Controllers
 {
@@ -457,8 +458,67 @@ namespace TMS.API.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
             IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
-            UserResponse userResponse = userTask.ChangePassword(changePasswordRequest);
+            UserResponse userResponse = userTask.ChangePassword(changePasswordRequest, "changepassword");
+            return Ok(userResponse);
+        }
+
+        [Route("forgotpassword")]
+        [AllowAnonymous, HttpPost]
+        public IHttpActionResult ForgotPassword(ForgotPasswordRequest forgotPasswordRequest)
+        {
+
+            IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
+            UserResponse userResponse = userTask.ForgotPassword(forgotPasswordRequest);
+
+            if (userResponse.StatusCode == (int)HttpStatusCode.OK && userResponse.Status == DomainObjects.Resource.ResourceData.Success)
+            {
+                User userDetails = userResponse.Data[0];
+                if (userDetails != null && Convert.ToBoolean(ConfigurationManager.AppSettings["EmailFeature"]) == true)
+                {
+                    MailMessage mail = new MailMessage();
+                    mail.From = new MailAddress(ConfigurationManager.AppSettings["EmailFrom"]);
+                    mail.To.Add(userDetails.Email);
+                    mail.Subject = ConfigurationManager.AppSettings["EmailSubject"];
+                    string resetpasswordlink = ConfigurationManager.AppSettings["ResetPasswordLink"] + "?userId=" + userDetails.ID;
+
+                    //Fetching Email Body Text from EmailTemplate File.  
+                    var mappedPath = System.Web.Hosting.HostingEnvironment.MapPath("~/EmailTemplates/ResetPasswordTemplate.html");
+                    string FilePath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName;
+                    StreamReader str = new StreamReader(FilePath);
+                    string MailText = str.ReadToEnd();
+                    str.Close();
+
+                    //Repalce [newusername] = signup user name   
+                    MailText = MailText.Trim().Replace("[namauser]", userDetails.UserName).Replace("[resetpasswordlink]", resetpasswordlink);
+
+                    mail.Body = MailText;
+                    mail.IsBodyHtml = true;
+                    string smtpHost = ConfigurationManager.AppSettings["SmtpHost"];
+                    string loginEmailId = ConfigurationManager.AppSettings["SmtpUserName"];
+                    string emailPassword = ConfigurationManager.AppSettings["SmtpPassword"];
+                    SmtpClient smtp = new SmtpClient(smtpHost);
+                    smtp.Port = 587;
+                    smtp.UseDefaultCredentials = false;
+                    smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+                    smtp.Credentials = new System.Net.NetworkCredential(loginEmailId, emailPassword); // Enter senders User name and password  
+                    smtp.EnableSsl = true;
+                    smtp.Send(mail);
+                }
+            }
+            return Ok(userResponse);
+        }
+
+        [Route("resetpassword")]
+        [AllowAnonymous, HttpPost]
+        public IHttpActionResult ResetPassword(ChangePasswordRequest changePasswordRequest)
+        {
+            ModelState.Remove("changePasswordRequest.OldPassword");
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
+            UserResponse userResponse = userTask.ChangePassword(changePasswordRequest, "resetpassword");
             return Ok(userResponse);
         }
 

@@ -850,6 +850,7 @@ namespace DMS.DataGateway.Repositories
                                           ID = status.StopPointId,
                                           TripId = td.TripID,
                                           LocationId = td.PartnerId,
+                                          StatusDate=status.StatusDate,
                                           LocationName = td.Partner.PartnerName,
                                           SequenceNumber = td.SequenceNumber,
                                           ActualDeliveryDate = td.ActualDeliveryDate,
