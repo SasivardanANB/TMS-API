@@ -475,7 +475,7 @@ namespace TMS.API.Controllers
             if (userResponse.StatusCode == (int)HttpStatusCode.OK && userResponse.Status == DomainObjects.Resource.ResourceData.Success)
             {
                 User userDetails = userResponse.Data[0];
-                if (userDetails != null)
+                if (userDetails != null && Convert.ToBoolean(ConfigurationManager.AppSettings["EmailFeature"]) == true)
                 {
                     MailMessage mail = new MailMessage();
                     mail.From = new MailAddress(ConfigurationManager.AppSettings["EmailFrom"]);
