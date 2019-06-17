@@ -21,5 +21,6 @@ namespace DMS.DataGateway.Repositories.Iterfaces
         string GetOrderStatusCode(int tripStatusId);
         int GetOrderSequnceNumber(int stopPointId);
         StopPointsResponse GetLastTripStatusData(int stopPointId);
+        string GetDeviceId(string token);
     }
 }

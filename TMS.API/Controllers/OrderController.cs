@@ -275,6 +275,7 @@ namespace TMS.API.Controllers
                                     TransporterName = transporterPartnerDetail.PartnerName,
                                     TransporterCode = transporterPartnerDetail.PartnerNo,
                                     DriverName = request.DriverName,
+                                    DriverNo=request.DriverNo,
                                     VehicleType = request.VehicleShipmentType,
                                     VehicleNumber = request.VehicleNo,
                                     TripType = Convert.ToString(request.FleetType),
@@ -313,6 +314,7 @@ namespace TMS.API.Controllers
                                     EstimatedDeliveryDate = estimationShipmentDate
                                 };
                                 tripDMS.TripLocations.Add(destinationLocation);
+                                requestDMS.Requests.Add(tripDMS);
                                 #endregion
                             }
                         }

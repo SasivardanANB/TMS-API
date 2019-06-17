@@ -15,5 +15,6 @@ namespace DMS.DomainObjects.Request
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidUserPassword")]
         [MaxLength(30)]
         public string UserPassword { get; set; }
+        public string DeviceToken { get; set; }
     }
 }

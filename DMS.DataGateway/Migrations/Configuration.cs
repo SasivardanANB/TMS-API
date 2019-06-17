@@ -28,8 +28,8 @@ namespace DMS.DataGateway.Migrations
         protected override void Seed(DMS.DataGateway.DataModels.DMSDBContext context)
         {
             //// Uncomment below code to debug while running Update-Database Command
-            if (!System.Diagnostics.Debugger.IsAttached)
-                System.Diagnostics.Debugger.Launch();
+            //if (!System.Diagnostics.Debugger.IsAttached)
+            //    System.Diagnostics.Debugger.Launch();
 
             try
             {
