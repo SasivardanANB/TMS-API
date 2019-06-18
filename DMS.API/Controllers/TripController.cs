@@ -71,9 +71,7 @@ namespace DMS.API.Controllers
                 int i = 0;
                 foreach (var reqObj in request.Requests)
                 {
-                    IEnumerable<string> headerValues = Request.Headers.GetValues("Token");
-                    var token = reqObj.DriverNo;
-                    string deviceId = tripTask.GetDeviceId(token);
+                    string deviceId = tripTask.GetDeviceId(reqObj.DriverNo);
                     if (!string.IsNullOrEmpty(deviceId))
                     {
                         var client = new RestClient("https://fcm.googleapis.com/");
@@ -81,7 +79,6 @@ namespace DMS.API.Controllers
                         client.AddDefaultHeader("Authorization", ConfigurationManager.AppSettings["FCM_Authorization"]);
                         var req = new RestRequest("fcm/send", Method.POST) { RequestFormat = DataFormat.Json };
                         req.Timeout = 500000;
-                        object onj = new object();
                         NotificationRequest notificationRequest = new NotificationRequest();
                         notificationRequest.to = deviceId;   //"cFaYBS5Rn_w:APA91bEcu9Q_wqSASgXZ1nAUUvpelCTOw6eF5g0RmdNIrIi7GlJl-mTezk9Tb7lVkzzBH3wabznQ6GMkws2Br9XV8OvpilwSmMjcE3MKe9LrEtYZ8eAodgbx12-Az0NU6_IKbIfB0POu";
 
