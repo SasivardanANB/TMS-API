@@ -21,13 +21,6 @@ namespace TMS.API.Controllers
         [HttpPost]
         public IHttpActionResult CreateUpdatePIC(PICRequest picRequest)
         {
-            for (int i = 0; i < picRequest.Requests.Count; i++)
-            {
-                if (picRequest.Requests[i].ID > 0)
-                {
-                    ModelState.Remove("picRequest.Requests[" + i + "].PICPassword");
-                }
-            }
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
