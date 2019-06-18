@@ -14,5 +14,7 @@ namespace TMS.DomainGateway.Task.Interfaces
         OrderReportResponse OrdersProgress(OrderReportRequest orderReportRequest);
         OrderReportResponse FinishedOrderReports(OrderReportRequest orderReportRequest);
         OrderReportResponse OrdersLoadAndUnloadAvgDayWiseReport(OrderReportRequest orderReportRequest);
+        GoodsReceiveOrIssueResponse GoodsReceiveOrGoodsIssueReport(GoodsReceiveOrIssueRequest goodsReceiveOrIssueRequest);
+        AdminBoardReportResponse BoardAdminReprt(int orderTypeId);
     }
 }

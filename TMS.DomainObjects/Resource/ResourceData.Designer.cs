@@ -88,7 +88,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Driver deleted successfully.
+        ///   Looks up a localized string similar to Driver(s) deleted successfully.
         /// </summary>
         public static string DriverDeleted {
             get {
@@ -826,7 +826,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PIC deleted successfully.
+        ///   Looks up a localized string similar to PIC(s) deleted successfully.
         /// </summary>
         public static string PicDeleted {
             get {

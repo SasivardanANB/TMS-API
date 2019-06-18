@@ -367,5 +367,162 @@ namespace TMS.DataGateway.Repositories
             }
             return orderReportResponse;
         }
+
+        // For generating either goods issue and goods receive reports based on request
+        public GoodsReceiveOrIssueResponse GoodsReceiveOrGoodsIssueReport(GoodsReceiveOrIssueRequest goodsReceiveOrIssueRequest)
+        {
+            GoodsReceiveOrIssueResponse goodsReceiveOrIssueResponse = new GoodsReceiveOrIssueResponse();
+            try
+            {
+                using (var tMSDBContext = new TMSDBContext())
+                {
+                    var goodsReceiveOrIssueData = (from opd in tMSDBContext.OrderPartnerDetails
+                                                   where
+                                                     opd.OrderDetail.OrderHeader.OrderType == goodsReceiveOrIssueRequest.Request.OrderTypeId &&
+                                                     opd.PartnerID == goodsReceiveOrIssueRequest.Request.PartnerId &&
+                                                     DbFunctions.TruncateTime(opd.OrderDetail.OrderHeader.OrderDate) >= DbFunctions.TruncateTime(goodsReceiveOrIssueRequest.Request.StartDate) &&
+                                                     DbFunctions.TruncateTime(opd.OrderDetail.OrderHeader.OrderDate) <= DbFunctions.TruncateTime(goodsReceiveOrIssueRequest.Request.EndDate)
+                                                   group new { opd.OrderDetail.OrderHeader, opd.OrderDetail } by new
+                                                   {
+                                                       //Column1 = (DateTime?)Convert.ToDateTime(opd.OrderDetail.OrderHeader.OrderDate.Date)
+                                                       Column1 = DbFunctions.TruncateTime(opd.OrderDetail.OrderHeader.OrderDate)
+                                                   } into g
+                                                   select new Domain.GoodsReceiveOrIssue
+                                                   {
+                                                       OrderQty = g.Sum(p => p.OrderDetail.TotalCollie).ToString(),
+                                                       GRQty = goodsReceiveOrIssueRequest.Request.OrderTypeId == 1 ? g.Where(o => o.OrderHeader.OrderStatusID == 12).Sum(p => p.OrderDetail.TotalCollie).ToString() : string.Empty,
+                                                       GIQty = goodsReceiveOrIssueRequest.Request.OrderTypeId == 2 ? g.Where(o => o.OrderHeader.OrderStatusID == 12).Sum(p => p.OrderDetail.TotalCollie).ToString() : string.Empty,
+                                                       Date = DbFunctions.TruncateTime(g.Key.Column1).Value,
+                                                       Percentage = ((g.Sum(p => p.OrderDetail.TotalCollie) / g.Where(o => o.OrderHeader.OrderStatusID == 12).Sum(p => p.OrderDetail.TotalCollie)) * 100).ToString()
+                                                   }).ToList();
+
+                    goodsReceiveOrIssueResponse.NumberOfRecords = goodsReceiveOrIssueData.Count;
+                    goodsReceiveOrIssueResponse.Data = new Domain.GoodsReceiveOrIssueReport()
+                    {
+                        StartDate = goodsReceiveOrIssueRequest.Request.StartDate,
+                        EndDate = goodsReceiveOrIssueRequest.Request.EndDate,
+                        GoodsReceiveOrIssues = goodsReceiveOrIssueData,
+                        OrderTypeId= goodsReceiveOrIssueRequest.Request.OrderTypeId,
+                        PartnerId= goodsReceiveOrIssueRequest.Request.PartnerId
+                    };
+                    goodsReceiveOrIssueResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                    goodsReceiveOrIssueResponse.StatusCode = (int)HttpStatusCode.OK;
+                    goodsReceiveOrIssueResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+                goodsReceiveOrIssueResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                goodsReceiveOrIssueResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                goodsReceiveOrIssueResponse.StatusMessage = ex.Message;
+            }
+            return goodsReceiveOrIssueResponse;
+        }
+
+        public AdminBoardReportResponse BoardAdminReprt(int orderTypeId)
+        {
+            AdminBoardReportResponse adminBoardReportResponse = new AdminBoardReportResponse();
+            try
+            {
+                using (var tMSDBContext = new TMSDBContext())
+                {
+                    var adminBoardDetails = (from oh in tMSDBContext.OrderHeaders
+                                             join od in tMSDBContext.OrderDetails on oh.ID equals od.OrderHeaderID
+                                             where oh.OrderType==orderTypeId
+                                             group new { oh, od } by new { oh.ID }).ToList();
+
+                    var ordersInDay = adminBoardDetails.Select(yf => yf.Where(i =>
+                    DbFunctions.TruncateTime(i.oh.OrderDate) == DbFunctions.TruncateTime(DateTime.Now)).ToList())
+                    .Select(o => new Domain.OrdersInDay
+                    {
+                        Pallet = o.Sum(p => p.od.TotalPallet).ToString(),
+                        OrderNumber = o.Select(or => or.oh.OrderNo).FirstOrDefault()
+                    }).ToList();
+
+                    var assignmentInDay = adminBoardDetails.Select(yf => yf.Where(i => i.oh.OrderStatusID == 3 && 
+                    DbFunctions.TruncateTime(i.oh.LastModifiedTime) == DbFunctions.TruncateTime(DateTime.Now)).ToList())
+                    .Select(o => new Domain.AssignmentInDay
+                    {
+                        Pallet = o.Sum(p => p.od.TotalPallet).ToString(),
+                        VehicleNumber = o.Select(or => or.oh.VehicleNo).FirstOrDefault()
+                    }).ToList();
+
+                    var finishInDay = adminBoardDetails.Select(yf => yf.Where(i => i.oh.OrderStatusID == 12 && 
+                    DbFunctions.TruncateTime(i.oh.LastModifiedTime) == DbFunctions.TruncateTime(DateTime.Now)).ToList())
+                    .Select(o => new Domain.FinishInDay
+                    {
+                        Collie = o.Sum(p => p.od.TotalCollie).ToString(),
+                        VehicleNumber = o.Select(or => or.oh.VehicleNo).FirstOrDefault()
+                    }).ToList();
+
+                    //if (orderTypeId == 1)
+                    //{
+
+                        var bongkarInDay = adminBoardDetails.Select(yf => yf.Where(i => i.oh.OrderStatusID == 10 &&
+                        DbFunctions.TruncateTime(i.oh.LastModifiedTime) == DbFunctions.TruncateTime(DateTime.Now)).ToList())
+                        .Select(o => new Domain.BongkarInDay
+                        {
+                            Collie = o.Sum(p => p.od.TotalCollie).ToString(),
+                            VehicleNumber = o.Select(or => or.oh.VehicleNo).FirstOrDefault()
+                        }).ToList();
+                    //}
+                    //else
+                    //{
+
+                        var muatInDay = adminBoardDetails.Select(yf => yf.Where(i => i.oh.OrderStatusID == 10 &&
+                        DbFunctions.TruncateTime(i.oh.LastModifiedTime) == DbFunctions.TruncateTime(DateTime.Now)).ToList())
+                        .Select(o => new Domain.MuatInDay
+                        {
+                            Collie = o.Sum(p => p.od.TotalCollie).ToString(),
+                            VehicleNumber = o.Select(or => or.oh.VehicleNo).FirstOrDefault()
+                        }).ToList();
+                    //}                    
+
+                    var jalanInDay = adminBoardDetails.Select(yf => yf.Where(i => i.oh.OrderStatusID == 4 &&
+                    DbFunctions.TruncateTime(i.oh.LastModifiedTime) == DbFunctions.TruncateTime(DateTime.Now)).ToList())
+                    .Select(o => new Domain.JalanInDay
+                    {
+                        Collie = o.Sum(p => p.od.TotalCollie).ToString(),
+                        VehicleNumber = o.Select(or => or.oh.VehicleNo).FirstOrDefault()
+                    }).ToList();
+
+                    var gatinInDay = (from oh in tMSDBContext.OrderHeaders
+                                      join g in tMSDBContext.GateInGateOuts on oh.ID equals g.OrderId
+                                      join od in tMSDBContext.OrderDetails on oh.ID equals od.OrderHeaderID
+                                      group new { oh, g, od } by new { oh.ID }
+                                     into ord
+                                      select new Domain.GatinInDay
+                                      {
+                                          Collie = ord.Sum(i => i.od.TotalCollie).ToString(),
+                                          VehicleNumber = ord.Select(i => i.oh.VehicleNo).FirstOrDefault()
+                                      }).ToList();
+
+                    Domain.AdminBoardReport adminBoardReport = new Domain.AdminBoardReport()
+                    {
+                        BongkarInDays = bongkarInDay,
+                        GatinInDays = gatinInDay,
+                        FinishInDays = finishInDay,
+                        AssignmentInDays = assignmentInDay,
+                        JalanInDays = jalanInDay,
+                        MuatInDays = muatInDay,
+                        OrdersInDays = ordersInDay,
+                        OrderType = tMSDBContext.OrderTypes.Where(o => o.ID == orderTypeId).Select(d => d.OrderTypeDescription).FirstOrDefault()
+                    };
+                    adminBoardReportResponse.Data = adminBoardReport;
+                    adminBoardReportResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                    adminBoardReportResponse.StatusCode = (int)HttpStatusCode.OK;
+                    adminBoardReportResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+                adminBoardReportResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                adminBoardReportResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                adminBoardReportResponse.StatusMessage = ex.Message;
+            }
+            return adminBoardReportResponse;
+        }
     }
 }

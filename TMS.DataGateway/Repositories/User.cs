@@ -1099,7 +1099,7 @@ namespace TMS.DataGateway.Repositories
                                 tMSDBContext.SaveChanges();
                                 userRoleResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserRoleCreated;
                                 userRoleResponse.StatusCode = (int)HttpStatusCode.OK;
-                                userRoleResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                                userRoleResponse.Status = DomainObjects.Resource.ResourceData.Success;
 
                             }
                             else
