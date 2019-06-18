@@ -205,7 +205,7 @@ namespace DMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Trip(s) created/updated successfully in TMS.
+        ///   Looks up a localized string similar to Trip(s) created/updated successfully in DMS.
         /// </summary>
         public static string TripCreated {
             get {
