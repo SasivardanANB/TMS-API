@@ -49,9 +49,9 @@ namespace TMS.BusinessGateway.Task
             return goodsReceiveOrIssueResponse;
         }
 
-        public override AdminBoardReportResponse BoardAdminReprt(int orderTypeId)
+        public override AdminBoardReportResponse BoardAdminReport(int orderTypeId)
         {
-            AdminBoardReportResponse adminBoardReportResponse = _reportRepository.BoardAdminReprt(orderTypeId);
+            AdminBoardReportResponse adminBoardReportResponse = _reportRepository.BoardAdminReport(orderTypeId);
             return adminBoardReportResponse;
         }
     }
