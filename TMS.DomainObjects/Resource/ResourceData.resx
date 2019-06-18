@@ -274,10 +274,10 @@
     <value>Order(s) updated successfully in TMS</value>
   </data>
   <data name="PoolActivated" xml:space="preserve">
-    <value>Pool activated successfully</value>
+    <value>Pool(s) activated successfully</value>
   </data>
   <data name="PoolDeactivated" xml:space="preserve">
-    <value>Pool deactivated successfully</value>
+    <value>Pool(s) deactivated successfully</value>
   </data>
   <data name="PoolsCreated" xml:space="preserve">
     <value>Pool(s) created successfully</value>
@@ -349,7 +349,7 @@
     <value>Driver(s) deleted successfully</value>
   </data>
   <data name="PoolDeleted" xml:space="preserve">
-    <value>Pool deleted successfully</value>
+    <value>Pool(s) deleted successfully</value>
   </data>
   <data name="VehicleDeleted" xml:space="preserve">
     <value>Vehicle deleted successfully</value>
