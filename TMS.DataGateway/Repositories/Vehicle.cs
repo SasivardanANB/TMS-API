@@ -90,10 +90,17 @@ namespace TMS.DataGateway.Repositories
                         vehicleDetails.LastModifiedTime = DateTime.Now;
                         vehicleDetails.IsDelete = true;
                         tMSDBContext.SaveChanges();
+                        VehicleResponse.StatusCode = (int)HttpStatusCode.OK;
+                        VehicleResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        VehicleResponse.StatusMessage = DomainObjects.Resource.ResourceData.VehicleDeleted;
                     }
-                    VehicleResponse.StatusCode = (int)HttpStatusCode.OK;
-                    VehicleResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                    VehicleResponse.StatusMessage = DomainObjects.Resource.ResourceData.VehicleDeleted;
+                    else
+                    {
+                        VehicleResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                        VehicleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                        VehicleResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
+                    }
+                   
                 }
             }
             catch (Exception ex)
@@ -319,7 +326,7 @@ namespace TMS.DataGateway.Repositories
                 }
                 else
                 {
-                    vehicleResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                    vehicleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                     vehicleResponse.StatusCode = (int)HttpStatusCode.NotFound;
                     vehicleResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                 }

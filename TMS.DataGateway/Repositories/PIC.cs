@@ -112,7 +112,7 @@ namespace TMS.DataGateway.Repositories
                     }
                     else
                     {
-                        picResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        picResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                         picResponse.StatusCode = (int)HttpStatusCode.NotFound;
                         picResponse.StatusMessage = DomainObjects.Resource.ResourceData.InvalidPICID;
                     }
@@ -248,7 +248,7 @@ namespace TMS.DataGateway.Repositories
                 }
                 else
                 {
-                    picResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                    picResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                     picResponse.StatusCode = (int)HttpStatusCode.NotFound;
                     picResponse.StatusMessage= DomainObjects.Resource.ResourceData.NoRecords;
                 }

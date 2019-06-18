@@ -73,6 +73,7 @@ namespace TMS.DataGateway.Repositories
                             tMSDBContext.SaveChanges();
                             driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.DriversUpdated;
                             driverResponse.StatusCode = (int)HttpStatusCode.OK;
+                            driverResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         }
                         //For create driver
                         else
@@ -96,6 +97,7 @@ namespace TMS.DataGateway.Repositories
                                 driverResponse.Data[driverObjectCount].DriverNo = driverData.DriverNo;
                                 driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.DriversCreated;
                                 driverResponse.StatusCode = (int)HttpStatusCode.OK;
+                                driverResponse.Status = DomainObjects.Resource.ResourceData.Success;
                             }
                             else
                             {
@@ -111,6 +113,7 @@ namespace TMS.DataGateway.Repositories
                                     driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.IdentityNoExisted;
                                 }
                                 driverResponse.StatusCode = (int)HttpStatusCode.BadRequest;
+                                driverResponse.Status = DomainObjects.Resource.ResourceData.Failure;
 
                             }
                         }
@@ -118,7 +121,7 @@ namespace TMS.DataGateway.Repositories
                     }
                     driverRequest.Requests = mapper.Map<List<DataModel.Driver>, List<Domain.Driver>>(drivers);
                     driverResponse.Data = driverRequest.Requests;
-                    driverResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                    
                 }
             }
             catch (Exception ex)
@@ -146,10 +149,17 @@ namespace TMS.DataGateway.Repositories
                         driverDetails.LastModifiedTime = DateTime.Now;
                         driverDetails.IsDelete = true;
                         tMSDBContext.SaveChanges();
+                        driverResponse.StatusCode = (int)HttpStatusCode.OK;
+                        driverResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.DriverDeleted;
                     }
-                    driverResponse.StatusCode = (int)HttpStatusCode.OK;
-                    driverResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                    driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.DriverDeleted;
+                    else
+                    {
+                        driverResponse.StatusCode = (int)HttpStatusCode.OK;
+                        driverResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                        driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
+                    }
+                    
                 }
             }
             catch (Exception ex)
@@ -382,7 +392,7 @@ namespace TMS.DataGateway.Repositories
                 }
                 else
                 {
-                    driverResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                    driverResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                     driverResponse.StatusCode = (int)HttpStatusCode.NotFound;
                     driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                 }

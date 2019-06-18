@@ -258,7 +258,7 @@ namespace TMS.DataGateway.Repositories
                     }
                     else
                     {
-                        tripResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        tripResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                         tripResponse.StatusCode = (int)HttpStatusCode.NotFound;
                         tripResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                     }
@@ -411,7 +411,7 @@ namespace TMS.DataGateway.Repositories
                     else
                     {
                         orderDetailsResponse.NumberOfRecords = 0;
-                        orderDetailsResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        orderDetailsResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                         orderDetailsResponse.StatusCode = (int)HttpStatusCode.NotFound;
                         orderDetailsResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
                     }
@@ -451,7 +451,7 @@ namespace TMS.DataGateway.Repositories
                         if(orderHeadeData != null)
                         {
                             orderHeadeData.DriverName = request.DriverName;
-                            orderHeadeData.DriverNo = request.DriverNo;
+                            orderHeadeData.DriverNo = context.Drivers.Where(o => o.UserName == request.DriverName && o.IsActive).Select(d => d.DriverNo).FirstOrDefault();
                             orderHeadeData.VehicleShipment = request.Vehicle;
                             orderHeadeData.LastModifiedTime = tripRequest.LastModifiedTime;
                             orderHeadeData.LastModifiedBy = tripRequest.LastModifiedBy;
@@ -462,7 +462,7 @@ namespace TMS.DataGateway.Repositories
                         }
                         else
                         {
-                            tripResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                            tripResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                             tripResponse.StatusCode = (int)HttpStatusCode.NotFound;
                             tripResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                         }

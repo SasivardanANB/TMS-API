@@ -1086,7 +1086,7 @@ namespace TMS.DataGateway.Repositories
                     }
                     else
                     {
-                        orderSearchResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        orderSearchResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                         orderSearchResponse.StatusCode = (int)HttpStatusCode.NotFound;
                         orderSearchResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                     }
@@ -1730,12 +1730,19 @@ namespace TMS.DataGateway.Repositories
                                     context.SaveChanges();
                                 }
                             }
+                            packingSheetResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                            packingSheetResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                            packingSheetResponse.StatusCode = (int)HttpStatusCode.OK;
+                        }
+                        else
+                        {
+                            packingSheetResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                            packingSheetResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
+                            packingSheetResponse.StatusCode = (int)HttpStatusCode.NotFound;
                         }
                         //packingSheetRequest.Requests = mapper.Map<List<DataModel.Role>, List<Domain.Role>>(roles);
                         //packingSheetResponse.Data = packingSheetRequest.Requests;
-                        packingSheetResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                        packingSheetResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
-                        packingSheetResponse.StatusCode = (int)HttpStatusCode.OK;
+                       
 
                     }
 
@@ -1786,7 +1793,7 @@ namespace TMS.DataGateway.Repositories
                     }
                     else
                     {
-                        packingSheetResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        packingSheetResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                         packingSheetResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                         packingSheetResponse.StatusCode = (int)HttpStatusCode.NotFound;
                         packingSheetResponse.NumberOfRecords = 0;
@@ -1835,7 +1842,7 @@ namespace TMS.DataGateway.Repositories
                     {
                         commonResponse.NumberOfRecords = 0;
                         commonResponse.Data = null;
-                        commonResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        commonResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                         commonResponse.StatusCode = (int)HttpStatusCode.NotFound;
                         commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
                     }
@@ -1907,7 +1914,7 @@ namespace TMS.DataGateway.Repositories
                     {
                         dealerDetailsResponse.NumberOfRecords = 0;
                         dealerDetailsResponse.Data = null;
-                        dealerDetailsResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        dealerDetailsResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                         dealerDetailsResponse.StatusCode = (int)HttpStatusCode.NotFound;
                         dealerDetailsResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
                     }
@@ -2063,7 +2070,7 @@ namespace TMS.DataGateway.Repositories
                     else
                     {
                         orderDetailsResponse.NumberOfRecords = 0;
-                        orderDetailsResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        orderDetailsResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                         orderDetailsResponse.StatusCode = (int)HttpStatusCode.NotFound;
                         orderDetailsResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
                     }
@@ -2210,6 +2217,9 @@ namespace TMS.DataGateway.Repositories
                 catch (Exception ex)
                 {
                     _logger.Log(LogLevel.Error, ex);
+                    response.Status = DomainObjects.Resource.ResourceData.Failure;
+                    response.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                    response.StatusMessage = ex.Message;
                 }
             }
 

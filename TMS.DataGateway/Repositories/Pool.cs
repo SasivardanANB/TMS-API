@@ -99,10 +99,17 @@ namespace TMS.DataGateway.Repositories
                         poolDetails.LastModifiedTime = DateTime.Now;
                         poolDetails.IsDelete = true;
                         tMSDBContext.SaveChanges();
+                        poolResponse.StatusCode = (int)HttpStatusCode.OK;
+                        poolResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        poolResponse.StatusMessage = DomainObjects.Resource.ResourceData.PoolDeleted;
                     }
-                    poolResponse.StatusCode = (int)HttpStatusCode.OK;
-                    poolResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                    poolResponse.StatusMessage = DomainObjects.Resource.ResourceData.PoolDeleted;
+                    else
+                    {
+                        poolResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                        poolResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                        poolResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
+                    }
+                   
                 }
             }
             catch (Exception ex)
@@ -254,7 +261,7 @@ namespace TMS.DataGateway.Repositories
                 }
                 else
                 {
-                    poolResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                    poolResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                     poolResponse.StatusCode = (int)HttpStatusCode.NotFound;
                     poolResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                 }

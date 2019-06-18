@@ -281,7 +281,7 @@ namespace TMS.DataGateway.Repositories
                 }
                 else
                 {
-                    partnerResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                    partnerResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                     partnerResponse.StatusCode = (int)HttpStatusCode.NotFound;
                     partnerResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                 }

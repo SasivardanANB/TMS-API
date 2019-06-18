@@ -143,7 +143,7 @@ namespace TMS.DataGateway.Repositories
                 }
                 else
                 {
-                    gateResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                    gateResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                     gateResponse.StatusCode = (int)HttpStatusCode.NotFound;
                     gateResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                 }
