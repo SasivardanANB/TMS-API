@@ -15,6 +15,6 @@ namespace TMS.DataGateway.Repositories.Interfaces
         OrderReportResponse FinishedOrderReports(OrderReportRequest orderReportRequest);
         OrderReportResponse OrdersLoadAndUnloadAvgDayWiseReport(OrderReportRequest orderReportRequest);
         GoodsReceiveOrIssueResponse GoodsReceiveOrGoodsIssueReport(GoodsReceiveOrIssueRequest goodsReceiveOrIssueRequest);
-        AdminBoardReportResponse BoardAdminReprt(int orderTypeId);
+        AdminBoardReportResponse BoardAdminReport(int orderTypeId);
     }
 }

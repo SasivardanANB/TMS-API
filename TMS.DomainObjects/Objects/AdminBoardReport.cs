@@ -18,39 +18,42 @@ namespace TMS.DomainObjects.Objects
         public List<FinishInDay> FinishInDays { get; set; }
         public List<MuatInDay> MuatInDays { get; set; }
     }
-    public class OrdersInDay
+    public class OrdersInDay: OrderNo
+    {
+        public string Pallet { get; set; }
+    }
+    public class AssignmentInDay : OrderNo
+    {
+        public string VehicleNumber { get; set; }
+        public string Pallet { get; set; }
+    }
+    public class JalanInDay : OrderNo
+    {
+        public string VehicleNumber { get; set; }
+        public string Collie { get; set; }
+    }
+    public class GatinInDay : OrderNo
+    {
+        public string VehicleNumber { get; set; }
+        public string Collie { get; set; }
+    }
+    public class BongkarInDay : OrderNo
+    {
+        public string VehicleNumber { get; set; }
+        public string Collie { get; set; }
+    }
+    public class FinishInDay : OrderNo
+    {
+        public string VehicleNumber { get; set; }
+        public string Collie { get; set; }
+    }
+    public class MuatInDay : OrderNo
+    {
+        public string VehicleNumber { get; set; }
+        public string Collie { get; set; }
+    }
+    public class OrderNo
     {
         public string OrderNumber { get; set; }
-        public string Pallet { get; set; }
-    }
-    public class AssignmentInDay
-    {
-        public string VehicleNumber { get; set; }
-        public string Pallet { get; set; }
-    }
-    public class JalanInDay
-    {
-        public string VehicleNumber { get; set; }
-        public string Collie { get; set; }
-    }
-    public class GatinInDay
-    {
-        public string VehicleNumber { get; set; }
-        public string Collie { get; set; }
-    }
-    public class BongkarInDay
-    {
-        public string VehicleNumber { get; set; }
-        public string Collie { get; set; }
-    }
-    public class FinishInDay
-    {
-        public string VehicleNumber { get; set; }
-        public string Collie { get; set; }
-    }
-    public class MuatInDay
-    {
-        public string VehicleNumber { get; set; }
-        public string Collie { get; set; }
     }
 }

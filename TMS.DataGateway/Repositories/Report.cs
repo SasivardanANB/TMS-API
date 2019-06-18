@@ -383,8 +383,7 @@ namespace TMS.DataGateway.Repositories
                                                      DbFunctions.TruncateTime(opd.OrderDetail.OrderHeader.OrderDate) >= DbFunctions.TruncateTime(goodsReceiveOrIssueRequest.Request.StartDate) &&
                                                      DbFunctions.TruncateTime(opd.OrderDetail.OrderHeader.OrderDate) <= DbFunctions.TruncateTime(goodsReceiveOrIssueRequest.Request.EndDate)
                                                    group new { opd.OrderDetail.OrderHeader, opd.OrderDetail } by new
-                                                   {
-                                                       //Column1 = (DateTime?)Convert.ToDateTime(opd.OrderDetail.OrderHeader.OrderDate.Date)
+                                                   {                                                       //Column1 = (DateTime?)Convert.ToDateTime(opd.OrderDetail.OrderHeader.OrderDate.Date)
                                                        Column1 = DbFunctions.TruncateTime(opd.OrderDetail.OrderHeader.OrderDate)
                                                    } into g
                                                    select new Domain.GoodsReceiveOrIssue
@@ -420,72 +419,80 @@ namespace TMS.DataGateway.Repositories
             return goodsReceiveOrIssueResponse;
         }
 
-        public AdminBoardReportResponse BoardAdminReprt(int orderTypeId)
+        public AdminBoardReportResponse BoardAdminReport(int orderTypeId)
         {
             AdminBoardReportResponse adminBoardReportResponse = new AdminBoardReportResponse();
             try
             {
                 using (var tMSDBContext = new TMSDBContext())
                 {
-                    var adminBoardDetails = (from oh in tMSDBContext.OrderHeaders
-                                             join od in tMSDBContext.OrderDetails on oh.ID equals od.OrderHeaderID
-                                             where oh.OrderType==orderTypeId
-                                             group new { oh, od } by new { oh.ID }).ToList();
+                    var ordersInDay = (from oh in tMSDBContext.OrderHeaders
+                                       join od in tMSDBContext.OrderDetails on oh.ID equals od.OrderHeaderID
+                                       where oh.OrderType == orderTypeId && DbFunctions.TruncateTime(oh.OrderDate) == DbFunctions.TruncateTime(DateTime.Now)
+                                       group new { oh, od } by new { oh.ID } into ord select new Domain.OrdersInDay {
+                                           Pallet = ord.Sum(p => p.od.TotalPallet).ToString(),
+                                           OrderNumber = ord.Select(or => or.oh.OrderNo).FirstOrDefault()
+                                       }).ToList();
 
-                    var ordersInDay = adminBoardDetails.Select(yf => yf.Where(i =>
-                    DbFunctions.TruncateTime(i.oh.OrderDate) == DbFunctions.TruncateTime(DateTime.Now)).ToList())
-                    .Select(o => new Domain.OrdersInDay
-                    {
-                        Pallet = o.Sum(p => p.od.TotalPallet).ToString(),
-                        OrderNumber = o.Select(or => or.oh.OrderNo).FirstOrDefault()
-                    }).ToList();
+                    var assignmentInDay = (from oh in tMSDBContext.OrderHeaders
+                                           join od in tMSDBContext.OrderDetails on oh.ID equals od.OrderHeaderID
+                                           join osh in tMSDBContext.OrderStatusHistories on od.ID equals osh.OrderDetailID
+                                           where oh.OrderType == orderTypeId && osh.OrderStatusID==3 && DbFunctions.TruncateTime(osh.StatusDate) == DbFunctions.TruncateTime(DateTime.Now)
+                                           group new { oh, od } by new { oh.ID } into ord
+                                           select new Domain.AssignmentInDay
+                                           {
+                                               Pallet = ord.Sum(p => p.od.TotalPallet).ToString(),
+                                               VehicleNumber = ord.Select(or => or.oh.VehicleNo).FirstOrDefault(),
+                                               OrderNumber = ord.Select(or => or.oh.OrderNo).FirstOrDefault()
+                                           }).ToList();
 
-                    var assignmentInDay = adminBoardDetails.Select(yf => yf.Where(i => i.oh.OrderStatusID == 3 && 
-                    DbFunctions.TruncateTime(i.oh.LastModifiedTime) == DbFunctions.TruncateTime(DateTime.Now)).ToList())
-                    .Select(o => new Domain.AssignmentInDay
-                    {
-                        Pallet = o.Sum(p => p.od.TotalPallet).ToString(),
-                        VehicleNumber = o.Select(or => or.oh.VehicleNo).FirstOrDefault()
-                    }).ToList();
+                    var finishInDay = (from oh in tMSDBContext.OrderHeaders
+                                       join od in tMSDBContext.OrderDetails on oh.ID equals od.OrderHeaderID
+                                       join osh in tMSDBContext.OrderStatusHistories on od.ID equals osh.OrderDetailID
+                                       where oh.OrderType == orderTypeId && osh.OrderStatusID == 12 && DbFunctions.TruncateTime(osh.StatusDate) == DbFunctions.TruncateTime(DateTime.Now)
+                                       group new { oh, od } by new { oh.ID } into ord
+                                       select new Domain.FinishInDay
+                                       {
+                                           Collie = ord.Sum(p => p.od.TotalCollie).ToString(),
+                                           VehicleNumber = ord.Select(or => or.oh.VehicleNo).FirstOrDefault(),
+                                           OrderNumber = ord.Select(or => or.oh.OrderNo).FirstOrDefault()
+                                       }).ToList();
 
-                    var finishInDay = adminBoardDetails.Select(yf => yf.Where(i => i.oh.OrderStatusID == 12 && 
-                    DbFunctions.TruncateTime(i.oh.LastModifiedTime) == DbFunctions.TruncateTime(DateTime.Now)).ToList())
-                    .Select(o => new Domain.FinishInDay
-                    {
-                        Collie = o.Sum(p => p.od.TotalCollie).ToString(),
-                        VehicleNumber = o.Select(or => or.oh.VehicleNo).FirstOrDefault()
-                    }).ToList();
+                    var bongkarInDay = (from oh in tMSDBContext.OrderHeaders
+                                        join od in tMSDBContext.OrderDetails on oh.ID equals od.OrderHeaderID
+                                        join osh in tMSDBContext.OrderStatusHistories on od.ID equals osh.OrderDetailID
+                                        where oh.OrderType == orderTypeId && osh.OrderStatusID == 10 && DbFunctions.TruncateTime(osh.StatusDate) == DbFunctions.TruncateTime(DateTime.Now)
+                                        group new { oh, od } by new { oh.ID } into ord
+                                        select new Domain.BongkarInDay
+                                        {
+                                            Collie = ord.Sum(p => p.od.TotalCollie).ToString(),
+                                            VehicleNumber = ord.Select(or => or.oh.VehicleNo).FirstOrDefault(),
+                                            OrderNumber = ord.Select(or => or.oh.OrderNo).FirstOrDefault()
+                                        }).ToList();
 
-                    //if (orderTypeId == 1)
-                    //{
+                    var muatInDay = (from oh in tMSDBContext.OrderHeaders
+                                     join od in tMSDBContext.OrderDetails on oh.ID equals od.OrderHeaderID
+                                     join osh in tMSDBContext.OrderStatusHistories on od.ID equals osh.OrderDetailID
+                                     where oh.OrderType == orderTypeId && osh.OrderStatusID == 10 && DbFunctions.TruncateTime(osh.StatusDate) == DbFunctions.TruncateTime(DateTime.Now)
+                                     group new { oh, od } by new { oh.ID } into ord
+                                     select new Domain.MuatInDay
+                                     {
+                                         Collie = ord.Sum(p => p.od.TotalCollie).ToString(),
+                                         VehicleNumber = ord.Select(or => or.oh.VehicleNo).FirstOrDefault(),
+                                         OrderNumber = ord.Select(or => or.oh.OrderNo).FirstOrDefault()
+                                     }).ToList();
 
-                        var bongkarInDay = adminBoardDetails.Select(yf => yf.Where(i => i.oh.OrderStatusID == 10 &&
-                        DbFunctions.TruncateTime(i.oh.LastModifiedTime) == DbFunctions.TruncateTime(DateTime.Now)).ToList())
-                        .Select(o => new Domain.BongkarInDay
-                        {
-                            Collie = o.Sum(p => p.od.TotalCollie).ToString(),
-                            VehicleNumber = o.Select(or => or.oh.VehicleNo).FirstOrDefault()
-                        }).ToList();
-                    //}
-                    //else
-                    //{
-
-                        var muatInDay = adminBoardDetails.Select(yf => yf.Where(i => i.oh.OrderStatusID == 10 &&
-                        DbFunctions.TruncateTime(i.oh.LastModifiedTime) == DbFunctions.TruncateTime(DateTime.Now)).ToList())
-                        .Select(o => new Domain.MuatInDay
-                        {
-                            Collie = o.Sum(p => p.od.TotalCollie).ToString(),
-                            VehicleNumber = o.Select(or => or.oh.VehicleNo).FirstOrDefault()
-                        }).ToList();
-                    //}                    
-
-                    var jalanInDay = adminBoardDetails.Select(yf => yf.Where(i => i.oh.OrderStatusID == 4 &&
-                    DbFunctions.TruncateTime(i.oh.LastModifiedTime) == DbFunctions.TruncateTime(DateTime.Now)).ToList())
-                    .Select(o => new Domain.JalanInDay
-                    {
-                        Collie = o.Sum(p => p.od.TotalCollie).ToString(),
-                        VehicleNumber = o.Select(or => or.oh.VehicleNo).FirstOrDefault()
-                    }).ToList();
+                    var jalanInDay = (from oh in tMSDBContext.OrderHeaders
+                                      join od in tMSDBContext.OrderDetails on oh.ID equals od.OrderHeaderID
+                                      join osh in tMSDBContext.OrderStatusHistories on od.ID equals osh.OrderDetailID
+                                      where oh.OrderType == orderTypeId && osh.OrderStatusID == 4 && DbFunctions.TruncateTime(osh.StatusDate) == DbFunctions.TruncateTime(DateTime.Now)
+                                      group new { oh, od } by new { oh.ID } into ord
+                                      select new Domain.JalanInDay
+                                      {
+                                          Collie = ord.Sum(p => p.od.TotalCollie).ToString(),
+                                          VehicleNumber = ord.Select(or => or.oh.VehicleNo).FirstOrDefault(),
+                                          OrderNumber = ord.Select(or => or.oh.OrderNo).FirstOrDefault()
+                                      }).ToList();
 
                     var gatinInDay = (from oh in tMSDBContext.OrderHeaders
                                       join g in tMSDBContext.GateInGateOuts on oh.ID equals g.OrderId
@@ -495,17 +502,18 @@ namespace TMS.DataGateway.Repositories
                                       select new Domain.GatinInDay
                                       {
                                           Collie = ord.Sum(i => i.od.TotalCollie).ToString(),
-                                          VehicleNumber = ord.Select(i => i.oh.VehicleNo).FirstOrDefault()
+                                          VehicleNumber = ord.Select(i => i.oh.VehicleNo).FirstOrDefault(),
+                                          OrderNumber = ord.Select(or => or.oh.OrderNo).FirstOrDefault()
                                       }).ToList();
 
                     Domain.AdminBoardReport adminBoardReport = new Domain.AdminBoardReport()
                     {
-                        BongkarInDays = bongkarInDay,
+                        BongkarInDays = orderTypeId == 1 ? bongkarInDay : null,
+                        MuatInDays = orderTypeId == 2 ? muatInDay : null,
                         GatinInDays = gatinInDay,
                         FinishInDays = finishInDay,
                         AssignmentInDays = assignmentInDay,
                         JalanInDays = jalanInDay,
-                        MuatInDays = muatInDay,
                         OrdersInDays = ordersInDay,
                         OrderType = tMSDBContext.OrderTypes.Where(o => o.ID == orderTypeId).Select(d => d.OrderTypeDescription).FirstOrDefault()
                     };
