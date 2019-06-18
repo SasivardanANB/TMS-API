@@ -255,4 +255,7 @@
   <data name="UsersUpdatedProfile" xml:space="preserve">
     <value>User(s) Profile updated successfully in OMS</value>
   </data>
+  <data name="ActiveUserRoleExists" xml:space="preserve">
+    <value>User cannot be deleted as there is an active user role</value>
+  </data>
 </root>
