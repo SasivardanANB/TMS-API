@@ -1069,7 +1069,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Vehicle activated successfully.
+        ///   Looks up a localized string similar to Vehicle(s) activated successfully.
         /// </summary>
         public static string VehicleActivated {
             get {
@@ -1087,7 +1087,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Vehicle deactivated successfully.
+        ///   Looks up a localized string similar to Vehicle(s) deactivated successfully.
         /// </summary>
         public static string VehicleDeactivated {
             get {
@@ -1096,7 +1096,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Vehicle deleted successfully.
+        ///   Looks up a localized string similar to Vehicle(s) deleted successfully.
         /// </summary>
         public static string VehicleDeleted {
             get {

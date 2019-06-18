@@ -319,10 +319,10 @@
     <value>User(s) updated successfully</value>
   </data>
   <data name="VehicleActivated" xml:space="preserve">
-    <value>Vehicle activated successfully</value>
+    <value>Vehicle(s) activated successfully</value>
   </data>
   <data name="VehicleDeactivated" xml:space="preserve">
-    <value>Vehicle deactivated successfully</value>
+    <value>Vehicle(s) deactivated successfully</value>
   </data>
   <data name="PartnerCreated" xml:space="preserve">
     <value>Partner(s) created successfully</value>
@@ -352,7 +352,7 @@
     <value>Pool(s) deleted successfully</value>
   </data>
   <data name="VehicleDeleted" xml:space="preserve">
-    <value>Vehicle deleted successfully</value>
+    <value>Vehicle(s) deleted successfully</value>
   </data>
   <data name="FileUploadError" xml:space="preserve">
     <value>An error occured while uploading the file</value>
