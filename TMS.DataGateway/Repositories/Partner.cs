@@ -163,6 +163,7 @@ namespace TMS.DataGateway.Repositories
                              PartnerTypeID = ppt.PartnerTypeId,
                              PICID = partner.PICID,
                              PICName = partner.PIC.PICName,
+                             PICPhone=partner.PIC.PICPhone,
                              CityCode = city.CityDescription
                          }).ToList();
                 }

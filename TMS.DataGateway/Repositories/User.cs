@@ -265,16 +265,27 @@ namespace TMS.DataGateway.Repositories
                         var user = context.Users.Where(x => x.ID == userId).FirstOrDefault();
                         if (user != null)
                         {
-                            user.IsDelete = true;
-                            context.SaveChanges();
-                            userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UsersDeleted;
-                            userResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                            userResponse.StatusCode = (int)HttpStatusCode.OK;
+                            var userRole = context.UserRoles.Where(x => x.UserID == user.ID && x.IsDelete == false).FirstOrDefault();
+                            if (userRole != null)
+                            {
+
+                                user.IsDelete = true;
+                                context.SaveChanges();
+                                userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UsersDeleted;
+                                userResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                                userResponse.StatusCode = (int)HttpStatusCode.OK;
+                            }
+                            else
+                            {
+                                userResponse.StatusMessage = DomainObjects.Resource.ResourceData.ActiveUserRoleExists;
+                                userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                                userResponse.StatusCode = (int)HttpStatusCode.OK;
+                            }
                         }
                         else
                         {
                             userResponse.StatusMessage = DomainObjects.Resource.ResourceData.InvalidUser;
-                            userResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                            userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                             userResponse.StatusCode = (int)HttpStatusCode.NotFound;
                         }
                     }

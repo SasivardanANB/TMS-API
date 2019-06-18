@@ -38,6 +38,7 @@ namespace TMS.DomainObjects.Objects
         public string CityCode { get; set; }
         [MaxLength(4)]
         public string ProvinceCode { get; set; }
+        public string PICPhone { get; set; }
 
     }
 }
