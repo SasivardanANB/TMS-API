@@ -166,7 +166,7 @@
     <value>Success</value>
   </data>
   <data name="TripCreated" xml:space="preserve">
-    <value>Trip(s) created/updated successfully in TMS</value>
+    <value>Trip(s) created/updated successfully in DMS</value>
   </data>
   <data name="TripStatusUpdated" xml:space="preserve">
     <value>Trip Status Updated Successfully in DMS</value>
