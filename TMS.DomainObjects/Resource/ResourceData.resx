@@ -465,4 +465,7 @@
   <data name="UserDetailsNotFound" xml:space="preserve">
     <value>User details not found</value>
   </data>
+  <data name="ActiveUserRoleExists" xml:space="preserve">
+    <value>User cannot be deleted as there is an active user role</value>
+  </data>
 </root>
