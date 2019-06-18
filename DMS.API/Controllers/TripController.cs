@@ -66,8 +66,9 @@ namespace DMS.API.Controllers
             ITripTask tripTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().TripTask;
             TripResponse tripData = tripTask.CreateUpdateTrip(request);
 
-            if (tripData.StatusCode == 200 && tripData.Status == "Success" && request.Requests.Count >0)
+            if (tripData.StatusCode == 200 && tripData.Status == "Success" && request.Requests.Count >0 && ConfigurationManager.AppSettings["AllowPushNotifications"].ToString() == "true" )
             {
+                int i = 0;
                 foreach (var reqObj in request.Requests)
                 {
                     IEnumerable<string> headerValues = Request.Headers.GetValues("Token");
@@ -82,17 +83,25 @@ namespace DMS.API.Controllers
                         req.Timeout = 500000;
                         object onj = new object();
                         NotificationRequest notificationRequest = new NotificationRequest();
-                        notificationRequest.to = deviceId;// "cFaYBS5Rn_w:APA91bEcu9Q_wqSASgXZ1nAUUvpelCTOw6eF5g0RmdNIrIi7GlJl-mTezk9Tb7lVkzzBH3wabznQ6GMkws2Br9XV8OvpilwSmMjcE3MKe9LrEtYZ8eAodgbx12-Az0NU6_IKbIfB0POu";
+                        notificationRequest.to = deviceId;   //"cFaYBS5Rn_w:APA91bEcu9Q_wqSASgXZ1nAUUvpelCTOw6eF5g0RmdNIrIi7GlJl-mTezk9Tb7lVkzzBH3wabznQ6GMkws2Br9XV8OvpilwSmMjcE3MKe9LrEtYZ8eAodgbx12-Az0NU6_IKbIfB0POu";
+
+                        string tripNumber = "";
+                        if (tripData.Data != null)
+                        {
+                            tripNumber = tripData.Data[i].TripNumber;
+                        }
 
                         notificationRequest.data = new Notification()
                         {
                             title = "DMS",
-                            message = "A trip (" + tripData.Data[0].TripNumber + ") has been assigned to you.",
+                            
+                            message = "A trip (" + tripNumber + ") has been assigned to you.",
                             click_action = "NOTIFICATIONACTIVITY",
                         };
 
                         req.AddJsonBody(notificationRequest);
                         var result = client.Execute(req);
+                        i++;
                     }
                 }
 

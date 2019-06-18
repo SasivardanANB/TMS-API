@@ -84,10 +84,13 @@ namespace DMS.DataGateway.Repositories
         public TripResponse CreateUpdateTrip(TripRequest request)
         {
             TripResponse response = new TripResponse();
+            List<TripDetails> tripDetails = new List<TripDetails>();
             using (var context = new DMSDBContext())
             {
                 foreach (var trip in request.Requests)
                 {
+                    TripDetails tripDetails1 = new TripDetails();
+
                     using (DbContextTransaction transaction = context.Database.BeginTransaction())
                     {
                         try
@@ -264,6 +267,8 @@ namespace DMS.DataGateway.Repositories
                                     context.SaveChanges();
                                     #endregion
                                 }
+                                tripDetails1.TripNumber = existingTrip.TripNumber;
+
                             }
                             #endregion
                             #region Create Trip data
@@ -291,6 +296,7 @@ namespace DMS.DataGateway.Repositories
                                 context.TripHeaders.Add(tripRequest);
                                 context.SaveChanges();
                                 tripId = tripRequest.ID;
+                                tripDetails1.TripNumber = tripRequest.TripNumber;
 
                                 foreach (var tripLocation in trip.TripLocations)
                                 {
@@ -377,6 +383,7 @@ namespace DMS.DataGateway.Repositories
                                     #endregion
                                 }
                             }
+                            tripDetails.Add(tripDetails1);
                             #endregion
                             transaction.Commit();
                         }
@@ -391,6 +398,7 @@ namespace DMS.DataGateway.Repositories
                     }
                 }
                 #region Return Response with Success and Commit Changes
+                response.Data = tripDetails;
                 response.Status = DomainObjects.Resource.ResourceData.Success;
                 response.StatusCode = (int)HttpStatusCode.OK;
                 response.StatusMessage = DomainObjects.Resource.ResourceData.TripCreated;
