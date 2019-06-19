@@ -210,10 +210,10 @@ namespace TMS.API.Controllers
             //Login to OMS and get Token
             LoginRequest omsLoginRequest = new LoginRequest();
             string omsToken = "";
-            omsLoginRequest.UserName = /*ConfigurationManager.AppSettings["OMSLogin"]*/"oms1";
-            omsLoginRequest.UserPassword = /*ConfigurationManager.AppSettings["OMSPassword"]*/"oms1";
-            var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(/*ConfigurationManager.AppSettings["ApiGatewayOMSURL"]*/
-                                                                                              /*+*/ "http://localhost:51368/api/v1/user/login", Method.POST, omsLoginRequest, null));
+            omsLoginRequest.UserName = ConfigurationManager.AppSettings["OMSLogin"];
+            omsLoginRequest.UserPassword = ConfigurationManager.AppSettings["OMSPassword"];
+            var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                                                                                              + "v1/user/login", Method.POST, omsLoginRequest, null));
             if (tmsLoginResponse != null && tmsLoginResponse.Data.Count > 0)
             {
                 omsToken = tmsLoginResponse.TokenKey;
@@ -260,8 +260,8 @@ namespace TMS.API.Controllers
                 omsRequest.Requests.Add(tmsOrder);
             }
 
-            OrderResponse omsOrderData = JsonConvert.DeserializeObject<OrderResponse>(GetApiResponse(/*ConfigurationManager.AppSettings["ApiGatewayOMSURL"]*/
-                                                                                                     /* +*/ "http://localhost:51368/api/v1/order/createupdateorders", Method.POST, omsRequest, omsToken));
+            OrderResponse omsOrderData = JsonConvert.DeserializeObject<OrderResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                                                                                                      + "v1/order/createupdateorders", Method.POST, omsRequest, omsToken));
             OrderResponse orderData = new OrderResponse();
             if (omsOrderData.StatusCode == (int)HttpStatusCode.OK)
             {
