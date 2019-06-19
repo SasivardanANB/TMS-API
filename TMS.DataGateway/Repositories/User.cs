@@ -233,7 +233,7 @@ namespace TMS.DataGateway.Repositories
                             else
                             {
                                 userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserNameExisted;
-                                userResponse.StatusCode = (int)HttpStatusCode.BadRequest;
+                                userResponse.StatusCode = (int)HttpStatusCode.OK;
                                 userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                             }
                         }
@@ -243,7 +243,6 @@ namespace TMS.DataGateway.Repositories
 
                     user.Requests = mapper.Map<List<DataModel.User>, List<Domain.User>>(userDataModelList);
                     userResponse.Data = user.Requests;
-                    
                 }
             }
             catch (Exception ex)
@@ -289,7 +288,7 @@ namespace TMS.DataGateway.Repositories
                         {
                             userResponse.StatusMessage = DomainObjects.Resource.ResourceData.InvalidUser;
                             userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
-                            userResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                            userResponse.StatusCode = (int)HttpStatusCode.OK;
                         }
                     }
                 }

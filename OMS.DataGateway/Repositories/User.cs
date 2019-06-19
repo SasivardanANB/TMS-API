@@ -202,6 +202,8 @@ namespace OMS.DataGateway.Repositories
                                     context.SaveChanges();
                                 }
                             }
+
+                            userResponse.Status = DomainObjects.Resource.ResourceData.Success;
                             userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UsersUpdated;
                             userResponse.StatusCode = (int)HttpStatusCode.OK;
                         }
@@ -231,17 +233,16 @@ namespace OMS.DataGateway.Repositories
                                         context.SaveChanges();
                                     }
                                 }
-
+                                userResponse.Status = DomainObjects.Resource.ResourceData.Success;
                                 userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UsersCreated;
                                 userResponse.StatusCode = (int)HttpStatusCode.OK;
                             }
                             else
                             {
+                                userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                                 userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserNameExisted;
-                                userResponse.StatusCode = (int)HttpStatusCode.BadRequest;
+                                userResponse.StatusCode = (int)HttpStatusCode.OK;
                             }
-
-
                         }
 
                         userDataModelList.Add(userDataModel);
@@ -249,7 +250,6 @@ namespace OMS.DataGateway.Repositories
 
                     user.Requests = mapper.Map<List<DataModel.User>, List<Domain.User>>(userDataModelList);
                     userResponse.Data = user.Requests;
-                    userResponse.Status = DomainObjects.Resource.ResourceData.Success;
                 }
             }
             catch (Exception ex)
@@ -293,8 +293,8 @@ namespace OMS.DataGateway.Repositories
                         else
                         {
                             userResponse.StatusMessage = DomainObjects.Resource.ResourceData.InvalidUser;
-                            userResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                            userResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                            userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                            userResponse.StatusCode = (int)HttpStatusCode.OK;
                         }
                     }
                 }

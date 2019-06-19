@@ -400,7 +400,7 @@
     <value>PIC(s) deleted successfully</value>
   </data>
   <data name="TripAssigned" xml:space="preserve">
-    <value>Trip assigned successfully in TMS</value>
+    <value>Trip(s) assigned successfully in DMS</value>
   </data>
   <data name="GateInCreated" xml:space="preserve">
     <value>GateIn created successfully</value>
