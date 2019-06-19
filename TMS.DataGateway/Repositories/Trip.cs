@@ -434,10 +434,8 @@ namespace TMS.DataGateway.Repositories
         public TripResponse UpdateTripDetails(TripRequest tripRequest)
         {
             //TripResponse tripResponse = new TripResponse();
-            TripResponse tripResponse = new TripResponse()
-            {
-                Data = new List<Domain.Trip>()
-            };
+            TripResponse tripResponse = new TripResponse();
+            List<Domain.Trip> trips = new List<Domain.Trip>();
 
             try
             {
@@ -445,20 +443,47 @@ namespace TMS.DataGateway.Repositories
                 {
                     foreach (var request in tripRequest.Requests)
                     {
+                        Domain.Trip trip = new Domain.Trip();
+
                       var   orderHeadeData = (from data in context.OrderHeaders
                                           where data.ID == request.OrderId
                                           select data).FirstOrDefault();
                         if(orderHeadeData != null)
                         {
-                            orderHeadeData.DriverName = request.DriverName;
-                            orderHeadeData.DriverNo = context.Drivers.Where(o => o.UserName == request.DriverName && o.IsActive).Select(d => d.DriverNo).FirstOrDefault();
+                            orderHeadeData.DriverName = context.Drivers.Where(o => o.DriverNo == request.DriverNo && o.IsActive).Select(d => d.UserName).FirstOrDefault();
+                            orderHeadeData.DriverNo = context.Drivers.Where(o => o.DriverNo == request.DriverNo && o.IsActive).Select(d => d.DriverNo).FirstOrDefault();
                             orderHeadeData.VehicleShipment = request.Vehicle;
                             orderHeadeData.LastModifiedTime = tripRequest.LastModifiedTime;
                             orderHeadeData.LastModifiedBy = tripRequest.LastModifiedBy;
                             context.SaveChanges();
+
+                            var OrderDetailsIds = context.OrderDetails.Where(o => o.OrderHeaderID == orderHeadeData.ID).ToList();
+                            if (OrderDetailsIds.Count > 0)
+                            {
+                                foreach (var orderDetail in OrderDetailsIds)
+                                {
+                                    var statusHistory = context.OrderStatusHistories.Where(osh => osh.OrderDetailID == orderDetail.ID).ToList();
+                                    context.OrderStatusHistories.RemoveRange(statusHistory);
+                                    OrderStatusHistory tshObj = new OrderStatusHistory()
+                                    {
+                                        OrderDetailID = orderDetail.ID,
+                                        StatusDate = DateTime.Now,
+                                        Remarks = "Order Creted",
+                                        OrderStatusID = context.OrderStatuses.Where(t => t.OrderStatusValue == "Booked").Select(t => t.ID).FirstOrDefault()
+                                    };
+                                    context.OrderStatusHistories.Add(tshObj);
+                                    context.SaveChanges();
+                                }
+                            }
                             tripResponse.Status = DomainObjects.Resource.ResourceData.Success;
                             tripResponse.StatusCode = (int)HttpStatusCode.OK;
                             tripResponse.StatusMessage = DomainObjects.Resource.ResourceData.TripAssigned;
+                            trip.OrderNumber = orderHeadeData.OrderNo;
+                            trip.DriverNo = orderHeadeData.DriverNo;
+                            trip.DriverName = orderHeadeData.DriverName;
+                            trip.VehicleType = orderHeadeData.VehicleShipment;
+                            trips.Add(trip);
+                            tripResponse.Data = trips;
                         }
                         else
                         {

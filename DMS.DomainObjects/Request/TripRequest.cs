@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DMS.DomainObjects.Request
 {
-    public class TripRequest 
+    public class TripRequest:RequestFilter 
     {
         public List<Trip> Requests { get; set; }
     }

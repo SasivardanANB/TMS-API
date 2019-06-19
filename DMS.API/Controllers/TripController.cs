@@ -302,5 +302,14 @@ namespace DMS.API.Controllers
             StopPointsResponse tripData = tripTask.GetLastTripStatusData(stopPointId);
             return Ok(tripData);
         }
+
+        [Route("reassigntrip")]
+        [HttpPost]
+        public IHttpActionResult ReAssignTrip(TripRequest tripRequest)
+        {
+            ITripTask tripTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().TripTask;
+            TripResponse tripData = tripTask.ReAssignTrip(tripRequest);
+            return Ok(tripData);
+        }
     }
 }

@@ -78,5 +78,10 @@ namespace DMS.BusinessGateway.Task
         {
             return _tripRepository.GetDeviceId(token);
         }
+
+        public override TripResponse ReAssignTrip(TripRequest tripRequest)
+        {
+            return _tripRepository.ReAssignTrip(tripRequest);
+        }
     }
 }
