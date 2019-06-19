@@ -199,8 +199,85 @@ namespace TMS.API.Controllers
                 return Ok(errorResponse);
             }
 
-            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
-            OrderResponse orderData = orderTask.CreateUpdateOrder(order);
+            OrderRequest omsRequest = new OrderRequest()
+            {
+                Requests = new List<Order>(),
+                CreatedBy = "TMS System",
+                UploadType = 1,
+                orderGeneratedSystem = "TMS"  // Useful for creating order only on OMS
+            };
+
+            //Login to OMS and get Token
+            LoginRequest omsLoginRequest = new LoginRequest();
+            string omsToken = "";
+            omsLoginRequest.UserName = /*ConfigurationManager.AppSettings["OMSLogin"]*/"oms1";
+            omsLoginRequest.UserPassword = /*ConfigurationManager.AppSettings["OMSPassword"]*/"oms1";
+            var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(/*ConfigurationManager.AppSettings["ApiGatewayOMSURL"]*/
+                                                                                              /*+*/ "http://localhost:51368/api/v1/user/login", Method.POST, omsLoginRequest, null));
+            if (tmsLoginResponse != null && tmsLoginResponse.Data.Count > 0)
+            {
+                omsToken = tmsLoginResponse.TokenKey;
+            }
+            foreach (var omsOrder in order.Requests)
+            {
+                Order tmsOrder = new Order()
+                {
+                    BusinessArea = omsOrder.BusinessArea,
+                    OrderNo = omsOrder.OrderNo,
+                    SequenceNo = omsOrder.SequenceNo,
+                    PartnerNo1 = omsOrder.PartnerNo1,
+                    PartnerType1 = omsOrder.PartnerType1,
+                    PartnerName1 = omsOrder.PartnerName1,
+                    PartnerNo2 = omsOrder.PartnerNo2,
+                    PartnerType2 = omsOrder.PartnerType2,
+                    PartnerName2 = omsOrder.PartnerName2,
+                    PartnerNo3 = omsOrder.PartnerNo3,
+                    PartnerType3 = omsOrder.PartnerType3,
+                    PartnerName3 = omsOrder.PartnerName3,
+                    FleetType = omsOrder.FleetType,
+                    OrderType = omsOrder.OrderType,
+                    VehicleShipmentType = omsOrder.VehicleShipmentType,
+                    DriverNo = omsOrder.DriverNo,
+                    DriverName = omsOrder.DriverName,
+                    VehicleNo = omsOrder.VehicleNo,
+                    OrderWeight = omsOrder.OrderWeight,
+                    OrderWeightUM = omsOrder.OrderWeightUM,
+                    EstimationShipmentDate = omsOrder.EstimationShipmentDate,
+                    EstimationShipmentTime = omsOrder.EstimationShipmentTime,
+                    ActualShipmentDate = omsOrder.ActualShipmentDate,
+                    ActualShipmentTime = omsOrder.ActualShipmentTime,
+                    Sender = omsOrder.Sender,
+                    Receiver = omsOrder.Receiver,
+                    OrderShipmentStatus = omsOrder.OrderShipmentStatus,
+                    Dimension = omsOrder.Dimension,
+                    TotalPallet = omsOrder.TotalPallet,
+                    Instructions = omsOrder.Instructions,
+                    ShippingListNo = omsOrder.ShippingListNo,
+                    PackingSheetNo = omsOrder.PackingSheetNo,
+                    TotalCollie = omsOrder.TotalCollie,
+                    ShipmentSAPNo = omsOrder.ShipmentSAPNo
+                };
+                omsRequest.Requests.Add(tmsOrder);
+            }
+
+            OrderResponse omsOrderData = JsonConvert.DeserializeObject<OrderResponse>(GetApiResponse(/*ConfigurationManager.AppSettings["ApiGatewayOMSURL"]*/
+                                                                                                     /* +*/ "http://localhost:51368/api/v1/order/createupdateorders", Method.POST, omsRequest, omsToken));
+            OrderResponse orderData = new OrderResponse();
+            if (omsOrderData.StatusCode == (int)HttpStatusCode.OK)
+            {
+                orderData.StatusMessage =  omsOrderData.StatusMessage;
+
+                // Creating order in TMS
+                IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+                OrderResponse tmsorderData = orderTask.CreateUpdateOrder(order);
+                orderData.Status = tmsorderData.Status;
+                orderData.StatusCode = tmsorderData.StatusCode;
+                orderData.StatusMessage = orderData.StatusMessage+". "+tmsorderData.StatusMessage;
+            }
+            else
+            {
+                return Ok(omsOrderData);
+            }
 
             if (orderData.StatusCode == 200 && orderData.Status == "Success")
             {

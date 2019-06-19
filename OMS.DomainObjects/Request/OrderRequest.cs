@@ -11,5 +11,6 @@ namespace OMS.DomainObjects.Request
     {
         public List<Order> Requests { get; set; }
         public int UploadType { get; set; }
+        public string orderGeneratedSystem { get; set; }
     }
 }

@@ -128,7 +128,7 @@ namespace OMS.API.Controllers
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
             OrderResponse orderData = orderTask.CreateUpdateOrders(request);
 
-            if (orderData.StatusCode == 200 && orderData.Status == "Success")
+            if (orderData.StatusCode == 200 && orderData.Status == "Success" && request.orderGeneratedSystem!="TMS")
             {
                 #region Call TMS Order Request
                 if (orderData.StatusCode == (int)HttpStatusCode.OK)
