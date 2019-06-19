@@ -42,12 +42,12 @@ namespace TMS.DomainObjects.Objects
     }
     public class OrderCompletedDates : OrderProgress
     {
-        public DateTime ShippingTime { get; set; }
-        public DateTime LoadingTime { get; set; }
-        public DateTime TravellingTime { get; set; }
-        public DateTime UnloadingTime { get; set; }
-        public DateTime ETA { get; set; }
-        public DateTime FinishDelivery { get; set; }
+        public string ShippingTime { get; set; }
+        public string LoadingTime { get; set; }
+        public string TravellingTime { get; set; }
+        public string UnloadingTime { get; set; }
+        public string ETA { get; set; }
+        public string FinishDelivery { get; set; }
         public string ServiceRate { get; set; }
     }
     public class LoadUnloacOrdersByDate

@@ -19,7 +19,7 @@ namespace TMS.DomainObjects.Resource {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class ResourceData {
@@ -853,7 +853,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Pool activated successfully.
+        ///   Looks up a localized string similar to Pool(s) activated successfully.
         /// </summary>
         public static string PoolActivated {
             get {
@@ -862,7 +862,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Pool deactivated successfully.
+        ///   Looks up a localized string similar to Pool(s) deactivated successfully.
         /// </summary>
         public static string PoolDeactivated {
             get {
@@ -871,7 +871,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Pool deleted successfully.
+        ///   Looks up a localized string similar to Pool(s) deleted successfully.
         /// </summary>
         public static string PoolDeleted {
             get {
@@ -1069,7 +1069,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Vehicle activated successfully.
+        ///   Looks up a localized string similar to Vehicle(s) activated successfully.
         /// </summary>
         public static string VehicleActivated {
             get {
@@ -1087,7 +1087,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Vehicle deactivated successfully.
+        ///   Looks up a localized string similar to Vehicle(s) deactivated successfully.
         /// </summary>
         public static string VehicleDeactivated {
             get {
@@ -1096,7 +1096,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Vehicle deleted successfully.
+        ///   Looks up a localized string similar to Vehicle(s) deleted successfully.
         /// </summary>
         public static string VehicleDeleted {
             get {

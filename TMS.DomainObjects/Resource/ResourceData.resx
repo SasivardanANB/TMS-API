@@ -274,10 +274,10 @@
     <value>Order(s) updated successfully in TMS</value>
   </data>
   <data name="PoolActivated" xml:space="preserve">
-    <value>Pool activated successfully</value>
+    <value>Pool(s) activated successfully</value>
   </data>
   <data name="PoolDeactivated" xml:space="preserve">
-    <value>Pool deactivated successfully</value>
+    <value>Pool(s) deactivated successfully</value>
   </data>
   <data name="PoolsCreated" xml:space="preserve">
     <value>Pool(s) created successfully</value>
@@ -319,10 +319,10 @@
     <value>User(s) updated successfully</value>
   </data>
   <data name="VehicleActivated" xml:space="preserve">
-    <value>Vehicle activated successfully</value>
+    <value>Vehicle(s) activated successfully</value>
   </data>
   <data name="VehicleDeactivated" xml:space="preserve">
-    <value>Vehicle deactivated successfully</value>
+    <value>Vehicle(s) deactivated successfully</value>
   </data>
   <data name="PartnerCreated" xml:space="preserve">
     <value>Partner(s) created successfully</value>
@@ -349,10 +349,10 @@
     <value>Driver(s) deleted successfully</value>
   </data>
   <data name="PoolDeleted" xml:space="preserve">
-    <value>Pool deleted successfully</value>
+    <value>Pool(s) deleted successfully</value>
   </data>
   <data name="VehicleDeleted" xml:space="preserve">
-    <value>Vehicle deleted successfully</value>
+    <value>Vehicle(s) deleted successfully</value>
   </data>
   <data name="FileUploadError" xml:space="preserve">
     <value>An error occured while uploading the file</value>
