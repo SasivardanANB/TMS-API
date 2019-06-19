@@ -123,7 +123,7 @@ namespace TMS.API.Controllers
         #region "User Application"
 
         [Route("createupdateuser")]
-        [AllowAnonymous, HttpPost]
+        [HttpPost]
         public IHttpActionResult CreateUpdateUser(UserRequest user)
         {
             #region Model validation
