@@ -13,5 +13,6 @@ namespace TMS.DomainObjects.Request
         public List<Order> Requests { get; set; }
         [Range(1,2)]
         public int UploadType { get; set; }
+        public string orderGeneratedSystem { get; set; }
     }
 }

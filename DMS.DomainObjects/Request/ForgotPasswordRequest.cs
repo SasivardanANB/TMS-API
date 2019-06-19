@@ -11,5 +11,6 @@ namespace DMS.DomainObjects.Request
     {
         [MaxLength(50)]
         public string Email { set; get; }
+        public string URLLink { get; set; }
     }
 }
