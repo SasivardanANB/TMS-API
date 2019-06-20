@@ -212,12 +212,12 @@ namespace TMS.API.Controllers
             string omsToken = "";
             omsLoginRequest.UserName = ConfigurationManager.AppSettings["OMSLogin"];
             omsLoginRequest.UserPassword = ConfigurationManager.AppSettings["OMSPassword"];
-            var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
-                                                                                              + "v1/user/login", Method.POST, omsLoginRequest, null));
-            if (tmsLoginResponse != null && tmsLoginResponse.Data.Count > 0)
-            {
-                omsToken = tmsLoginResponse.TokenKey;
-            }
+            //var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+            //                                                                                  + "v1/user/login", Method.POST, omsLoginRequest, null));
+            //if (tmsLoginResponse != null && tmsLoginResponse.Data.Count > 0)
+            //{
+            //    omsToken = tmsLoginResponse.TokenKey;
+            //}
             foreach (var omsOrder in order.Requests)
             {
                 Order tmsOrder = new Order()
@@ -260,24 +260,27 @@ namespace TMS.API.Controllers
                 omsRequest.Requests.Add(tmsOrder);
             }
 
-            OrderResponse omsOrderData = JsonConvert.DeserializeObject<OrderResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
-                                                                                                     + "v1/order/createupdateorders", Method.POST, omsRequest, omsToken));
-            OrderResponse orderData = new OrderResponse();
-            if (omsOrderData.StatusCode == (int)HttpStatusCode.OK)
-            {
-                orderData.StatusMessage =  omsOrderData.StatusMessage;
+            //OrderResponse omsOrderData = JsonConvert.DeserializeObject<OrderResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+            //                                                                                          + "v1/order/createupdateorders", Method.POST, omsRequest, omsToken));
+            //OrderResponse orderData = new OrderResponse();
+            //if (omsOrderData.StatusCode == (int)HttpStatusCode.OK)
+            //{
+            //    orderData.StatusMessage =  omsOrderData.StatusMessage;
 
-                // Creating order in TMS
-                IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
-                OrderResponse tmsorderData = orderTask.CreateUpdateOrder(order);
-                orderData.Status = tmsorderData.Status;
-                orderData.StatusCode = tmsorderData.StatusCode;
-                orderData.StatusMessage = orderData.StatusMessage+". "+tmsorderData.StatusMessage;
-            }
-            else
-            {
-                return Ok(omsOrderData);
-            }
+            //    // Creating order in TMS
+            //    IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            //    OrderResponse tmsorderData = orderTask.CreateUpdateOrder(order);
+            //    orderData.Status = tmsorderData.Status;
+            //    orderData.StatusCode = tmsorderData.StatusCode;
+            //    orderData.StatusMessage = orderData.StatusMessage+". "+tmsorderData.StatusMessage;
+            //}
+            //else
+            //{
+            //    return Ok(omsOrderData);
+            //}
+
+            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            OrderResponse orderData = orderTask.CreateUpdateOrder(order);
 
             if (orderData.StatusCode == 200 && orderData.Status == "Success")
             {

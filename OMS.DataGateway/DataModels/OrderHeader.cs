@@ -17,6 +17,8 @@ namespace OMS.DataGateway.DataModels
         [ForeignKey("BusinessArea")]
         public int BusinessAreaId { get; set; }
         public BusinessArea BusinessArea { get; set; }
+        [MaxLength(10)]
+        public string SOPONumber { get; set; }
         [Index("OrderHeader_OrderNo", IsUnique = true)]
         [Required]
         [MaxLength(15)]
@@ -42,7 +44,10 @@ namespace OMS.DataGateway.DataModels
         public int OrderStatusID { get; set; }
         //public OrderStatus OrderStatus { get; set; }
         public bool IsActive { get; set; }
-       
-
+        public decimal Harga { get; set; }
+        [ForeignKey("ImageGuid")]
+        public int? ShipmentScheduleImageID { get; set; }
+        public ImageGuid ImageGuid { get; set; }
+        public int UploadType { get; set; }
     }
 }
