@@ -261,7 +261,7 @@ namespace TMS.API.Controllers
             }
 
             OrderResponse omsOrderData = JsonConvert.DeserializeObject<OrderResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
-                                                                                                      + "v1/order/createupdateorders", Method.POST, omsRequest, omsToken));
+                                                                                                     + "v1/order/createupdateorders", Method.POST, omsRequest, omsToken));
             OrderResponse orderData = new OrderResponse();
             if (omsOrderData.StatusCode == (int)HttpStatusCode.OK)
             {

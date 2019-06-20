@@ -24,7 +24,7 @@ namespace TMS.DataGateway.DataModels
         //public string VehicleTypeName { get; set; }
         [MaxLength(12)]
         public string PoliceNo { get; set; }
-        public int MaxWeight { get; set; }
+        public decimal MaxWeight { get; set; }
         [MaxLength(11)]
         public string MaxDimension { get; set; }
         [MaxLength(25)]

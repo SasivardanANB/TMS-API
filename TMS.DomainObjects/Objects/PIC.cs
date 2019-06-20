@@ -23,5 +23,6 @@ namespace TMS.DomainObjects.Objects
         public int PhotoId { get; set; }
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidImage")]
         public string PhotoGuId { get; set; }
+        public string Expeditor { get; set; }
     }
 }

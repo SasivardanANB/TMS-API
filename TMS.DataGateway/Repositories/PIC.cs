@@ -152,7 +152,8 @@ namespace TMS.DataGateway.Repositories
                              IsDeleted = pic.IsDeleted,
                              PhotoId = pic.PhotoId,
                              PICPassword=pic.PICPassword,
-                             PhotoGuId=pic.ImageGuid.ImageGuIdValue
+                             PhotoGuId=pic.ImageGuid.ImageGuIdValue,
+                             Expeditor=context.Partners.Where(i=>i.PICID==pic.ID).Select(pname=>pname.PIC.PICName).FirstOrDefault()
                          }).ToList();
                     if (picList.Count > 0)
                     {
