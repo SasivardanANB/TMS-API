@@ -32,6 +32,6 @@ namespace OMS.DataGateway.DataModels
         public int TotalCollie { get; set; }
         public DateTime EstimationShipmentDate { get; set; }
         public DateTime ActualShipmentDate { get; set; }
-       
+        public string Katerangan { get; set; }
     }
 }
