@@ -16,7 +16,5 @@ namespace DMS.DomainGateway.Task
         public abstract UserResponse CreateUpdateUser(UserRequest user);
         public abstract UserResponse GetProfileDetails(int userID);
         public abstract UserResponse ChangePassword(ChangePasswordRequest changepassword, string type);
-        public abstract UserResponse ForgotPassword(ForgotPasswordRequest forgotPassword);
-
     }
 }

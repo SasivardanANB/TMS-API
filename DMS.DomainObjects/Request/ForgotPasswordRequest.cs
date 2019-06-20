@@ -10,7 +10,9 @@ namespace DMS.DomainObjects.Request
   public  class ForgotPasswordRequest
     {
         [MaxLength(50)]
+        [Required]
         public string Email { set; get; }
+        [Required]
         public string URLLink { get; set; }
     }
 }
