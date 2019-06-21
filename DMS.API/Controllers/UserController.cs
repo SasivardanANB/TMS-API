@@ -81,9 +81,10 @@ namespace DMS.API.Controllers
         [AllowAnonymous, HttpPost]
         public HttpResponseMessage ForgotPassword(ForgotPasswordRequest forgotPasswordRequest)
         {
+            HttpResponseMessage responseMessage = new HttpResponseMessage();
             if (!ModelState.IsValid)
             {
-                HttpResponseMessage responseMessage = Request.CreateResponse(HttpStatusCode.BadRequest);
+                 responseMessage = Request.CreateResponse(HttpStatusCode.BadRequest);
                 return responseMessage;
             }
             try
@@ -106,12 +107,12 @@ namespace DMS.API.Controllers
                 smtp.Credentials = new System.Net.NetworkCredential(loginEmailId, emailPassword); // Enter senders User name and password  
                 smtp.EnableSsl = true;
                 smtp.Send(mail);
-                HttpResponseMessage responseMessage = Request.CreateResponse(HttpStatusCode.OK, "Email sent successfully");
+                 responseMessage = Request.CreateResponse(HttpStatusCode.OK, "Email sent successfully");
                return responseMessage;
             }
             catch (Exception ex )
             {
-                HttpResponseMessage responseMessage = Request.CreateResponse(HttpStatusCode.ExpectationFailed, "Some issues occured while sending email",ex.Message);
+                 responseMessage = Request.CreateResponse(HttpStatusCode.ExpectationFailed, "Some issues occured while sending email",ex.Message);
                 return responseMessage;
             }
         }
