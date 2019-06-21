@@ -271,7 +271,7 @@ namespace TMS.API.Controllers
                     }
                     else
                     {
-                        userResponse.StatusMessage = userResponse.StatusMessage + " " + omsUserResponse.StatusMessage;
+                        userResponse.StatusMessage = userResponse.StatusMessage + ". " + omsUserResponse.StatusMessage;
                     }
 
                 }

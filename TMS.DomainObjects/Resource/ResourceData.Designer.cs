@@ -1033,7 +1033,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to User(s) created successfully.
+        ///   Looks up a localized string similar to User(s) created successfully in TMS.
         /// </summary>
         public static string UsersCreated {
             get {
@@ -1051,7 +1051,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to User(s) updated successfully.
+        ///   Looks up a localized string similar to User(s) updated successfully in TMS.
         /// </summary>
         public static string UsersUpdated {
             get {

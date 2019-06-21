@@ -310,13 +310,13 @@
     <value>UserRole(s) updated successfully</value>
   </data>
   <data name="UsersCreated" xml:space="preserve">
-    <value>User(s) created successfully</value>
+    <value>User(s) created successfully in TMS</value>
   </data>
   <data name="UsersDeleted" xml:space="preserve">
     <value>User(s) deleted successfully</value>
   </data>
   <data name="UsersUpdated" xml:space="preserve">
-    <value>User(s) updated successfully</value>
+    <value>User(s) updated successfully in TMS</value>
   </data>
   <data name="VehicleActivated" xml:space="preserve">
     <value>Vehicle(s) activated successfully</value>

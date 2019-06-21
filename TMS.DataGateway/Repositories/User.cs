@@ -268,9 +268,8 @@ namespace TMS.DataGateway.Repositories
                         if (user != null)
                         {
                             var userRole = context.UserRoles.Where(x => x.UserID == user.ID && x.IsDelete == false).FirstOrDefault();
-                            if (userRole != null)
+                            if (userRole == null)
                             {
-
                                 user.IsDelete = true;
                                 context.SaveChanges();
                                 userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UsersDeleted;
@@ -744,6 +743,8 @@ namespace TMS.DataGateway.Repositories
                                 }
                             }
                             roleResponse.StatusMessage = DomainObjects.Resource.ResourceData.RolesUpdated;
+                            roleResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                            roleResponse.StatusCode = (int)HttpStatusCode.OK;
                         }
                     }
                     else
@@ -810,17 +811,19 @@ namespace TMS.DataGateway.Repositories
 
                                 }
                                 roleResponse.StatusMessage = DomainObjects.Resource.ResourceData.RolesCreated;
+                                roleResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                                roleResponse.StatusCode = (int)HttpStatusCode.OK;
                             }
                             else
                             {
                                 roleResponse.StatusMessage = DomainObjects.Resource.ResourceData.RoleCodeExists;
+                                roleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                                roleResponse.StatusCode = (int)HttpStatusCode.OK;
                             }
                         }
                     }
                     role.Requests = mapper.Map<List<DataModel.Role>, List<Domain.Role>>(roles);
                     roleResponse.Data = role.Requests;
-                    roleResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                    roleResponse.StatusCode = (int)HttpStatusCode.OK;
                 }
             }
             catch (Exception ex)

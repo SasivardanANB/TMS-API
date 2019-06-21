@@ -184,13 +184,13 @@
     <value>User is In-Active</value>
   </data>
   <data name="UsersCreated" xml:space="preserve">
-    <value>User(s) created successfully</value>
+    <value>User(s) created successfully in OMS</value>
   </data>
   <data name="UsersDeleted" xml:space="preserve">
     <value>User(s) deleted successfully</value>
   </data>
   <data name="UsersUpdated" xml:space="preserve">
-    <value>User(s) updated successfully</value>
+    <value>User(s) updated successfully in OMS</value>
   </data>
   <data name="DataBaseException" xml:space="preserve">
     <value>Some exception occured in database</value>

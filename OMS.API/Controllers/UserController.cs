@@ -276,7 +276,7 @@ namespace OMS.API.Controllers
                     }
                     else
                     {
-                        userResponse.StatusMessage = userResponse.StatusMessage + " " + tmsUserResponse.StatusMessage;
+                        userResponse.StatusMessage = userResponse.StatusMessage + ". " + tmsUserResponse.StatusMessage;
                     }
                 }
                 #endregion
