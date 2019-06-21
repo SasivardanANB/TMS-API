@@ -265,10 +265,15 @@ namespace TMS.API.Controllers
                     UserResponse omsUserResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
                          + "/v1/user/createupdateuser", Method.POST, omsRequest, token));
 
-                    if (omsUserResponse.StatusCode == (int)HttpStatusCode.OK && omsUserResponse.Status == DomainObjects.Resource.ResourceData.Success)
+                    if (!userDetails.Applications.Contains(2))
+                    {
+                        userResponse = omsUserResponse;
+                    }
+                    else
                     {
                         userResponse.StatusMessage = userResponse.StatusMessage + " " + omsUserResponse.StatusMessage;
                     }
+
                 }
                 #endregion
 

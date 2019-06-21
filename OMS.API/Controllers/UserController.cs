@@ -270,7 +270,11 @@ namespace OMS.API.Controllers
                     UserResponse tmsUserResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
                          + "/v1/user/createupdateuser", Method.POST, tmsRequest, token));
 
-                    if (tmsUserResponse.StatusCode == (int)HttpStatusCode.OK && tmsUserResponse.Status == DomainObjects.Resource.ResourceData.Success)
+                    if (!userDetails.Applications.Contains(1))
+                    {
+                        userResponse = tmsUserResponse;
+                    }
+                    else
                     {
                         userResponse.StatusMessage = userResponse.StatusMessage + " " + tmsUserResponse.StatusMessage;
                     }
@@ -313,7 +317,7 @@ namespace OMS.API.Controllers
                     var client2 = new RestClient(ConfigurationManager.AppSettings["SAMAApiGatewayBaseURL"]);
                     RestRequest request2 = new RestRequest("token", Method.POST);
                     request2.AddParameter("Authorization", "Basic NDFFNTBEM0ItMDU5Ni00REY5LUE5OUItNTVCN0JDM0VCNDFCOndUN2VVRFpLM1VFWlNOeGR1YXl4dzFzdWRnenN3VHdNOTBNOHMrUVJaYk09", ParameterType.HttpHeader);
-                    request2.AddParameter("text/xml", "grant_type=password&username="+ ConfigurationManager.AppSettings["SAMALogin"] + "&password=" + encryptedDefaultPassword, ParameterType.RequestBody);
+                    request2.AddParameter("text/xml", "grant_type=password&username=" + ConfigurationManager.AppSettings["SAMALogin"] + "&password=" + encryptedDefaultPassword, ParameterType.RequestBody);
                     IRestResponse response2 = client.Execute(request2);
                     dynamic data2 = JObject.Parse(response2.Content);
                     var defaultUserBearerToken = data2.access_token;
@@ -631,7 +635,7 @@ namespace OMS.API.Controllers
             UserRoleResponse userRoleResponse = userTask.GetUserRoles(userRoleRequest);
             return Ok(userRoleResponse);
         }
-        
+
         #endregion
 
         #region "Master Data Operations"
