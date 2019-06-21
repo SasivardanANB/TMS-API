@@ -54,6 +54,7 @@
     <Compile Include="Objects\Common.cs" />
     <Compile Include="Objects\Error.cs" />
     <Compile Include="Objects\OrderFilter.cs" />
+    <Compile Include="Objects\OrderStatus.cs" />
     <Compile Include="Objects\Partner.cs" />
     <Compile Include="Objects\BusinessArea.cs" />
     <Compile Include="Objects\City.cs" />
@@ -71,18 +72,21 @@
     <Compile Include="Objects\SubDistrict.cs" />
     <Compile Include="Objects\Application.cs" />
     <Compile Include="Objects\Role.cs" />
+    <Compile Include="Objects\PackingSheet.cs" />
     <Compile Include="Objects\UserRole.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Request\ChangePasswordRequest.cs" />
     <Compile Include="Request\LoginRequest.cs" />
     <Compile Include="Request\AuthenticateRequest.cs" />
     <Compile Include="Request\DownloadOrderRequest.cs" />
+    <Compile Include="Request\OrderStatusRequest.cs" />
     <Compile Include="Request\RegionRequest.cs" />
     <Compile Include="Request\OrderRequest.cs" />
     <Compile Include="Request\RoleRequest.cs" />
     <Compile Include="Request\AssignUserRoleRequest.cs" />
     <Compile Include="Request\ApplicationRequest.cs" />
     <Compile Include="Request\SAMAUserRequest.cs" />
+    <Compile Include="Request\PackingSheetRequest.cs" />
     <Compile Include="Request\UserRequest.cs" />
     <Compile Include="Objects\Message.cs" />
     <Compile Include="Request\UserRoleRequest.cs" />
@@ -96,6 +100,7 @@
     <Compile Include="Objects\OrderHeader.cs" />
     <Compile Include="Objects\User.cs" />
     <Compile Include="Response\AuthenticateResponse.cs" />
+    <Compile Include="Response\OrderStatusCodesResponse.cs" />
     <Compile Include="Response\OrderStatusResponse.cs" />
     <Compile Include="Response\RegionResponse.cs" />
     <Compile Include="Response\CommonResponse.cs" />
@@ -104,6 +109,7 @@
     <Compile Include="Response\AssignUserRoleResponse.cs" />
     <Compile Include="Response\ApplicationResponse.cs" />
     <Compile Include="Response\SAMAUserResponse.cs" />
+    <Compile Include="Response\PackingSheetResponse.cs" />
     <Compile Include="Response\UserResponse.cs" />
     <Compile Include="Response\UserRoleResponse.cs" />
   </ItemGroup>

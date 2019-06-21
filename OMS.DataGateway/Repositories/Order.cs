@@ -884,9 +884,9 @@ namespace OMS.DataGateway.Repositories
             return response;
         }
 
-        public OrderStatusResponse GetAllOrderStatus()
+        public OrderStatusCodesResponse GetAllOrderStatus()
         {
-            OrderStatusResponse response = new OrderStatusResponse()
+            OrderStatusCodesResponse response = new OrderStatusCodesResponse()
             {
                 Data = new List<Domain.Common>()
             };
@@ -923,6 +923,831 @@ namespace OMS.DataGateway.Repositories
                 }
 
             }
+            return response;
+        }
+
+        public OrderResponse SyncOrders(OrderRequest request)
+        {
+            OrderResponse response = new OrderResponse()
+            {
+                Data = new List<Domain.Order>()
+            };
+
+            using (var context = new Data.OMSDBContext())
+            {
+                foreach (var order in request.Requests)
+                {
+                    using (DbContextTransaction transaction = context.Database.BeginTransaction())
+                    {
+                        try
+                        {
+                            DateTime estimationShipmentDate = DateTime.ParseExact(order.EstimationShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(order.EstimationShipmentTime);
+                            DateTime actualShipmentDate = DateTime.ParseExact(order.ActualShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(order.ActualShipmentTime);
+
+                            #region Step 1: Check if We have Business Area master data
+                            Domain.BusinessArea businessArea = new BusinessArea();
+                            int businessAreaId;
+                            string businessAreaCode = string.Empty;
+                            if (request.UploadType == 2) // Upload via UI
+                            {
+                                businessArea = (from ba in context.BusinessAreas
+                                                where ba.BusinessAreaCode == order.BusinessArea
+                                                select new Domain.BusinessArea()
+                                                {
+                                                    ID = ba.ID,
+                                                    BusinessAreaCode = ba.BusinessAreaCode
+                                                }).FirstOrDefault();
+                            }
+                            else
+                            {
+
+                                businessArea = (from ba in context.BusinessAreas
+                                                where ba.BusinessAreaCode == order.BusinessArea
+                                                select new Domain.BusinessArea()
+                                                {
+                                                    ID = ba.ID
+                                                }).FirstOrDefault();
+                            }
+
+                            if (businessArea.ID > 0)
+                            {
+                                businessAreaId = businessArea.ID;
+                                businessAreaCode = businessArea.BusinessAreaCode;
+                            }
+                            else
+                            {
+                                //Return with Business Area not found
+                                transaction.Rollback();
+                                response.Status = DomainObjects.Resource.ResourceData.Failure;
+                                response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                response.StatusMessage = order.BusinessArea + " Business Area not found in OMS.";
+                                return response;
+                            }
+                            #endregion
+
+                            #region Step 1: Check if We have Order Status in Master data
+                            int orderStatusId;
+                            string orderStatusValue = string.Empty;
+                            var orderStatus = (from os in context.OrderStatuses
+                                               where os.OrderStatusCode == order.OrderShipmentStatus.ToString()
+                                               select new Domain.BusinessArea()
+                                               {
+                                                   ID = os.ID
+                                               }).FirstOrDefault();
+                            if (orderStatus != null)
+                                orderStatusId = orderStatus.ID;
+                            else
+                            {
+                                //Return with Status Code not found 
+                                transaction.Rollback();
+                                response.Status = DomainObjects.Resource.ResourceData.Failure;
+                                response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                response.StatusMessage = order.OrderShipmentStatus.ToString() + " Status Code not found in OMS.";
+                                return response;
+                            }
+                            #endregion
+
+                            #region Step 2: Check if Order already existing then update/create accordingly
+                            var orderData = context.OrderHeaders.FirstOrDefault(t => t.OrderNo == order.OrderNo);
+
+                            if (request.UploadType == 2)
+                            {
+                                if (orderData == null)
+                                {
+                                    string orderNumber = GetOrderNumber(businessAreaId, businessAreaCode, "OMS", DateTime.Now.Year);
+
+                                    foreach (var ord in request.Requests)
+                                    {
+                                        ord.OrderNo = orderNumber;
+                                    }
+                                }
+                            }
+
+                            if (orderData != null)
+                            {
+                                #region Update Order
+                                orderData.BusinessAreaId = businessAreaId;
+                                orderData.OrderType = order.OrderType;
+                                orderData.FleetType = order.FleetType;
+                                orderData.VehicleShipment = order.VehicleShipmentType;
+                                orderData.DriverNo = order.DriverNo;
+                                orderData.DriverName = order.DriverName;
+                                orderData.VehicleNo = order.VehicleNo;
+                                orderData.OrderWeight = order.OrderWeight;
+                                orderData.OrderWeightUM = order.OrderWeightUM;
+                                orderData.IsActive = true;
+                                orderData.LastModifiedBy = request.LastModifiedBy;
+                                orderData.LastModifiedTime = DateTime.Now;
+                                orderData.OrderStatusID = orderStatusId;
+
+                                context.Entry(orderData).State = System.Data.Entity.EntityState.Modified;
+                                context.SaveChanges();
+                                order.ID = orderData.ID;
+                                context.Entry(orderData).State = System.Data.Entity.EntityState.Detached;
+                                int orderDetailId = 0;
+
+                                #region Step 3 : Check if Order Detail Exists
+                                var existingOrderDetail = context.OrderDetails.FirstOrDefault(t => t.OrderHeaderID == order.ID && t.SequenceNo == order.SequenceNo);
+
+                                if (existingOrderDetail != null)
+                                {
+                                    #region Update Order Detail
+                                    existingOrderDetail.SequenceNo = order.SequenceNo;
+                                    existingOrderDetail.Sender = order.Sender;
+                                    existingOrderDetail.Receiver = order.Receiver;
+                                    existingOrderDetail.Dimension = order.Dimension;
+                                    existingOrderDetail.TotalPallet = order.TotalPallet;
+                                    existingOrderDetail.Instruction = order.Instructions;
+                                    existingOrderDetail.ShippingListNo = order.ShippingListNo;
+                                    existingOrderDetail.TotalCollie = order.TotalCollie;
+                                    existingOrderDetail.LastModifiedBy = order.OrderLastModifiedBy;
+                                    existingOrderDetail.LastModifiedTime = DateTime.Now;
+                                    existingOrderDetail.EstimationShipmentDate = estimationShipmentDate;
+                                    existingOrderDetail.ActualShipmentDate = actualShipmentDate;
+
+                                    context.Entry(existingOrderDetail).State = System.Data.Entity.EntityState.Modified;
+                                    context.SaveChanges();
+                                    orderDetailId = existingOrderDetail.ID;
+                                    context.Entry(existingOrderDetail).State = System.Data.Entity.EntityState.Detached;
+                                    #endregion
+                                }
+                                else
+                                {
+                                    #region Create Order Detail
+                                    Data.OrderDetail orderDetail = new Data.OrderDetail()
+                                    {
+                                        OrderHeaderID = order.ID,
+                                        SequenceNo = order.SequenceNo,
+                                        Sender = order.Sender,
+                                        Receiver = order.Receiver,
+                                        Dimension = order.Dimension,
+                                        TotalPallet = order.TotalPallet,
+                                        Instruction = order.Instructions,
+                                        ShippingListNo = order.ShippingListNo,
+                                        TotalCollie = order.TotalCollie,
+                                        EstimationShipmentDate = estimationShipmentDate,
+                                        ActualShipmentDate = actualShipmentDate,
+                                        CreatedBy = request.CreatedBy,
+                                        CreatedTime = DateTime.Now,
+                                        LastModifiedBy = "",
+                                        LastModifiedTime = null
+                                    };
+                                    context.OrderDetails.Add(orderDetail);
+                                    context.SaveChanges();
+                                    orderDetailId = orderDetail.ID;
+                                    #endregion
+                                }
+                                #endregion
+
+                                string partner1TypeId = order.PartnerType1.ToString();
+                                string partner2TypeId = order.PartnerType2.ToString();
+                                string partner3TypeId = order.PartnerType3.ToString();
+
+                                #region Check if Partner Type Exists or not
+                                var partnerType1 = context.PartnerTypes.FirstOrDefault(t => t.PartnerTypeCode == partner1TypeId);
+                                var partnerType2 = context.PartnerTypes.FirstOrDefault(t => t.PartnerTypeCode == partner2TypeId);
+                                var partnerType3 = context.PartnerTypes.FirstOrDefault(t => t.PartnerTypeCode == partner3TypeId);
+
+                                if (partnerType1 == null || partnerType2 == null || partnerType3 == null)
+                                {
+                                    //Return with Partner Type not found.
+                                    transaction.Rollback();
+                                    response.Status = DomainObjects.Resource.ResourceData.Failure;
+                                    response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                }
+                                if (partnerType1 == null)
+                                {
+                                    //Return with Partner Type not found.
+                                    response.StatusMessage = order.PartnerType1.ToString() + " Partner Type not found in OMS.";
+                                    return response;
+                                }
+                                if (partnerType2 == null)
+                                {
+                                    //Return with Partner Type not found.
+                                    response.StatusMessage = order.PartnerType2.ToString() + " Partner Type not found in OMS.";
+                                    return response;
+                                }
+                                if (partnerType3 == null)
+                                {
+                                    //Return with Partner Type not found.
+                                    response.StatusMessage = order.PartnerType3.ToString() + " Partner Type not found in OMS.";
+                                    return response;
+                                }
+
+                                #endregion
+
+                                int partner1Id;
+                                int partner2Id;
+                                int partner3Id;
+
+                                #region Check if Partner Exists or not
+                                var partner1 = (from p in context.Partners
+                                                join ppt in context.PartnerPartnerTypes on p.ID equals ppt.PartnerId
+                                                where p.PartnerNo == order.PartnerNo1 && ppt.PartnerTypeId == partnerType1.ID
+                                                select new Domain.Partner()
+                                                {
+                                                    ID = p.ID
+                                                }).FirstOrDefault();
+
+                                var partner2 = (from p in context.Partners
+                                                join ppt in context.PartnerPartnerTypes on p.ID equals ppt.PartnerId
+                                                where p.PartnerNo == order.PartnerNo2 && ppt.PartnerTypeId == partnerType2.ID
+                                                select new Domain.Partner()
+                                                {
+                                                    ID = p.ID
+                                                }).FirstOrDefault();
+
+                                var partner3 = (from p in context.Partners
+                                                join ppt in context.PartnerPartnerTypes on p.ID equals ppt.PartnerId
+                                                where p.PartnerNo == order.PartnerNo3 && ppt.PartnerTypeId == partnerType3.ID
+                                                select new Domain.Partner()
+                                                {
+                                                    ID = p.ID
+                                                }).FirstOrDefault();
+
+                                if (partnerType1 == null || partnerType2 == null || partnerType3 == null)
+                                {
+                                    //Return with Partner not found.
+                                    transaction.Rollback();
+                                    response.Status = DomainObjects.Resource.ResourceData.Failure;
+                                    response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                }
+
+                                if (partner1 == null)
+                                {
+
+                                    response.StatusMessage = order.PartnerNo1 + " Partner not found in OMS.";
+                                    return response;
+                                }
+                                else
+                                {
+                                    partner1Id = partner1.ID;
+
+                                }
+                                if (partner2 == null)
+                                {
+                                    //Return with Partner not found.
+                                    response.StatusMessage = order.PartnerNo2 + " Partner not found in OMS.";
+                                    return response;
+                                }
+                                else
+                                {
+                                    partner2Id = partner2.ID;
+                                }
+                                if (partner3 == null)
+                                {
+                                    //Return with Partner not found.
+                                    response.StatusMessage = order.PartnerNo3 + " Partner not found in OMS.";
+                                    return response;
+                                }
+                                else
+                                {
+                                    partner3Id = partner3.ID;
+                                }
+
+                                #endregion
+
+                                #region Check if Order Partner Expeditor Detail Exists or not
+                                var existingOrderPartner1Detail = context.OrderPartnerDetails.FirstOrDefault
+                                    (t => t.OrderDetailID == orderDetailId && t.PartnerTypeId == partnerType1.ID && t.PartnerID == partner1Id);
+                                if (existingOrderPartner1Detail == null)
+                                {
+                                    Data.OrderPartnerDetail orderPartner1Detail = new Data.OrderPartnerDetail()
+                                    {
+                                        OrderDetailID = orderDetailId,
+                                        PartnerID = partner1Id,
+                                        PartnerTypeId = partnerType1.ID,
+                                        IsOriginal = true,
+                                        IsParent = true,
+                                        CreatedBy = "SYSTEM",
+                                        CreatedTime = DateTime.Now,
+                                        LastModifiedBy = "",
+                                        LastModifiedTime = null
+                                    };
+                                    context.OrderPartnerDetails.Add(orderPartner1Detail);
+                                    context.SaveChanges();
+                                }
+                                #endregion
+
+                                #region Check if Order Partner Source Detail Exists or not
+                                var existingOrderPartner2Detail = context.OrderPartnerDetails.FirstOrDefault
+                                    (t => t.OrderDetailID == orderDetailId && t.PartnerTypeId == partnerType2.ID && t.PartnerID == partner2Id);
+                                if (existingOrderPartner2Detail == null)
+                                {
+                                    Data.OrderPartnerDetail orderPartner2Detail = new Data.OrderPartnerDetail()
+                                    {
+                                        OrderDetailID = orderDetailId,
+                                        PartnerID = partner2Id,
+                                        PartnerTypeId = partnerType2.ID,
+                                        IsOriginal = true,
+                                        IsParent = true,
+                                        CreatedBy = "SYSTEM",
+                                        CreatedTime = DateTime.Now,
+                                        LastModifiedBy = "",
+                                        LastModifiedTime = null
+                                    };
+                                    context.OrderPartnerDetails.Add(orderPartner2Detail);
+                                    context.SaveChanges();
+                                }
+                                #endregion
+
+                                #region Check if Order Partner Destination Detail Exists or not
+                                var existingOrderPartner3Detail = context.OrderPartnerDetails.FirstOrDefault
+                                    (t => t.OrderDetailID == orderDetailId && t.PartnerTypeId == partnerType3.ID && t.PartnerID == partner3Id);
+                                if (existingOrderPartner3Detail == null)
+                                {
+                                    Data.OrderPartnerDetail orderPartner3Detail = new Data.OrderPartnerDetail()
+                                    {
+                                        OrderDetailID = orderDetailId,
+                                        PartnerID = partner3Id,
+                                        PartnerTypeId = partnerType3.ID,
+                                        IsOriginal = true,
+                                        IsParent = true,
+                                        CreatedBy = "SYSTEM",
+                                        CreatedTime = DateTime.Now,
+                                        LastModifiedBy = "",
+                                        LastModifiedTime = null
+                                    };
+                                    context.OrderPartnerDetails.Add(orderPartner3Detail);
+                                    context.SaveChanges();
+                                }
+                                #endregion
+
+                                #region Step 6: Insert Packing Sheet
+                                if (!string.IsNullOrEmpty(order.PackingSheetNo))
+                                {
+                                    string[] packingSheets = order.PackingSheetNo.Split(',');
+                                    foreach (string packinSheet in packingSheets)
+                                    {
+                                        var existingPackingSheet = context.PackingSheets.FirstOrDefault(t => t.ShippingListNo == order.ShippingListNo && t.PackingSheetNo == packinSheet);
+                                        if (existingPackingSheet == null)
+                                        {
+                                            Data.PackingSheet packingSheetRequest = new Data.PackingSheet()
+                                            {
+                                                ShippingListNo = order.ShippingListNo,
+                                                PackingSheetNo = packinSheet,
+                                                CreatedBy = request.CreatedBy,
+                                                CreatedTime = DateTime.Now,
+                                                LastModifiedBy = "",
+                                                LastModifiedTime = null
+                                            };
+
+                                            context.PackingSheets.Add(packingSheetRequest);
+                                            context.SaveChanges();
+                                        }
+
+                                    }
+                                }
+                                #endregion
+
+                                #region Step 7: Insert Shipment SAP
+                                if (!string.IsNullOrEmpty(order.ShipmentSAPNo))
+                                {
+                                    string[] shipmentSAPs = order.ShipmentSAPNo.Split(',');
+                                    foreach (string shipmentSAP in shipmentSAPs)
+                                    {
+                                        var existingShipmentSAP = context.ShipmentSAPs.FirstOrDefault(t => t.OrderDetailID == orderDetailId && t.ShipmentSAPNo == shipmentSAP);
+                                        if (existingShipmentSAP == null)
+                                        {
+                                            Data.ShipmentSAP shipmentSAPRequest = new Data.ShipmentSAP()
+                                            {
+                                                OrderDetailID = orderDetailId,
+                                                ShipmentSAPNo = shipmentSAP,
+                                                CreatedBy = request.CreatedBy,
+                                                CreatedTime = DateTime.Now,
+                                                LastModifiedBy = "",
+                                                LastModifiedTime = null
+                                            };
+
+                                            context.ShipmentSAPs.Add(shipmentSAPRequest);
+                                            context.SaveChanges();
+                                        }
+                                    }
+                                }
+                                #endregion
+
+                                #endregion
+                            }
+                            else
+                            {
+                                #region Create New Order Header
+                                Data.OrderHeader orderHeader = new Data.OrderHeader()
+                                {
+                                    OrderNo = order.OrderNo,
+                                    LegecyOrderNo = order.OrderNo,
+                                    OrderType = order.OrderType,
+                                    FleetType = order.FleetType,
+                                    VehicleShipment = order.VehicleShipmentType,
+                                    DriverNo = order.DriverNo,
+                                    DriverName = order.DriverName,
+                                    VehicleNo = order.VehicleNo,
+                                    OrderWeight = order.OrderWeight,
+                                    OrderWeightUM = order.OrderWeightUM,
+                                    BusinessAreaId = businessAreaId,
+                                    IsActive = true,
+                                    OrderDate = DateTime.Now,
+                                    OrderStatusID = orderStatusId,
+                                    CreatedBy = request.CreatedBy,
+                                    CreatedTime = DateTime.Now,
+                                    LastModifiedBy = "",
+                                    LastModifiedTime = null,
+                                    UploadType = request.UploadType
+                                };
+                                context.OrderHeaders.Add(orderHeader);
+                                context.SaveChanges();
+                                order.ID = orderHeader.ID;
+
+                                #region Step 3 : Create Order Detail
+                                Data.OrderDetail orderDetail = new Data.OrderDetail()
+                                {
+                                    OrderHeaderID = order.ID,
+                                    SequenceNo = order.SequenceNo,
+                                    Sender = order.Sender,
+                                    Receiver = order.Receiver,
+                                    Dimension = order.Dimension,
+                                    TotalPallet = order.TotalPallet,
+                                    Instruction = order.Instructions,
+                                    ShippingListNo = order.ShippingListNo,
+                                    TotalCollie = order.TotalCollie,
+                                    EstimationShipmentDate = estimationShipmentDate,
+                                    ActualShipmentDate = actualShipmentDate,
+                                    CreatedBy = request.CreatedBy,
+                                    CreatedTime = DateTime.Now,
+                                    LastModifiedBy = "",
+                                    LastModifiedTime = null
+                                };
+                                context.OrderDetails.Add(orderDetail);
+                                context.SaveChanges();
+                                #endregion
+
+                                string partner1TypeId = order.PartnerType1.ToString();
+                                string partner2TypeId = order.PartnerType2.ToString();
+                                string partner3TypeId = order.PartnerType3.ToString();
+
+                                #region Check if Partner Type Exists or not
+                                var partnerType1 = context.PartnerTypes.FirstOrDefault(t => t.PartnerTypeCode == partner1TypeId);
+                                var partnerType2 = context.PartnerTypes.FirstOrDefault(t => t.PartnerTypeCode == partner2TypeId);
+                                var partnerType3 = context.PartnerTypes.FirstOrDefault(t => t.PartnerTypeCode == partner3TypeId);
+
+                                if (partnerType1 == null || partnerType2 == null || partnerType3 == null)
+                                {
+                                    //Return with Partner Type not found.
+                                    transaction.Rollback();
+                                    response.Status = DomainObjects.Resource.ResourceData.Failure;
+                                    response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                }
+                                if (partnerType1 == null)
+                                {
+                                    //Return with Partner Type not found.
+                                    response.StatusMessage = order.PartnerType1.ToString() + " Partner Type not found in OMS.";
+                                    return response;
+                                }
+                                if (partnerType2 == null)
+                                {
+                                    //Return with Partner Type not found.
+                                    response.StatusMessage = order.PartnerType2.ToString() + " Partner Type not found in OMS.";
+                                    return response;
+                                }
+                                if (partnerType3 == null)
+                                {
+                                    //Return with Partner Type not found.
+                                    response.StatusMessage = order.PartnerType3.ToString() + " Partner Type not found in OMS.";
+                                    return response;
+                                }
+
+                                #endregion
+
+                                int partner1Id;
+                                int partner2Id;
+                                int partner3Id;
+
+                                #region Check if Partner Exists or not
+                                var partner1 = (from p in context.Partners
+                                                join ppt in context.PartnerPartnerTypes on p.ID equals ppt.PartnerId
+                                                where p.PartnerNo == order.PartnerNo1 && ppt.PartnerTypeId == partnerType1.ID
+                                                select new Domain.Partner()
+                                                {
+                                                    ID = p.ID
+                                                }).FirstOrDefault();
+
+                                var partner2 = (from p in context.Partners
+                                                join ppt in context.PartnerPartnerTypes on p.ID equals ppt.PartnerId
+                                                where p.PartnerNo == order.PartnerNo2 && ppt.PartnerTypeId == partnerType2.ID
+                                                select new Domain.Partner()
+                                                {
+                                                    ID = p.ID
+                                                }).FirstOrDefault();
+
+                                var partner3 = (from p in context.Partners
+                                                join ppt in context.PartnerPartnerTypes on p.ID equals ppt.PartnerId
+                                                where p.PartnerNo == order.PartnerNo3 && ppt.PartnerTypeId == partnerType3.ID
+                                                select new Domain.Partner()
+                                                {
+                                                    ID = p.ID
+                                                }).FirstOrDefault();
+
+                                if (partner1 == null || partner2 == null || partner3 == null)
+                                {
+                                    //Return with Partner not found.
+                                    transaction.Rollback();
+                                    response.Status = DomainObjects.Resource.ResourceData.Failure;
+                                    response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                }
+
+                                if (partner1 == null)
+                                {
+
+                                    response.StatusMessage = order.PartnerNo1 + " Partner not found in OMS.";
+                                    return response;
+                                }
+                                else
+                                {
+                                    partner1Id = partner1.ID;
+
+                                }
+                                if (partner2 == null)
+                                {
+                                    //Return with Partner not found.
+                                    response.StatusMessage = order.PartnerNo2 + " Partner not found in OMS.";
+                                    return response;
+                                }
+                                else
+                                {
+                                    partner2Id = partner2.ID;
+                                }
+                                if (partner3 == null)
+                                {
+                                    //Return with Partner not found.
+                                    response.StatusMessage = order.PartnerNo3 + " Partner not found in OMS.";
+                                    return response;
+                                }
+                                else
+                                {
+                                    partner3Id = partner3.ID;
+                                }
+
+                                #endregion
+
+                                #region Step 5: Insert Expedetor Partner Detail
+                                Data.OrderPartnerDetail orderPartner1Detail = new Data.OrderPartnerDetail()
+                                {
+                                    OrderDetailID = orderDetail.ID,
+                                    PartnerID = partner1Id,
+                                    PartnerTypeId = partnerType1.ID,
+                                    IsOriginal = true,
+                                    IsParent = true,
+                                    CreatedBy = "SYSTEM",
+                                    CreatedTime = DateTime.Now,
+                                    LastModifiedBy = "",
+                                    LastModifiedTime = null
+                                };
+                                context.OrderPartnerDetails.Add(orderPartner1Detail);
+                                context.SaveChanges();
+
+                                #endregion
+
+                                #region Insert Source Partner Detail
+                                Data.OrderPartnerDetail orderPartner2Detail = new Data.OrderPartnerDetail()
+                                {
+                                    OrderDetailID = orderDetail.ID,
+                                    PartnerID = partner2Id,
+                                    PartnerTypeId = partnerType2.ID,
+                                    IsOriginal = true,
+                                    IsParent = true,
+                                    CreatedBy = "SYSTEM",
+                                    CreatedTime = DateTime.Now,
+                                    LastModifiedBy = "",
+                                    LastModifiedTime = null
+                                };
+                                context.OrderPartnerDetails.Add(orderPartner2Detail);
+                                context.SaveChanges();
+                                #endregion
+
+                                #region Insert Destination Partner Detail
+                                Data.OrderPartnerDetail orderPartner3Detail = new Data.OrderPartnerDetail()
+                                {
+                                    OrderDetailID = orderDetail.ID,
+                                    PartnerID = partner3Id,
+                                    PartnerTypeId = partnerType3.ID,
+                                    IsOriginal = true,
+                                    IsParent = true,
+                                    CreatedBy = "SYSTEM",
+                                    CreatedTime = DateTime.Now,
+                                    LastModifiedBy = "",
+                                    LastModifiedTime = null
+                                };
+                                context.OrderPartnerDetails.Add(orderPartner3Detail);
+                                context.SaveChanges();
+                                #endregion
+
+                                #region Step 6: Insert Packing Sheet
+                                if (!string.IsNullOrEmpty(order.PackingSheetNo))
+                                {
+                                    string[] packingSheets = order.PackingSheetNo.Split(',');
+                                    foreach (string packinSheet in packingSheets)
+                                    {
+                                        Data.PackingSheet packingSheetRequest = new Data.PackingSheet()
+                                        {
+                                            ShippingListNo = order.ShippingListNo,
+                                            PackingSheetNo = packinSheet,
+                                            CreatedBy = request.CreatedBy,
+                                            CreatedTime = DateTime.Now,
+                                            LastModifiedBy = "",
+                                            LastModifiedTime = null
+                                        };
+
+                                        context.PackingSheets.Add(packingSheetRequest);
+                                        context.SaveChanges();
+                                    }
+                                }
+                                #endregion
+
+                                #region Step 7: Insert Shipment SAP
+                                if (!string.IsNullOrEmpty(order.ShipmentSAPNo))
+                                {
+                                    string[] shipmentSAPs = order.ShipmentSAPNo.Split(',');
+                                    foreach (string shipmentSAP in shipmentSAPs)
+                                    {
+                                        Data.ShipmentSAP shipmentSAPRequest = new Data.ShipmentSAP()
+                                        {
+                                            OrderDetailID = orderDetail.ID,
+                                            ShipmentSAPNo = shipmentSAP,
+                                            CreatedBy = request.CreatedBy,
+                                            CreatedTime = DateTime.Now,
+                                            LastModifiedBy = "",
+                                            LastModifiedTime = null
+                                        };
+
+                                        context.ShipmentSAPs.Add(shipmentSAPRequest);
+                                        context.SaveChanges();
+                                    }
+                                }
+                                #endregion
+
+                                #endregion
+                            }
+                            #endregion
+
+                            transaction.Commit();
+                            response.Data.Add(order);
+                            response.Status = DomainObjects.Resource.ResourceData.Success;
+                            response.StatusCode = (int)HttpStatusCode.OK;
+                            response.StatusMessage = DomainObjects.Resource.ResourceData.OrderCreated;
+                        }
+                        catch (Exception ex)
+                        {
+                            transaction.Rollback();
+                            _logger.Log(LogLevel.Error, ex);
+                            response.Status = DomainObjects.Resource.ResourceData.Failure;
+                            response.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                            response.StatusMessage = ex.Message;
+                        }
+                    }
+                }
+            }
+            return response;
+        }
+
+        private string GetOrderNumber(int businessAreaId, string businessArea, string applicationCode, int year)
+        {
+            string orderNo = businessArea + applicationCode;
+            using (var context = new Data.OMSDBContext())
+            {
+                var order = context.OrderHeaders.Where(t => t.BusinessAreaId == businessAreaId && t.UploadType == 2).OrderByDescending(t => t.OrderNo).FirstOrDefault();
+                if (order != null)
+                {
+                    int lastOrderYear = order.OrderDate.Year;
+                    if (year != lastOrderYear)
+                    {
+                        orderNo += "00000001";
+                    }
+                    else
+                    {
+                        string orderSequnceString = order.OrderNo.Substring(order.OrderNo.Length - 8);
+                        int orderSequnceNumber = Convert.ToInt32(orderSequnceString) + 1;
+
+                        orderNo += orderSequnceNumber.ToString().PadLeft(8, '0');
+                    }
+                }
+                else
+                {
+                    orderNo += "00000001";
+                }
+            }
+            return orderNo;
+        }
+
+        public PackingSheetResponse CreateUpdatePackingSheet(PackingSheetRequest packingSheetRequest)
+        {
+            PackingSheetResponse packingSheetResponse = new PackingSheetResponse();
+            try
+            {
+                using (var context = new Data.OMSDBContext())
+                {
+                    foreach (var packingSheet in packingSheetRequest.Requests)
+                    {
+                        var orderID = context.OrderHeaders.Where(oh => oh.OrderNo == packingSheet.OrderNumber).Select(oh => oh.ID).FirstOrDefault();
+                        var partnerID = context.Partners.Where(p => p.PartnerNo == packingSheet.DealerNumber).Select(p => p.ID).FirstOrDefault();
+                        var orderDetailsData = context.OrderDetails.Where(x => x.ID == packingSheet.OrderDetailId).FirstOrDefault();
+                        if (orderDetailsData != null)
+                        {
+                            orderDetailsData.ShippingListNo = packingSheet.ShippingListNo;
+                            orderDetailsData.TotalCollie = packingSheet.Collie;
+                            orderDetailsData.Katerangan = packingSheet.Katerangan;
+                            // context.SaveChanges();
+
+                            if (packingSheet.PackingSheetNumbers.Count > 0)
+                            {
+                                foreach (var item in packingSheet.PackingSheetNumbers)
+                                {
+                                    Data.PackingSheet packingSheetData = new Data.PackingSheet()
+                                    {
+                                        // OrderDetailID = orderDetail.ID,
+                                        PackingSheetNo = item.Value,
+                                        CreatedBy = packingSheetRequest.CreatedBy,
+                                        CreatedTime = DateTime.Now,
+                                        LastModifiedBy = "",
+                                        LastModifiedTime = null,
+                                        ShippingListNo = packingSheet.ShippingListNo
+
+                                    };
+
+                                    context.PackingSheets.Add(packingSheetData);
+                                    context.SaveChanges();
+                                }
+                            }
+                            packingSheetResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                            packingSheetResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                            packingSheetResponse.StatusCode = (int)HttpStatusCode.OK;
+                        }
+                        else
+                        {
+                            packingSheetResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                            packingSheetResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
+                            packingSheetResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                        }
+                        //packingSheetRequest.Requests = mapper.Map<List<DataModel.Role>, List<Domain.Role>>(roles);
+                        //packingSheetResponse.Data = packingSheetRequest.Requests;
+
+
+                    }
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+                packingSheetResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                packingSheetResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                packingSheetResponse.StatusMessage = ex.Message;
+            }
+            return packingSheetResponse;
+        }
+
+        public OrderStatusResponse UpdateOrderStatus(OrderStatusRequest request)
+        {
+            _logger.Log(LogLevel.Error, request);
+            OrderStatusResponse response = new OrderStatusResponse()
+            {
+                Data = new List<OrderStatus>()
+            };
+
+            using (var context = new Data.OMSDBContext())
+            {
+                try
+                {
+                    foreach (var statusRequest in request.Requests)
+                    {
+                        int orderId = 0;
+
+                        orderId = context.OrderHeaders.FirstOrDefault(t => t.LegecyOrderNo == statusRequest.OrderNumber).ID;
+
+                        #region Update Order Header
+                        var orderHeader = context.OrderHeaders.FirstOrDefault(t => t.ID == orderId);
+                        orderHeader.OrderStatusID = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == statusRequest.OrderStatusCode).ID;
+
+                        context.Entry(orderHeader).State = System.Data.Entity.EntityState.Modified;
+                        context.SaveChanges();
+                        context.Entry(orderHeader).State = System.Data.Entity.EntityState.Detached;
+
+                        #endregion
+
+                        response.Data = request.Requests;
+                        response.Status = DomainObjects.Resource.ResourceData.Success;
+                        response.StatusCode = (int)HttpStatusCode.OK;
+                        response.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log(LogLevel.Error, ex);
+                    response.Status = DomainObjects.Resource.ResourceData.Failure;
+                    response.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                    response.StatusMessage = ex.Message;
+                }
+            }
+
             return response;
         }
     }

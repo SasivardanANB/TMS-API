@@ -128,7 +128,7 @@ namespace OMS.API.Controllers
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
             OrderResponse orderData = orderTask.CreateUpdateOrders(request);
 
-            if (orderData.StatusCode == 200 && orderData.Status == "Success" && request.orderGeneratedSystem!="TMS")
+            if (orderData.StatusCode == 200 && orderData.Status == "Success" && request.orderGeneratedSystem != "TMS")
             {
                 #region Call TMS Order Request
                 if (orderData.StatusCode == (int)HttpStatusCode.OK)
@@ -138,7 +138,8 @@ namespace OMS.API.Controllers
                     {
                         Requests = new List<Order>(),
                         CreatedBy = "OMS System",
-                        UploadType = 1
+                        UploadType = 1,
+                        orderGeneratedSystem = "OMS"
                     };
 
                     //Login to TMS and get Token
@@ -206,15 +207,131 @@ namespace OMS.API.Controllers
             return Ok(orderData);
         }
 
+        /// <summary>
+        /// This method deals manually entered orders in TMS
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [Route("syncOrders")]
+        [HttpPost]
+        public IHttpActionResult SyncOrders(OrderRequest order)
+        {
+            #region Model Validation
+            for (int i = 0; i < order.Requests.Count; i++)
+            {
+                if (order.Requests[i].OrderType == 1) //For Inbound
+                {
+                    if (order.Requests[i].OrderWeight == 0)
+                    {
+                        ModelState.AddModelError($"{nameof(order)}.{nameof(order.Requests)}.[{i}].{nameof(Order.OrderWeight)}", "Invalid Order Weight");
+                    }
+                    else
+                    {
+                        if (string.IsNullOrEmpty(order.Requests[i].OrderWeightUM))
+                        {
+                            ModelState.AddModelError($"{nameof(order)}.{nameof(order.Requests)}.[{i}].{nameof(Order.OrderWeightUM)}", "Invalid Order Weight UM");
+                        }
+                    }
+                    if (order.UploadType == 2) // Create Order
+                    {
+                        ModelState.Remove("order.Requests[" + i + "].BusinessArea");
+                        ModelState.Remove("order.Requests[" + i + "].ShippingListNo");
+                        ModelState.Remove("order.Requests[" + i + "].PackingSheetNo");
+                        ModelState.Remove("order.Requests[" + i + "].TotalCollie");
+                        ModelState.Remove("order.Requests[" + i + "].PartnerName1");
+                        ModelState.Remove("order.Requests[" + i + "].PartnerName2");
+                        ModelState.Remove("order.Requests[" + i + "].PartnerName3");
+                        ModelState.Remove("order.Requests[" + i + "].Dimension");
+                        ModelState.Remove("order.Requests[" + i + "].OrderNo");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError($"{nameof(order)}.{nameof(order.Requests)}.[{i}].{nameof(Order.OrderType)}", "Invalid Upload Type");
+                    }
+                }
+                else if (order.Requests[i].OrderType == 2)//For Outbound
+                {
+                    ModelState.Remove("order.Requests[" + i + "]");
+                    ModelState.Remove("order.Requests[" + i + "].BusinessArea");
+
+                    if (order.UploadType == 2) // Upload Order
+                    {
+                        ModelState.Remove("order.Requests[" + i + "].BusinessArea");
+                        ModelState.Remove("order.Requests[" + i + "].ShippingListNo");
+                        ModelState.Remove("order.Requests[" + i + "].PackingSheetNo");
+                        ModelState.Remove("order.Requests[" + i + "].TotalCollie");
+                        ModelState.Remove("order.Requests[" + i + "].PartnerName1");
+                        ModelState.Remove("order.Requests[" + i + "].PartnerName2");
+                        ModelState.Remove("order.Requests[" + i + "].PartnerName3");
+                        ModelState.Remove("order.Requests[" + i + "].Dimension");
+                        ModelState.Remove("order.Requests.[" + i + "].ShipmentSAPNo");
+                        ModelState.Remove("order.Requests[" + i + "].OrderNo");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError($"{nameof(order)}.{nameof(order.Requests)}.[{i}].{nameof(Order.OrderType)}", "Invalid Upload Type");
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError($"{nameof(order)}.{nameof(order.Requests)}.[{i}].{nameof(Order.OrderType)}", "Invalid Order Type");
+                }
+            }
+            if (!ModelState.IsValid)
+            {
+                ErrorResponse errorResponse = new ErrorResponse()
+                {
+                    Status = DomainObjects.Resource.ResourceData.Failure,
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    Data = new List<Error>()
+                };
+                for (int i = 0; i < ModelState.Keys.Count; i++)
+                {
+                    Error errorData = new Error()
+                    {
+                        ErrorMessage = ModelState.Keys.ToList<string>()[i].Replace("request.Requests[", "Row Number[") + " : " + ModelState.Values.ToList<ModelState>()[i].Errors[0].ErrorMessage
+                    };
+
+                    errorResponse.Data.Add(errorData);
+                }
+                return Ok(errorResponse);
+            }
+            #endregion
+
+            //Create order in OMS
+            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            OrderResponse orderData = orderTask.SyncOrders(order);
+
+            return Ok(orderData);
+        }
+
         [Route("getallorderstatus")]
         [HttpGet]
         public IHttpActionResult GetAllOrderStatus()
         {
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
-            OrderStatusResponse orderStatusData = orderTask.GetAllOrderStatus();
+            OrderStatusCodesResponse orderStatusData = orderTask.GetAllOrderStatus();
 
             return Ok(orderStatusData);
 
+        }
+
+        [Route("createupdatepackingsheet")]
+        [HttpPost]
+        public IHttpActionResult CreateUpdatePackingSheet(PackingSheetRequest packingSheetRequest)
+        {
+            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            PackingSheetResponse packingSheetResponse = orderTask.CreateUpdatePackingSheet(packingSheetRequest);
+            return Ok(packingSheetResponse);
+        }
+
+        [Route("updateorderstatus")]
+        [HttpPost]
+        public IHttpActionResult UpdateOrderStatus(OrderStatusRequest request)
+        {
+            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            OrderStatusResponse response = orderTask.UpdateOrderStatus(request);
+            return Ok(response);
         }
     }
 }

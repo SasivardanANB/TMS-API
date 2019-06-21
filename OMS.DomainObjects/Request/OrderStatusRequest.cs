@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OMS.DomainObjects.Response
+namespace OMS.DomainObjects.Request
 {
-    public class OrderStatusResponse : Message
+    public class OrderStatusRequest
     {
-        public List<OrderStatus> Data { get; set; }
+        public List<OrderStatus> Requests { get; set; }
     }
 }

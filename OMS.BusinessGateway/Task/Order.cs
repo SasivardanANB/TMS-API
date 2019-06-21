@@ -34,10 +34,28 @@ namespace OMS.BusinessGateway.Task
             OrderResponse orderData = _orderRepository.CreateUpdateOrders(request);
             return orderData;
         }
-        public override OrderStatusResponse GetAllOrderStatus()
+
+        public override OrderStatusCodesResponse GetAllOrderStatus()
         {
-            OrderStatusResponse orderStatusData = _orderRepository.GetAllOrderStatus();
+            OrderStatusCodesResponse orderStatusData = _orderRepository.GetAllOrderStatus();
             return orderStatusData;
+        }
+
+        public override OrderResponse SyncOrders(OrderRequest request)
+        {
+            OrderResponse orderData = _orderRepository.SyncOrders(request);
+            return orderData;
+        }
+
+        public override PackingSheetResponse CreateUpdatePackingSheet(PackingSheetRequest packingSheetRequest)
+        {
+            PackingSheetResponse packingSheetResponse   = _orderRepository.CreateUpdatePackingSheet(packingSheetRequest);
+            return packingSheetResponse;
+        }
+
+        public override OrderStatusResponse UpdateOrderStatus(OrderStatusRequest request)
+        {
+            return _orderRepository.UpdateOrderStatus(request);
         }
     }
 }
