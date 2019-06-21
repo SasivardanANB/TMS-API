@@ -450,8 +450,8 @@ namespace TMS.DataGateway.Repositories
                                           select data).FirstOrDefault();
                         if(orderHeadeData != null)
                         {
-                            orderHeadeData.DriverName = context.Drivers.Where(o => o.DriverNo == request.DriverNo && o.IsActive).Select(d => d.UserName).FirstOrDefault();
-                            orderHeadeData.DriverNo = context.Drivers.Where(o => o.DriverNo == request.DriverNo && o.IsActive).Select(d => d.DriverNo).FirstOrDefault();
+                            orderHeadeData.DriverName = context.Drivers.Where(o => o.UserName == request.DriverName && o.IsActive).Select(d => d.UserName).FirstOrDefault();
+                            orderHeadeData.DriverNo = context.Drivers.Where(o => o.UserName == request.DriverName && o.IsActive).Select(d => d.DriverNo).FirstOrDefault();
                             orderHeadeData.VehicleShipment = request.Vehicle;
                             orderHeadeData.LastModifiedTime = tripRequest.LastModifiedTime;
                             orderHeadeData.LastModifiedBy = tripRequest.LastModifiedBy;

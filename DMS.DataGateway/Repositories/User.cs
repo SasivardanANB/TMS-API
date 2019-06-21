@@ -265,57 +265,6 @@ namespace DMS.DataGateway.Repositories
             }
             return userResponse;
         }
-        public UserResponse ForgotPassword(ForgotPasswordRequest forgotPasswordRequest)
-        {
-            UserResponse userResponse = new UserResponse();
-            try
-            {
-                using (var context = new DMSDBContext())
-                {
-                    var userDetails = context.Drivers.Where(u => u.Email == forgotPasswordRequest.Email).FirstOrDefault();
-                    if (userDetails != null)
-                    {
-                        MailMessage mail = new MailMessage();
-                        mail.To.Add(forgotPasswordRequest.Email);
-                        string emailFrom = ConfigurationManager.AppSettings["EmailFrom"];
-                        mail.From = new MailAddress(emailFrom);
-                        mail.Subject = ConfigurationManager.AppSettings["EmailSubject"]; // "Test-case";
-                        string Body = "To reset your password click the link : " + ConfigurationManager.AppSettings["ResetPassword"] + "?userId=" + userDetails.ID;
-                        mail.Body = Body;
-                        mail.IsBodyHtml = true;
-
-                        string smtpHost = ConfigurationManager.AppSettings["SmtpHost"];
-                        string loginEmailId = ConfigurationManager.AppSettings["SmtpUserName"];
-                        string emailPassword = ConfigurationManager.AppSettings["SmtpPassword"];
-                        SmtpClient smtp = new SmtpClient(smtpHost);
-                        smtp.Port = 587;
-                        smtp.UseDefaultCredentials = false;
-                        smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
-                        smtp.Credentials = new System.Net.NetworkCredential(loginEmailId, emailPassword); // Enter senders User name and password  
-                        smtp.EnableSsl = true;
-                        smtp.Send(mail);
-
-                        userResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                        userResponse.StatusCode = (int)HttpStatusCode.OK;
-                        userResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
-                    }
-                    else
-                    {
-                        userResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                        userResponse.StatusCode = (int)HttpStatusCode.NotFound;
-                        userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UserDetailsNotFound;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Log(LogLevel.Error, ex);
-                userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
-                userResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                userResponse.StatusMessage = ex.Message;
-            }
-            return userResponse;
-        }
 
         public UserResponse GetProfileDetails(int userID)
         {

@@ -23,7 +23,7 @@ namespace TMS.DomainObjects.Objects
         public string PoliceNo { get; set; }
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidMaxWeight")]
         [Range(minimum: 1, maximum: int.MaxValue, ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidMaxWeight")]
-        public int MaxWeight { get; set; }
+        public decimal MaxWeight { get; set; }
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidMaxDimension"),MaxLength(12,ErrorMessageResourceType =typeof(Resource.ResourceData),ErrorMessageResourceName = "InvalidMaxDimensionLength"), MinLength(3, ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidMaxDimensionLength")]
         [RegularExpression("^[0-9]+\\*[0-9]+\\*[0-9]+$",ErrorMessage ="Invalid Max Dimensi format. Please provide in 12*34*56 format.")]
         public string MaxDimension { get; set; }

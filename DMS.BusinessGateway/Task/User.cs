@@ -45,13 +45,7 @@ namespace DMS.BusinessGateway.Task
             UserResponse userData = _userRepository.ChangePassword(changePasswordRequest,type);
             return userData;
         }
-        public override UserResponse ForgotPassword(ForgotPasswordRequest forgotPasswordRequest)
-        {
-            UserResponse userData = _userRepository.ForgotPassword(forgotPasswordRequest);
-            return userData;
-        }
-        
-      
+       
         public override UserResponse GetProfileDetails(int userID)
         {
             UserResponse userData = _userRepository.GetProfileDetails(userID);
