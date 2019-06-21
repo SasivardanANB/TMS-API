@@ -103,6 +103,11 @@ namespace OMS.DomainObjects.Objects
         public string OrderLastModifiedBy { get; set; }
         public DateTime? OrderLastModifiedTime { get; set; }
         public int OrderDetailID { get; set; }
+        public decimal Harga { get; set; }
+        public int? ShipmentScheduleImageID { get; set; }
+        public string ShipmentScheduleImageGUID { get; set; }
+        [MaxLength(10)]
+        public string SOPONumber { get; set; }
 
     }
 }

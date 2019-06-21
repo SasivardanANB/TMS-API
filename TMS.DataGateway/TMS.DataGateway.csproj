@@ -157,6 +157,10 @@
     <Compile Include="Migrations\201906170728078_DBChanges.Designer.cs">
       <DependentUpon>201906170728078_DBChanges.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201906201137536_tmsorderheaderchange.cs" />
+    <Compile Include="Migrations\201906201137536_tmsorderheaderchange.Designer.cs">
+      <DependentUpon>201906201137536_tmsorderheaderchange.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\Authenticate.cs" />
@@ -201,6 +205,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201906170728078_DBChanges.resx">
       <DependentUpon>201906170728078_DBChanges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201906201137536_tmsorderheaderchange.resx">
+      <DependentUpon>201906201137536_tmsorderheaderchange.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SeedData\Activities.csv" />
     <EmbeddedResource Include="SeedData\applications.csv" />

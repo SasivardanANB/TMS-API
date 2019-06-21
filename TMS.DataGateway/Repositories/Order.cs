@@ -129,11 +129,11 @@ namespace TMS.DataGateway.Repositories
                                 order.DriverNo = order.DriverNo;
                                 order.DriverName = context.Drivers.FirstOrDefault(t => t.DriverNo == order.DriverNo).UserName;
                                 soPoNumber = order.SOPONumber;
-                                if (persistedOrderDataID == 0)
-                                {
-                                    order.OrderNo = GetOrderNumber(businessAreaId, businessAreaCode, "TMS", DateTime.Now.Year);
-                                }
-                                order.LegecyOrderNo = order.OrderNo;
+                                //if (persistedOrderDataID == 0)
+                                //{
+                                //    order.OrderNo = GetOrderNumber(businessAreaId, businessAreaCode, "TMS", DateTime.Now.Year);
+                                //}
+                                //order.LegecyOrderNo = order.OrderNo;
                             }
 
                             int orderDetailId = 0;
@@ -1664,38 +1664,39 @@ namespace TMS.DataGateway.Repositories
             return orderTrackResponse;
         }
 
-        private string GetOrderNumber(int businessAreaId, string businessArea, string applicationCode, int year)
-        {
-            string orderNo = businessArea + applicationCode;
-            using (var context = new Data.TMSDBContext())
-            {
-                var order = context.OrderHeaders.Where(t => t.BusinessAreaId == businessAreaId && t.UploadType == 2).OrderByDescending(t => t.OrderNo).FirstOrDefault();
-                if (order != null)
-                {
-                    int lastOrderYear = order.OrderDate.Year;
-                    if (year != lastOrderYear)
-                    {
-                        orderNo += "00000001";
-                    }
-                    else
-                    {
-                        string orderSequnceString = order.OrderNo.Substring(order.OrderNo.Length - 8);
-                        int orderSequnceNumber = Convert.ToInt32(orderSequnceString) + 1;
+        //private string GetOrderNumber(int businessAreaId, string businessArea, string applicationCode, int year)
+        //{
+        //    string orderNo = businessArea + applicationCode;
+        //    using (var context = new Data.TMSDBContext())
+        //    {
+        //        var order = context.OrderHeaders.Where(t => t.BusinessAreaId == businessAreaId && t.UploadType == 2).OrderByDescending(t => t.OrderNo).FirstOrDefault();
+        //        if (order != null)
+        //        {
+        //            int lastOrderYear = order.OrderDate.Year;
+        //            if (year != lastOrderYear)
+        //            {
+        //                orderNo += "00000001";
+        //            }
+        //            else
+        //            {
+        //                string orderSequnceString = order.OrderNo.Substring(order.OrderNo.Length - 8);
+        //                int orderSequnceNumber = Convert.ToInt32(orderSequnceString) + 1;
 
-                        orderNo += orderSequnceNumber.ToString().PadLeft(8, '0');
-                    }
-                }
-                else
-                {
-                    orderNo += "00000001";
-                }
-            }
-            return orderNo;
-        }
+        //                orderNo += orderSequnceNumber.ToString().PadLeft(8, '0');
+        //            }
+        //        }
+        //        else
+        //        {
+        //            orderNo += "00000001";
+        //        }
+        //    }
+        //    return orderNo;
+        //}
 
         public PackingSheetResponse CreateUpdatePackingSheet(PackingSheetRequest packingSheetRequest)
         {
             PackingSheetResponse packingSheetResponse = new PackingSheetResponse();
+            packingSheetResponse.Data = new List<PackingSheet>();
             try
             {
                 using (var context = new Data.TMSDBContext())
@@ -1703,12 +1704,19 @@ namespace TMS.DataGateway.Repositories
                     foreach (var packingSheet in packingSheetRequest.Requests)
                     {
                         var orderDetailsData = context.OrderDetails.Where(x => x.ID == packingSheet.OrderDetailId).FirstOrDefault();
+
                         if (orderDetailsData != null)
                         {
+                            var partnerdetails = context.OrderPartnerDetails.Where(x => x.OrderDetailID == packingSheet.OrderDetailId && x.PartnerID == packingSheet.DealerId).FirstOrDefault();
+
+                            PackingSheet ps = new PackingSheet();
+                            ps.OrderNumber = orderDetailsData.OrderHeader.OrderNo;
+                            ps.DealerNumber = partnerdetails.Partner.PartnerNo;
+                            ps.DealerId = packingSheet.DealerId;
+
                             orderDetailsData.ShippingListNo = packingSheet.ShippingListNo;
                             orderDetailsData.TotalCollie = packingSheet.Collie;
                             orderDetailsData.Katerangan = packingSheet.Katerangan;
-                            // context.SaveChanges();
 
                             if (packingSheet.PackingSheetNumbers.Count > 0)
                             {
@@ -1716,7 +1724,6 @@ namespace TMS.DataGateway.Repositories
                                 {
                                     Data.PackingSheet packingSheetData = new Data.PackingSheet()
                                     {
-                                        // OrderDetailID = orderDetail.ID,
                                         PackingSheetNo = item.Value,
                                         CreatedBy = packingSheetRequest.CreatedBy,
                                         CreatedTime = DateTime.Now,
@@ -1730,6 +1737,7 @@ namespace TMS.DataGateway.Repositories
                                     context.SaveChanges();
                                 }
                             }
+                            packingSheetResponse.Data.Add(ps);
                             packingSheetResponse.Status = DomainObjects.Resource.ResourceData.Success;
                             packingSheetResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
                             packingSheetResponse.StatusCode = (int)HttpStatusCode.OK;
@@ -1740,14 +1748,8 @@ namespace TMS.DataGateway.Repositories
                             packingSheetResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                             packingSheetResponse.StatusCode = (int)HttpStatusCode.NotFound;
                         }
-                        //packingSheetRequest.Requests = mapper.Map<List<DataModel.Role>, List<Domain.Role>>(roles);
-                        //packingSheetResponse.Data = packingSheetRequest.Requests;
-                       
-
                     }
-
                 }
-
             }
             catch (Exception ex)
             {

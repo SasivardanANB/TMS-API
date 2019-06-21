@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace OMS.DomainObjects.Response
 {
-    public class OrderStatusResponse : Message
+    public class OrderStatusCodesResponse : Message
     {
-        public List<OrderStatus> Data { get; set; }
+        public List<Common> Data { get; set; }
     }
 }

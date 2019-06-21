@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace OMS.DataGateway.DataModels
 {
     [Table("ImageGuid", Schema = "OMS")]
-    public class ImageGuid
+    public class ImageGuid : ModelBase
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

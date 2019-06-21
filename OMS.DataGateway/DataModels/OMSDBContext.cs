@@ -36,5 +36,6 @@ namespace OMS.DataGateway.DataModels
         public virtual DbSet<ShipmentSAP> ShipmentSAPs { get; set; }
         public virtual DbSet<OrderStatus> OrderStatuses { get; set; }
         public virtual DbSet<PartnerPartnerType> PartnerPartnerTypes { get; set; }
+        public virtual DbSet<ImageGuid> ImageGuids { get; set; }
     }
 }

@@ -12,6 +12,9 @@ namespace OMS.DomainGateway.Task.Interfaces
     {
         OrderResponse GetOrders(DownloadOrderRequest order);
         OrderResponse CreateUpdateOrders(OrderRequest request);
-        OrderStatusResponse GetAllOrderStatus();
+        OrderResponse SyncOrders(OrderRequest request);
+        OrderStatusCodesResponse GetAllOrderStatus();
+        PackingSheetResponse CreateUpdatePackingSheet(PackingSheetRequest packingSheetRequest);
+        OrderStatusResponse UpdateOrderStatus(OrderStatusRequest request);
     }
 }

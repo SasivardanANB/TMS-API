@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
-namespace TMS.DomainObjects.Objects
+namespace OMS.DomainObjects.Objects
 {
     public class PackingSheet
     {
@@ -20,8 +20,6 @@ namespace TMS.DomainObjects.Objects
         public string ShippingListNo { get; set; }
         public int Collie { get; set; }
         public string Katerangan { get; set; }
-
-        public List<Common> PackingSheetNumbers { get; set; } 
-
+        public List<Common> PackingSheetNumbers { get; set; }
     }
 }
