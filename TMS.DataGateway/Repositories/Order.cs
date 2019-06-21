@@ -1462,25 +1462,25 @@ namespace TMS.DataGateway.Repositories
                                                     if (unLoadStatus.StatusCode == "4")
                                                     {
                                                         loadData.StartTrip.StepHeaderName = "START TRIP";
-                                                        loadData.StartTrip.StepHeaderDescription = "On the way to Main Dealer";
+                                                        loadData.StartTrip.StepHeaderDescription = "On the way to " + context.OrderPartnerDetails.Where(o => o.OrderDetailID == unLoadStatus.OrderDetailId && o.PartnerTypeId == 2).Select(n => n.Partner.PartnerName).FirstOrDefault();
                                                         loadData.StartTrip.StepHeaderDateTime = unLoadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
                                                     }
                                                     else if (unLoadStatus.StatusCode == "5")
                                                     {
                                                         loadData.ConfirmArrive.StepHeaderName = "CONFIRM ARRIVE";
-                                                        loadData.ConfirmArrive.StepHeaderDescription = "Arrived at Main Dealer";
+                                                        loadData.ConfirmArrive.StepHeaderDescription = "Arrived at " + context.OrderPartnerDetails.Where(o => o.OrderDetailID == unLoadStatus.OrderDetailId && o.PartnerTypeId == 2).Select(n => n.Partner.PartnerName).FirstOrDefault();
                                                         loadData.ConfirmArrive.StepHeaderDateTime = unLoadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
                                                     }
                                                     else if (unLoadStatus.StatusCode == "6")
                                                     {
                                                         loadData.StartLoad.StepHeaderName = "START LOAD";
-                                                        loadData.StartLoad.StepHeaderDescription = "Loading parts at Main Dealer";
+                                                        loadData.StartLoad.StepHeaderDescription = "Loading parts at " + context.OrderPartnerDetails.Where(o => o.OrderDetailID == unLoadStatus.OrderDetailId && o.PartnerTypeId == 2).Select(n => n.Partner.PartnerName).FirstOrDefault();
                                                         loadData.StartLoad.StepHeaderDateTime = unLoadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
                                                     }
                                                     else if (unLoadStatus.StatusCode == "7")
                                                     {
                                                         loadData.FinishLoad.StepHeaderName = "FINISH LOAD";
-                                                        loadData.FinishLoad.StepHeaderDescription = "Parts loaded at Main Dealer";
+                                                        loadData.FinishLoad.StepHeaderDescription = "Parts loaded at " + context.OrderPartnerDetails.Where(o => o.OrderDetailID == unLoadStatus.OrderDetailId && o.PartnerTypeId == 2).Select(n => n.Partner.PartnerName).FirstOrDefault();
                                                         loadData.FinishLoad.StepHeaderDateTime = unLoadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
                                                     }
                                                 }
@@ -1572,25 +1572,25 @@ namespace TMS.DataGateway.Repositories
                                                             if (loadStatus.StatusCode == "4")
                                                             {
                                                                 unLoadData.StartTrip.StepHeaderName = "START TRIP";
-                                                                unLoadData.StartTrip.StepHeaderDescription = "On the way to Dealer";
+                                                                unLoadData.StartTrip.StepHeaderDescription = "On the way to " + context.OrderPartnerDetails.Where(o => o.OrderDetailID == loadStatus.OrderDetailId && o.PartnerTypeId == 3).Select(n => n.Partner.PartnerName).FirstOrDefault();
                                                                 unLoadData.StartTrip.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
                                                             }
                                                             else if (loadStatus.StatusCode == "5")
                                                             {
                                                                 unLoadData.ConfirmArrive.StepHeaderName = "CONFIRM ARRIVE";
-                                                                unLoadData.ConfirmArrive.StepHeaderDescription = "Arrived at Dealer";
+                                                                unLoadData.ConfirmArrive.StepHeaderDescription = "Arrived at " + context.OrderPartnerDetails.Where(o => o.OrderDetailID == loadStatus.OrderDetailId && o.PartnerTypeId == 3).Select(n => n.Partner.PartnerName).FirstOrDefault();
                                                                 unLoadData.ConfirmArrive.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
                                                             }
                                                             else if (loadStatus.StatusCode == "9")
                                                             {
                                                                 unLoadData.StartLoad.StepHeaderName = "START UNLOAD";
-                                                                unLoadData.StartLoad.StepHeaderDescription = "Unloading parts at Dealer";
+                                                                unLoadData.StartLoad.StepHeaderDescription = "Unloading parts at " + context.OrderPartnerDetails.Where(o => o.OrderDetailID == loadStatus.OrderDetailId && o.PartnerTypeId == 3).Select(n => n.Partner.PartnerName).FirstOrDefault();
                                                                 unLoadData.StartLoad.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
                                                             }
                                                             else if (loadStatus.StatusCode == "10")
                                                             {
                                                                 unLoadData.FinishLoad.StepHeaderName = "FINISH UNLOAD";
-                                                                unLoadData.FinishLoad.StepHeaderDescription = "Parts unloaded at Dealer";
+                                                                unLoadData.FinishLoad.StepHeaderDescription = "Parts unloaded at " + context.OrderPartnerDetails.Where(o => o.OrderDetailID == loadStatus.OrderDetailId && o.PartnerTypeId == 3).Select(n => n.Partner.PartnerName).FirstOrDefault();
                                                                 unLoadData.FinishLoad.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
                                                             }
                                                         }
