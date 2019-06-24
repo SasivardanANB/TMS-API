@@ -258,7 +258,7 @@ namespace TMS.DataGateway.Repositories
                     }
                     else
                     {
-                        tripResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                        tripResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         tripResponse.StatusCode = (int)HttpStatusCode.NotFound;
                         tripResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                     }

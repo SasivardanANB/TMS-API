@@ -106,7 +106,7 @@ namespace TMS.DataGateway.Repositories
                     else
                     {
                         poolResponse.StatusCode = (int)HttpStatusCode.NotFound;
-                        poolResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                        poolResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         poolResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                     }
                    
@@ -261,7 +261,7 @@ namespace TMS.DataGateway.Repositories
                 }
                 else
                 {
-                    poolResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                    poolResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     poolResponse.StatusCode = (int)HttpStatusCode.NotFound;
                     poolResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                 }

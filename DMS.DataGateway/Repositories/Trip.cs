@@ -235,6 +235,7 @@ namespace DMS.DataGateway.Repositories
 
                                         context.Entry(existingTripDetail).State = System.Data.Entity.EntityState.Modified;
                                         context.SaveChanges();
+                                        stopPointId = existingTripDetail.ID;
                                     }
                                     else
                                     {

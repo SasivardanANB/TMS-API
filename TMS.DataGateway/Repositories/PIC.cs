@@ -249,7 +249,7 @@ namespace TMS.DataGateway.Repositories
                 }
                 else
                 {
-                    picResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                    picResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     picResponse.StatusCode = (int)HttpStatusCode.NotFound;
                     picResponse.StatusMessage= DomainObjects.Resource.ResourceData.NoRecords;
                 }

@@ -1086,7 +1086,7 @@ namespace TMS.DataGateway.Repositories
                     }
                     else
                     {
-                        orderSearchResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                        orderSearchResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         orderSearchResponse.StatusCode = (int)HttpStatusCode.NotFound;
                         orderSearchResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                     }
@@ -1231,7 +1231,7 @@ namespace TMS.DataGateway.Repositories
 
                                                         foreach (var loadStatus in loadStatusData)
                                                         {
-                                                            if (loadStatus.StatusCode == "4")
+                                                            if (loadStatus.StatusCode == "4" && loadStatus.OrderDetailId == orderDetail.OrderDetailId )
                                                             {
                                                                 loadData.StartTrip.StepHeaderName = "START TRIP";
                                                                 loadData.StartTrip.StepHeaderDescription = "On the way to " + context.OrderPartnerDetails.Where(o=>o.OrderDetailID==loadStatus.OrderDetailId && o.PartnerTypeId==2).Select(n=>n.Partner.PartnerName).FirstOrDefault();
@@ -1241,7 +1241,7 @@ namespace TMS.DataGateway.Repositories
                                                                 }
 
                                                             }
-                                                            else if (loadStatus.StatusCode == "5")
+                                                            else if (loadStatus.StatusCode == "5" && loadStatus.OrderDetailId == orderDetail.OrderDetailId)
                                                             {
                                                                 loadData.ConfirmArrive.StepHeaderName = "CONFIRM ARRIVE";
                                                                 loadData.ConfirmArrive.StepHeaderDescription = "Arrived at " + context.OrderPartnerDetails.Where(o => o.OrderDetailID == loadStatus.OrderDetailId && o.PartnerTypeId == 2).Select(n => n.Partner.PartnerName).FirstOrDefault();
@@ -1250,7 +1250,7 @@ namespace TMS.DataGateway.Repositories
                                                                     loadData.ConfirmArrive.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
                                                                 }
                                                             }
-                                                            else if (loadStatus.StatusCode == "6")
+                                                            else if (loadStatus.StatusCode == "6" && loadStatus.OrderDetailId == orderDetail.OrderDetailId)
                                                             {
                                                                 loadData.StartLoad.StepHeaderName = "START LOAD";
                                                                 loadData.StartLoad.StepHeaderDescription = "Loading parts at " + context.OrderPartnerDetails.Where(o => o.OrderDetailID == loadStatus.OrderDetailId && o.PartnerTypeId == 2).Select(n => n.Partner.PartnerName).FirstOrDefault();
@@ -1259,7 +1259,7 @@ namespace TMS.DataGateway.Repositories
                                                                     loadData.StartLoad.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
                                                                 }
                                                             }
-                                                            else if (loadStatus.StatusCode == "7")
+                                                            else if (loadStatus.StatusCode == "7" && loadStatus.OrderDetailId == orderDetail.OrderDetailId)
                                                             {
                                                                 loadData.FinishLoad.StepHeaderName = "FINISH LOAD";
                                                                 loadData.FinishLoad.StepHeaderDescription = "Parts loaded at " + context.OrderPartnerDetails.Where(o => o.OrderDetailID == loadStatus.OrderDetailId && o.PartnerTypeId == 2).Select(n => n.Partner.PartnerName).FirstOrDefault();
@@ -1795,7 +1795,7 @@ namespace TMS.DataGateway.Repositories
                     }
                     else
                     {
-                        packingSheetResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                        packingSheetResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         packingSheetResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                         packingSheetResponse.StatusCode = (int)HttpStatusCode.NotFound;
                         packingSheetResponse.NumberOfRecords = 0;
@@ -1894,7 +1894,7 @@ namespace TMS.DataGateway.Repositories
                         delearData = (from orderHeader in context.OrderHeaders
                                       join orderDetails in context.OrderDetails on orderHeader.ID equals orderDetails.OrderHeaderID
                                       join opd in context.OrderPartnerDetails on orderDetails.ID equals opd.OrderDetailID
-                                      where orderHeader.ID == orderId && opd.PartnerTypeId == context.PartnerTypes.FirstOrDefault(t => t.PartnerTypeCode == "1").ID
+                                      where orderHeader.ID == orderId && opd.PartnerTypeId == context.PartnerTypes.FirstOrDefault(t => t.PartnerTypeCode == "2").ID
                                       select new Domain.DealerDetails
                                       {
                                           DealerId = opd.PartnerID,

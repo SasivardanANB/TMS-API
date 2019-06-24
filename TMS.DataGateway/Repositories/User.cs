@@ -1067,7 +1067,7 @@ namespace TMS.DataGateway.Repositories
                     }
                     else
                     {
-                        roleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                        roleResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         roleResponse.StatusCode = (int)HttpStatusCode.NotFound;
                         roleResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                     }
@@ -1299,7 +1299,7 @@ namespace TMS.DataGateway.Repositories
                     }
                     else
                     {
-                        userRoleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                        userRoleResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         userRoleResponse.StatusCode = (int)HttpStatusCode.NotFound;
                         userRoleResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                     }
@@ -1433,7 +1433,7 @@ namespace TMS.DataGateway.Repositories
                     }
                     else
                     {
-                        regionResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                        regionResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         regionResponse.StatusCode = (int)HttpStatusCode.NotFound;
                         regionResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                     }
@@ -1532,7 +1532,7 @@ namespace TMS.DataGateway.Repositories
                     if (applications.Count == 0)
                     {
                         applicationResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
-                        applicationResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                        applicationResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     }
                 }
             }
@@ -1577,7 +1577,7 @@ namespace TMS.DataGateway.Repositories
                 }
                 else
                 {
-                    commonResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                    commonResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     commonResponse.StatusCode = (int)HttpStatusCode.NotFound;
                     commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                 }
@@ -1623,7 +1623,7 @@ namespace TMS.DataGateway.Repositories
                 }
                 else
                 {
-                    commonResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                    commonResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     commonResponse.StatusCode = (int)HttpStatusCode.NotFound;
                     commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                 }
@@ -1669,7 +1669,7 @@ namespace TMS.DataGateway.Repositories
                 }
                 else
                 {
-                    commonResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                    commonResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     commonResponse.StatusCode = (int)HttpStatusCode.NotFound;
                     commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                 }
@@ -1862,7 +1862,7 @@ namespace TMS.DataGateway.Repositories
                     }
                     else
                     {
-                        roleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                        roleResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         roleResponse.StatusCode = (int)HttpStatusCode.NotFound;
                         roleResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                     }

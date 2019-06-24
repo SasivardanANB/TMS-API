@@ -961,7 +961,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Trip(s) assigned successfully in DMS.
+        ///   Looks up a localized string similar to Trip(s) assigned successfully in TMS.
         /// </summary>
         public static string TripAssigned {
             get {

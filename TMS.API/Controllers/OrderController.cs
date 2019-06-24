@@ -845,21 +845,21 @@ namespace TMS.API.Controllers
 
                 #region Call OMS API to update packing sheet details
 
-                //LoginRequest omsLoginRequest = new LoginRequest();
-                //string omsToken = "";
-                //omsLoginRequest.UserName = ConfigurationManager.AppSettings["OMSLogin"];
-                //omsLoginRequest.UserPassword = ConfigurationManager.AppSettings["OMSPassword"];
-                //var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
-                //                                                                                  + "v1/user/login", Method.POST, omsLoginRequest, null));
-                //if (tmsLoginResponse != null && tmsLoginResponse.Data.Count > 0)
-                //{
-                //    omsToken = tmsLoginResponse.TokenKey;
-                //}
+                LoginRequest omsLoginRequest = new LoginRequest();
+                string omsToken = "";
+                omsLoginRequest.UserName = ConfigurationManager.AppSettings["OMSLogin"];
+                omsLoginRequest.UserPassword = ConfigurationManager.AppSettings["OMSPassword"];
+                var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                                                                                                  + "v1/user/login", Method.POST, omsLoginRequest, null));
+                if (tmsLoginResponse != null && tmsLoginResponse.Data.Count > 0)
+                {
+                    omsToken = tmsLoginResponse.TokenKey;
+                }
 
-                //PackingSheetResponse omsPackingSheetResponse = JsonConvert.DeserializeObject<PackingSheetResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
-                //                                                                                          + "v1/order/CreateUpdatePackingSheet", Method.POST, packingSheetRequest, omsToken));
+                PackingSheetResponse omsPackingSheetResponse = JsonConvert.DeserializeObject<PackingSheetResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                                                                                                          + "v1/order/CreateUpdatePackingSheet", Method.POST, packingSheetRequest, omsToken));
 
-                //packingSheetResponse.StatusMessage += omsPackingSheetResponse.StatusMessage;
+                packingSheetResponse.StatusMessage += omsPackingSheetResponse.StatusMessage;
 
                 #endregion
             }
