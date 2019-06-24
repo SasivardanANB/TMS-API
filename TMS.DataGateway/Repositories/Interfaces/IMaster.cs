@@ -21,6 +21,6 @@ namespace TMS.DataGateway.Repositories.Iterfaces
         CommonResponse GetShipperNames(string searchText);
         CommonResponse GetCityNames(string searchText);
         CommonResponse GetGateNamesByBusinessArea(int businessAreaId, int gateTypeId);
-        CommonResponse GetTripStatusNames();
+        CommonResponse GetTripStatusNames(string requestType);
     }
 }
