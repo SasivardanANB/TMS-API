@@ -1706,8 +1706,8 @@ namespace TMS.DataGateway.Repositories
                     dashboardResponse.CancelledCount = orders.Where(o => o.OrderStatusID == 13).Count();   // For status cancelled
                     dashboardResponse.LoadingCount = GetLoadingUnloadingCount(orders, "Load");
                     dashboardResponse.UnloadingCount = GetLoadingUnloadingCount(orders, "Unload");
-                    dashboardResponse.LoadingCount = GetPrickupDropOffCount(orders, "Load");
-                    dashboardResponse.UnloadingCount = GetPrickupDropOffCount(orders, "Unload");
+                    dashboardResponse.PickUpCount = GetPrickupDropOffCount(orders, "Load");
+                    dashboardResponse.DropOffCount = GetPrickupDropOffCount(orders, "Unload");
                 }
                 dashboardResponse.Status = DomainObjects.Resource.ResourceData.Success;
                 dashboardResponse.StatusCode = (int)HttpStatusCode.OK;
