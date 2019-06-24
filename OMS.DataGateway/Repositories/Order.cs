@@ -1648,13 +1648,18 @@ namespace OMS.DataGateway.Repositories
                     {
                         var orderID = context.OrderHeaders.Where(oh => oh.OrderNo == packingSheet.OrderNumber).Select(oh => oh.ID).FirstOrDefault();
                         var partnerID = context.Partners.Where(p => p.PartnerNo == packingSheet.DealerNumber).Select(p => p.ID).FirstOrDefault();
-                        var orderDetailsData = context.OrderDetails.Where(x => x.ID == packingSheet.OrderDetailId).FirstOrDefault();
+
+                        var orderDetailID = (from ord in context.OrderDetails
+                                             join opd in context.OrderPartnerDetails on ord.ID equals opd.OrderDetailID
+                                             where ord.OrderHeaderID == orderID && opd.PartnerID == partnerID
+                                             select ord.ID).FirstOrDefault();
+
+                        var orderDetailsData = context.OrderDetails.Where(x => x.ID == orderDetailID).FirstOrDefault();
                         if (orderDetailsData != null)
                         {
                             orderDetailsData.ShippingListNo = packingSheet.ShippingListNo;
                             orderDetailsData.TotalCollie = packingSheet.Collie;
                             orderDetailsData.Katerangan = packingSheet.Katerangan;
-                            // context.SaveChanges();
 
                             if (packingSheet.PackingSheetNumbers.Count > 0)
                             {
@@ -1662,7 +1667,6 @@ namespace OMS.DataGateway.Repositories
                                 {
                                     Data.PackingSheet packingSheetData = new Data.PackingSheet()
                                     {
-                                        // OrderDetailID = orderDetail.ID,
                                         PackingSheetNo = item.Value,
                                         CreatedBy = packingSheetRequest.CreatedBy,
                                         CreatedTime = DateTime.Now,
@@ -1686,14 +1690,8 @@ namespace OMS.DataGateway.Repositories
                             packingSheetResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                             packingSheetResponse.StatusCode = (int)HttpStatusCode.NotFound;
                         }
-                        //packingSheetRequest.Requests = mapper.Map<List<DataModel.Role>, List<Domain.Role>>(roles);
-                        //packingSheetResponse.Data = packingSheetRequest.Requests;
-
-
                     }
-
                 }
-
             }
             catch (Exception ex)
             {

@@ -1894,7 +1894,7 @@ namespace TMS.DataGateway.Repositories
                         delearData = (from orderHeader in context.OrderHeaders
                                       join orderDetails in context.OrderDetails on orderHeader.ID equals orderDetails.OrderHeaderID
                                       join opd in context.OrderPartnerDetails on orderDetails.ID equals opd.OrderDetailID
-                                      where orderHeader.ID == orderId && opd.PartnerTypeId == context.PartnerTypes.FirstOrDefault(t => t.PartnerTypeCode == "1").ID
+                                      where orderHeader.ID == orderId && opd.PartnerTypeId == context.PartnerTypes.FirstOrDefault(t => t.PartnerTypeCode == "2").ID
                                       select new Domain.DealerDetails
                                       {
                                           DealerId = opd.PartnerID,
