@@ -333,5 +333,14 @@ namespace OMS.API.Controllers
             OrderStatusResponse response = orderTask.UpdateOrderStatus(request);
             return Ok(response);
         }
+        [Route("reassigntrip")]
+        [HttpPost]
+        public IHttpActionResult ReAssignTrip(TripRequest tripRequest)
+        {
+            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            TripResponse tripData = orderTask.ReAssignTrip(tripRequest);
+            return Ok(tripData);
+        }
+
     }
 }

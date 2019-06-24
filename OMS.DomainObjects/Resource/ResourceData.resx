@@ -258,4 +258,7 @@
   <data name="ActiveUserRoleExists" xml:space="preserve">
     <value>User cannot be deleted as there is an active user role</value>
   </data>
+  <data name="TripAssigned" xml:space="preserve">
+    <value>Trip(s) assigned successfully in OMS</value>
+  </data>
 </root>

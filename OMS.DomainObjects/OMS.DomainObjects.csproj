@@ -65,6 +65,7 @@
     <Compile Include="Objects\Order.cs" />
     <Compile Include="Objects\Region.cs" />
     <Compile Include="Objects\RequestFilter.cs" />
+    <Compile Include="Objects\Trip.cs" />
     <Compile Include="Objects\RoleMenuActivity.cs" />
     <Compile Include="Objects\RoleMenu.cs" />
     <Compile Include="Objects\Activity.cs" />
@@ -82,6 +83,7 @@
     <Compile Include="Request\OrderStatusRequest.cs" />
     <Compile Include="Request\RegionRequest.cs" />
     <Compile Include="Request\OrderRequest.cs" />
+    <Compile Include="Request\TripRequest.cs" />
     <Compile Include="Request\RoleRequest.cs" />
     <Compile Include="Request\AssignUserRoleRequest.cs" />
     <Compile Include="Request\ApplicationRequest.cs" />
@@ -104,6 +106,7 @@
     <Compile Include="Response\OrderStatusResponse.cs" />
     <Compile Include="Response\RegionResponse.cs" />
     <Compile Include="Response\CommonResponse.cs" />
+    <Compile Include="Response\TripResponse.cs" />
     <Compile Include="Response\RoleResponse.cs" />
     <Compile Include="Response\RoleMenuResponse.cs" />
     <Compile Include="Response\AssignUserRoleResponse.cs" />

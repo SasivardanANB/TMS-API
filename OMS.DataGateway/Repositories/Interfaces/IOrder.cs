@@ -17,5 +17,6 @@ namespace OMS.DataGateway.Repositories.Iterfaces
         OrderResponse SyncOrders(OrderRequest request);
         PackingSheetResponse CreateUpdatePackingSheet(PackingSheetRequest packingSheetRequest);
         OrderStatusResponse UpdateOrderStatus(OrderStatusRequest request);
+        TripResponse ReAssignTrip(TripRequest tripRequest);
     }
 }

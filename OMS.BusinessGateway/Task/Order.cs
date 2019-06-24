@@ -57,5 +57,10 @@ namespace OMS.BusinessGateway.Task
         {
             return _orderRepository.UpdateOrderStatus(request);
         }
+
+        public override TripResponse ReAssignTrip(TripRequest tripRequest)
+        {
+            return _orderRepository.ReAssignTrip(tripRequest);
+        }
     }
 }

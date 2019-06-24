@@ -1748,5 +1748,81 @@ namespace OMS.DataGateway.Repositories
 
             return response;
         }
+
+        public TripResponse ReAssignTrip(TripRequest request)
+        {
+            TripResponse response = new TripResponse();
+            List<Trip> tripDetails = new List<Trip>();
+
+            using (var context = new Data.OMSDBContext())
+            {
+                foreach (var trip in request.Requests)
+                {
+                    Trip tripDetail = new Trip();
+
+                    using (DbContextTransaction transaction = context.Database.BeginTransaction())
+                    {
+                        try
+                        {
+                            var tripObj = context.OrderHeaders.Where(t => t.OrderNo == trip.OrderNumber).FirstOrDefault();
+                            if (tripObj != null)
+                            {
+                                tripObj.DriverNo =  trip.DriverNo ;
+                                tripObj.DriverName = trip.DriverName;
+                                tripObj.VehicleShipment = trip.VehicleType;
+                                tripObj.LastModifiedBy = request.LastModifiedBy;
+                                tripObj.LastModifiedTime = request.LastModifiedTime;
+                                context.SaveChanges();
+                                //var tripDetailsToUpdateStatus = context.TripDetails.Where(t => t.TripID == tripObj.ID).ToList();
+                                //if (tripDetailsToUpdateStatus.Count > 0)
+                                //{
+                                //    foreach (var td in tripDetailsToUpdateStatus)
+                                //    {
+                                //        var statusHistory = context.TripStatusHistories.Where(ts => ts.StopPointId == td.ID).ToList();
+                                //        context.TripStatusHistories.RemoveRange(statusHistory);
+                                //        TripStatusHistory tshObj = new TripStatusHistory()
+                                //        {
+                                //            StopPointId = td.ID,
+                                //            StatusDate = DateTime.Now,
+                                //            Remarks = "Driver Assigned to Trip",
+                                //            TripStatusId = context.TripStatuses.Where(t => t.StatusName == "Assigned").Select(t => t.ID).FirstOrDefault()
+                                //        };
+                                //        context.TripStatusHistories.Add(tshObj);
+                                //        context.SaveChanges();
+                                //    }
+                                //}
+
+                            }
+                            else
+                            {
+                                response.Status = DomainObjects.Resource.ResourceData.Failure;
+                                response.StatusCode = (int)HttpStatusCode.NotFound;
+                                response.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
+                                return response;
+                            }
+                            transaction.Commit();
+                        }
+                        catch (Exception ex)
+                        {
+                            transaction.Rollback();
+                            _logger.Log(LogLevel.Error, ex);
+                            response.Status = DomainObjects.Resource.ResourceData.Failure;
+                            response.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                            response.StatusMessage = ex.Message;
+                            return response;
+                        }
+                    }
+                    tripDetails.Add(tripDetail);
+                }
+                #region Return Response with Success and Commit Changes
+                response.Data = tripDetails;
+                response.Status = DomainObjects.Resource.ResourceData.Success;
+                response.StatusCode = (int)HttpStatusCode.OK;
+                response.StatusMessage = DomainObjects.Resource.ResourceData.TripAssigned;
+                #endregion
+
+            }
+            return response;
+        }
     }
 }

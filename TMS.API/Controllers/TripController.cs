@@ -67,9 +67,9 @@ namespace TMS.API.Controllers
             ITripTask tripTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().TripTask;
             TripResponse tripResponse = tripTask.UpdateTripDetails(tripRequest);
 
-            if (tripResponse.StatusCode == 200 && tripResponse.Status == "Success" && tripResponse.Data.Count >0)
+            if (tripResponse.StatusCode == 200 && tripResponse.Status == "Success" && tripResponse.Data.Count > 0)
             {
-                #region Creating trip object to Update Trip Details
+              // Creating trip object to Update Trip Details
                 TripRequest tripRequest1 = new TripRequest();
                 List<Trip> trips = new List<Trip>();
                 foreach (var response in tripResponse.Data)
@@ -84,10 +84,10 @@ namespace TMS.API.Controllers
                 tripRequest1.Requests = trips;
                 tripRequest1.LastModifiedTime = DateTime.Now;
                 tripRequest1.LastModifiedBy = tripRequest.LastModifiedBy;
-                if(tripRequest1.Requests.Count > 0)
+                if (tripRequest1.Requests.Count > 0)
                 {
-                    #region Calling DMS API to updatedriver details in trip
-                    #region Login to DMS and get Token
+                   // Calling DMS API to updatedriver details in trip
+                    // Login to DMS and get Token
                     LoginRequest loginRequest = new LoginRequest();
                     string token = "";
                     loginRequest.UserName = ConfigurationManager.AppSettings["DMSLogin"];
@@ -98,20 +98,56 @@ namespace TMS.API.Controllers
                     {
                         token = dmsLoginResponse.TokenKey;
                     }
-                    #endregion
-                    #region Call DMS API to assign order to driver
+                   
+                    // Call DMS API to assign order to driver
                     var response = JsonConvert.DeserializeObject<TripResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
                         + "/v1/trip/reassigntrip", Method.POST, tripRequest1, token));
-                    if (response != null)
+                    if (response != null && response.StatusCode == 200 && response.Status == "Success")
                     {
                         tripResponse.StatusMessage += ". " + response.StatusMessage;
+
+                       // Creating trip object to Update Trip Details
+                        TripRequest omsTripRequest = new TripRequest();
+                        List<Trip> omsTrips = new List<Trip>();
+                        foreach (var tripresponse in tripResponse.Data)
+                        {
+                            Trip trip = new Trip();
+                            trip.OrderNumber = tripresponse.OrderNumber;
+                            trip.VehicleType = tripresponse.VehicleType;
+                            trip.DriverNo = tripresponse.DriverNo;
+                            trip.DriverName = tripresponse.DriverName;
+                            omsTrips.Add(trip);
+                        }
+                        omsTripRequest.Requests = omsTrips;
+                        omsTripRequest.LastModifiedTime = DateTime.Now;
+                        omsTripRequest.LastModifiedBy = tripRequest.LastModifiedBy;
+                        if (omsTripRequest.Requests.Count > 0)
+                        {
+
+                            // Calling OMS API to updatedriver details in trip
+                           //Login to DMS and get Token
+                            LoginRequest loginRequestOMS = new LoginRequest();
+                            string tokenOMS = "";
+                            loginRequest.UserName = ConfigurationManager.AppSettings["OMSLogin"];
+                            loginRequest.UserPassword = ConfigurationManager.AppSettings["OMSPassword"];
+                            var omsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                                + "/v1/user/login", Method.POST, loginRequest, null));
+                            if (omsLoginResponse != null && omsLoginResponse.Data.Count > 0)
+                            {
+                                tokenOMS = omsLoginResponse.TokenKey;
+                            }
+                             //Call OMS API to assign order to driver
+                            var omsResponse = JsonConvert.DeserializeObject<TripResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                                + "/v1/order/reassigntrip", Method.POST, omsTripRequest, tokenOMS));
+                            if (omsResponse != null)
+                            {
+                                tripResponse.StatusMessage += ". " + omsResponse.StatusMessage;
+                            }
+                        }
+
                     }
-                    #endregion
-
-                    #endregion
-
+                   
                 }
-                #endregion
             }
 
             return Ok(tripResponse);
