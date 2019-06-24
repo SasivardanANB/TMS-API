@@ -514,7 +514,7 @@ namespace TMS.DataGateway.Repositories
             return commonResponse;
         }
 
-        public CommonResponse GetTripStatusNames()
+        public CommonResponse GetTripStatusNames(string requestType)
         {
             CommonResponse commonResponse = new CommonResponse();
             try
@@ -522,13 +522,24 @@ namespace TMS.DataGateway.Repositories
                 using (var context = new TMSDBContext())
                 {
                     var tripstatusData = new List<Domain.Common>();
-
-                    tripstatusData = context.OrderStatuses.Select(data => new Domain.Common
+                    if (!string.IsNullOrEmpty(requestType))
                     {
-                        Id = data.ID,
-                        Value = data.OrderStatusValue
-                    }).ToList();
+                        tripstatusData = context.OrderStatuses.Where(c=>c.OrderStatusCode=="1"|| c.OrderStatusCode == "2"|| 
+                        c.OrderStatusCode == "3" || c.OrderStatusCode == "13"|| c.OrderStatusCode == "15" || c.OrderStatusCode == "16").Select(data => new Domain.Common
+                        {
+                            Id = data.ID,
+                            Value = data.OrderStatusValue
+                        }).ToList();
+                    }
+                    else
+                    {
 
+                        tripstatusData = context.OrderStatuses.Select(data => new Domain.Common
+                        {
+                            Id = data.ID,
+                            Value = data.OrderStatusValue
+                        }).ToList();
+                    }
                     if (tripstatusData.Count > 0)
                     {
                         commonResponse.Data = tripstatusData;

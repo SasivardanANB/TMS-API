@@ -109,10 +109,10 @@ namespace TMS.API.Controllers
 
         [Route("gettripstatusnames")]
         [HttpGet]
-        public IHttpActionResult GetTripStatusNames()
+        public IHttpActionResult GetTripStatusNames(string requestType=null)
         {
             IMasterTask masterTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().MasterTask;
-            CommonResponse commonResponse = masterTask.GetTripStatusNames();
+            CommonResponse commonResponse = masterTask.GetTripStatusNames(requestType);
             return Ok(commonResponse);
         }
     }
