@@ -76,9 +76,9 @@ namespace TMS.BusinessGateway.Task
             return commonResponse;
         }
 
-        public override CommonResponse GetTripStatusNames()
+        public override CommonResponse GetTripStatusNames(string requestType)
         {
-            CommonResponse commonResponse = _masterRepository.GetTripStatusNames();
+            CommonResponse commonResponse = _masterRepository.GetTripStatusNames(requestType);
             return commonResponse;
         }
     }

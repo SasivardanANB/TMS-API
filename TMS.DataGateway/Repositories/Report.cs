@@ -378,23 +378,46 @@ namespace TMS.DataGateway.Repositories
             {
                 using (var tMSDBContext = new TMSDBContext())
                 {
-                    var goodsReceiveOrIssueData = (from opd in tMSDBContext.OrderPartnerDetails
-                                                   where
-                                                     opd.OrderDetail.OrderHeader.OrderType == goodsReceiveOrIssueRequest.Request.OrderTypeId &&
-                                                     opd.PartnerID == goodsReceiveOrIssueRequest.Request.PartnerId &&
-                                                     DbFunctions.TruncateTime(opd.OrderDetail.OrderHeader.OrderDate) >= DbFunctions.TruncateTime(goodsReceiveOrIssueRequest.Request.StartDate) &&
-                                                     DbFunctions.TruncateTime(opd.OrderDetail.OrderHeader.OrderDate) <= DbFunctions.TruncateTime(goodsReceiveOrIssueRequest.Request.EndDate)
-                                                   group new { opd.OrderDetail.OrderHeader, opd.OrderDetail } by new
-                                                   {                                                       //Column1 = (DateTime?)Convert.ToDateTime(opd.OrderDetail.OrderHeader.OrderDate.Date)
-                                                       Column1 = DbFunctions.TruncateTime(opd.OrderDetail.OrderHeader.OrderDate)
-                                                   } into g
+                    var goodsReceiveOrIssueData = (from A in (from opd in tMSDBContext.OrderPartnerDetails
+                                                              where
+                                                                opd.OrderDetail.OrderHeader.OrderType == goodsReceiveOrIssueRequest.Request.OrderTypeId &&
+                                                                opd.PartnerID == goodsReceiveOrIssueRequest.Request.PartnerId &&
+                                                                DbFunctions.TruncateTime(opd.OrderDetail.OrderHeader.OrderDate) >= DbFunctions.TruncateTime(goodsReceiveOrIssueRequest.Request.StartDate) &&
+                                                                DbFunctions.TruncateTime(opd.OrderDetail.OrderHeader.OrderDate) <= DbFunctions.TruncateTime(goodsReceiveOrIssueRequest.Request.EndDate)
+                                                              group new { opd.OrderDetail.OrderHeader, opd.OrderDetail } by new
+                                                              {
+                                                                  Column1 = (DateTime?)DbFunctions.TruncateTime(opd.OrderDetail.OrderHeader.OrderDate)
+                                                              } into g
+                                                              select new
+                                                              {
+                                                                  Order_Qty = (int?)g.Sum(p => p.OrderDetail.TotalCollie),
+                                                                  CreatedDate = g.Key.Column1
+                                                              })
+                                                   join B in (from opd in tMSDBContext.OrderPartnerDetails
+                                                              join osh in tMSDBContext.OrderStatusHistories on opd.OrderDetail.ID equals osh.OrderDetailID
+                                                              where
+                                                                opd.OrderDetail.OrderHeader.OrderType == goodsReceiveOrIssueRequest.Request.OrderTypeId &&
+                                                                opd.PartnerID == goodsReceiveOrIssueRequest.Request.PartnerId && osh.OrderStatusID == 12 &&
+                                                                DbFunctions.TruncateTime(osh.StatusDate) >= DbFunctions.TruncateTime(goodsReceiveOrIssueRequest.Request.StartDate) &&
+                                                                DbFunctions.TruncateTime(osh.StatusDate) <= DbFunctions.TruncateTime(goodsReceiveOrIssueRequest.Request.EndDate)
+                                                              group new { osh, opd.OrderDetail } by new
+                                                              {
+                                                                  Column1 = (DateTime?)DbFunctions.TruncateTime(osh.StatusDate)
+                                                              } into g
+                                                              select new
+                                                              {
+                                                                  Order_Qty = (int?)g.Sum(p => p.OrderDetail.TotalCollie),
+                                                                  CreatedDate = g.Key.Column1
+                                                              })
+                                                               on new { CreatedDate = DbFunctions.TruncateTime(A.CreatedDate).Value } equals new { CreatedDate = DbFunctions.TruncateTime(B.CreatedDate).Value } into B_join
+                                                   from B in B_join.DefaultIfEmpty()
                                                    select new Domain.GoodsReceiveOrIssue
                                                    {
-                                                       OrderQty = g.Sum(p => p.OrderDetail.TotalCollie).ToString(),
-                                                       GRQty = goodsReceiveOrIssueRequest.Request.OrderTypeId == 1 ? g.Where(o => o.OrderHeader.OrderStatusID == 12).Sum(p => p.OrderDetail.TotalCollie).ToString() : string.Empty,
-                                                       GIQty = goodsReceiveOrIssueRequest.Request.OrderTypeId == 2 ? g.Where(o => o.OrderHeader.OrderStatusID == 12).Sum(p => p.OrderDetail.TotalCollie).ToString() : string.Empty,
-                                                       Date = DbFunctions.TruncateTime(g.Key.Column1).Value,
-                                                       Percentage = ((g.Sum(p => p.OrderDetail.TotalCollie) / g.Where(o => o.OrderHeader.OrderStatusID == 12).Sum(p => p.OrderDetail.TotalCollie)) * 100).ToString()
+                                                       OrderQty = A.Order_Qty.ToString(),
+                                                       GRQty = goodsReceiveOrIssueRequest.Request.OrderTypeId == 1 ? (string.IsNullOrEmpty(B.Order_Qty.ToString())?"0": B.Order_Qty.ToString()) : "0",
+                                                       GIQty = goodsReceiveOrIssueRequest.Request.OrderTypeId == 2 ? (string.IsNullOrEmpty(B.Order_Qty.ToString())?"0": B.Order_Qty.ToString()) : "0",
+                                                       Percentage = string.IsNullOrEmpty(((A.Order_Qty / B.Order_Qty) * 100).ToString())?"0":((A.Order_Qty / B.Order_Qty) * 100).ToString(),
+                                                       Date = A.CreatedDate.Value != null ? A.CreatedDate.Value : B.CreatedDate.Value
                                                    }).ToList();
 
                     goodsReceiveOrIssueResponse.NumberOfRecords = goodsReceiveOrIssueData.Count;
@@ -403,8 +426,8 @@ namespace TMS.DataGateway.Repositories
                         StartDate = goodsReceiveOrIssueRequest.Request.StartDate,
                         EndDate = goodsReceiveOrIssueRequest.Request.EndDate,
                         GoodsReceiveOrIssues = goodsReceiveOrIssueData,
-                        OrderTypeId= goodsReceiveOrIssueRequest.Request.OrderTypeId,
-                        PartnerId= goodsReceiveOrIssueRequest.Request.PartnerId
+                        OrderTypeId = goodsReceiveOrIssueRequest.Request.OrderTypeId,
+                        PartnerId = goodsReceiveOrIssueRequest.Request.PartnerId
                     };
                     goodsReceiveOrIssueResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     goodsReceiveOrIssueResponse.StatusCode = (int)HttpStatusCode.OK;
