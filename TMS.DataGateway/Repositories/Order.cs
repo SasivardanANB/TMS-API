@@ -1086,7 +1086,7 @@ namespace TMS.DataGateway.Repositories
                     }
                     else
                     {
-                        orderSearchResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                        orderSearchResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         orderSearchResponse.StatusCode = (int)HttpStatusCode.NotFound;
                         orderSearchResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                     }
@@ -1795,7 +1795,7 @@ namespace TMS.DataGateway.Repositories
                     }
                     else
                     {
-                        packingSheetResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                        packingSheetResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         packingSheetResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                         packingSheetResponse.StatusCode = (int)HttpStatusCode.NotFound;
                         packingSheetResponse.NumberOfRecords = 0;
@@ -1894,7 +1894,7 @@ namespace TMS.DataGateway.Repositories
                         delearData = (from orderHeader in context.OrderHeaders
                                       join orderDetails in context.OrderDetails on orderHeader.ID equals orderDetails.OrderHeaderID
                                       join opd in context.OrderPartnerDetails on orderDetails.ID equals opd.OrderDetailID
-                                      where orderHeader.ID == orderId && opd.PartnerTypeId == context.PartnerTypes.FirstOrDefault(t => t.PartnerTypeCode == "1").ID
+                                      where orderHeader.ID == orderId && opd.PartnerTypeId == context.PartnerTypes.FirstOrDefault(t => t.PartnerTypeCode == "2").ID
                                       select new Domain.DealerDetails
                                       {
                                           DealerId = opd.PartnerID,

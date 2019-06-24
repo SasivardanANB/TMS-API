@@ -326,7 +326,7 @@ namespace TMS.DataGateway.Repositories
                 }
                 else
                 {
-                    vehicleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                    vehicleResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     vehicleResponse.StatusCode = (int)HttpStatusCode.NotFound;
                     vehicleResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                 }
