@@ -90,9 +90,9 @@ namespace DMS.API.Controllers
 
                         notificationRequest.data = new Notification()
                         {
-                            title = "DMS",
+                            title = "Trip has been assigned to you.",
                             
-                            message = "A trip (" + tripNumber + ") has been assigned to you.",
+                            message = " " + tripNumber ,
                             click_action = "NOTIFICATIONACTIVITY",
                         };
 

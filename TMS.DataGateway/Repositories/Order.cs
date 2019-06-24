@@ -1231,7 +1231,7 @@ namespace TMS.DataGateway.Repositories
 
                                                         foreach (var loadStatus in loadStatusData)
                                                         {
-                                                            if (loadStatus.StatusCode == "4")
+                                                            if (loadStatus.StatusCode == "4" && loadStatus.OrderDetailId == orderDetail.OrderDetailId )
                                                             {
                                                                 loadData.StartTrip.StepHeaderName = "START TRIP";
                                                                 loadData.StartTrip.StepHeaderDescription = "On the way to " + context.OrderPartnerDetails.Where(o=>o.OrderDetailID==loadStatus.OrderDetailId && o.PartnerTypeId==2).Select(n=>n.Partner.PartnerName).FirstOrDefault();
@@ -1241,7 +1241,7 @@ namespace TMS.DataGateway.Repositories
                                                                 }
 
                                                             }
-                                                            else if (loadStatus.StatusCode == "5")
+                                                            else if (loadStatus.StatusCode == "5" && loadStatus.OrderDetailId == orderDetail.OrderDetailId)
                                                             {
                                                                 loadData.ConfirmArrive.StepHeaderName = "CONFIRM ARRIVE";
                                                                 loadData.ConfirmArrive.StepHeaderDescription = "Arrived at " + context.OrderPartnerDetails.Where(o => o.OrderDetailID == loadStatus.OrderDetailId && o.PartnerTypeId == 2).Select(n => n.Partner.PartnerName).FirstOrDefault();
@@ -1250,7 +1250,7 @@ namespace TMS.DataGateway.Repositories
                                                                     loadData.ConfirmArrive.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
                                                                 }
                                                             }
-                                                            else if (loadStatus.StatusCode == "6")
+                                                            else if (loadStatus.StatusCode == "6" && loadStatus.OrderDetailId == orderDetail.OrderDetailId)
                                                             {
                                                                 loadData.StartLoad.StepHeaderName = "START LOAD";
                                                                 loadData.StartLoad.StepHeaderDescription = "Loading parts at " + context.OrderPartnerDetails.Where(o => o.OrderDetailID == loadStatus.OrderDetailId && o.PartnerTypeId == 2).Select(n => n.Partner.PartnerName).FirstOrDefault();
@@ -1259,7 +1259,7 @@ namespace TMS.DataGateway.Repositories
                                                                     loadData.StartLoad.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
                                                                 }
                                                             }
-                                                            else if (loadStatus.StatusCode == "7")
+                                                            else if (loadStatus.StatusCode == "7" && loadStatus.OrderDetailId == orderDetail.OrderDetailId)
                                                             {
                                                                 loadData.FinishLoad.StepHeaderName = "FINISH LOAD";
                                                                 loadData.FinishLoad.StepHeaderDescription = "Parts loaded at " + context.OrderPartnerDetails.Where(o => o.OrderDetailID == loadStatus.OrderDetailId && o.PartnerTypeId == 2).Select(n => n.Partner.PartnerName).FirstOrDefault();
