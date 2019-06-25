@@ -471,4 +471,7 @@
   <data name="TripReAssigned" xml:space="preserve">
     <value>Trip(s) re-assigned successfully in TMS.</value>
   </data>
+  <data name="PackingSheetUpdated" xml:space="preserve">
+    <value>Packing sheet(s) updated successfully in TMS.</value>
+  </data>
 </root>

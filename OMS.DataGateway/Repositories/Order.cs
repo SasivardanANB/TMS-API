@@ -1681,7 +1681,7 @@ namespace OMS.DataGateway.Repositories
                                 }
                             }
                             packingSheetResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                            packingSheetResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                            packingSheetResponse.StatusMessage = DomainObjects.Resource.ResourceData.PackingSheetUpdated;
                             packingSheetResponse.StatusCode = (int)HttpStatusCode.OK;
                         }
                         else

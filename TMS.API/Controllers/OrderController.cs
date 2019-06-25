@@ -836,11 +836,12 @@ namespace TMS.API.Controllers
                 foreach (PackingSheet ps in packingSheetRequest.Requests)
                 {
                     ps.OrderNumber = packingSheetResponse.Data[0].OrderNumber;
-                    ps.DealerId = 0;
-                    ps.OrderDetailId = 0;
+                   
                     ps.DealerNumber = (from pks in packingSheetResponse.Data
                                        where pks.DealerId == ps.DealerId
                                        select pks.DealerNumber).FirstOrDefault();
+                    ps.DealerId = 0;
+                    ps.OrderDetailId = 0;
                 }
 
                 #region Call OMS API to update packing sheet details
@@ -859,7 +860,7 @@ namespace TMS.API.Controllers
                 PackingSheetResponse omsPackingSheetResponse = JsonConvert.DeserializeObject<PackingSheetResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
                                                                                                           + "v1/order/CreateUpdatePackingSheet", Method.POST, packingSheetRequest, omsToken));
 
-                packingSheetResponse.StatusMessage += omsPackingSheetResponse.StatusMessage;
+                packingSheetResponse.StatusMessage = omsPackingSheetResponse.StatusMessage + " " + packingSheetResponse.StatusMessage;
 
                 #endregion
             }
