@@ -477,7 +477,7 @@ namespace TMS.DataGateway.Repositories
                             }
                             tripResponse.Status = DomainObjects.Resource.ResourceData.Success;
                             tripResponse.StatusCode = (int)HttpStatusCode.OK;
-                            tripResponse.StatusMessage = DomainObjects.Resource.ResourceData.TripAssigned;
+                            tripResponse.StatusMessage = DomainObjects.Resource.ResourceData.TripReAssigned;
                             trip.OrderNumber = orderHeadeData.OrderNo;
                             trip.DriverNo = orderHeadeData.DriverNo;
                             trip.DriverName = orderHeadeData.DriverName;

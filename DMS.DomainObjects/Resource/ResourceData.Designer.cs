@@ -223,6 +223,15 @@ namespace DMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Trip(s) re-assigned successfully in DMS..
+        /// </summary>
+        public static string TripReAssigned {
+            get {
+                return ResourceManager.GetString("TripReAssigned", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Trip Status Updated Successfully in DMS.
         /// </summary>
         public static string TripStatusUpdated {
