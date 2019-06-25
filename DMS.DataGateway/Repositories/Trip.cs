@@ -176,7 +176,7 @@ namespace DMS.DataGateway.Repositories
                                 existingTrip.VehicleNumber = trip.VehicleNumber;
                                 existingTrip.TripType = trip.TripType;
                                 existingTrip.Weight = trip.Weight;
-                                existingTrip.PoliceNumber = trip.PoliceNumber;
+                                existingTrip.PoliceNumber = trip.VehicleNumber;
                                 existingTrip.CurrentTripStatusId = statusId;
                                 existingTrip.BusinessAreaId = businessAreaId;
                                 existingTrip.ShipmentScheduleImageID = imageId;
@@ -287,7 +287,7 @@ namespace DMS.DataGateway.Repositories
                                     VehicleNumber = trip.VehicleNumber,
                                     TripType = trip.TripType,
                                     Weight = trip.Weight,
-                                    PoliceNumber = trip.PoliceNumber,
+                                    PoliceNumber = trip.VehicleNumber,
                                     CurrentTripStatusId = statusId,
                                     OrderType = trip.OrderType,
                                     TripDate = DateTime.Now,
@@ -932,6 +932,7 @@ namespace DMS.DataGateway.Repositories
                             {
                                 tripObj.DriverId = context.Drivers.Where(d => d.DriverNo == trip.DriverNo).Select(x => x.ID).FirstOrDefault();
                                 tripObj.VehicleType = trip.VehicleType;
+                                tripObj.VehicleNumber = trip.VehicleNumber;
                                 tripObj.LastModifiedBy = request.LastModifiedBy;
                                 tripObj.LastModifiedTime = request.LastModifiedTime;
                                 context.SaveChanges();

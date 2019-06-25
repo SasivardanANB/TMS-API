@@ -1770,6 +1770,7 @@ namespace OMS.DataGateway.Repositories
                                 tripObj.DriverNo =  trip.DriverNo ;
                                 tripObj.DriverName = trip.DriverName;
                                 tripObj.VehicleShipment = trip.VehicleType;
+                                tripObj.VehicleNo = trip.Vehicle;
                                 tripObj.LastModifiedBy = request.LastModifiedBy;
                                 tripObj.LastModifiedTime = request.LastModifiedTime;
                                 context.SaveChanges();

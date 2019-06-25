@@ -27,7 +27,7 @@ namespace TMS.DomainObjects.Objects
         public string OrderStatus { get; set; }
         [MaxLength(20)]
         public string PackingSheetNumber { get; set; }
-        public string PoliceNumber { get; set; }
+        //public string PoliceNumber { get; set; }
         public int OrderStatusId { get; set; }
         public bool IsChangeAllowed { get; set; }
         [MaxLength(12)]

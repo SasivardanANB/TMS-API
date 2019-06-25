@@ -29,7 +29,7 @@ namespace DMS.DomainObjects.Objects
         public string TripType { get; set; }
         public decimal Weight { get; set; }
         [MaxLength(12)]
-        public string PoliceNumber { get; set; }
+        //public string PoliceNumber { get; set; }
         public string TripStatusCode { get; set; }
         public int OrderType { get; set; }
         [MaxLength(4)]

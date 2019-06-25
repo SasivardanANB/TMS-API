@@ -71,13 +71,14 @@ namespace TMS.API.Controllers
             if (tripResponse.StatusCode == (int)HttpStatusCode.OK && tripResponse.Status == DomainObjects.Resource.ResourceData.Success && tripResponse.Data.Count > 0)
             {
                 // Creating trip object to Update Trip Details
-                TripRequest tripRequest1 = new TripRequest();
-                List<Trip> trips = new List<Trip>();
+                TripRequestDMS tripRequest1 = new TripRequestDMS();
+                List<TripDMS> trips = new List<TripDMS>();
                 foreach (var response in tripResponse.Data)
                 {
-                    Trip trip = new Trip();
+                    TripDMS trip = new TripDMS();
                     trip.OrderNumber = response.OrderNumber;
                     trip.VehicleType = response.VehicleType;
+                    trip.VehicleNumber = response.Vehicle;
                     trip.DriverNo = response.DriverNo;
                     trip.DriverName = response.DriverName;
                     trips.Add(trip);
@@ -118,6 +119,7 @@ namespace TMS.API.Controllers
                             Trip trip = new Trip();
                             trip.OrderNumber = tripresponse.OrderNumber;
                             trip.VehicleType = tripresponse.VehicleType;
+                            trip.Vehicle = tripresponse.Vehicle;
                             trip.DriverNo = tripresponse.DriverNo;
                             trip.DriverName = tripresponse.DriverName;
                             omsTrips.Add(trip);
