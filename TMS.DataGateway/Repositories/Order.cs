@@ -98,37 +98,27 @@ namespace TMS.DataGateway.Repositories
 
                             #region Step 2: Check if We have Driver master data
                             string driverCode = string.Empty;
-                            //if (request.UploadType == 1) // Upload via Excel
-                            //{
-                                var driverData = (from ba in context.Drivers
-                                                    where ba.DriverNo == order.DriverNo
-                                                    select new Domain.Driver()
-                                                    {
-                                                        DriverNo = ba.DriverNo,
-                                                        UserName = ba.UserName
-                                                    }).FirstOrDefault();
-                                if (driverData != null)
-                                {
-                                 
-                                }
-                                else
-                                {
-                                    //Return with Business Area not found
-                                    transaction.Rollback();
-                                    response.Status = DomainObjects.Resource.ResourceData.Failure;
-                                    response.StatusCode = (int)HttpStatusCode.BadRequest;
-                                    response.StatusMessage = order.DriverNo + " Driver Number not found in TMS.";
-                                    return response;
-                                }
+                            var driverData = (from ba in context.Drivers
+                                              where ba.DriverNo == order.DriverNo
+                                              select new Domain.Driver()
+                                              {
+                                                  DriverNo = ba.DriverNo,
+                                                  UserName = ba.UserName
+                                              }).FirstOrDefault();
+                            if (driverData == null)
+                            {
+                                //Return with Business Area not found
+                                transaction.Rollback();
+                                response.Status = DomainObjects.Resource.ResourceData.Failure;
+                                response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                response.StatusMessage = order.DriverNo + " Driver Number not found in TMS.";
+                                return response;
+                            }
 
-                            //}
-                            
                             #endregion
-
 
                             #region Step 3: Check if We have Order Status in Master data
                             int orderStatusId;
-                            string orderStatusValue = "";
                             var orderStatus = (from os in context.OrderStatuses
                                                where os.OrderStatusCode == order.OrderShipmentStatus.ToString()
                                                select new Domain.BusinessArea()
@@ -148,7 +138,7 @@ namespace TMS.DataGateway.Repositories
                             }
                             #endregion
 
-                            #region Step 2: Check if Order already existing then update/create accordingly
+                            #region Step 4: Check if Order already existing then update/create accordingly
 
                             var persistedOrderDataID = (from o in context.OrderHeaders
                                                         where o.LegecyOrderNo == order.OrderNo
@@ -560,7 +550,7 @@ namespace TMS.DataGateway.Repositories
                                     LastModifiedBy = "",
                                     LastModifiedTime = null,
                                     SOPONumber = soPoNumber,
-                                    UploadType=request.UploadType
+                                    UploadType = request.UploadType
                                 };
                                 context.OrderHeaders.Add(orderHeader);
                                 context.SaveChanges();
@@ -1261,10 +1251,10 @@ namespace TMS.DataGateway.Repositories
 
                                                         foreach (var loadStatus in loadStatusData)
                                                         {
-                                                            if (loadStatus.StatusCode == "4" && loadStatus.OrderDetailId == orderDetail.OrderDetailId )
+                                                            if (loadStatus.StatusCode == "4" && loadStatus.OrderDetailId == orderDetail.OrderDetailId)
                                                             {
                                                                 loadData.StartTrip.StepHeaderName = "START TRIP";
-                                                                loadData.StartTrip.StepHeaderDescription = "On the way to " + context.OrderPartnerDetails.Where(o=>o.OrderDetailID==loadStatus.OrderDetailId && o.PartnerTypeId==2).Select(n=>n.Partner.PartnerName).FirstOrDefault();
+                                                                loadData.StartTrip.StepHeaderDescription = "On the way to " + context.OrderPartnerDetails.Where(o => o.OrderDetailID == loadStatus.OrderDetailId && o.PartnerTypeId == 2).Select(n => n.Partner.PartnerName).FirstOrDefault();
                                                                 if (orderDetail.OrderDetailId == loadStatus.OrderDetailId)
                                                                 {
                                                                     loadData.StartTrip.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
@@ -2158,7 +2148,7 @@ namespace TMS.DataGateway.Repositories
                                         PartnerAddress = partner.PartnerAddress,
                                         CityCode = subDistrict.City.CityCode,
                                         ProvinceCode = subDistrict.City.Province.ProvinceCode,
-                                        PartnerName=partner.PartnerName,
+                                        PartnerName = partner.PartnerName,
                                         PartnerNo = partner.PartnerNo
                                     }).FirstOrDefault();
                     }
