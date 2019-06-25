@@ -1681,7 +1681,7 @@ namespace OMS.DataGateway.Repositories
                                 }
                             }
                             packingSheetResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                            packingSheetResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                            packingSheetResponse.StatusMessage = DomainObjects.Resource.ResourceData.PackingSheetUpdated;
                             packingSheetResponse.StatusCode = (int)HttpStatusCode.OK;
                         }
                         else
@@ -1770,6 +1770,7 @@ namespace OMS.DataGateway.Repositories
                                 tripObj.DriverNo =  trip.DriverNo ;
                                 tripObj.DriverName = trip.DriverName;
                                 tripObj.VehicleShipment = trip.VehicleType;
+                                tripObj.VehicleNo = trip.Vehicle;
                                 tripObj.LastModifiedBy = request.LastModifiedBy;
                                 tripObj.LastModifiedTime = request.LastModifiedTime;
                                 context.SaveChanges();

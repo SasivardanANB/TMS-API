@@ -154,13 +154,13 @@ namespace TMS.DataGateway.Repositories
                              PhotoGuId=pic.ImageGuid.ImageGuIdValue,
                              Expeditor=context.Partners.Where(i=>i.PICID==pic.ID).Select(pname=>pname.PIC.PICName).FirstOrDefault()
                          }).ToList();
-                    if (picList.Count > 0)
-                    {
-                        foreach (var item in picList)
-                        {
-                            item.PICPassword = Encryption.EncryptionLibrary.DecrypPassword(item.PICPassword);
-                        }
-                    }
+                    //if (picList.Count > 0)
+                    //{
+                    //    foreach (var item in picList)
+                    //    {
+                    //        item.PICPassword = Encryption.EncryptionLibrary.DecrypPassword(item.PICPassword);
+                    //    }
+                    //}
                 }
                 // Filter
                 if (picRequest.Requests.Count > 0)

@@ -176,7 +176,7 @@ namespace DMS.DataGateway.Repositories
                                 existingTrip.VehicleNumber = trip.VehicleNumber;
                                 existingTrip.TripType = trip.TripType;
                                 existingTrip.Weight = trip.Weight;
-                                existingTrip.PoliceNumber = trip.PoliceNumber;
+                                existingTrip.PoliceNumber = trip.VehicleNumber;
                                 existingTrip.CurrentTripStatusId = statusId;
                                 existingTrip.BusinessAreaId = businessAreaId;
                                 existingTrip.ShipmentScheduleImageID = imageId;
@@ -287,7 +287,7 @@ namespace DMS.DataGateway.Repositories
                                     VehicleNumber = trip.VehicleNumber,
                                     TripType = trip.TripType,
                                     Weight = trip.Weight,
-                                    PoliceNumber = trip.PoliceNumber,
+                                    PoliceNumber = trip.VehicleNumber,
                                     CurrentTripStatusId = statusId,
                                     OrderType = trip.OrderType,
                                     TripDate = DateTime.Now,
@@ -320,27 +320,16 @@ namespace DMS.DataGateway.Repositories
                                     #region Check If Partners exists
                                     int locationId = 0;
 
-                                    var partner = context.Partners.FirstOrDefault(t => t.PartnerNo.Trim().Equals(tripLocation.PartnerNo));
-                                    if (partner != null)
-                                    {
-                                        var location = (from ppt in context.PartnerPartnerTypes
-                                                        where ppt.PartnerTypeId == partnerTypeId
-                                                        select new
-                                                        {
-                                                            ID = ppt.PartnerId
-                                                        }).FirstOrDefault();
+                                    var location = (from partner in context.Partners
+                                                    join ppt in context.PartnerPartnerTypes on partner.ID equals ppt.PartnerId
+                                                    where partner.PartnerNo == tripLocation.PartnerNo && ppt.PartnerTypeId == partnerTypeId
+                                                    select new
+                                                    {
+                                                        ID = partner.ID
+                                                    }).FirstOrDefault();
 
-                                        if (location != null)
-                                            locationId = location.ID;
-                                        else
-                                        {
-                                            transaction.Rollback();
-                                            response.Status = DomainObjects.Resource.ResourceData.Failure;
-                                            response.StatusCode = (int)HttpStatusCode.BadRequest;
-                                            response.StatusMessage = tripLocation.PartnerNo + " is not available in DMS";
-                                            return response;
-                                        }
-                                    }
+                                    if (location != null)
+                                        locationId = location.ID;
                                     else
                                     {
                                         transaction.Rollback();
@@ -859,7 +848,7 @@ namespace DMS.DataGateway.Repositories
                                           ID = status.StopPointId,
                                           TripId = td.TripID,
                                           LocationId = td.PartnerId,
-                                          StatusDate=status.StatusDate,
+                                          StatusDate = status.StatusDate,
                                           LocationName = td.Partner.PartnerName,
                                           SequenceNumber = td.SequenceNumber,
                                           ActualDeliveryDate = td.ActualDeliveryDate,
@@ -928,15 +917,16 @@ namespace DMS.DataGateway.Repositories
                         try
                         {
                             var tripObj = context.TripHeaders.Where(t => t.OrderNumber == trip.OrderNumber).FirstOrDefault();
-                            if(tripObj != null)
+                            if (tripObj != null)
                             {
                                 tripObj.DriverId = context.Drivers.Where(d => d.DriverNo == trip.DriverNo).Select(x => x.ID).FirstOrDefault();
                                 tripObj.VehicleType = trip.VehicleType;
+                                tripObj.VehicleNumber = trip.VehicleNumber;
                                 tripObj.LastModifiedBy = request.LastModifiedBy;
                                 tripObj.LastModifiedTime = request.LastModifiedTime;
                                 context.SaveChanges();
                                 var tripDetailsToUpdateStatus = context.TripDetails.Where(t => t.TripID == tripObj.ID).ToList();
-                                if(tripDetailsToUpdateStatus.Count >0)
+                                if (tripDetailsToUpdateStatus.Count > 0)
                                 {
                                     foreach (var td in tripDetailsToUpdateStatus)
                                     {

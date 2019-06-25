@@ -8,7 +8,7 @@ using TMS.DomainObjects.Objects;
 
 namespace TMS.DomainObjects.Request
 {
-    public class TripRequestDMS
+    public class TripRequestDMS : RequestFilter
     {
         public List<TripDMS> Requests { get; set; }
     }

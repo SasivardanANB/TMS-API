@@ -169,9 +169,9 @@ namespace TMS.DataGateway.Repositories
                             tripList = tripList.Where(o => o.PackingSheetNumber.Contains(orderFilter.PackingSheetNumber)).ToList();
                         }
 
-                        if (!String.IsNullOrEmpty(orderFilter.PoliceNumber))
+                        if (!String.IsNullOrEmpty(orderFilter.Vehicle))
                         {
-                            tripList = tripList.Where(o => o.PoliceNumber.Contains(orderFilter.PoliceNumber)).ToList();
+                            tripList = tripList.Where(o => o.Vehicle.Contains(orderFilter.Vehicle)).ToList();
                         }
                         //if (orderFilter.OrderType != 0)
                         //{
@@ -215,10 +215,10 @@ namespace TMS.DataGateway.Repositories
                                 tripList = tripList.OrderByDescending(o => o.EstimatedShipmentDate).ToList();
                                 break;
                             case "policenumber":
-                                tripList = tripList.OrderBy(o => o.PoliceNumber).ToList();
+                                tripList = tripList.OrderBy(o => o.Vehicle).ToList();
                                 break;
                             case "policenumber_desc":
-                                tripList = tripList.OrderByDescending(o => o.PoliceNumber).ToList();
+                                tripList = tripList.OrderByDescending(o => o.Vehicle).ToList();
                                 break;
                             case "orderstatus":
                                 tripList = tripList.OrderBy(o => o.OrderStatus).ToList();
@@ -452,7 +452,8 @@ namespace TMS.DataGateway.Repositories
                         {
                             orderHeadeData.DriverName = context.Drivers.Where(o => o.UserName == request.DriverName && o.IsActive).Select(d => d.UserName).FirstOrDefault();
                             orderHeadeData.DriverNo = context.Drivers.Where(o => o.UserName == request.DriverName && o.IsActive).Select(d => d.DriverNo).FirstOrDefault();
-                            orderHeadeData.VehicleShipment = request.Vehicle;
+                            orderHeadeData.VehicleShipment = request.VehicleType;
+                            orderHeadeData.VehicleNo = request.Vehicle;
                             orderHeadeData.LastModifiedTime = tripRequest.LastModifiedTime;
                             orderHeadeData.LastModifiedBy = tripRequest.LastModifiedBy;
                             context.SaveChanges();
@@ -482,6 +483,7 @@ namespace TMS.DataGateway.Repositories
                             trip.DriverNo = orderHeadeData.DriverNo;
                             trip.DriverName = orderHeadeData.DriverName;
                             trip.VehicleType = orderHeadeData.VehicleShipment;
+                            trip.Vehicle = orderHeadeData.VehicleNo;
                             trips.Add(trip);
                             tripResponse.Data = trips;
                         }

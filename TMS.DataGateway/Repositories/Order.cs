@@ -97,23 +97,23 @@ namespace TMS.DataGateway.Repositories
                             #endregion
 
                             #region Step 2: Check if We have Driver master data
-                            string driverCode = string.Empty;
-                            var driverData = (from ba in context.Drivers
-                                              where ba.DriverNo == order.DriverNo
-                                              select new Domain.Driver()
-                                              {
-                                                  DriverNo = ba.DriverNo,
-                                                  UserName = ba.UserName
-                                              }).FirstOrDefault();
-                            if (driverData == null)
-                            {
-                                //Return with Business Area not found
-                                transaction.Rollback();
-                                response.Status = DomainObjects.Resource.ResourceData.Failure;
-                                response.StatusCode = (int)HttpStatusCode.BadRequest;
-                                response.StatusMessage = order.DriverNo + " Driver Number not found in TMS.";
-                                return response;
-                            }
+                            //string driverCode = string.Empty;
+                            //var driverData = (from ba in context.Drivers
+                            //                  where ba.DriverNo == order.DriverNo
+                            //                  select new Domain.Driver()
+                            //                  {
+                            //                      DriverNo = ba.DriverNo,
+                            //                      UserName = ba.UserName
+                            //                  }).FirstOrDefault();
+                            //if (driverData == null)
+                            //{
+                            //    //Return with Business Area not found
+                            //    transaction.Rollback();
+                            //    response.Status = DomainObjects.Resource.ResourceData.Failure;
+                            //    response.StatusCode = (int)HttpStatusCode.BadRequest;
+                            //    response.StatusMessage = order.DriverNo + " Driver Number not found in TMS.";
+                            //    return response;
+                            //}
 
                             #endregion
 
@@ -1730,8 +1730,8 @@ namespace TMS.DataGateway.Repositories
                             var partnerdetails = context.OrderPartnerDetails.Where(x => x.OrderDetailID == packingSheet.OrderDetailId && x.PartnerID == packingSheet.DealerId).FirstOrDefault();
 
                             PackingSheet ps = new PackingSheet();
-                            ps.OrderNumber = orderDetailsData.OrderHeader.OrderNo;
-                            ps.DealerNumber = partnerdetails.Partner.PartnerNo;
+                            ps.OrderNumber = context.OrderHeaders.Where(o => o.ID == orderDetailsData.OrderHeaderID).Select(oh => oh.OrderNo).FirstOrDefault();// orderDetailsData.OrderHeader.OrderNo;
+                            ps.DealerNumber = context.Partners.Where(o => o.ID == partnerdetails.PartnerID).Select(oh => oh.PartnerNo).FirstOrDefault(); // partnerdetails.Partner.PartnerNo;
                             ps.DealerId = packingSheet.DealerId;
 
                             orderDetailsData.ShippingListNo = packingSheet.ShippingListNo;
@@ -1759,7 +1759,7 @@ namespace TMS.DataGateway.Repositories
                             }
                             packingSheetResponse.Data.Add(ps);
                             packingSheetResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                            packingSheetResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                            packingSheetResponse.StatusMessage = DomainObjects.Resource.ResourceData.PackingSheetUpdated;
                             packingSheetResponse.StatusCode = (int)HttpStatusCode.OK;
                         }
                         else
