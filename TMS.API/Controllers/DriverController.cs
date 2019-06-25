@@ -74,7 +74,7 @@ namespace TMS.API.Controllers
                                 PICName = "",
                                 PICEmail = "",
                                 PICPhone = "",
-                                IsActive = true,
+                                IsActive = driverRequest.Requests[0].IsActive,
                                 CreatedBy = "SYSTEM"
                             }
                         },
