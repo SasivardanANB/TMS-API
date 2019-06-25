@@ -96,7 +96,37 @@ namespace TMS.DataGateway.Repositories
                             }
                             #endregion
 
-                            #region Step 1: Check if We have Order Status in Master data
+                            #region Step 2: Check if We have Driver master data
+                            string driverCode = string.Empty;
+                            //if (request.UploadType == 1) // Upload via Excel
+                            //{
+                                var driverData = (from ba in context.Drivers
+                                                    where ba.DriverNo == order.DriverNo
+                                                    select new Domain.Driver()
+                                                    {
+                                                        DriverNo = ba.DriverNo,
+                                                        UserName = ba.UserName
+                                                    }).FirstOrDefault();
+                                if (driverData != null)
+                                {
+                                 
+                                }
+                                else
+                                {
+                                    //Return with Business Area not found
+                                    transaction.Rollback();
+                                    response.Status = DomainObjects.Resource.ResourceData.Failure;
+                                    response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                    response.StatusMessage = order.DriverNo + " Driver Number not found in TMS.";
+                                    return response;
+                                }
+
+                            //}
+                            
+                            #endregion
+
+
+                            #region Step 3: Check if We have Order Status in Master data
                             int orderStatusId;
                             string orderStatusValue = "";
                             var orderStatus = (from os in context.OrderStatuses
