@@ -97,23 +97,23 @@ namespace TMS.DataGateway.Repositories
                             #endregion
 
                             #region Step 2: Check if We have Driver master data
-                            string driverCode = string.Empty;
-                            var driverData = (from ba in context.Drivers
-                                              where ba.DriverNo == order.DriverNo
-                                              select new Domain.Driver()
-                                              {
-                                                  DriverNo = ba.DriverNo,
-                                                  UserName = ba.UserName
-                                              }).FirstOrDefault();
-                            if (driverData == null)
-                            {
-                                //Return with Business Area not found
-                                transaction.Rollback();
-                                response.Status = DomainObjects.Resource.ResourceData.Failure;
-                                response.StatusCode = (int)HttpStatusCode.BadRequest;
-                                response.StatusMessage = order.DriverNo + " Driver Number not found in TMS.";
-                                return response;
-                            }
+                            //string driverCode = string.Empty;
+                            //var driverData = (from ba in context.Drivers
+                            //                  where ba.DriverNo == order.DriverNo
+                            //                  select new Domain.Driver()
+                            //                  {
+                            //                      DriverNo = ba.DriverNo,
+                            //                      UserName = ba.UserName
+                            //                  }).FirstOrDefault();
+                            //if (driverData == null)
+                            //{
+                            //    //Return with Business Area not found
+                            //    transaction.Rollback();
+                            //    response.Status = DomainObjects.Resource.ResourceData.Failure;
+                            //    response.StatusCode = (int)HttpStatusCode.BadRequest;
+                            //    response.StatusMessage = order.DriverNo + " Driver Number not found in TMS.";
+                            //    return response;
+                            //}
 
                             #endregion
 
