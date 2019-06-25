@@ -70,7 +70,6 @@ namespace TMS.DataGateway.Repositories
                         {
                             picData.CreatedBy = picRequest.CreatedBy;
                             picData.CreatedTime = DateTime.Now;
-                            picData.IsActive = true;
                             context.Pics.Add(picData);
                             context.SaveChanges();
                             picResponse.StatusMessage = DomainObjects.Resource.ResourceData.PicCreated;

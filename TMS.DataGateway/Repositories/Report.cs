@@ -29,7 +29,7 @@ namespace TMS.DataGateway.Repositories
                 {
                     var orderReports = (from oh in tMSDBContext.OrderHeaders
                                         join opd in tMSDBContext.OrderPartnerDetails on tMSDBContext.OrderDetails.Where(i => i.OrderHeaderID == oh.ID).OrderByDescending(d => d.ID).Select(od => od.ID).FirstOrDefault() equals opd.OrderDetailID
-                                        where opd.PartnerID == orderReportRequest.Request.MainDealerId && oh.OrderDate.Month == orderReportRequest.Request.Month && oh.OrderDate.Year == orderReportRequest.Request.Year && oh.OrderType== orderReportRequest.Request.OrderTypeId
+                                        where opd.PartnerID == orderReportRequest.Request.MainDealerId && oh.OrderDate.Month == orderReportRequest.Request.Month && oh.OrderDate.Year == orderReportRequest.Request.Year && oh.OrderType == orderReportRequest.Request.OrderTypeId
                                         group oh by new { oh.OrderDate.Day } into ord
                                         select new Domain.OrdersByDate
                                         {
@@ -88,7 +88,7 @@ namespace TMS.DataGateway.Repositories
                 {
                     var orderprogresses = (from oh in tMSDBContext.OrderHeaders
                                            join od in tMSDBContext.OrderDetails on oh.ID equals od.OrderHeaderID
-                                           join opd in tMSDBContext.OrderPartnerDetails on tMSDBContext.OrderDetails.Where(i => i.OrderHeaderID == oh.ID).OrderByDescending(d => d.ID).Select(od => od.ID).FirstOrDefault()  equals opd.OrderDetailID
+                                           join opd in tMSDBContext.OrderPartnerDetails on tMSDBContext.OrderDetails.Where(i => i.OrderHeaderID == oh.ID).OrderByDescending(d => d.ID).Select(od => od.ID).FirstOrDefault() equals opd.OrderDetailID
                                            where oh.OrderStatusID != 12 && oh.OrderType == orderReportRequest.Request.OrderTypeId && opd.PartnerID == orderReportRequest.Request.MainDealerId && oh.OrderDate.Month == orderReportRequest.Request.Month && oh.OrderDate.Year == orderReportRequest.Request.Year
                                            select new Domain.OrderProgress
                                            {
@@ -153,27 +153,143 @@ namespace TMS.DataGateway.Repositories
                                                        PartnerId = ord.Select(p => p.opd.PartnerID).FirstOrDefault(),
                                                        OrderId = ord.Select(p => p.oh.ID).FirstOrDefault(),
                                                        OrderNo = ord.Select(p => p.oh.OrderNo).FirstOrDefault(),
-                                                       OrderCreatedDate = ord.Select(p => p.oh.OrderDate).FirstOrDefault().ToString(),
-                                                       Vehicle = tMSDBContext.VehicleTypes.Where(v => v.ID.ToString() == ord.Select(p => p.oh.VehicleShipment).FirstOrDefault()).Select(d => d.VehicleTypeDescription).FirstOrDefault(),
+                                                       Transporter = tMSDBContext.Partners.Where(pa => pa.ID == tMSDBContext.OrderPartnerDetails.Where(i => i.OrderDetailID == tMSDBContext.OrderDetails.Where(o => o.OrderHeaderID == ord.Select(id => id.oh.ID).FirstOrDefault()).Select(od => od.ID).Take(1).FirstOrDefault() && i.PartnerTypeId == 1).Select(pt => pt.PartnerID).FirstOrDefault()).Select(pn => pn.PartnerName).FirstOrDefault(),
+                                                       //Source = tMSDBContext.Partners.Where(pa => pa.ID == tMSDBContext.OrderPartnerDetails.Where(i => i.OrderDetailID == tMSDBContext.OrderDetails.Where(o => o.OrderHeaderID == ord.Select(id => id.oh.ID).FirstOrDefault()).Select(od => od.ID).Take(1).FirstOrDefault() && i.PartnerTypeId == 2).Select(pt => pt.PartnerID).FirstOrDefault()).Select(pn => pn.PartnerName).FirstOrDefault(),
+                                                       //Destination = tMSDBContext.Partners.Where(pa => pa.ID == tMSDBContext.OrderPartnerDetails.Where(i => i.OrderDetailID == tMSDBContext.OrderDetails.Where(o => o.OrderHeaderID == ord.Select(id => id.oh.ID).FirstOrDefault()).Select(od => od.ID).Take(1).FirstOrDefault() && i.PartnerTypeId == 3).Select(pt => pt.PartnerID).FirstOrDefault()).Select(pn => pn.PartnerName).FirstOrDefault(),
                                                        Drivername = ord.Select(p => p.oh.DriverName).FirstOrDefault(),
+                                                       OrderCreatedDate = ord.Select(p => p.oh.OrderDate).FirstOrDefault().ToString(),
+                                                       //Vehicle = tMSDBContext.VehicleTypes.Where(v => v.ID.ToString() == ord.Select(p => p.oh.VehicleShipment).FirstOrDefault()).Select(d => d.VehicleTypeDescription).FirstOrDefault(),
 
-                                                       Transporter = tMSDBContext.Partners.Where(pa => pa.ID == tMSDBContext.OrderPartnerDetails.Where(i => i.OrderDetailID == tMSDBContext.OrderDetails.Where(o => o.OrderHeaderID == ord.Select(id=>id.oh.ID).FirstOrDefault()).Select(od => od.ID).Take(1).FirstOrDefault() && i.PartnerTypeId == 1).Select(pt => pt.PartnerID).FirstOrDefault()).Select(pn => pn.PartnerName).FirstOrDefault(),
-                                                       Source = tMSDBContext.Partners.Where(pa => pa.ID == tMSDBContext.OrderPartnerDetails.Where(i => i.OrderDetailID == tMSDBContext.OrderDetails.Where(o => o.OrderHeaderID == ord.Select(id => id.oh.ID).FirstOrDefault()).Select(od => od.ID).Take(1).FirstOrDefault() && i.PartnerTypeId == 2).Select(pt => pt.PartnerID).FirstOrDefault()).Select(pn => pn.PartnerName).FirstOrDefault(),
-                                                       Destination = tMSDBContext.Partners.Where(pa => pa.ID == tMSDBContext.OrderPartnerDetails.Where(i => i.OrderDetailID == tMSDBContext.OrderDetails.Where(o => o.OrderHeaderID == ord.Select(id => id.oh.ID).FirstOrDefault()).Select(od => od.ID).Take(1).FirstOrDefault() && i.PartnerTypeId == 3).Select(pt => pt.PartnerID).FirstOrDefault()).Select(pn => pn.PartnerName).FirstOrDefault(),
-                                                       
-                                                       OrderStatusId = ord.Select(p => p.oh.OrderStatusID).FirstOrDefault(),
-                                                       OrderStatus = tMSDBContext.OrderStatuses.Where(i => i.ID == ord.Select(p => p.oh.OrderStatusID).FirstOrDefault()).Select(s => s.OrderStatusValue).FirstOrDefault(),
-
-                                                       ETA = ord.OrderByDescending(i=>i.od.ID).Select(o => o.od.EstimationShipmentDate).FirstOrDefault().ToString(),
+                                                       //ShippingTime = DbFunctions.DiffHours(ord.Where(i => i.osh.ID == 12).Select(o => o.osh.StatusDate).FirstOrDefault(), ord.Where(i => i.osh.ID == 4 && i.osh.IsLoad == false).Select(o => o.osh.StatusDate).FirstOrDefault()).ToString(),
+                                                       ETA = ord.OrderByDescending(i => i.od.ID).Select(o => o.od.EstimationShipmentDate).FirstOrDefault().ToString(),
                                                        FinishDelivery = ord.Where(od => od.osh.OrderStatusID == 12).Select(o => o.osh.StatusDate).FirstOrDefault().ToString(),
-
-                                                       //TravellingTime = DbFunctions.DiffHours(ord.Where(i => i.osh.ID == 5).OrderByDescending(i => i.osh.ID).Select(o => o.osh.StatusDate).FirstOrDefault(),ord.Where(i => i.osh.ID == 4).Select(o => o.osh.StatusDate).FirstOrDefault()).ToString(),
-                                                       //ShippingTime = DbFunctions.DiffHours(ord.Where(i => i.osh.ID == 12).Select(o => o.osh.StatusDate).FirstOrDefault(), ord.Where(i => i.osh.ID == 4).Select(o => o.osh.StatusDate).FirstOrDefault()).ToString(),
-                                                       //ServiceRate=oh.Harga.ToString(),
-
-                                                       //LoadingTime = DbFunctions.DiffHours(ord.Where(i => i.osh.ID == 6).Select(o => o.osh.StatusDate).FirstOrDefault(), ord.Where(i => i.osh.ID == 7).Select(o => o.osh.StatusDate).FirstOrDefault()).ToString(),
-                                                       //UnloadingTime = DbFunctions.DiffHours(ord.Where(i => i.osh.ID == 9).Select(o => o.osh.StatusDate).FirstOrDefault(), ord.Where(i => i.osh.ID == 10).Select(o => o.osh.StatusDate).FirstOrDefault()).ToString(),
+                                                       //ServiceRate = oh.Harga.ToString(),                                                       
                                                    }).ToList();
+
+                    foreach (var item in comletedOrderprogresses)
+                    {
+                        int loadingTime = 0;
+                        int unLoadingTime = 0;
+                        int travellingTime = 0;
+                        var orderDetails = tMSDBContext.OrderDetails.Where(i => i.OrderHeaderID == item.OrderId).ToList();
+                        foreach (var orderItem in orderDetails)
+                        {
+                            var orderDetailLoadStartTripTime = (from od in tMSDBContext.OrderDetails
+                                                                join opd in tMSDBContext.OrderPartnerDetails on od.ID equals opd.OrderDetailID
+                                                                join osh in tMSDBContext.OrderStatusHistories on od.ID equals osh.OrderDetailID
+                                                                where od.ID == orderItem.ID && opd.PartnerID == orderReportRequest.Request.MainDealerId && 
+                                                                osh.OrderStatusID == 4 && osh.IsLoad == true
+                                                                select new
+                                                                {
+                                                                    Date = osh.StatusDate
+                                                                }).FirstOrDefault();
+
+                            var orderDetailLoadConfirmArriveTime = (from od in tMSDBContext.OrderDetails
+                                                                    join opd in tMSDBContext.OrderPartnerDetails on od.ID equals opd.OrderDetailID
+                                                                    join osh in tMSDBContext.OrderStatusHistories on od.ID equals osh.OrderDetailID
+                                                                    where od.ID == orderItem.ID && opd.PartnerID == orderReportRequest.Request.MainDealerId &&
+                                                                    osh.OrderStatusID == 5 && osh.IsLoad == true
+                                                                    select new
+                                                                    {
+                                                                        Date = osh.StatusDate
+                                                                    }).FirstOrDefault();
+
+                            var orderDetailUnLoadStartTripTime = (from od in tMSDBContext.OrderDetails
+                                                                  join opd in tMSDBContext.OrderPartnerDetails on od.ID equals opd.OrderDetailID
+                                                                  join osh in tMSDBContext.OrderStatusHistories on od.ID equals osh.OrderDetailID
+                                                                  where od.ID == orderItem.ID && opd.PartnerID == orderReportRequest.Request.MainDealerId && 
+                                                                  osh.OrderStatusID == 4 && osh.IsLoad == false
+                                                                  select new
+                                                                  {
+                                                                      Date = osh.StatusDate
+                                                                  }).FirstOrDefault();
+
+                            var orderDetailUnLoadConfirmArriveTime = (from od in tMSDBContext.OrderDetails
+                                                                      join opd in tMSDBContext.OrderPartnerDetails on od.ID equals opd.OrderDetailID
+                                                                      join osh in tMSDBContext.OrderStatusHistories on od.ID equals osh.OrderDetailID
+                                                                      where od.ID == orderItem.ID && opd.PartnerID == orderReportRequest.Request.MainDealerId &&
+                                                                      osh.OrderStatusID == 5 && osh.IsLoad == false
+                                                                      select new
+                                                                      {
+                                                                          Date = osh.StatusDate
+                                                                      }).FirstOrDefault();
+
+                            var orderDetailStartLoadingTime = (from od in tMSDBContext.OrderDetails
+                                                               join opd in tMSDBContext.OrderPartnerDetails on od.ID equals opd.OrderDetailID
+                                                               join osh in tMSDBContext.OrderStatusHistories on od.ID equals osh.OrderDetailID
+                                                               where od.ID == orderItem.ID && opd.PartnerID == orderReportRequest.Request.MainDealerId && osh.OrderStatusID == 6
+                                                               select new
+                                                               {
+                                                                   Date = osh.StatusDate
+                                                               }).FirstOrDefault();
+
+                            var orderDetailEndLoaingTime = (from od in tMSDBContext.OrderDetails
+                                                            join opd in tMSDBContext.OrderPartnerDetails on od.ID equals opd.OrderDetailID
+                                                            join osh in tMSDBContext.OrderStatusHistories on od.ID equals osh.OrderDetailID
+                                                            where od.ID == orderItem.ID && opd.PartnerID == orderReportRequest.Request.MainDealerId && osh.OrderStatusID == 7
+                                                            select new
+                                                            {
+                                                                Date = osh.StatusDate
+                                                            }).FirstOrDefault();
+
+                            var orderDetailStartUnLoadingTime = (from od in tMSDBContext.OrderDetails
+                                                                 join opd in tMSDBContext.OrderPartnerDetails on od.ID equals opd.OrderDetailID
+                                                                 join osh in tMSDBContext.OrderStatusHistories on od.ID equals osh.OrderDetailID
+                                                                 where od.ID == orderItem.ID && opd.PartnerID == orderReportRequest.Request.MainDealerId && osh.OrderStatusID == 9
+                                                                 select new
+                                                                 {
+                                                                     Date = osh.StatusDate
+                                                                 }).FirstOrDefault();
+
+                            var orderDetailEndUnLoaingTime = (from od in tMSDBContext.OrderDetails
+                                                              join opd in tMSDBContext.OrderPartnerDetails on od.ID equals opd.OrderDetailID
+                                                              join osh in tMSDBContext.OrderStatusHistories on od.ID equals osh.OrderDetailID
+                                                              where od.ID == orderItem.ID && opd.PartnerID == orderReportRequest.Request.MainDealerId && osh.OrderStatusID == 10
+                                                              select new
+                                                              {
+                                                                  Date = osh.StatusDate
+                                                              }).FirstOrDefault();
+
+                            var orderCompletedTime= (from od in tMSDBContext.OrderDetails
+                                                     join opd in tMSDBContext.OrderPartnerDetails on od.ID equals opd.OrderDetailID
+                                                     join osh in tMSDBContext.OrderStatusHistories on od.ID equals osh.OrderDetailID
+                                                     where od.ID == orderItem.ID && opd.PartnerID == orderReportRequest.Request.MainDealerId && osh.OrderStatusID == 12
+                                                     select new
+                                                     {
+                                                         Date = osh.StatusDate
+                                                     }).FirstOrDefault();
+
+
+
+                            if (orderDetailEndLoaingTime!=null || orderDetailStartLoadingTime != null)
+                            {
+                                loadingTime += Convert.ToInt32((orderDetailEndLoaingTime.Date - orderDetailStartLoadingTime.Date).TotalHours);
+                            }
+                            if(orderDetailEndUnLoaingTime!=null || orderDetailStartUnLoadingTime != null)
+                            {
+                                unLoadingTime += Convert.ToInt32((orderDetailEndUnLoaingTime.Date - orderDetailStartUnLoadingTime.Date).TotalHours);
+                            }
+                            if(orderCompletedTime!=null || orderDetailLoadStartTripTime != null)
+                            {
+                                item.ShippingTime= Convert.ToInt32((orderCompletedTime.Date - orderDetailLoadStartTripTime.Date).TotalHours).ToString();
+                            }
+                            int travelLoadTime = 0;
+                            int travelUnLoadTime = 0;
+                            if(orderDetailLoadConfirmArriveTime!=null || orderDetailLoadStartTripTime != null)
+                            {
+                                travelLoadTime = Convert.ToInt32((orderDetailLoadConfirmArriveTime.Date - orderDetailLoadStartTripTime.Date).TotalHours);
+                            }
+                            if(orderDetailUnLoadConfirmArriveTime!=null || orderDetailUnLoadStartTripTime != null)
+                            {
+                                travelUnLoadTime = Convert.ToInt32((orderDetailUnLoadConfirmArriveTime.Date - orderDetailUnLoadStartTripTime.Date).TotalHours);
+                            }
+                            travellingTime += travelLoadTime + travelUnLoadTime;
+                        }
+                        item.LoadingTime = loadingTime.ToString();
+                        item.UnloadingTime = unLoadingTime.ToString();
+                        item.TravellingTime = travellingTime.ToString();
+                    }
+
                     orderReportResponse.Data = new Domain.OrderReport()
                     {
                         OrderCompletedDates = comletedOrderprogresses,
@@ -223,13 +339,13 @@ namespace TMS.DataGateway.Repositories
                     if (orderReportRequest.Request.OrderAvgLoadingTypeId == 1)
                     {
 
-                         loadStatusCode = tMSDBContext.OrderStatuses.Where(o => o.OrderStatusCode == "6").Select(i => i.ID).FirstOrDefault();
-                         unloadStatusCode = tMSDBContext.OrderStatuses.Where(o => o.OrderStatusCode == "7").Select(i => i.ID).FirstOrDefault();
+                        loadStatusCode = tMSDBContext.OrderStatuses.Where(o => o.OrderStatusCode == "6").Select(i => i.ID).FirstOrDefault();
+                        unloadStatusCode = tMSDBContext.OrderStatuses.Where(o => o.OrderStatusCode == "7").Select(i => i.ID).FirstOrDefault();
                     }
                     else
                     {
-                         loadStatusCode = tMSDBContext.OrderStatuses.Where(o => o.OrderStatusCode == "9").Select(i => i.ID).FirstOrDefault();
-                         unloadStatusCode = tMSDBContext.OrderStatuses.Where(o => o.OrderStatusCode == "10").Select(i => i.ID).FirstOrDefault();
+                        loadStatusCode = tMSDBContext.OrderStatuses.Where(o => o.OrderStatusCode == "9").Select(i => i.ID).FirstOrDefault();
+                        unloadStatusCode = tMSDBContext.OrderStatuses.Where(o => o.OrderStatusCode == "10").Select(i => i.ID).FirstOrDefault();
                     }
 
                     //var avgLoadOrderReports = (from od in tMSDBContext.OrderDetails
@@ -331,8 +447,8 @@ namespace TMS.DataGateway.Repositories
                         {
                             loadUnloacOrdersByDate.Day = dayValue;
                             loadUnloacOrdersByDate.OrderCount = avgLoadOrderReports.Where(i => i.Day == dayValue).Select(d => d.OrderCount).FirstOrDefault();
-                            loadUnloacOrdersByDate.TotlLoadingTime= avgLoadOrderReports.Where(i => i.Day == dayValue).Select(d => d.TotlLoadingTime).FirstOrDefault();
-                            loadUnloacOrdersByDate.AvgTotlLoadingTime= avgLoadOrderReports.Where(i => i.Day == dayValue).Select(d => d.AvgTotlLoadingTime).FirstOrDefault();
+                            loadUnloacOrdersByDate.TotlLoadingTime = avgLoadOrderReports.Where(i => i.Day == dayValue).Select(d => d.TotlLoadingTime).FirstOrDefault();
+                            loadUnloacOrdersByDate.AvgTotlLoadingTime = avgLoadOrderReports.Where(i => i.Day == dayValue).Select(d => d.AvgTotlLoadingTime).FirstOrDefault();
                         }
                         else
                         {
@@ -414,9 +530,9 @@ namespace TMS.DataGateway.Repositories
                                                    select new Domain.GoodsReceiveOrIssue
                                                    {
                                                        OrderQty = A.Order_Qty.ToString(),
-                                                       GRQty = goodsReceiveOrIssueRequest.Request.OrderTypeId == 1 ? (string.IsNullOrEmpty(B.Order_Qty.ToString())?"0": B.Order_Qty.ToString()) : "0",
-                                                       GIQty = goodsReceiveOrIssueRequest.Request.OrderTypeId == 2 ? (string.IsNullOrEmpty(B.Order_Qty.ToString())?"0": B.Order_Qty.ToString()) : "0",
-                                                       Percentage = string.IsNullOrEmpty(((A.Order_Qty / B.Order_Qty) * 100).ToString())?"0":((A.Order_Qty / B.Order_Qty) * 100).ToString(),
+                                                       GRQty = goodsReceiveOrIssueRequest.Request.OrderTypeId == 1 ? (string.IsNullOrEmpty(B.Order_Qty.ToString()) ? "0" : B.Order_Qty.ToString()) : "0",
+                                                       GIQty = goodsReceiveOrIssueRequest.Request.OrderTypeId == 2 ? (string.IsNullOrEmpty(B.Order_Qty.ToString()) ? "0" : B.Order_Qty.ToString()) : "0",
+                                                       Percentage = string.IsNullOrEmpty(((A.Order_Qty / B.Order_Qty) * 100).ToString()) ? "0" : ((A.Order_Qty / B.Order_Qty) * 100).ToString(),
                                                        Date = A.CreatedDate.Value != null ? A.CreatedDate.Value : B.CreatedDate.Value
                                                    }).ToList();
 
@@ -454,7 +570,9 @@ namespace TMS.DataGateway.Repositories
                     var ordersInDay = (from oh in tMSDBContext.OrderHeaders
                                        join od in tMSDBContext.OrderDetails on oh.ID equals od.OrderHeaderID
                                        where oh.OrderType == orderTypeId && DbFunctions.TruncateTime(oh.OrderDate) == DbFunctions.TruncateTime(DateTime.Now)
-                                       group new { oh, od } by new { oh.ID } into ord select new Domain.OrdersInDay {
+                                       group new { oh, od } by new { oh.ID } into ord
+                                       select new Domain.OrdersInDay
+                                       {
                                            Pallet = ord.Sum(p => p.od.TotalPallet).ToString(),
                                            OrderNumber = ord.Select(or => or.oh.OrderNo).FirstOrDefault()
                                        }).ToList();
@@ -462,7 +580,7 @@ namespace TMS.DataGateway.Repositories
                     var assignmentInDay = (from oh in tMSDBContext.OrderHeaders
                                            join od in tMSDBContext.OrderDetails on oh.ID equals od.OrderHeaderID
                                            join osh in tMSDBContext.OrderStatusHistories on od.ID equals osh.OrderDetailID
-                                           where oh.OrderType == orderTypeId && osh.OrderStatusID==3 && DbFunctions.TruncateTime(osh.StatusDate) == DbFunctions.TruncateTime(DateTime.Now)
+                                           where oh.OrderType == orderTypeId && osh.OrderStatusID == 3 && DbFunctions.TruncateTime(osh.StatusDate) == DbFunctions.TruncateTime(DateTime.Now)
                                            group new { oh, od } by new { oh.ID } into ord
                                            select new Domain.AssignmentInDay
                                            {
