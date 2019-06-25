@@ -970,6 +970,15 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Trip(s) re-assigned successfully in TMS..
+        /// </summary>
+        public static string TripReAssigned {
+            get {
+                return ResourceManager.GetString("TripReAssigned", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to User details not found.
         /// </summary>
         public static string UserDetailsNotFound {

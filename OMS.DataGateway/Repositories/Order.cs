@@ -211,9 +211,9 @@ namespace OMS.DataGateway.Repositories
                     }
                     else
                     {
-                        response.Status = DomainObjects.Resource.ResourceData.Failure;
+                        response.Status = DomainObjects.Resource.ResourceData.Success;
                         response.StatusCode = (int)HttpStatusCode.NotFound;
-                        response.StatusMessage = DomainObjects.Resource.ResourceData.NoOrders;
+                        response.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                     }
                 }
             }
@@ -1686,7 +1686,7 @@ namespace OMS.DataGateway.Repositories
                         }
                         else
                         {
-                            packingSheetResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                            packingSheetResponse.Status = DomainObjects.Resource.ResourceData.Success;
                             packingSheetResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                             packingSheetResponse.StatusCode = (int)HttpStatusCode.NotFound;
                         }
@@ -1773,29 +1773,10 @@ namespace OMS.DataGateway.Repositories
                                 tripObj.LastModifiedBy = request.LastModifiedBy;
                                 tripObj.LastModifiedTime = request.LastModifiedTime;
                                 context.SaveChanges();
-                                //var tripDetailsToUpdateStatus = context.TripDetails.Where(t => t.TripID == tripObj.ID).ToList();
-                                //if (tripDetailsToUpdateStatus.Count > 0)
-                                //{
-                                //    foreach (var td in tripDetailsToUpdateStatus)
-                                //    {
-                                //        var statusHistory = context.TripStatusHistories.Where(ts => ts.StopPointId == td.ID).ToList();
-                                //        context.TripStatusHistories.RemoveRange(statusHistory);
-                                //        TripStatusHistory tshObj = new TripStatusHistory()
-                                //        {
-                                //            StopPointId = td.ID,
-                                //            StatusDate = DateTime.Now,
-                                //            Remarks = "Driver Assigned to Trip",
-                                //            TripStatusId = context.TripStatuses.Where(t => t.StatusName == "Assigned").Select(t => t.ID).FirstOrDefault()
-                                //        };
-                                //        context.TripStatusHistories.Add(tshObj);
-                                //        context.SaveChanges();
-                                //    }
-                                //}
-
                             }
                             else
                             {
-                                response.Status = DomainObjects.Resource.ResourceData.Failure;
+                                response.Status = DomainObjects.Resource.ResourceData.Success;
                                 response.StatusCode = (int)HttpStatusCode.NotFound;
                                 response.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                                 return response;
@@ -1818,7 +1799,7 @@ namespace OMS.DataGateway.Repositories
                 response.Data = tripDetails;
                 response.Status = DomainObjects.Resource.ResourceData.Success;
                 response.StatusCode = (int)HttpStatusCode.OK;
-                response.StatusMessage = DomainObjects.Resource.ResourceData.TripAssigned;
+                response.StatusMessage = DomainObjects.Resource.ResourceData.TripReAssigned;
                 #endregion
 
             }

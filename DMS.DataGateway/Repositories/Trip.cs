@@ -969,7 +969,7 @@ namespace DMS.DataGateway.Repositories
                 response.Data = tripDetails;
                 response.Status = DomainObjects.Resource.ResourceData.Success;
                 response.StatusCode = (int)HttpStatusCode.OK;
-                response.StatusMessage = DomainObjects.Resource.ResourceData.TripAssigned;
+                response.StatusMessage = DomainObjects.Resource.ResourceData.TripReAssigned;
                 #endregion
 
             }
