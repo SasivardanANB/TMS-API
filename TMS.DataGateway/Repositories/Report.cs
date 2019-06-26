@@ -261,25 +261,25 @@ namespace TMS.DataGateway.Repositories
 
 
 
-                            if (orderDetailEndLoaingTime!=null || orderDetailStartLoadingTime != null)
+                            if (orderDetailEndLoaingTime!=null && orderDetailStartLoadingTime != null)
                             {
                                 loadingTime += Convert.ToInt32((orderDetailEndLoaingTime.Date - orderDetailStartLoadingTime.Date).TotalHours);
                             }
-                            if(orderDetailEndUnLoaingTime!=null || orderDetailStartUnLoadingTime != null)
+                            if(orderDetailEndUnLoaingTime!=null && orderDetailStartUnLoadingTime != null)
                             {
                                 unLoadingTime += Convert.ToInt32((orderDetailEndUnLoaingTime.Date - orderDetailStartUnLoadingTime.Date).TotalHours);
                             }
-                            if(orderCompletedTime!=null || orderDetailLoadStartTripTime != null)
+                            if(orderCompletedTime!=null && orderDetailLoadStartTripTime != null)
                             {
                                 item.ShippingTime= Convert.ToInt32((orderCompletedTime.Date - orderDetailLoadStartTripTime.Date).TotalHours).ToString();
                             }
                             int travelLoadTime = 0;
                             int travelUnLoadTime = 0;
-                            if(orderDetailLoadConfirmArriveTime!=null || orderDetailLoadStartTripTime != null)
+                            if(orderDetailLoadConfirmArriveTime!=null && orderDetailLoadStartTripTime != null)
                             {
                                 travelLoadTime = Convert.ToInt32((orderDetailLoadConfirmArriveTime.Date - orderDetailLoadStartTripTime.Date).TotalHours);
                             }
-                            if(orderDetailUnLoadConfirmArriveTime!=null || orderDetailUnLoadStartTripTime != null)
+                            if(orderDetailUnLoadConfirmArriveTime!=null && orderDetailUnLoadStartTripTime != null)
                             {
                                 travelUnLoadTime = Convert.ToInt32((orderDetailUnLoadConfirmArriveTime.Date - orderDetailUnLoadStartTripTime.Date).TotalHours);
                             }
@@ -660,7 +660,7 @@ namespace TMS.DataGateway.Repositories
                         OrdersInDays = ordersInDay,
                         OrderType = tMSDBContext.OrderTypes.Where(o => o.ID == orderTypeId).Select(d => d.OrderTypeDescription).FirstOrDefault()
                     };
-                    if (ordersInDay.Count > 0 || assignmentInDay.Count > 0 || finishInDay.Count > 0 || gatinInDay.Count > 0 || jalanInDay.Count > 0 || muatInDay.Count > 0 || bongkarInDay.Count > 0)
+                    if (ordersInDay.Count > 0 && assignmentInDay.Count > 0 && finishInDay.Count > 0 && gatinInDay.Count > 0 && jalanInDay.Count > 0 && muatInDay.Count > 0 && bongkarInDay.Count > 0)
                     {
                         adminBoardReportResponse.NumberOfRecords = 1;
                     }

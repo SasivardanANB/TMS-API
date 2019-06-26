@@ -1369,7 +1369,8 @@ namespace TMS.DataGateway.Repositories
                                                     StartTrip = new TrackStep(),
                                                     ConfirmArrive = new TrackStep(),
                                                     StartLoad = new TrackStep(),
-                                                    FinishLoad = new TrackStep()
+                                                    FinishLoad = new TrackStep(),
+                                                    StepHeaderNotification= "Unloaded at Main Dealer"
                                                 };
                                                 foreach (var unLoadStatus in unLoadStatusData)
                                                 {
@@ -1475,7 +1476,8 @@ namespace TMS.DataGateway.Repositories
                                                     StartTrip = new TrackStep(),
                                                     ConfirmArrive = new TrackStep(),
                                                     StartLoad = new TrackStep(),
-                                                    FinishLoad = new TrackStep()
+                                                    FinishLoad = new TrackStep(),
+                                                    StepHeaderNotification="Loaded at Main Dealer"
                                                 };
                                                 foreach (var unLoadStatus in unLoadStatusData)
                                                 {
