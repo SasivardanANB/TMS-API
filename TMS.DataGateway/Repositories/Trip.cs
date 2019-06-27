@@ -90,14 +90,15 @@ namespace TMS.DataGateway.Repositories
                                         EstimatedShipmentDate = od.EstimationShipmentDate,
                                         Dimensions = oh.OrderWeight + " " + oh.OrderWeightUM,
                                         OrderStatusId = oh.OrderStatusID,
-                                        OrderStatus = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusCode
+                                        OrderStatus = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusValue,
+                                        OrderStatusCode = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusCode
                                     }).Distinct().ToList();
                     }
                     if (tripList != null && tripList.Count > 0)
                     {
                         foreach (var order in tripList)
                         {
-                            if(order.OrderStatus == "3" || order.OrderStatus == "13" || order.OrderStatus == "15" || order.OrderStatus == "16")
+                            if(order.OrderStatusCode == "3" || order.OrderStatusCode == "13" || order.OrderStatusCode == "15" || order.OrderStatusCode == "16")
                             {
                                 order.IsChangeAllowed = true;
                             }

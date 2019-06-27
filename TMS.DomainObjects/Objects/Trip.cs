@@ -29,6 +29,7 @@ namespace TMS.DomainObjects.Objects
         public string PackingSheetNumber { get; set; }
         //public string PoliceNumber { get; set; }
         public int OrderStatusId { get; set; }
+        public string OrderStatusCode { get; set; }
         public bool IsChangeAllowed { get; set; }
         [MaxLength(12)]
         public string DriverNo { get; set; }
