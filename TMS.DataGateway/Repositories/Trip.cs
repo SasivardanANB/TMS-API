@@ -471,7 +471,7 @@ namespace TMS.DataGateway.Repositories
                                     {
                                         OrderDetailID = orderDetail.ID,
                                         StatusDate = DateTime.Now,
-                                        Remarks = "Order Creted",
+                                        Remarks = "Trip re-assigned",
                                         OrderStatusID = context.OrderStatuses.Where(t => t.OrderStatusCode == "3").Select(t => t.ID).FirstOrDefault()
                                     };
                                     context.OrderStatusHistories.Add(tshObj);
