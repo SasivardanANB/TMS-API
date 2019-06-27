@@ -309,7 +309,48 @@ namespace DMS.API.Controllers
         {
             ITripTask tripTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().TripTask;
             TripResponse tripData = tripTask.ReAssignTrip(tripRequest);
+
+            if (tripData.StatusCode == 200 && tripData.Status == "Success" && tripRequest.Requests.Count > 0 && ConfigurationManager.AppSettings["AllowPushNotifications"].ToString() == "true")
+            {
+                int i = 0;
+                foreach (var reqObj in tripRequest.Requests)
+                {
+                    string deviceId = tripTask.GetDeviceId(reqObj.DriverNo);
+                    if (!string.IsNullOrEmpty(deviceId))
+                    {
+                        var client = new RestClient("https://fcm.googleapis.com/");
+                        client.AddDefaultHeader("Content-Type", "application/json");
+                        client.AddDefaultHeader("Authorization", ConfigurationManager.AppSettings["FCM_Authorization"]);
+                        var req = new RestRequest("fcm/send", Method.POST) { RequestFormat = DataFormat.Json };
+                        req.Timeout = 500000;
+                        NotificationRequest notificationRequest = new NotificationRequest();
+                        notificationRequest.to = deviceId;   //"cFaYBS5Rn_w:APA91bEcu9Q_wqSASgXZ1nAUUvpelCTOw6eF5g0RmdNIrIi7GlJl-mTezk9Tb7lVkzzBH3wabznQ6GMkws2Br9XV8OvpilwSmMjcE3MKe9LrEtYZ8eAodgbx12-Az0NU6_IKbIfB0POu";
+
+                        string tripNumber = "";
+                        if (tripData.Data != null)
+                        {
+                            tripNumber = tripData.Data[i].TripNumber;
+                        }
+
+                        notificationRequest.data = new Notification()
+                        {
+                            title = "Trip has been assigned to you.",
+
+                            message = " " + tripNumber,
+                            click_action = "NOTIFICATIONACTIVITY",
+                        };
+
+                        req.AddJsonBody(notificationRequest);
+                        var result = client.Execute(req);
+                        i++;
+                    }
+                }
+
+            }
+
             return Ok(tripData);
+
+
         }
     }
 }

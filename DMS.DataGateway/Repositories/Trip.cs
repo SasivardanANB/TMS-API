@@ -919,6 +919,7 @@ namespace DMS.DataGateway.Repositories
                             var tripObj = context.TripHeaders.Where(t => t.OrderNumber == trip.OrderNumber).FirstOrDefault();
                             if (tripObj != null)
                             {
+                                tripDetail.TripNumber= tripObj.TripNumber;
                                 tripObj.DriverId = context.Drivers.Where(d => d.DriverNo == trip.DriverNo).Select(x => x.ID).FirstOrDefault();
                                 tripObj.VehicleType = trip.VehicleType;
                                 tripObj.VehicleNumber = trip.VehicleNumber;
