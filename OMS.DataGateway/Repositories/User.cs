@@ -786,7 +786,7 @@ namespace OMS.DataGateway.Repositories
                             }
                             else
                             {
-                                roleResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                                roleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                                 roleResponse.StatusCode = (int)HttpStatusCode.OK;
                                 roleResponse.StatusMessage = DomainObjects.Resource.ResourceData.RoleCannontBeDeleted;
                             }
