@@ -924,6 +924,7 @@ namespace DMS.DataGateway.Repositories
                                 tripObj.VehicleNumber = trip.VehicleNumber;
                                 tripObj.LastModifiedBy = request.LastModifiedBy;
                                 tripObj.LastModifiedTime = request.LastModifiedTime;
+                                tripObj.CurrentTripStatusId = context.TripStatuses.Where(t => t.StatusCode == "3").Select(t => t.ID).FirstOrDefault();
                                 context.SaveChanges();
                                 var tripDetailsToUpdateStatus = context.TripDetails.Where(t => t.TripID == tripObj.ID).ToList();
                                 if (tripDetailsToUpdateStatus.Count > 0)
@@ -937,7 +938,7 @@ namespace DMS.DataGateway.Repositories
                                             StopPointId = td.ID,
                                             StatusDate = DateTime.Now,
                                             Remarks = "Driver Assigned to Trip",
-                                            TripStatusId = context.TripStatuses.Where(t => t.StatusName == "Assigned").Select(t => t.ID).FirstOrDefault()
+                                            TripStatusId = context.TripStatuses.Where(t => t.StatusCode == "3").Select(t => t.ID).FirstOrDefault()
                                         };
                                         context.TripStatusHistories.Add(tshObj);
                                         context.SaveChanges();

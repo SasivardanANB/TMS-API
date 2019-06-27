@@ -457,6 +457,7 @@ namespace TMS.DataGateway.Repositories
                             orderHeadeData.VehicleNo = request.Vehicle;
                             orderHeadeData.LastModifiedTime = tripRequest.LastModifiedTime;
                             orderHeadeData.LastModifiedBy = tripRequest.LastModifiedBy;
+                            orderHeadeData.OrderStatusID = context.OrderStatuses.Where(s => s.OrderStatusCode == "3").Select(t => t.ID).FirstOrDefault();
                             context.SaveChanges();
 
                             var OrderDetailsIds = context.OrderDetails.Where(o => o.OrderHeaderID == orderHeadeData.ID).ToList();
@@ -471,7 +472,7 @@ namespace TMS.DataGateway.Repositories
                                         OrderDetailID = orderDetail.ID,
                                         StatusDate = DateTime.Now,
                                         Remarks = "Order Creted",
-                                        OrderStatusID = context.OrderStatuses.Where(t => t.OrderStatusValue == "Booked").Select(t => t.ID).FirstOrDefault()
+                                        OrderStatusID = context.OrderStatuses.Where(t => t.OrderStatusCode == "3").Select(t => t.ID).FirstOrDefault()
                                     };
                                     context.OrderStatusHistories.Add(tshObj);
                                     context.SaveChanges();
