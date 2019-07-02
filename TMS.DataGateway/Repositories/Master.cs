@@ -567,5 +567,36 @@ namespace TMS.DataGateway.Repositories
             }
             return commonResponse;
         }
+
+        public CommonCodeResponse GetDriversByTransporter(int transporterId)
+        {
+            CommonCodeResponse commonResponse = new CommonCodeResponse();
+            using (var context = new TMSDBContext())
+            {
+                var driversList = context.Drivers.Where(driver => !driver.IsDelete && driver.IsActive && driver.TransporterId == transporterId).Select(response => new Domain.CommonCode()
+                {
+                    Id = response.DriverNo,
+                    Value = response.UserName
+                }).ToList();
+
+                // Total NumberOfRecords
+                commonResponse.NumberOfRecords = driversList.Count;
+
+                if (driversList.Count > 0)
+                {
+                    commonResponse.Data = driversList;
+                    commonResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                    commonResponse.StatusCode = (int)HttpStatusCode.OK;
+                    commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                }
+                else
+                {
+                    commonResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                    commonResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                    commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
+                }
+                return commonResponse;
+            }
+        }
     }
 }

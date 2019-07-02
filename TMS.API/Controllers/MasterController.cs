@@ -115,5 +115,15 @@ namespace TMS.API.Controllers
             CommonResponse commonResponse = masterTask.GetTripStatusNames(requestType);
             return Ok(commonResponse);
         }
+
+        [Route("getdriversbytransporter")]
+        [HttpGet]
+        public IHttpActionResult GetDriversByTransporter(int transporterId)
+        {
+            IMasterTask masterTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().MasterTask;
+            CommonCodeResponse commonResponse = masterTask.GetDriversByTransporter(transporterId);
+            return Ok(commonResponse);
+        }
+
     }
 }
