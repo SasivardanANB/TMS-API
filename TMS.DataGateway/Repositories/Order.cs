@@ -1797,11 +1797,16 @@ namespace TMS.DataGateway.Repositories
                         foreach (var item in orderDetailsData)
                         {
                             PackingSheet pack = new PackingSheet();
+                            pack.OrderNumber= context.OrderHeaders.Where(o => o.ID == item.OrderHeaderID).Select(p => p.OrderNo).FirstOrDefault();
                             pack.Collie = item.TotalCollie;
                             pack.Katerangan = item.Katerangan;
                             pack.Notes = item.Instruction;
                             pack.OrderDetailId = item.ID;
                             pack.ShippingListNo = item.ShippingListNo;
+                            pack.Katerangan = item.Katerangan;
+                            pack.DealerId = context.OrderPartnerDetails.Where(p => p.OrderDetailID == item.ID).Select(p => p.PartnerID).FirstOrDefault();
+                            pack.DealerNumber = context.Partners.Where(p => p.ID == pack.DealerId ).Select(p => p.PartnerNo).FirstOrDefault();
+                            pack.DealerName = context.Partners.Where(p => p.ID == pack.DealerId ).Select(p => p.PartnerName).FirstOrDefault();
                             var packingSheetNos = context.PackingSheets.Where(ps => ps.ShippingListNo == item.ShippingListNo).Select(i => new Common { Id = i.ID, Value = i.PackingSheetNo }).ToList();
                             if (packingSheetNos.Count > 0)
                             {
