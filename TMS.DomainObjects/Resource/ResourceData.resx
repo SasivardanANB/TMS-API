@@ -474,4 +474,7 @@
   <data name="PackingSheetUpdated" xml:space="preserve">
     <value>Packing sheet(s) updated successfully in TMS.</value>
   </data>
+  <data name="InvalidPoolLength" xml:space="preserve">
+    <value>Pool Name must be 6-25 characters only</value>
+  </data>
 </root>
