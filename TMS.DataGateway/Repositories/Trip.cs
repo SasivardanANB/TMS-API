@@ -412,9 +412,9 @@ namespace TMS.DataGateway.Repositories
                     else
                     {
                         orderDetailsResponse.NumberOfRecords = 0;
-                        orderDetailsResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                        orderDetailsResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         orderDetailsResponse.StatusCode = (int)HttpStatusCode.NotFound;
-                        orderDetailsResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                        orderDetailsResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                     }
 
 
@@ -491,7 +491,7 @@ namespace TMS.DataGateway.Repositories
                         }
                         else
                         {
-                            tripResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                            tripResponse.Status = DomainObjects.Resource.ResourceData.Success;
                             tripResponse.StatusCode = (int)HttpStatusCode.NotFound;
                             tripResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                         }

@@ -1871,9 +1871,9 @@ namespace TMS.DataGateway.Repositories
                     {
                         commonResponse.NumberOfRecords = 0;
                         commonResponse.Data = null;
-                        commonResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                        commonResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         commonResponse.StatusCode = (int)HttpStatusCode.NotFound;
-                        commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                        commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                     }
 
 
@@ -1943,9 +1943,9 @@ namespace TMS.DataGateway.Repositories
                     {
                         dealerDetailsResponse.NumberOfRecords = 0;
                         dealerDetailsResponse.Data = null;
-                        dealerDetailsResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                        dealerDetailsResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         dealerDetailsResponse.StatusCode = (int)HttpStatusCode.NotFound;
-                        dealerDetailsResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                        dealerDetailsResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                     }
 
 
@@ -2099,7 +2099,7 @@ namespace TMS.DataGateway.Repositories
                     else
                     {
                         orderDetailsResponse.NumberOfRecords = 0;
-                        orderDetailsResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                        orderDetailsResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         orderDetailsResponse.StatusCode = (int)HttpStatusCode.NotFound;
                         orderDetailsResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
                     }
