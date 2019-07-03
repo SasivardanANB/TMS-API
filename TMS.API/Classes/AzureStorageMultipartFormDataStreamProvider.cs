@@ -12,7 +12,7 @@ namespace TMS.API.Classes
     public class AzureStorageMultipartFormDataStreamProvider : MultipartFormDataStreamProvider
     {
         private readonly CloudBlobContainer _blobContainer;
-        private readonly string[] _supportedMimeTypes = { "image/png", "image/jpeg", "image/jpg" };
+        private readonly string[] _supportedMimeTypes = { "image/png", "image/jpeg", "image/jpg", "application/pdf" };
 
         public AzureStorageMultipartFormDataStreamProvider(CloudBlobContainer blobContainer) : base("azure")
         {
