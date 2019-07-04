@@ -225,6 +225,7 @@ namespace TMS.DataGateway.Repositories
                     || s.MaxWeight.ToString().Contains(globalSearch)
                     || (s.PoolName != null && s.PoolName.ToLower().Contains(globalSearch))
                     || (s.VehicleTypeDescription != null && s.VehicleTypeDescription.ToLower().Contains(globalSearch))
+                    || (s.ShipperName != null && s.ShipperName.ToLower().Contains(globalSearch))
                     ).ToList();
                 }
 

@@ -73,7 +73,8 @@ namespace OMS.DataGateway.Repositories
                                       TotalPallet = details.TotalPallet,
                                       Instructions = details.Instruction,
                                       TotalCollie = details.TotalCollie,
-                                      ShippingListNo = details.ShippingListNo
+                                      ShippingListNo = details.ShippingListNo,
+                                      OrderCreatedTime=details.CreatedTime
 
                                   }).ToList();
                     }
@@ -122,11 +123,12 @@ namespace OMS.DataGateway.Repositories
                                 TotalPallet = details.TotalPallet,
                                 Instructions = details.Instruction,
                                 TotalCollie = details.TotalCollie,
-                                ShippingListNo = details.ShippingListNo
+                                ShippingListNo = details.ShippingListNo,
+                                OrderCreatedTime = details.CreatedTime
                             }
                             )
                         .Where(p => p.IsActive)
-                        .Where(p => filter.StatusId == 0 || p.OrderShipmentStatus == filter.StatusId)
+                        .Where(p => /*filter.StatusId == 0 || p.OrderShipmentStatus == filter.StatusId*/filter.StatusIds.Contains(p.OrderShipmentStatus))
                         .Where(p => String.IsNullOrEmpty(filter.OrderNumber) || p.OrderNo.Contains(filter.OrderNumber))
                         .Where(p => filter.FromDate == DateTime.MinValue || (DbFunctions.TruncateTime(p.OrderDate) >= filter.FromDate.Date))
                         .Where(p => filter.ToDate == DateTime.MinValue || (DbFunctions.TruncateTime(p.OrderDate) <= filter.ToDate.Date)).ToList();
@@ -135,10 +137,12 @@ namespace OMS.DataGateway.Repositories
 
                     foreach (var order in orders)
                     {
-                        order.EstimationShipmentDate = order.EstimationShipment.ToString("dd.MM.yyyy");
+                        order.EstimationShipmentDate = order.EstimationShipment.ToString("dd MMM yyyy");
                         order.EstimationShipmentTime = order.EstimationShipment.ToString("H:mm");
-                        order.ActualShipmentDate = order.ActualShipment.ToString("dd.MM.yyyy");
+                        order.ActualShipmentDate = order.ActualShipment.ToString("dd MMM yyyy");
                         order.ActualShipmentTime = order.ActualShipment.ToString("H:mm");
+                        order.OrderCreatedDate = order.OrderCreatedTime.ToString("dd MMM yyyy");
+                        order.OrderCreateTime=order.OrderCreatedTime.ToString("H:mm");
 
                         List<string> packingSheets = (from ps in context.PackingSheets
                                                       where ps.ShippingListNo == order.ShippingListNo

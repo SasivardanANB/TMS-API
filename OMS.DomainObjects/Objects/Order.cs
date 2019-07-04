@@ -108,6 +108,7 @@ namespace OMS.DomainObjects.Objects
         public string ShipmentScheduleImageGUID { get; set; }
         [MaxLength(10)]
         public string SOPONumber { get; set; }
-
+        public string OrderCreatedDate { get; set; }
+        public string OrderCreateTime { get; set; }
     }
 }
