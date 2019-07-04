@@ -871,7 +871,8 @@ namespace TMS.DataGateway.Repositories
                                      OrderNumber = oh.OrderNo,
                                      VehicleType = context.VehicleTypes.Where(v => v.ID.ToString() == oh.VehicleShipment).Select(vt => vt.VehicleTypeDescription).FirstOrDefault(),
                                      PoliceNumber = oh.VehicleNo,
-                                     OrderStatus = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusValue
+                                     OrderStatus = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusValue,
+                                     PackingSheetNumber= pksh.PackingSheetNo == null? "": pksh.PackingSheetNo
                                  }).Distinct().ToList();
 
                     if (orderList != null && orderList.Count > 0)
@@ -1010,12 +1011,12 @@ namespace TMS.DataGateway.Repositories
                             orderList = orderList.Where(o => o.OrderNumber.Contains(orderFilter.OrderNumber)).ToList();
                         }
 
-                        if (!String.IsNullOrEmpty(orderFilter.PackingSheetNumber))
+                        if (!string.IsNullOrEmpty(orderFilter.PackingSheetNumber))
                         {
                             orderList = orderList.Where(o => o.PackingSheetNumber.Contains(orderFilter.PackingSheetNumber)).ToList();
                         }
 
-                        if (!String.IsNullOrEmpty(orderFilter.PoliceNumber))
+                        if (!string.IsNullOrEmpty(orderFilter.PoliceNumber))
                         {
                             orderList = orderList.Where(o => o.PoliceNumber.Contains(orderFilter.PoliceNumber)).ToList();
                         }
@@ -2011,9 +2012,9 @@ namespace TMS.DataGateway.Repositories
                                                 {
                                                     ID = orderPartnerDetails.ID,
                                                     Address = orderPartnerDetails.Partner.PartnerAddress,
-                                                    CityName = orderPartnerDetails.Partner.PostalCode.SubDistrict.City.CityDescription,
-                                                    ProvinceName = orderPartnerDetails.Partner.PostalCode.SubDistrict.City.Province.ProvinceDescription,
-                                                    SubDistrictName = orderPartnerDetails.Partner.PostalCode.SubDistrict.SubdistrictName,
+                                                    CityName = orderPartnerDetails.Partner.SubDistrict.City.CityDescription,
+                                                    ProvinceName = orderPartnerDetails.Partner.SubDistrict.City.Province.ProvinceDescription,
+                                                    SubDistrictName = orderPartnerDetails.Partner.SubDistrict.SubdistrictName,
                                                     ActualShipmentDate = orderDetailsData.ActualShipmentDate.ToString(),
                                                     EstimationShipmentDate = orderDetailsData.EstimationShipmentDate.ToString(),
                                                     PartnerCode = orderPartnerDetails.Partner.PartnerNo,
@@ -2131,8 +2132,8 @@ namespace TMS.DataGateway.Repositories
                     {
                         int partnerId = Convert.ToInt32(partnerNo);
                         response = (from partner in context.Partners
-                                    join postalcode in context.PostalCodes on partner.PostalCodeID equals postalcode.ID
-                                    join subDistrict in context.SubDistricts on postalcode.SubDistrictID equals subDistrict.ID
+                                    //join postalcode in context.PostalCodes on partner.PostalCodeID equals postalcode.ID
+                                    join subDistrict in context.SubDistricts on partner.SubDistrictID equals subDistrict.ID
                                     where partner.ID == partnerId
                                     select new Domain.Partner
                                     {
@@ -2147,8 +2148,8 @@ namespace TMS.DataGateway.Repositories
                     else
                     {
                         response = (from partner in context.Partners
-                                    join postalcode in context.PostalCodes on partner.PostalCodeID equals postalcode.ID
-                                    join subDistrict in context.SubDistricts on postalcode.SubDistrictID equals subDistrict.ID
+                                    //join postalcode in context.PostalCodes on partner.PostalCodeID equals postalcode.ID
+                                    join subDistrict in context.SubDistricts on partner.SubDistrictID equals subDistrict.ID
                                     where partner.PartnerNo == partnerNo
                                     select new Domain.Partner
                                     {

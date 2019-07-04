@@ -323,9 +323,9 @@ namespace TMS.DataGateway.Repositories
                                                 {
                                                     ID = orderPartnerDetails.ID,
                                                     Address = orderPartnerDetails.Partner.PartnerAddress,
-                                                    CityName = orderPartnerDetails.Partner.PostalCode.SubDistrict.City.CityDescription,
-                                                    ProvinceName = orderPartnerDetails.Partner.PostalCode.SubDistrict.City.Province.ProvinceDescription,
-                                                    SubDistrictName = orderPartnerDetails.Partner.PostalCode.SubDistrict.SubdistrictName,
+                                                    CityName = orderPartnerDetails.Partner.SubDistrict.City.CityDescription,
+                                                    ProvinceName = orderPartnerDetails.Partner.SubDistrict.City.Province.ProvinceDescription,
+                                                    SubDistrictName = orderPartnerDetails.Partner.SubDistrict.SubdistrictName,
                                                     ActualShipmentDate = orderDetailsData.ActualShipmentDate.ToString(),
                                                     EstimationShipmentDate = orderDetailsData.EstimationShipmentDate.ToString(),
                                                     PartnerCode = orderPartnerDetails.Partner.PartnerNo,

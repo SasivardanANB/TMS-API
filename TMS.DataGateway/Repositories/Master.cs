@@ -189,8 +189,10 @@ namespace TMS.DataGateway.Repositories
                 using (var context = new TMSDBContext())
                 {
                     var partnerDetails = (from partner in context.Partners
-                                          join postalcode in context.PostalCodes on partner.PostalCodeID equals postalcode.ID
-                                          join subDistrict in context.SubDistricts on postalcode.SubDistrictID equals subDistrict.ID
+                                          //join postalcode in context.PostalCodes on partner.PostalCodeID equals postalcode.ID
+                                          join subDistrict in context.SubDistricts on partner.SubDistrictID equals subDistrict.ID
+                                          join postalcode in context.PostalCodes on subDistrict.ID equals postalcode.SubDistrictID into lpost
+                                          from lp in lpost.DefaultIfEmpty()
                                           where partner.ID == partnerId
                                           select new Domain.PartnerDeatils
                                           {
@@ -201,8 +203,8 @@ namespace TMS.DataGateway.Repositories
                                               SubDistrictId = subDistrict.ID,
                                               ProvinceId = subDistrict.City.Province.ID,
                                               ProvinceName = subDistrict.City.Province.ProvinceDescription,
-                                              PostalCode = postalcode.PostalCodeNo,
-                                              PostalCodeId = postalcode.ID
+                                              PostalCode = lp.PostalCodeNo,
+                                              PostalCodeId = lp.ID
                                           }).ToList();
 
                     if (partnerDetails.Count > 0)
@@ -245,28 +247,32 @@ namespace TMS.DataGateway.Repositories
                     if (string.IsNullOrEmpty(searchText))
                     {
                         subDistrictDateils = (from subDistrict in context.SubDistricts
-                                                  join postlCode in context.PostalCodes on subDistrict.ID equals postlCode.SubDistrictID
+                                                  join postlCode in context.PostalCodes on subDistrict.ID equals postlCode.SubDistrictID into pos
+                                                  from pc in pos.DefaultIfEmpty()
                                                   select new Domain.SubDistrictDeatils
                                                   {
+                                                      SubDistrictId=subDistrict.ID,
                                                       SubDistrictName = subDistrict.SubdistrictName,
                                                       CityName = subDistrict.City.CityDescription,
                                                       ProvinceName = subDistrict.City.Province.ProvinceDescription,
-                                                      PostalCodeId = postlCode.ID,
-                                                      PostalCode = postlCode.PostalCodeNo
+                                                      PostalCodeId = pc.ID,
+                                                      PostalCode = pc.PostalCodeNo
                                                   }).ToList();
                     }
                     else
                     {
                         subDistrictDateils = (from subDistrict in context.SubDistricts
-                                                  join postlCode in context.PostalCodes on subDistrict.ID equals postlCode.SubDistrictID
+                                                  join postlCode in context.PostalCodes on subDistrict.ID equals postlCode.SubDistrictID into pos
+                                                  from pc in pos.DefaultIfEmpty()
                                                   where subDistrict.SubdistrictName.Contains(searchText)
                                                   select new Domain.SubDistrictDeatils
                                                   {
+                                                      SubDistrictId = subDistrict.ID,
                                                       SubDistrictName = subDistrict.SubdistrictName,
                                                       CityName = subDistrict.City.CityDescription,
                                                       ProvinceName = subDistrict.City.Province.ProvinceDescription,
-                                                      PostalCodeId = postlCode.ID,
-                                                      PostalCode = postlCode.PostalCodeNo
+                                                      PostalCodeId = pc.ID,
+                                                      PostalCode = pc.PostalCodeNo
                                                   }).ToList();
                     }
                     
