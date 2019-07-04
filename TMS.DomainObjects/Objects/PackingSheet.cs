@@ -15,6 +15,7 @@ namespace TMS.DomainObjects.Objects
         public string Notes { get; set; }
         public int DealerId { get; set; }
         public string DealerNumber { get; set; }
+        public string DealerName { get; set; }
         public int OrderDetailId { get; set; }
         [MaxLength(20)]
         public string ShippingListNo { get; set; }

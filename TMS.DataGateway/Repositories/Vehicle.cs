@@ -97,7 +97,7 @@ namespace TMS.DataGateway.Repositories
                     else
                     {
                         VehicleResponse.StatusCode = (int)HttpStatusCode.NotFound;
-                        VehicleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                        VehicleResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         VehicleResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                     }
                    

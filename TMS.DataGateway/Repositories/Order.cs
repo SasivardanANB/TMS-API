@@ -1797,11 +1797,16 @@ namespace TMS.DataGateway.Repositories
                         foreach (var item in orderDetailsData)
                         {
                             PackingSheet pack = new PackingSheet();
+                            pack.OrderNumber= context.OrderHeaders.Where(o => o.ID == item.OrderHeaderID).Select(p => p.OrderNo).FirstOrDefault();
                             pack.Collie = item.TotalCollie;
                             pack.Katerangan = item.Katerangan;
                             pack.Notes = item.Instruction;
                             pack.OrderDetailId = item.ID;
                             pack.ShippingListNo = item.ShippingListNo;
+                            pack.Katerangan = item.Katerangan;
+                            pack.DealerId = context.OrderPartnerDetails.Where(p => p.OrderDetailID == item.ID).Select(p => p.PartnerID).FirstOrDefault();
+                            pack.DealerNumber = context.Partners.Where(p => p.ID == pack.DealerId ).Select(p => p.PartnerNo).FirstOrDefault();
+                            pack.DealerName = context.Partners.Where(p => p.ID == pack.DealerId ).Select(p => p.PartnerName).FirstOrDefault();
                             var packingSheetNos = context.PackingSheets.Where(ps => ps.ShippingListNo == item.ShippingListNo).Select(i => new Common { Id = i.ID, Value = i.PackingSheetNo }).ToList();
                             if (packingSheetNos.Count > 0)
                             {
@@ -1866,9 +1871,9 @@ namespace TMS.DataGateway.Repositories
                     {
                         commonResponse.NumberOfRecords = 0;
                         commonResponse.Data = null;
-                        commonResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                        commonResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         commonResponse.StatusCode = (int)HttpStatusCode.NotFound;
-                        commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                        commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                     }
 
 
@@ -1938,9 +1943,9 @@ namespace TMS.DataGateway.Repositories
                     {
                         dealerDetailsResponse.NumberOfRecords = 0;
                         dealerDetailsResponse.Data = null;
-                        dealerDetailsResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                        dealerDetailsResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         dealerDetailsResponse.StatusCode = (int)HttpStatusCode.NotFound;
-                        dealerDetailsResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                        dealerDetailsResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                     }
 
 
@@ -2094,7 +2099,7 @@ namespace TMS.DataGateway.Repositories
                     else
                     {
                         orderDetailsResponse.NumberOfRecords = 0;
-                        orderDetailsResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                        orderDetailsResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         orderDetailsResponse.StatusCode = (int)HttpStatusCode.NotFound;
                         orderDetailsResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
                     }
