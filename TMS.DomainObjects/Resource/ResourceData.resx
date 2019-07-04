@@ -477,4 +477,7 @@
   <data name="InvalidPoolLength" xml:space="preserve">
     <value>Pool Name must be 6-25 characters only</value>
   </data>
+  <data name="InvalidSubDistrictID" xml:space="preserve">
+    <value>Invalid Sub District id</value>
+  </data>
 </root>

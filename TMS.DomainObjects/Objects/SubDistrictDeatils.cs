@@ -11,6 +11,7 @@ namespace TMS.DomainObjects.Objects
     {
         public int PostalCodeId { get; set; }
         public string PostalCode { get; set; }
+        public int SubDistrictId { get; set; }
         public string SubDistrictName { get; set; }
         public string CityName { get; set; }
         public string ProvinceName { get; set; }

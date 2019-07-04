@@ -145,9 +145,11 @@ namespace TMS.DataGateway.Repositories
                     partnerList =
                         (from partner in context.Partners
                          join ppt in context.PartnerPartnerTypes on partner.ID equals ppt.PartnerId
-                         join postalcode in context.PostalCodes on partner.PostalCodeID equals postalcode.ID
-                         join subdistrict in context.SubDistricts on postalcode.SubDistrictID equals subdistrict.ID
+                        // join postalcode in context.PostalCodes on partner.PostalCodeID equals postalcode.ID
+                         join subdistrict in context.SubDistricts on partner.SubDistrictID equals subdistrict.ID
                          join city in context.Cities on subdistrict.CityID equals city.ID
+                        //join postalcode in context.PostalCodes on subdistrict.ID equals postalcode.SubDistrictID into ldata
+                        //from ld in ldata.DefaultIfEmpty()
                          where !partner.IsDeleted
                          select new Domain.Partner
                          {
@@ -158,7 +160,7 @@ namespace TMS.DataGateway.Repositories
                              PartnerAddress = partner.PartnerAddress,
                              OrderPointCode = partner.OrderPointCode,
                              OrderPointTypeID = partner.OrderPointTypeID,
-                             PostalCodeID = partner.PostalCodeID,
+                             SubDistrictID = subdistrict.ID,
                              PartnerNo = partner.PartnerNo,
                              PartnerTypeID = ppt.PartnerTypeId,
                              PICID = partner.PICID,
@@ -192,9 +194,9 @@ namespace TMS.DataGateway.Repositories
                         partnerList = partnerList.Where(s => s.PartnerTypeID == partnerFilter.PartnerTypeID).ToList();
                     }
 
-                    if (partnerFilter.PostalCodeID > 0)
+                    if (partnerFilter.SubDistrictID > 0)
                     {
-                        partnerList = partnerList.Where(s => s.PostalCodeID == partnerFilter.PostalCodeID).ToList();
+                        partnerList = partnerList.Where(s => s.SubDistrictID == partnerFilter.SubDistrictID).ToList();
                     }
                 }
 

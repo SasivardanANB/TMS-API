@@ -26,9 +26,9 @@ namespace TMS.DataGateway.DataModels
         public string PartnerName { get; set; }
         [MaxLength(200)]
         public string PartnerAddress { get; set; }
-        [ForeignKey("PostalCode")]
-        public int? PostalCodeID { get; set; }
-        public virtual PostalCode PostalCode { get; set; }
+        [ForeignKey("SubDistrict")]
+        public int? SubDistrictID { get; set; }
+        public virtual SubDistrict SubDistrict { get; set; }
         [MaxLength(30)]
         public string PartnerInitial { get; set; }
         [MaxLength(50)]
