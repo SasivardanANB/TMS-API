@@ -74,7 +74,7 @@ namespace OMS.DataGateway.Repositories
                                       Instructions = details.Instruction,
                                       TotalCollie = details.TotalCollie,
                                       ShippingListNo = details.ShippingListNo,
-                                      OrderCreatedTime=details.CreatedTime
+                                      OrderCreatedTime = details.CreatedTime
 
                                   }).ToList();
                     }
@@ -128,7 +128,7 @@ namespace OMS.DataGateway.Repositories
                             }
                             )
                         .Where(p => p.IsActive)
-                        .Where(p => /*filter.StatusId == 0 || p.OrderShipmentStatus == filter.StatusId*/filter.StatusIds.Count>0? filter.StatusIds.Contains(p.OrderShipmentStatus): p.OrderShipmentStatus>0)
+                        .Where(p => /*filter.StatusId == 0 || p.OrderShipmentStatus == filter.StatusId*/filter.StatusIds.Count > 0 ? filter.StatusIds.Contains(p.OrderShipmentStatus) : p.OrderShipmentStatus > 0)
                         .Where(p => String.IsNullOrEmpty(filter.OrderNumber) || p.OrderNo.Contains(filter.OrderNumber))
                         .Where(p => filter.FromDate == DateTime.MinValue || (DbFunctions.TruncateTime(p.OrderDate) >= filter.FromDate.Date))
                         .Where(p => filter.ToDate == DateTime.MinValue || (DbFunctions.TruncateTime(p.OrderDate) <= filter.ToDate.Date)).ToList();
@@ -142,7 +142,7 @@ namespace OMS.DataGateway.Repositories
                         order.ActualShipmentDate = order.ActualShipment.ToString("dd MMM yyyy");
                         order.ActualShipmentTime = order.ActualShipment.ToString("H:mm");
                         order.OrderCreatedDate = order.OrderCreatedTime.ToString("dd MMM yyyy");
-                        order.OrderCreateTime=order.OrderCreatedTime.ToString("H:mm");
+                        order.OrderCreateTime = order.OrderCreatedTime.ToString("H:mm");
 
                         List<string> packingSheets = (from ps in context.PackingSheets
                                                       where ps.ShippingListNo == order.ShippingListNo
@@ -1722,18 +1722,31 @@ namespace OMS.DataGateway.Repositories
                     foreach (var statusRequest in request.Requests)
                     {
                         int orderId = 0;
+                        if (request.RequestFrom == "TMS")
+                        {
+                            #region Update Order Header
+                            var orderHeader = context.OrderHeaders.FirstOrDefault(t => t.OrderNo == statusRequest.OrderNumber);
+                            orderHeader.OrderStatusID = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == statusRequest.OrderStatusCode).ID;
 
-                        orderId = context.OrderHeaders.FirstOrDefault(t => t.LegecyOrderNo == statusRequest.OrderNumber).ID;
+                            context.Entry(orderHeader).State = System.Data.Entity.EntityState.Modified;
+                            context.SaveChanges();
+                            context.Entry(orderHeader).State = System.Data.Entity.EntityState.Detached;
+                            #endregion
+                        }
+                        else
+                        {
+                            orderId = context.OrderHeaders.FirstOrDefault(t => t.LegecyOrderNo == statusRequest.OrderNumber).ID;
+                            #region Update Order Header
+                            var orderHeader = context.OrderHeaders.FirstOrDefault(t => t.ID == orderId);
+                            orderHeader.OrderStatusID = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == statusRequest.OrderStatusCode).ID;
 
-                        #region Update Order Header
-                        var orderHeader = context.OrderHeaders.FirstOrDefault(t => t.ID == orderId);
-                        orderHeader.OrderStatusID = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == statusRequest.OrderStatusCode).ID;
+                            context.Entry(orderHeader).State = System.Data.Entity.EntityState.Modified;
+                            context.SaveChanges();
+                            context.Entry(orderHeader).State = System.Data.Entity.EntityState.Detached;
+                            #endregion
+                        }
 
-                        context.Entry(orderHeader).State = System.Data.Entity.EntityState.Modified;
-                        context.SaveChanges();
-                        context.Entry(orderHeader).State = System.Data.Entity.EntityState.Detached;
 
-                        #endregion
 
                         response.Data = request.Requests;
                         response.Status = DomainObjects.Resource.ResourceData.Success;
@@ -1771,7 +1784,7 @@ namespace OMS.DataGateway.Repositories
                             var tripObj = context.OrderHeaders.Where(t => t.OrderNo == trip.OrderNumber).FirstOrDefault();
                             if (tripObj != null)
                             {
-                                tripObj.DriverNo =  trip.DriverNo ;
+                                tripObj.DriverNo = trip.DriverNo;
                                 tripObj.DriverName = trip.DriverName;
                                 tripObj.VehicleShipment = trip.VehicleType;
                                 tripObj.VehicleNo = trip.Vehicle;
