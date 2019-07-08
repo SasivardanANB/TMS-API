@@ -153,6 +153,9 @@
   <data name="NewPasswordMustbeDifferent" xml:space="preserve">
     <value>New Password Must be Different</value>
   </data>
+  <data name="NoRecordsFound" xml:space="preserve">
+    <value>No records found</value>
+  </data>
   <data name="OldPasswordMismatch" xml:space="preserve">
     <value>Old Password Mismatch</value>
   </data>

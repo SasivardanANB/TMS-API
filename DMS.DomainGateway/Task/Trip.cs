@@ -24,6 +24,9 @@ namespace DMS.DomainGateway.Task
         public abstract StopPointsResponse GetLastTripStatusData(int stopPointId);
         public abstract string GetDeviceId(string token);
         public abstract TripResponse ReAssignTrip(TripRequest tripRequest);
+        public abstract ImageGuidsResponse GetShippingListGuids(string orderNumber);
+        public abstract ImageGuidsResponse GetPodGuids(string orderNumber);
+        public abstract ImageGuidsResponse GetPhotoWithCustomerGuids(string orderNumber);
 
     }
 }

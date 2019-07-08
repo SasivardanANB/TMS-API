@@ -53,6 +53,7 @@
     <Compile Include="Objects\City.cs" />
     <Compile Include="Objects\Notification.cs" />
     <Compile Include="Objects\OrderStatus.cs" />
+    <Compile Include="Objects\ImageGuid.cs" />
     <Compile Include="Objects\TripLocation.cs" />
     <Compile Include="Objects\Location.cs" />
     <Compile Include="Objects\PostalCode.cs" />
@@ -87,6 +88,7 @@
     </Compile>
     <Compile Include="Response\StopPointOrderItemsResponse.cs" />
     <Compile Include="Response\StopPointsResponse.cs" />
+    <Compile Include="Response\ImageGuidsResponse.cs" />
     <Compile Include="Response\TripResponse.cs" />
     <Compile Include="Response\UpdateTripStatusResponse.cs" />
     <Compile Include="Response\UserResponse.cs" />

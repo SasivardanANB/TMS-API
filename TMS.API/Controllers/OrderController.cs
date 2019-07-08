@@ -975,5 +975,85 @@ namespace TMS.API.Controllers
             return Ok(response);
         }
 
+        [Route("getshippinglistguids")]
+        [HttpGet]
+        public IHttpActionResult GetShippingListGuids(string orderNumber)
+        {
+            #region Call DMS API to assign order to driver
+            #region Login to DMS and get Token
+            LoginRequest loginRequest = new LoginRequest();
+            string token = "";
+
+            loginRequest.UserName = ConfigurationManager.AppSettings["DMSLogin"];
+            loginRequest.UserPassword = ConfigurationManager.AppSettings["DMSPassword"];
+            var dmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
+                + "/v1/user/login", Method.POST, loginRequest, null));
+            if (dmsLoginResponse != null && dmsLoginResponse.Data.Count > 0)
+            {
+                token = dmsLoginResponse.TokenKey;
+            }
+            #endregion
+
+            var response = JsonConvert.DeserializeObject<ImageGuidsResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
+                + "/v1/trip/getshippinglistguids?orderNumber="+ orderNumber, Method.GET, null, token));
+            #endregion
+            return Ok(response);
+        }
+
+        [Route("getpodguids")]
+        [HttpGet]
+        public IHttpActionResult GetPodGuids(string orderNumber)
+        {
+            #region Call DMS API to assign order to driver
+            #region Login to DMS and get Token
+            LoginRequest loginRequest = new LoginRequest();
+            string token = "";
+
+            loginRequest.UserName = ConfigurationManager.AppSettings["DMSLogin"];
+            loginRequest.UserPassword = ConfigurationManager.AppSettings["DMSPassword"];
+            var dmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
+                + "/v1/user/login", Method.POST, loginRequest, null));
+            if (dmsLoginResponse != null && dmsLoginResponse.Data.Count > 0)
+            {
+                token = dmsLoginResponse.TokenKey;
+            }
+            #endregion
+
+            var response = JsonConvert.DeserializeObject<ImageGuidsResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
+                + "/v1/trip/getpodguids?orderNumber=" + orderNumber, Method.GET, null, token));
+
+            #endregion
+            return Ok(response);
+        }
+
+        [Route("getphotowithcustomerguids")]
+        [HttpGet]
+        public IHttpActionResult GetPhotoWithCustomerGuids(string orderNumber)
+        {
+            #region Call DMS API to assign order to driver
+            #region Login to DMS and get Token
+            LoginRequest loginRequest = new LoginRequest();
+            string token = "";
+
+            loginRequest.UserName = ConfigurationManager.AppSettings["DMSLogin"];
+            loginRequest.UserPassword = ConfigurationManager.AppSettings["DMSPassword"];
+            var dmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
+                + "/v1/user/login", Method.POST, loginRequest, null));
+            if (dmsLoginResponse != null && dmsLoginResponse.Data.Count > 0)
+            {
+                token = dmsLoginResponse.TokenKey;
+            }
+            #endregion
+
+            var response = JsonConvert.DeserializeObject<ImageGuidsResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
+                + "/v1/trip/getphotowithcustomerguids?orderNumber=" + orderNumber, Method.GET, null, token));
+
+            #endregion
+            return Ok(response);
+        }
+
+
+
+
     }
 }

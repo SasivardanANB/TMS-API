@@ -169,6 +169,15 @@ namespace DMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No records found.
+        /// </summary>
+        public static string NoRecordsFound {
+            get {
+                return ResourceManager.GetString("NoRecordsFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Old Password Mismatch.
         /// </summary>
         public static string OldPasswordMismatch {

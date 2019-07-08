@@ -83,5 +83,18 @@ namespace DMS.BusinessGateway.Task
         {
             return _tripRepository.ReAssignTrip(tripRequest);
         }
+
+        public override ImageGuidsResponse GetShippingListGuids(string orderNumber)
+        {
+            return _tripRepository.GetShippingListGuids(orderNumber);
+        }
+        public override ImageGuidsResponse GetPodGuids(string orderNumber)
+        {
+            return _tripRepository.GetPodGuids(orderNumber);
+        }
+        public override ImageGuidsResponse GetPhotoWithCustomerGuids(string orderNumber)
+        {
+            return _tripRepository.GetPhotoWithCustomerGuids(orderNumber);
+        }
     }
 }

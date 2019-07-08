@@ -978,5 +978,171 @@ namespace DMS.DataGateway.Repositories
             }
             return response;
         }
+
+        public ImageGuidsResponse GetShippingListGuids(string orderNumber)
+        {
+            ImageGuidsResponse imageGuidsResponse = new ImageGuidsResponse()
+            {
+                Data = new List<Domain.ImageGuid>()
+            };
+
+            using (var context = new DMSDBContext())
+            {
+                try
+                {
+                    var tripHeader = context.TripHeaders.Where(x => x.OrderNumber == orderNumber).FirstOrDefault();
+                    if(tripHeader != null)
+                    {
+                        var stopPoints = (from stopPoint in context.TripDetails
+                                          join stpimgguid in context.StopPointImages on stopPoint.ID equals stpimgguid.StopPointId
+                                          where stopPoint.TripID == tripHeader.ID && stpimgguid.ImageTypeId == (context.ImageTypes.Where(i=>i.ImageTypeCode ==1).Select(i=>i.ID).FirstOrDefault())
+                                          select new Domain.ImageGuid
+                                          {
+                                              Guid = stpimgguid.ImageGuId.ImageGuIdValue,
+                                              ImageName = stpimgguid.ImageType.ImageTypeDescription,
+                                              SequenceNo = stopPoint.SequenceNumber
+                                          }).ToList();
+                        if (stopPoints.Count > 0)
+                        {
+                            imageGuidsResponse.Data.AddRange(stopPoints);
+                            imageGuidsResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                            imageGuidsResponse.StatusCode = (int)HttpStatusCode.OK;
+                            imageGuidsResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                        }
+                        else
+                        {
+                            imageGuidsResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                            imageGuidsResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                            imageGuidsResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecordsFound;
+                        }
+                    }
+                    else
+                    {
+                        imageGuidsResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        imageGuidsResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                        imageGuidsResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecordsFound;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log(LogLevel.Error, ex);
+                    imageGuidsResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                    imageGuidsResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                    imageGuidsResponse.StatusMessage = ex.Message;
+                }
+            }
+
+            return imageGuidsResponse;
+        }
+
+        public ImageGuidsResponse GetPodGuids(string orderNumber)
+        {
+            ImageGuidsResponse imageGuidsResponse = new ImageGuidsResponse()
+            {
+                Data = new List<Domain.ImageGuid>()
+            };
+
+            using (var context = new DMSDBContext())
+            {
+                try
+                {
+                    var tripHeader = context.TripHeaders.Where(x => x.OrderNumber == orderNumber).FirstOrDefault();
+                    if (tripHeader != null)
+                    {
+                        var stopPoints = (from stopPoint in context.TripDetails
+                                          join stpimgguid in context.StopPointImages on stopPoint.ID equals stpimgguid.StopPointId
+                                          where stopPoint.TripID == tripHeader.ID && stpimgguid.ImageTypeId == (context.ImageTypes.Where(i => i.ImageTypeCode == 3).Select(i => i.ID).FirstOrDefault())
+                                          select new Domain.ImageGuid
+                                          {
+                                              Guid = stpimgguid.ImageGuId.ImageGuIdValue,
+                                              ImageName = stpimgguid.ImageType.ImageTypeDescription,
+                                              SequenceNo = stopPoint.SequenceNumber
+                                          }).ToList();
+                        if(stopPoints.Count >0) { 
+                        imageGuidsResponse.Data.AddRange(stopPoints);
+                        imageGuidsResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        imageGuidsResponse.StatusCode = (int)HttpStatusCode.OK;
+                        imageGuidsResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                        }
+                        else
+                        {
+                            imageGuidsResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                            imageGuidsResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                            imageGuidsResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecordsFound;
+                        }
+                    }
+                    else
+                    {
+                        imageGuidsResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        imageGuidsResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                        imageGuidsResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecordsFound;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log(LogLevel.Error, ex);
+                    imageGuidsResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                    imageGuidsResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                    imageGuidsResponse.StatusMessage = ex.Message;
+                }
+            }
+
+            return imageGuidsResponse;
+        }
+        public ImageGuidsResponse GetPhotoWithCustomerGuids(string orderNumber)
+        {
+            ImageGuidsResponse imageGuidsResponse = new ImageGuidsResponse()
+            {
+                Data = new List<Domain.ImageGuid>()
+            };
+
+            using (var context = new DMSDBContext())
+            {
+                try
+                {
+                    var tripHeader = context.TripHeaders.Where(x => x.OrderNumber == orderNumber).FirstOrDefault();
+                    if (tripHeader != null)
+                    {
+                        var stopPoints = (from stopPoint in context.TripDetails
+                                          join stpimgguid in context.StopPointImages on stopPoint.ID equals stpimgguid.StopPointId
+                                          where stopPoint.TripID == tripHeader.ID && stpimgguid.ImageTypeId == (context.ImageTypes.Where(i => i.ImageTypeCode == 2).Select(i => i.ID).FirstOrDefault())
+                                          select new Domain.ImageGuid
+                                          {
+                                              Guid = stpimgguid.ImageGuId.ImageGuIdValue,
+                                              ImageName = stpimgguid.ImageType.ImageTypeDescription,
+                                              SequenceNo = stopPoint.SequenceNumber
+                                          }).ToList();
+                        if(stopPoints.Count >0) { 
+                        imageGuidsResponse.Data.AddRange(stopPoints);
+                        imageGuidsResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        imageGuidsResponse.StatusCode = (int)HttpStatusCode.OK;
+                        imageGuidsResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                        }
+                        else
+                        {
+                            imageGuidsResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                            imageGuidsResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                            imageGuidsResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecordsFound;
+                        }
+                    }
+                    else
+                    {
+                        imageGuidsResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        imageGuidsResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                        imageGuidsResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecordsFound;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log(LogLevel.Error, ex);
+                    imageGuidsResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                    imageGuidsResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                    imageGuidsResponse.StatusMessage = ex.Message;
+                }
+            }
+
+            return imageGuidsResponse;
+        }
+
     }
 }

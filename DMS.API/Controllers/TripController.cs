@@ -352,5 +352,33 @@ namespace DMS.API.Controllers
 
 
         }
+
+        [Route("getshippinglistguids")]
+        [HttpGet]
+        public IHttpActionResult GetShippingListGuids(string orderNumber)
+        {
+            ITripTask tripTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().TripTask;
+            ImageGuidsResponse  imageGuidsResponse  = tripTask.GetShippingListGuids(orderNumber);
+            return Ok(imageGuidsResponse);
+        }
+
+        [Route("getpodguids")]
+        [HttpGet]
+        public IHttpActionResult GetPodGuids(string orderNumber)
+        {
+            ITripTask tripTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().TripTask;
+            ImageGuidsResponse imageGuidsResponse = tripTask.GetPodGuids(orderNumber);
+            return Ok(imageGuidsResponse);
+        }
+
+        [Route("getphotowithcustomerguids")]
+        [HttpGet]
+        public IHttpActionResult GetPhotoWithCustomerGuids(string orderNumber)
+        {
+            ITripTask tripTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().TripTask;
+            ImageGuidsResponse imageGuidsResponse = tripTask.GetPhotoWithCustomerGuids(orderNumber);
+            return Ok(imageGuidsResponse);
+        }
+
     }
 }

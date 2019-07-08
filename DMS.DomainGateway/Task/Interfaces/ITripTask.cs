@@ -22,5 +22,8 @@ namespace DMS.DomainGateway.Task.Interfaces
         StopPointsResponse GetLastTripStatusData(int stopPointId);
         string GetDeviceId(string token);
         TripResponse ReAssignTrip(TripRequest tripRequest);
+        ImageGuidsResponse GetShippingListGuids(string orderNumber);
+        ImageGuidsResponse GetPodGuids(string orderNumber);
+        ImageGuidsResponse GetPhotoWithCustomerGuids(string orderNumber);
     }
 }

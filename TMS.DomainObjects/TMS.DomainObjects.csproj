@@ -58,6 +58,7 @@
     <Compile Include="Objects\AdminBoardReport.cs" />
     <Compile Include="Objects\Driver.cs" />
     <Compile Include="Objects\Error.cs" />
+    <Compile Include="Objects\ImageGuids.cs" />
     <Compile Include="Objects\Message.cs" />
     <Compile Include="Objects\GoodsReceiveOrIssueReport.cs" />
     <Compile Include="Objects\OrderReport.cs" />
@@ -139,6 +140,7 @@
     <Compile Include="Response\DealerDetailsResponse.cs" />
     <Compile Include="Response\PartnerSearchResponse.cs" />
     <Compile Include="Response\OrderReportResponse.cs" />
+    <Compile Include="Response\ImageGuidsResponse.cs" />
     <Compile Include="Response\SAMAUserResponse.cs" />
     <Compile Include="Response\TripResponse.cs" />
     <Compile Include="Response\SubDistrictDetailsResponse.cs" />
