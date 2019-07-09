@@ -27,6 +27,7 @@ namespace DMS.DomainGateway.Task
         public abstract ImageGuidsResponse GetShippingListGuids(string orderNumber);
         public abstract ImageGuidsResponse GetPodGuids(string orderNumber);
         public abstract ImageGuidsResponse GetPhotoWithCustomerGuids(string orderNumber);
+        public abstract StopPointsResponse GetPendingStopPoints(int tripId);
 
     }
 }

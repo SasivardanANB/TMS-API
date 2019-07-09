@@ -26,5 +26,6 @@ namespace DMS.DataGateway.Repositories.Iterfaces
         ImageGuidsResponse GetShippingListGuids(string orderNumber);
         ImageGuidsResponse GetPodGuids(string orderNumber);
         ImageGuidsResponse GetPhotoWithCustomerGuids(string orderNumber);
+        StopPointsResponse GetPendingStopPoints(int tripId);
     }
 }

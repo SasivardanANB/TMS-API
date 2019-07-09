@@ -380,5 +380,14 @@ namespace DMS.API.Controllers
             return Ok(imageGuidsResponse);
         }
 
+        [Route("getpendingstoppoints")]
+        [HttpGet]
+        public IHttpActionResult GetPendingStopPoints(int tripId)
+        {
+            ITripTask tripTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().TripTask;
+            StopPointsResponse stopPointsResponse = tripTask.GetPendingStopPoints(tripId);
+            return Ok(stopPointsResponse);
+        }
+
     }
 }

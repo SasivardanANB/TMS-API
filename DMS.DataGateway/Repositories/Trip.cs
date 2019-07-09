@@ -919,7 +919,7 @@ namespace DMS.DataGateway.Repositories
                             var tripObj = context.TripHeaders.Where(t => t.OrderNumber == trip.OrderNumber).FirstOrDefault();
                             if (tripObj != null)
                             {
-                                tripDetail.TripNumber= tripObj.TripNumber;
+                                tripDetail.TripNumber = tripObj.TripNumber;
                                 tripObj.DriverId = context.Drivers.Where(d => d.DriverNo == trip.DriverNo).Select(x => x.ID).FirstOrDefault();
                                 tripObj.VehicleType = trip.VehicleType;
                                 tripObj.VehicleNumber = trip.VehicleNumber;
@@ -991,11 +991,11 @@ namespace DMS.DataGateway.Repositories
                 try
                 {
                     var tripHeader = context.TripHeaders.Where(x => x.OrderNumber == orderNumber).FirstOrDefault();
-                    if(tripHeader != null)
+                    if (tripHeader != null)
                     {
                         var stopPoints = (from stopPoint in context.TripDetails
                                           join stpimgguid in context.StopPointImages on stopPoint.ID equals stpimgguid.StopPointId
-                                          where stopPoint.TripID == tripHeader.ID && stpimgguid.ImageTypeId == (context.ImageTypes.Where(i=>i.ImageTypeCode ==1).Select(i=>i.ID).FirstOrDefault())
+                                          where stopPoint.TripID == tripHeader.ID && stpimgguid.ImageTypeId == (context.ImageTypes.Where(i => i.ImageTypeCode == 1).Select(i => i.ID).FirstOrDefault())
                                           select new Domain.ImageGuid
                                           {
                                               Guid = stpimgguid.ImageGuId.ImageGuIdValue,
@@ -1058,11 +1058,12 @@ namespace DMS.DataGateway.Repositories
                                               ImageName = stpimgguid.ImageType.ImageTypeDescription,
                                               SequenceNo = stopPoint.SequenceNumber
                                           }).ToList();
-                        if(stopPoints.Count >0) { 
-                        imageGuidsResponse.Data.AddRange(stopPoints);
-                        imageGuidsResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                        imageGuidsResponse.StatusCode = (int)HttpStatusCode.OK;
-                        imageGuidsResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                        if (stopPoints.Count > 0)
+                        {
+                            imageGuidsResponse.Data.AddRange(stopPoints);
+                            imageGuidsResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                            imageGuidsResponse.StatusCode = (int)HttpStatusCode.OK;
+                            imageGuidsResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
                         }
                         else
                         {
@@ -1112,11 +1113,12 @@ namespace DMS.DataGateway.Repositories
                                               ImageName = stpimgguid.ImageType.ImageTypeDescription,
                                               SequenceNo = stopPoint.SequenceNumber
                                           }).ToList();
-                        if(stopPoints.Count >0) { 
-                        imageGuidsResponse.Data.AddRange(stopPoints);
-                        imageGuidsResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                        imageGuidsResponse.StatusCode = (int)HttpStatusCode.OK;
-                        imageGuidsResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                        if (stopPoints.Count > 0)
+                        {
+                            imageGuidsResponse.Data.AddRange(stopPoints);
+                            imageGuidsResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                            imageGuidsResponse.StatusCode = (int)HttpStatusCode.OK;
+                            imageGuidsResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
                         }
                         else
                         {
@@ -1143,6 +1145,76 @@ namespace DMS.DataGateway.Repositories
 
             return imageGuidsResponse;
         }
+
+        public StopPointsResponse GetPendingStopPoints(int tripId)
+        {
+            StopPointsResponse tripResponse = new StopPointsResponse()
+            {
+                Data = new List<Domain.StopPoints>()
+            };
+
+            using (var context = new DMSDBContext())
+            {
+                try
+                {
+                    List<StopPoints> pendingStopPoints = new List<StopPoints>();
+                    var tripDetails = context.TripHeaders.Where(x => x.ID == tripId).FirstOrDefault();
+
+                    if (tripDetails.OrderType == 1)
+                    {
+                        pendingStopPoints = (from sectionPage in context.TripStatusHistories
+                                             group sectionPage by sectionPage.StopPointId into sectionGroup
+                                             join b in context.TripStatusHistories on sectionGroup.Max(y => y.ID) equals b.ID
+                                             join c in context.TripDetails on b.StopPointId equals c.ID
+                                             where c.SequenceNumber > 0 && b.TripStatusId == 3 && c.TripID == tripDetails.ID
+                                             select new StopPoints
+                                             {
+                                                 ID = c.ID,
+                                                 TripId=c.TripID,
+                                                 SequenceNumber = c.SequenceNumber,
+                                                 LocationId=c.Partner.ID,
+                                                 LocationName=c.Partner.PartnerName,
+                                                 ActualDeliveryDate=c.ActualDeliveryDate,
+                                                 EstimatedDeliveryDate=c.EstimatedDeliveryDate
+                                             }).ToList();
+
+                    }
+                    else if (tripDetails.OrderType == 2)
+                    {
+                        pendingStopPoints = (from sectionPage in context.TripStatusHistories
+                                             group sectionPage by sectionPage.StopPointId into sectionGroup
+                                             join b in context.TripStatusHistories on sectionGroup.Max(y => y.ID) equals b.ID
+                                             join c in context.TripDetails on b.StopPointId equals c.ID
+                                             where c.SequenceNumber > 0 && b.TripStatusId == 3 && c.TripID == tripDetails.ID
+                                             select new StopPoints
+                                             {
+                                                 ID = c.ID,
+                                                 TripId = c.TripID,
+                                                 SequenceNumber = c.SequenceNumber,
+                                                 LocationId = c.Partner.ID,
+                                                 LocationName = c.Partner.PartnerName,
+                                                 ActualDeliveryDate = c.ActualDeliveryDate,
+                                                 EstimatedDeliveryDate = c.EstimatedDeliveryDate
+                                             }).ToList();
+                      
+                    }
+                    tripResponse.Data.AddRange(pendingStopPoints);
+                    tripResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                    tripResponse.StatusCode = (int)HttpStatusCode.OK;
+                    tripResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log(LogLevel.Error, ex);
+                    tripResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                    tripResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                    tripResponse.StatusMessage = ex.Message;
+                }
+            }
+
+            return tripResponse;
+        }
+
 
     }
 }

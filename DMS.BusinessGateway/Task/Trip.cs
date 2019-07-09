@@ -96,5 +96,9 @@ namespace DMS.BusinessGateway.Task
         {
             return _tripRepository.GetPhotoWithCustomerGuids(orderNumber);
         }
+        public override StopPointsResponse GetPendingStopPoints(int tripId)
+        {
+           return _tripRepository.GetPendingStopPoints(tripId);
+        }
     }
 }
