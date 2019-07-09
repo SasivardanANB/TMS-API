@@ -13,5 +13,6 @@ namespace TMS.DataGateway.Repositories.Interfaces
         VehicleResponse CreateUpdateVehicle(VehicleRequest vehicleRequest);
         VehicleResponse DeleteVehicle(int vehicleID);
         VehicleResponse GetVehicles(VehicleRequest vehicleRequest);
+        CommonCodeResponse GetVehiclesPlateNumbers(string searchText);
     }
 }

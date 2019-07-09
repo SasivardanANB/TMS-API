@@ -14,5 +14,6 @@ namespace TMS.DomainGateway.Task
         public abstract VehicleResponse CreateUpdateVehicle(VehicleRequest vehicleRequest);
         public abstract VehicleResponse DeleteVehicle(int vehicleID);
         public abstract VehicleResponse GetVehicles(VehicleRequest vehicleRequest);
+        public abstract CommonCodeResponse GetVehiclesPlateNumbers(string searchText);
     }
 }

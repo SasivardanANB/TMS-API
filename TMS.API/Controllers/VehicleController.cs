@@ -49,5 +49,15 @@ namespace TMS.API.Controllers
             VehicleResponse vehicleResponse = vehicleTask.GetVehicles(vehicleRequest);
             return Ok(vehicleResponse);
         }
+        //public CommonResponse GetCityNames(string searchText)
+        
+        [Route("getvehiclesplatenumbers")]
+        [HttpGet]
+        public IHttpActionResult GetVehiclesPlateNumbers(string searchText=null)
+        {
+            IVehicleTask vehicleTask = DependencyResolver.GetImplementationOf<ITaskGateway>().VehicleTask;
+            CommonCodeResponse vehicleResponse = vehicleTask.GetVehiclesPlateNumbers(searchText);
+            return Ok(vehicleResponse);
+        }
     }
 }
