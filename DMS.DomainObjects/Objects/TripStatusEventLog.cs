@@ -19,6 +19,7 @@ namespace DMS.DomainObjects.Objects
         public List<string> ShipmentImageGuIds { get; set; }
         public bool? IsLoad { get; set; }
         public int ImageTypeCode { get; set; }
+        public int SequenceNumber { get; set; }
 
     }
 }

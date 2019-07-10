@@ -79,6 +79,55 @@ namespace DMS.DataGateway.Repositories
             }
             return imageTypeId;
         }
+
+        private void SwapeOrderSequence(int tripDetailId)
+        {
+            using (var context = new DMSDBContext())
+            {
+                using (var beginDBTransaction = context.Database.BeginTransaction())
+                {
+                    List<StopPoints> pendingStopPoints = new List<StopPoints>();
+                    try
+                    {
+                        DataModels.TripDetail tripDetailData = context.TripDetails.Where(t => t.ID == tripDetailId).FirstOrDefault();
+                         pendingStopPoints = (from sectionPage in context.TripStatusHistories
+                                                 group sectionPage by sectionPage.StopPointId into sectionGroup
+                                                 join b in context.TripStatusHistories on sectionGroup.Max(y => y.ID) equals b.ID
+                                                 join c in context.TripDetails on b.StopPointId equals c.ID
+                                                 where c.SequenceNumber > 0 && b.TripStatusId == 3 && c.TripID == tripDetailData.TripID
+                                                 select new StopPoints
+                                                 {
+                                                     ID = c.ID,
+                                                     TripId = c.TripID,
+                                                     SequenceNumber = c.SequenceNumber,
+                                                 }).ToList();
+
+                        int minSequenceNo = pendingStopPoints.Min(f => f.SequenceNumber);
+
+                        if (tripDetailData.SequenceNumber != minSequenceNo)
+                        {
+                            int originalSequenceNo = tripDetailData.SequenceNumber;                            
+
+                            tripDetailData.SequenceNumber = minSequenceNo;
+                            context.Entry(tripDetailData).State = System.Data.Entity.EntityState.Modified;                                                      
+
+                            DataModels.TripDetail swappingDetailData = context.TripDetails.Where(t => t.TripID  == tripDetailData.TripID && t.SequenceNumber == minSequenceNo ).FirstOrDefault();
+                            swappingDetailData.SequenceNumber = originalSequenceNo;
+                            context.Entry(swappingDetailData).State = System.Data.Entity.EntityState.Modified;
+                            context.SaveChanges();
+                            beginDBTransaction.Commit();
+                        }
+
+                    }
+                    catch(Exception ex)
+                    {
+                        beginDBTransaction.Rollback();
+                        _logger.Log(LogLevel.Error, ex);
+                    }
+                }
+            }
+        }
+
         #endregion
 
         public TripResponse CreateUpdateTrip(TripRequest request)
@@ -596,7 +645,10 @@ namespace DMS.DataGateway.Repositories
                             StatusDate = DateTime.Now,
 
                         };
-
+                        // For Changeinging stoppoint order
+                        if (tripStatusEventLogFilter.TripStatusId == 4) { 
+                        SwapeOrderSequence(tripStatusEventLogFilter.StopPointId);
+                        }
                         //For getting trip deatails and updating trip status as assigned
                         var tripID = context.TripDetails.Where(t => t.ID == tripStatusEventLogFilter.StopPointId).Select(t => t.TripID).FirstOrDefault();
                         var tripDetails = context.TripHeaders.Where(t => t.ID == tripID).FirstOrDefault();
@@ -1170,12 +1222,12 @@ namespace DMS.DataGateway.Repositories
                                              select new StopPoints
                                              {
                                                  ID = c.ID,
-                                                 TripId=c.TripID,
+                                                 TripId = c.TripID,
                                                  SequenceNumber = c.SequenceNumber,
-                                                 LocationId=c.Partner.ID,
-                                                 LocationName=c.Partner.PartnerName,
-                                                 ActualDeliveryDate=c.ActualDeliveryDate,
-                                                 EstimatedDeliveryDate=c.EstimatedDeliveryDate
+                                                 LocationId = c.Partner.ID,
+                                                 LocationName = c.Partner.PartnerName,
+                                                 ActualDeliveryDate = c.ActualDeliveryDate,
+                                                 EstimatedDeliveryDate = c.EstimatedDeliveryDate
                                              }).ToList();
 
                     }
@@ -1196,7 +1248,7 @@ namespace DMS.DataGateway.Repositories
                                                  ActualDeliveryDate = c.ActualDeliveryDate,
                                                  EstimatedDeliveryDate = c.EstimatedDeliveryDate
                                              }).ToList();
-                      
+
                     }
                     tripResponse.Data.AddRange(pendingStopPoints);
                     tripResponse.Status = DomainObjects.Resource.ResourceData.Success;
