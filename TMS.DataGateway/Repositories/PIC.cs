@@ -150,17 +150,10 @@ namespace TMS.DataGateway.Repositories
                              IsActive = pic.IsActive,
                              IsDeleted = pic.IsDeleted,
                              PhotoId = pic.PhotoId,
-                             PICPassword=pic.PICPassword,
-                             PhotoGuId=pic.ImageGuid.ImageGuIdValue,
-                             Expeditor=context.Partners.Where(i=>i.PICID==pic.ID).Select(pname=>pname.PIC.PICName).FirstOrDefault()
+                             PICPassword = pic.PICPassword,
+                             PhotoGuId = pic.ImageGuid.ImageGuIdValue,
+                             Expeditor = context.Partners.Where(i => i.PICID == pic.ID).Select(pname => pname.PartnerName).FirstOrDefault()
                          }).ToList();
-                    //if (picList.Count > 0)
-                    //{
-                    //    foreach (var item in picList)
-                    //    {
-                    //        item.PICPassword = Encryption.EncryptionLibrary.DecrypPassword(item.PICPassword);
-                    //    }
-                    //}
                 }
                 // Filter
                 if (picRequest.Requests.Count > 0)
@@ -250,7 +243,7 @@ namespace TMS.DataGateway.Repositories
                 {
                     picResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     picResponse.StatusCode = (int)HttpStatusCode.NotFound;
-                    picResponse.StatusMessage= DomainObjects.Resource.ResourceData.NoRecords;
+                    picResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                 }
             }
             catch (Exception ex)
