@@ -18,5 +18,6 @@ namespace TMS.DomainObjects.Objects
         public string Remarks { get; set; }
         [MaxLength(4)]
         public string OrderStatusCode { get; set; }
+        public int NewSequenceNumber { get; set; }
     }
 }

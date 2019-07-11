@@ -180,7 +180,8 @@ namespace DMS.API.Controllers
                     OrderNumber = orderNumber,
                     OrderStatusCode = orderStatusCode,
                     Remarks = item.Remarks,
-                    SequenceNumber = orderSequenceNumber
+                    SequenceNumber = item.SequenceNumber,
+                    NewSequenceNumber = orderSequenceNumber
                 };
 
                 tmsRequest.Requests.Add(requestData);

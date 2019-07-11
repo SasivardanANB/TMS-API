@@ -20,6 +20,40 @@ namespace OMS.DataGateway.Repositories
     {
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
+        private void SwapeOrderSequence(int tripDetailId, int sequenceNumber, int newSequenceNumber)
+        {
+            using (var context = new Data.OMSDBContext())
+            {
+                using (var beginDBTransaction = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        DataModels.OrderDetail orderDetailData = context.OrderDetails.Where(t => t.ID == tripDetailId).FirstOrDefault();
+
+                        if (orderDetailData.SequenceNo != newSequenceNumber)
+                        {
+                            int originalSequenceNo = sequenceNumber;
+
+                            orderDetailData.SequenceNo = newSequenceNumber;
+                            context.Entry(orderDetailData).State = System.Data.Entity.EntityState.Modified;
+
+                            DataModels.OrderDetail swappingDetailData = context.OrderDetails.Where(t => t.OrderHeaderID == orderDetailData.OrderHeaderID && t.SequenceNo == newSequenceNumber).FirstOrDefault();
+                            swappingDetailData.SequenceNo = originalSequenceNo;
+                            context.Entry(swappingDetailData).State = System.Data.Entity.EntityState.Modified;
+                            context.SaveChanges();
+                            beginDBTransaction.Commit();
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        beginDBTransaction.Rollback();
+                        _logger.Log(LogLevel.Error, ex);
+                    }
+                }
+            }
+        }
+
         public OrderResponse GetOrders(DownloadOrderRequest orderRequest)
         {
             OrderResponse response = new OrderResponse()
@@ -1727,10 +1761,26 @@ namespace OMS.DataGateway.Repositories
                             #region Update Order Header
                             var orderHeader = context.OrderHeaders.FirstOrDefault(t => t.OrderNo == statusRequest.OrderNumber);
                             orderHeader.OrderStatusID = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == statusRequest.OrderStatusCode).ID;
-
                             context.Entry(orderHeader).State = System.Data.Entity.EntityState.Modified;
                             context.SaveChanges();
                             context.Entry(orderHeader).State = System.Data.Entity.EntityState.Detached;
+                            int orderDetailId = 0;
+                            if (statusRequest.SequenceNumber > 0)
+                            {
+                                orderDetailId = context.OrderDetails.FirstOrDefault(t => t.SequenceNo == statusRequest.SequenceNumber && t.OrderHeaderID == orderHeader.ID).ID;
+
+                            }
+                            else
+                            {
+                                orderDetailId = context.OrderDetails.FirstOrDefault(t => t.OrderHeaderID == orderHeader.ID).ID;
+                            }
+
+                            // Swapping trip sequence 
+                            if (statusRequest.SequenceNumber != statusRequest.NewSequenceNumber)
+                            {
+                                SwapeOrderSequence(orderDetailId, statusRequest.SequenceNumber, statusRequest.NewSequenceNumber);
+                            }
+
                             #endregion
                         }
                         else

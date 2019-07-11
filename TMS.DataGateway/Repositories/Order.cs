@@ -22,6 +22,42 @@ namespace TMS.DataGateway.Repositories
     {
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
+        private void SwapeOrderSequence(int tripDetailId,int sequenceNumber,int newSequenceNumber)
+        {
+            using (var context = new Data.TMSDBContext())
+            {
+                using (var beginDBTransaction = context.Database.BeginTransaction())
+                {
+                    List<StopPoints> pendingStopPoints = new List<StopPoints>();
+                    try
+                    {
+                        DataModels.OrderDetail orderDetailData = context.OrderDetails.Where(t => t.ID == tripDetailId).FirstOrDefault();
+
+                        if (orderDetailData.SequenceNo != newSequenceNumber)
+                        {
+                            int originalSequenceNo = sequenceNumber;
+
+                            orderDetailData.SequenceNo = newSequenceNumber;
+                            context.Entry(orderDetailData).State = System.Data.Entity.EntityState.Modified;
+
+                            DataModels.OrderDetail swappingDetailData = context.OrderDetails.Where(t => t.OrderHeaderID == orderDetailData.OrderHeaderID && t.SequenceNo == newSequenceNumber).FirstOrDefault();
+                            swappingDetailData.SequenceNo = originalSequenceNo;
+                            context.Entry(swappingDetailData).State = System.Data.Entity.EntityState.Modified;
+                            context.SaveChanges();
+                            beginDBTransaction.Commit();
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        beginDBTransaction.Rollback();
+                        _logger.Log(LogLevel.Error, ex);
+                    }
+                }
+            }
+        }
+
+
         public OrderResponse CreateUpdateOrder(OrderRequest request)
         {
             OrderResponse response = new OrderResponse()
@@ -265,6 +301,20 @@ namespace TMS.DataGateway.Repositories
                                     context.OrderDetails.Add(orderDetail);
                                     context.SaveChanges();
                                     orderDetailId = orderDetail.ID;
+                                    #endregion
+                                    #region  Update Order Status
+                                    string orderStatusCode = order.OrderShipmentStatus.ToString();
+                                    Data.OrderStatusHistory orderStatusHistory = new Data.OrderStatusHistory()
+                                    {
+                                        OrderDetailID = orderDetailId,
+                                        OrderStatusID = context.OrderStatuses.Where(t => t.OrderStatusCode == orderStatusCode).FirstOrDefault().ID,
+                                        StatusDate = DateTime.Now,
+                                        Remarks = "Order Creted"
+                                    };
+
+                                    context.OrderStatusHistories.Add(orderStatusHistory);
+                                    context.SaveChanges();
+
                                     #endregion
                                 }
                                 #endregion
@@ -2208,12 +2258,17 @@ namespace TMS.DataGateway.Repositories
                     {
                         int orderId = 0;
                         int orderDetailId = 0;
-                        orderId = context.OrderHeaders.FirstOrDefault(t => t.LegecyOrderNo == statusRequest.OrderNumber).ID;
-                        if (statusRequest.SequenceNumber > 0)
+                        orderId = context.OrderHeaders.FirstOrDefault(t => t.OrderNo == statusRequest.OrderNumber).ID;
+                        if (statusRequest.SequenceNumber > 0) { 
                             orderDetailId = context.OrderDetails.FirstOrDefault(t => t.SequenceNo == statusRequest.SequenceNumber && t.OrderHeaderID == orderId).ID;
+                       
+                        }
                         else
                         {
                             orderDetailId = context.OrderDetails.FirstOrDefault(t => t.OrderHeaderID == orderId).ID;
+                        }
+                        if(statusRequest.SequenceNumber != statusRequest.NewSequenceNumber) { 
+                         SwapeOrderSequence(orderDetailId, statusRequest.SequenceNumber, statusRequest.NewSequenceNumber);
                         }
 
                         DataModel.OrderStatusHistory statusHistory = new DataModel.OrderStatusHistory()
@@ -2227,7 +2282,9 @@ namespace TMS.DataGateway.Repositories
                         };
                         context.OrderStatusHistories.Add(statusHistory);
                         context.SaveChanges();
-
+                        if(context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == statusRequest.OrderStatusCode).ID == 4) { 
+                        
+                        }
                         #region Update Order Header
                         var orderHeader = context.OrderHeaders.FirstOrDefault(t => t.ID == orderId);
                         orderHeader.OrderStatusID = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == statusRequest.OrderStatusCode).ID;

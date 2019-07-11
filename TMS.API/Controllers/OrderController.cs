@@ -938,7 +938,8 @@ namespace TMS.API.Controllers
                     OrderNumber = item.OrderNumber,
                     OrderStatusCode = item.OrderStatusCode,
                     Remarks = "",
-                    SequenceNumber = item.SequenceNumber
+                    SequenceNumber = item.SequenceNumber,
+                    NewSequenceNumber=item.NewSequenceNumber
                 };
 
                 omsRequest.Requests.Add(requestData);
