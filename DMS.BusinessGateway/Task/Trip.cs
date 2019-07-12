@@ -100,5 +100,9 @@ namespace DMS.BusinessGateway.Task
         {
            return _tripRepository.GetPendingStopPoints(tripId);
         }
+        public override OrderStatusResponse CancelOrder(OrderStatusRequest request)
+        {
+            return _tripRepository.CancelOrder(request);
+        }
     }
 }

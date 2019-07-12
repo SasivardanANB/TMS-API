@@ -277,6 +277,15 @@ namespace OMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Order(s) cancelled successfully in OMS.
+        /// </summary>
+        public static string OrderCanceled {
+            get {
+                return ResourceManager.GetString("OrderCanceled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Order Created Successfully in OMS.
         /// </summary>
         public static string OrderCreated {

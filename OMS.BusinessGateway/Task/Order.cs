@@ -62,5 +62,10 @@ namespace OMS.BusinessGateway.Task
         {
             return _orderRepository.ReAssignTrip(tripRequest);
         }
+
+        public override OrderStatusResponse CancelOrder(OrderStatusRequest request)
+        {
+            return _orderRepository.CancelOrder(request);
+        }
     }
 }

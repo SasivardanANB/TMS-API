@@ -171,6 +171,9 @@
   <data name="TripAssigned" xml:space="preserve">
     <value>Trip(s) assigned successfully in DMS</value>
   </data>
+  <data name="TripCanceled" xml:space="preserve">
+    <value>Trip(s) cancelled successfully in DMS</value>
+  </data>
   <data name="TripCreated" xml:space="preserve">
     <value>Trip(s) created/updated successfully in DMS</value>
   </data>

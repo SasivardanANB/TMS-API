@@ -1267,6 +1267,68 @@ namespace DMS.DataGateway.Repositories
             return tripResponse;
         }
 
+        public OrderStatusResponse CancelOrder(OrderStatusRequest request)
+        {
+            OrderStatusResponse response = new OrderStatusResponse()
+            {
+                Data = new List<OrderStatus>()
+            };
 
+            using (var context = new DMSDBContext())
+            {
+                try
+                {
+                    foreach (var statusRequest in request.Requests)
+                    {
+                        int tripId = 0;
+                        tripId = context.TripHeaders.FirstOrDefault(t => t.OrderNumber == statusRequest.OrderNumber).ID;
+                        var tripDetailData = context.TripDetails.Where(od => od.TripID == tripId).ToList();
+
+                        if (tripDetailData.Count > 0)
+                        {
+                            foreach (var tripDetail in tripDetailData)
+                            {
+                                DataModel.TripStatusHistory dataTripStatusEventLog = new DataModel.TripStatusHistory()
+                                {
+                                    TripStatusId = context.TripStatuses.FirstOrDefault(t => t.StatusCode == "13").ID,
+                                    StopPointId = tripDetail.ID,
+                                    Remarks = statusRequest.Remarks,
+                                    StatusDate = DateTime.Now,
+
+                                };
+                                context.TripStatusHistories.Add(dataTripStatusEventLog);
+                                context.SaveChanges();
+                            }
+                            #region Update Order Header
+                            var tripHeader = context.TripHeaders.FirstOrDefault(t => t.ID == tripId );
+                            tripHeader.CurrentTripStatusId = context.TripStatuses.FirstOrDefault(t => t.StatusCode == "13").ID;
+
+                            context.Entry(tripHeader).State = System.Data.Entity.EntityState.Modified;
+                            context.SaveChanges();
+                            context.Entry(tripHeader).State = System.Data.Entity.EntityState.Detached;
+                            #endregion
+                            response.Status = DomainObjects.Resource.ResourceData.Success;
+                            response.StatusCode = (int)HttpStatusCode.OK;
+                            response.StatusMessage = DomainObjects.Resource.ResourceData.TripCanceled;
+                        }
+                        else
+                        {
+                            response.Status = DomainObjects.Resource.ResourceData.Success;
+                            response.StatusCode = (int)HttpStatusCode.NotFound;
+                            response.StatusMessage = DomainObjects.Resource.ResourceData.NoRecordsFound;
+                        }
+                        response.Data = request.Requests;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log(LogLevel.Error, ex);
+                    response.Status = DomainObjects.Resource.ResourceData.Failure;
+                    response.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                    response.StatusMessage = ex.Message;
+                }
+            }
+            return response;
+        }
     }
 }

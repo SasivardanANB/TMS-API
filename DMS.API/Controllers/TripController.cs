@@ -389,6 +389,65 @@ namespace DMS.API.Controllers
             StopPointsResponse stopPointsResponse = tripTask.GetPendingStopPoints(tripId);
             return Ok(stopPointsResponse);
         }
+        [Route("cancelorder")]
+        [HttpPost]
+        public IHttpActionResult CancelOrder(OrderStatusRequest request)
+        {
+            ITripTask tripTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().TripTask;
+            OrderStatusResponse response = tripTask.CancelOrder(request);
+
+            //#region Update Status to OMS 
+            //OrderStatusRequest omsRequest = new OrderStatusRequest()
+            //{
+            //    Requests = new List<OrderStatus>()
+            //};
+
+            //foreach (var item in request.Requests)
+            //{
+
+            //    OrderStatus requestData = new OrderStatus()
+            //    {
+            //        IsLoad = null,
+            //        OrderNumber = item.OrderNumber,
+            //        OrderStatusCode = item.OrderStatusCode,
+            //        Remarks = "",
+            //        SequenceNumber = item.SequenceNumber,
+            //        NewSequenceNumber = item.NewSequenceNumber
+            //    };
+
+            //    omsRequest.Requests.Add(requestData);
+            //    omsRequest.RequestFrom = "TMS";
+            //}
+
+            //if (omsRequest.Requests.Count > 0)
+            //{
+            //    #region Call OMS API to Update Order
+            //    #region Login to OMS and get Token
+            //    LoginRequest loginRequest = new LoginRequest();
+            //    string token = "";
+
+            //    loginRequest.UserName = ConfigurationManager.AppSettings["OMSLogin"];
+            //    loginRequest.UserPassword = ConfigurationManager.AppSettings["OMSPassword"];
+            //    var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+            //        + "/v1/user/login", Method.POST, loginRequest, null));
+            //    if (tmsLoginResponse != null && tmsLoginResponse.Data.Count > 0)
+            //    {
+            //        token = tmsLoginResponse.TokenKey;
+            //    }
+            //    #endregion
+
+            //    var omsresponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+            //        + "/v1/order/updateorderstatus", Method.POST, omsRequest, token));
+            //    if (response != null)
+            //    {
+            //        response.StatusMessage += ". " + omsresponse.StatusMessage;
+            //    }
+            //    #endregion
+            //}
+            //#endregion
+
+            return Ok(response);
+        }
 
     }
 }

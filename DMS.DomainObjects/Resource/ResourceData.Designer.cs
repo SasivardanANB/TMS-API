@@ -223,6 +223,15 @@ namespace DMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Trip(s) cancelled successfully in DMS.
+        /// </summary>
+        public static string TripCanceled {
+            get {
+                return ResourceManager.GetString("TripCanceled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Trip(s) created/updated successfully in DMS.
         /// </summary>
         public static string TripCreated {

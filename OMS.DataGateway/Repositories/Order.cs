@@ -1873,5 +1873,53 @@ namespace OMS.DataGateway.Repositories
             }
             return response;
         }
+
+        public OrderStatusResponse CancelOrder(OrderStatusRequest request)
+        {
+            OrderStatusResponse response = new OrderStatusResponse()
+            {
+                Data = new List<OrderStatus>()
+            };
+
+            using (var context = new Data.OMSDBContext())
+            {
+                try
+                {
+                    foreach (var statusRequest in request.Requests)
+                    {
+                        var orderHeader = context.OrderHeaders.FirstOrDefault(t => t.OrderNo == statusRequest.OrderNumber);
+                        if (orderHeader != null)
+                        {
+                            #region Update Order Header
+                           
+                            orderHeader.OrderStatusID = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == "13").ID;
+
+                            context.Entry(orderHeader).State = System.Data.Entity.EntityState.Modified;
+                            context.SaveChanges();
+                            context.Entry(orderHeader).State = System.Data.Entity.EntityState.Detached;
+                            #endregion
+                            response.Status = DomainObjects.Resource.ResourceData.Success;
+                            response.StatusCode = (int)HttpStatusCode.OK;
+                            response.StatusMessage = DomainObjects.Resource.ResourceData.OrderCanceled;
+                        }
+                        else
+                        {
+                            response.Status = DomainObjects.Resource.ResourceData.Success;
+                            response.StatusCode = (int)HttpStatusCode.NotFound;
+                            response.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
+                        }
+                        response.Data = request.Requests;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log(LogLevel.Error, ex);
+                    response.Status = DomainObjects.Resource.ResourceData.Failure;
+                    response.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                    response.StatusMessage = ex.Message;
+                }
+            }
+            return response;
+        }
     }
 }

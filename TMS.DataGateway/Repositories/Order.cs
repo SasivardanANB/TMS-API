@@ -2282,9 +2282,7 @@ namespace TMS.DataGateway.Repositories
                         };
                         context.OrderStatusHistories.Add(statusHistory);
                         context.SaveChanges();
-                        if(context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == statusRequest.OrderStatusCode).ID == 4) { 
                         
-                        }
                         #region Update Order Header
                         var orderHeader = context.OrderHeaders.FirstOrDefault(t => t.ID == orderId);
                         orderHeader.OrderStatusID = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == statusRequest.OrderStatusCode).ID;
@@ -2299,6 +2297,70 @@ namespace TMS.DataGateway.Repositories
                         response.Status = DomainObjects.Resource.ResourceData.Success;
                         response.StatusCode = (int)HttpStatusCode.OK;
                         response.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log(LogLevel.Error, ex);
+                    response.Status = DomainObjects.Resource.ResourceData.Failure;
+                    response.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                    response.StatusMessage = ex.Message;
+                }
+            }
+
+            return response;
+        }
+
+        public OrderStatusResponse CancelOrder(OrderStatusRequest request)
+        {
+            OrderStatusResponse response = new OrderStatusResponse()
+            {
+                Data = new List<OrderStatus>()
+            };
+
+            using (var context = new DataModel.TMSDBContext())
+            {
+                try
+                {
+                    foreach (var statusRequest in request.Requests)
+                    {
+                        var orderHeader = context.OrderHeaders.Where(oh => oh.OrderNo == statusRequest.OrderNumber).FirstOrDefault();
+                        var orderDetailData = context.OrderDetails.Where(od => od.OrderHeaderID == orderHeader.ID).ToList();
+
+                        if(orderDetailData.Count > 0)
+                        {
+                            foreach(var orderDetail in orderDetailData)
+                            {
+                                DataModel.OrderStatusHistory statusHistory = new DataModel.OrderStatusHistory()
+                                {
+                                    OrderDetailID = orderDetail.ID,
+                                    OrderStatusID = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == "13" ).ID,
+                                    Remarks = statusRequest.Remarks,
+                                    StatusDate = DateTime.Now
+
+                                };
+                                context.OrderStatusHistories.Add(statusHistory);
+                                context.SaveChanges();
+                            }
+                            #region Update Order Header
+                            //var orderHeader2 = context.OrderHeaders.FirstOrDefault(t => t.ID == orderId);
+                            orderHeader.OrderStatusID = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == "13").ID;
+
+                            context.Entry(orderHeader).State = System.Data.Entity.EntityState.Modified;
+                            context.SaveChanges();
+                            context.Entry(orderHeader).State = System.Data.Entity.EntityState.Detached;
+                            #endregion
+                            response.Status = DomainObjects.Resource.ResourceData.Success;
+                            response.StatusCode = (int)HttpStatusCode.OK;
+                            response.StatusMessage = DomainObjects.Resource.ResourceData.OrderCanceled;
+                        }
+                        else
+                        {
+                            response.Status = DomainObjects.Resource.ResourceData.Success;
+                            response.StatusCode = (int)HttpStatusCode.NotFound;
+                            response.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
+                        }
+                        response.Data = request.Requests;
                     }
                 }
                 catch (Exception ex)
