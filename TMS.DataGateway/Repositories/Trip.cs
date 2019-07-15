@@ -35,13 +35,19 @@ namespace TMS.DataGateway.Repositories
             {
                 using (var context = new DataModel.TMSDBContext())
                 {
+                    var userDetails = context.Tokens.Where(t => t.TokenKey == tripRequest.Token).FirstOrDefault();
+                    var businessAreas = (from ur in context.UserRoles
+                                         where ur.UserID == userDetails.UserID && ur.IsDelete == false
+                                         select ur.BusinessAreaID).ToList();
+
+
                     var searchRequest = tripRequest.Requests[0];
                     if(searchRequest.OrderStatusId > 0) { 
                     tripList = (from oh in context.OrderHeaders
                                  join od in context.OrderDetails on oh.ID equals od.OrderHeaderID
                                  join ps in context.PackingSheets on od.ShippingListNo equals ps.ShippingListNo into pks
                                  from pksh in pks.DefaultIfEmpty()
-                                where( (((!String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.OrderNo == tripRequest.GlobalSearch)
+                                where businessAreas.Contains(oh.BusinessAreaId) && ( (((!String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.OrderNo == tripRequest.GlobalSearch)
                                        || (String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.OrderNo == oh.OrderNo))
                                        ||
                                        ((!String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.VehicleNo == tripRequest.GlobalSearch)
@@ -70,7 +76,7 @@ namespace TMS.DataGateway.Repositories
                                     join od in context.OrderDetails on oh.ID equals od.OrderHeaderID
                                     join ps in context.PackingSheets on od.ShippingListNo equals ps.ShippingListNo into pks
                                     from pksh in pks.DefaultIfEmpty()
-                                    where ((((!String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.OrderNo == tripRequest.GlobalSearch)
+                                    where businessAreas.Contains(oh.BusinessAreaId) && ((((!String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.OrderNo == tripRequest.GlobalSearch)
                                            || (String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.OrderNo == oh.OrderNo))
                                            ||
                                            ((!String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.VehicleNo == tripRequest.GlobalSearch)

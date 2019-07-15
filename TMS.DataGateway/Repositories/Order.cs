@@ -1903,15 +1903,23 @@ namespace TMS.DataGateway.Repositories
         }
 
 
-        public CommonResponse GetOrderIds()
+        public CommonResponse GetOrderIds(string tokenValue)
         {
             CommonResponse commonResponse = new CommonResponse();
             try
             {
                 using (var context = new Data.TMSDBContext())
                 {
+                    var userDetails = context.Tokens.Where(t => t.TokenKey == tokenValue).FirstOrDefault();
+                    var businessAreas = (from ur in context.UserRoles
+                                         where ur.UserID == userDetails.UserID && ur.IsDelete == false
+                                         select ur.BusinessAreaID).ToList();
+
                     var orderData = (from orderHeader in context.OrderHeaders
-                                     where orderHeader.OrderType == (context.OrderTypes.Where(ot => ot.OrderTypeCode == "INBD").Select(p => p.ID).FirstOrDefault())
+                                     where businessAreas.Contains(orderHeader.BusinessAreaId) &&
+                                     orderHeader.OrderType == (context.OrderTypes.Where(ot => ot.OrderTypeCode == "INBD").Select(p => p.ID).FirstOrDefault() 
+                                    
+                                     )
                                      select new Domain.Common
                                      {
                                          Id = orderHeader.ID,
@@ -1934,10 +1942,7 @@ namespace TMS.DataGateway.Repositories
                         commonResponse.StatusCode = (int)HttpStatusCode.NotFound;
                         commonResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                     }
-
-
                 }
-
             }
             catch (Exception ex)
             {
@@ -1947,7 +1952,6 @@ namespace TMS.DataGateway.Repositories
                 commonResponse.StatusMessage = ex.Message;
             }
             return commonResponse;
-
         }
 
         public DealerDetailsResponse GetDealers(int orderId, string searchText)

@@ -901,8 +901,15 @@ namespace TMS.API.Controllers
         [HttpGet]
         public IHttpActionResult GetOrderIds()
         {
+            IEnumerable<string> headerValues;
+            string tokenValue = string.Empty;
+            if (Request.Headers.TryGetValues("Token", out headerValues))
+            {
+                tokenValue = headerValues.FirstOrDefault().ToString();
+            }
+
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
-            CommonResponse commonResponse = orderTask.GetOrderIds();
+            CommonResponse commonResponse = orderTask.GetOrderIds(tokenValue);
             return Ok(commonResponse);
         }
 

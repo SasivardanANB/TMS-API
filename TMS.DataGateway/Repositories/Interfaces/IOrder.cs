@@ -15,7 +15,7 @@ namespace TMS.DataGateway.Repositories.Interfaces
         PackingSheetResponse CreateUpdatePackingSheet(PackingSheetRequest packingSheetRequest);
         PackingSheetResponse GetPackingSheetDetails(int orderId);
         OrderTrackResponse TrackOrder(int orderId);
-        CommonResponse GetOrderIds();
+        CommonResponse GetOrderIds(string tokenValue);
         DealerDetailsResponse GetDealers(int orderId, string searchText);
         OrderDetailsResponse GetOrderDetails(int orderId);
         DomainObjects.Objects.Partner GetPartnerDetail(string partnerNo, int uploadType);
