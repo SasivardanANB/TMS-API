@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace OMS.DomainObjects.Request
 {
-    public class OrderStatusRequest
+    public class OrderStatusRequest:RequestFilter
     {
         public List<OrderStatus> Requests { get; set; }
         public string RequestFrom { get; set; }

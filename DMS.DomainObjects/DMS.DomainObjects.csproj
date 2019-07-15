@@ -91,6 +91,7 @@
     <Compile Include="Response\StopPointOrderItemsResponse.cs" />
     <Compile Include="Response\StopPointsResponse.cs" />
     <Compile Include="Response\ImageGuidsResponse.cs" />
+    <Compile Include="Response\OrderStatusResponse.cs" />
     <Compile Include="Response\TripResponse.cs" />
     <Compile Include="Response\UpdateTripStatusResponse.cs" />
     <Compile Include="Response\UserResponse.cs" />

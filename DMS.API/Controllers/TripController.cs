@@ -181,7 +181,8 @@ namespace DMS.API.Controllers
                     OrderNumber = orderNumber,
                     OrderStatusCode = orderStatusCode,
                     Remarks = item.Remarks,
-                    SequenceNumber = orderSequenceNumber
+                    SequenceNumber = item.SequenceNumber,
+                    NewSequenceNumber = orderSequenceNumber
                 };
 
                 tmsRequest.Requests.Add(requestData);
@@ -388,6 +389,14 @@ namespace DMS.API.Controllers
             ITripTask tripTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().TripTask;
             StopPointsResponse stopPointsResponse = tripTask.GetPendingStopPoints(tripId);
             return Ok(stopPointsResponse);
+        }
+        [Route("cancelorder")]
+        [HttpPost]
+        public IHttpActionResult CancelOrder(OrderStatusRequest request)
+        {
+            ITripTask tripTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().TripTask;
+            OrderStatusResponse response = tripTask.CancelOrder(request);
+            return Ok(response);
         }
 
         [HttpPost, Route("shippinglistocr")]

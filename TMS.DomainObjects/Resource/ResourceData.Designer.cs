@@ -754,6 +754,15 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Order(s) cancelled successfully in TMS.
+        /// </summary>
+        public static string OrderCanceled {
+            get {
+                return ResourceManager.GetString("OrderCanceled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Order Created Successfully in TMS.
         /// </summary>
         public static string OrderCreated {

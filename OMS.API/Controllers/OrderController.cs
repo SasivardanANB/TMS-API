@@ -342,5 +342,14 @@ namespace OMS.API.Controllers
             return Ok(tripData);
         }
 
+        [Route("cancelorder")]
+        [HttpPost]
+        public IHttpActionResult CancelOrder(OrderStatusRequest request)
+        {
+            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            OrderStatusResponse response = orderTask.CancelOrder(request);
+            return Ok(response);
+        }
+
     }
 }

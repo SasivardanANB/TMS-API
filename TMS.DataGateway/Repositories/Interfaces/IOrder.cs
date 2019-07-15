@@ -21,5 +21,6 @@ namespace TMS.DataGateway.Repositories.Interfaces
         DomainObjects.Objects.Partner GetPartnerDetail(string partnerNo, int uploadType);
         string GetBusinessAreaCode(int businessAreaId);
         OrderStatusResponse UpdateOrderStatus(OrderStatusRequest request);
+        OrderStatusResponse CancelOrder(OrderStatusRequest request);
     }
 }

@@ -18,5 +18,6 @@ namespace OMS.DomainGateway.Task
         public abstract PackingSheetResponse CreateUpdatePackingSheet(PackingSheetRequest packingSheetRequest);
         public abstract OrderStatusResponse UpdateOrderStatus(OrderStatusRequest request);
         public abstract TripResponse ReAssignTrip(TripRequest tripRequest);
+        public abstract OrderStatusResponse CancelOrder(OrderStatusRequest request);
     }
 }

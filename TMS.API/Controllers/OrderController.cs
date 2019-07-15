@@ -818,6 +818,14 @@ namespace TMS.API.Controllers
         [AllowAnonymous, HttpPost]
         public IHttpActionResult GetOrders(OrderSearchRequest orderSearchRequest)
         {
+            IEnumerable<string> headerValues;
+            var tokenValue = string.Empty;
+            if (Request.Headers.TryGetValues("Token", out headerValues))
+            {
+                tokenValue = headerValues.FirstOrDefault();
+                orderSearchRequest.Token = tokenValue;
+            }
+
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
             OrderSearchResponse orderSearchResponse = orderTask.GetOrders(orderSearchRequest);
             return Ok(orderSearchResponse);
@@ -923,7 +931,7 @@ namespace TMS.API.Controllers
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
             OrderStatusResponse response = orderTask.UpdateOrderStatus(request);
 
-            #region Update Status to TMS 
+            #region Update Status to OMS 
             OrderStatusRequest omsRequest = new OrderStatusRequest()
             {
                 Requests = new List<OrderStatus>()
@@ -938,7 +946,8 @@ namespace TMS.API.Controllers
                     OrderNumber = item.OrderNumber,
                     OrderStatusCode = item.OrderStatusCode,
                     Remarks = "",
-                    SequenceNumber = item.SequenceNumber
+                    SequenceNumber = item.SequenceNumber,
+                    NewSequenceNumber=item.NewSequenceNumber
                 };
 
                 omsRequest.Requests.Add(requestData);
@@ -1052,6 +1061,109 @@ namespace TMS.API.Controllers
             return Ok(response);
         }
 
+        [Route("cancelorder")]
+        [HttpPost]
+        public IHttpActionResult CancelOrder(OrderStatusRequest request)
+        {
+            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            OrderStatusResponse response = orderTask.CancelOrder(request);
+
+            #region Update Status to OMS 
+            OrderStatusRequest omsRequest = new OrderStatusRequest()
+            {
+                Requests = new List<OrderStatus>()
+            };
+
+            foreach (var item in request.Requests)
+            {
+                OrderStatus requestData = new OrderStatus()
+                {
+                    IsLoad = null,
+                    OrderNumber = item.OrderNumber,
+                    OrderStatusCode = item.OrderStatusCode,
+                    Remarks = "",
+                    SequenceNumber = item.SequenceNumber,
+                    NewSequenceNumber = item.NewSequenceNumber
+                };
+                omsRequest.Requests.Add(requestData);
+                omsRequest.RequestFrom = "TMS";
+            }
+            if (omsRequest.Requests.Count > 0)
+            {
+                #region Call OMS API to Update Order
+                #region Login to OMS and get Token
+                LoginRequest loginRequest = new LoginRequest();
+                string token = "";
+
+                loginRequest.UserName = ConfigurationManager.AppSettings["OMSLogin"];
+                loginRequest.UserPassword = ConfigurationManager.AppSettings["OMSPassword"];
+                var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                    + "/v1/user/login", Method.POST, loginRequest, null));
+                if (tmsLoginResponse != null && tmsLoginResponse.Data.Count > 0)
+                {
+                    token = tmsLoginResponse.TokenKey;
+                }
+                #endregion
+
+                var omsresponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                    + "/v1/order/cancelorder", Method.POST, omsRequest, token));
+                if (response != null)
+                {
+                    response.StatusMessage += ". " + omsresponse.StatusMessage;
+                }
+                #endregion
+            }
+            #endregion
+
+            #region Update Status to DMS 
+            OrderStatusRequest dmsRequest = new OrderStatusRequest()
+            {
+                Requests = new List<OrderStatus>()
+            };
+
+            foreach (var item in request.Requests)
+            {
+                OrderStatus requestData = new OrderStatus()
+                {
+                    IsLoad = null,
+                    OrderNumber = item.OrderNumber,
+                    OrderStatusCode = item.OrderStatusCode,
+                    Remarks = "",
+                    SequenceNumber = item.SequenceNumber,
+                    NewSequenceNumber = item.NewSequenceNumber
+                };
+                dmsRequest.Requests.Add(requestData);
+                dmsRequest.RequestFrom = "TMS";
+            }
+            if (dmsRequest.Requests.Count > 0)
+            {
+                #region Call DMS API to Update Order
+                #region Login to DMS and get Token
+                LoginRequest dmsLoginRequest = new LoginRequest();
+                string dmsToken = "";
+
+                dmsLoginRequest.UserName = ConfigurationManager.AppSettings["DMSLogin"];
+                dmsLoginRequest.UserPassword = ConfigurationManager.AppSettings["DMSPassword"];
+                var dmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
+                    + "/v1/user/login", Method.POST, dmsLoginRequest, null));
+                if (dmsLoginResponse != null && dmsLoginResponse.Data.Count > 0)
+                {
+                    dmsToken = dmsLoginResponse.TokenKey;
+                }
+                #endregion
+
+                var dmsresponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
+                    + "/v1/trip/cancelorder", Method.POST, omsRequest, dmsToken));
+                if (response != null)
+                {
+                    response.StatusMessage += ". " + dmsresponse.StatusMessage;
+                }
+                #endregion
+            }
+            #endregion
+
+            return Ok(response);
+        }
 
 
 

@@ -22,5 +22,6 @@ namespace TMS.DomainGateway.Task.Interfaces
         Partner GetPartnerDetail(string partnerNo, int uploadType);
         string GetBusinessAreaCode(int businessAreaId);
         OrderStatusResponse UpdateOrderStatus(OrderStatusRequest request);
+        OrderStatusResponse CancelOrder(OrderStatusRequest request);
     }
 }

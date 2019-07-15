@@ -22,6 +22,42 @@ namespace TMS.DataGateway.Repositories
     {
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
+        private void SwapeOrderSequence(int tripDetailId, int sequenceNumber, int newSequenceNumber)
+        {
+            using (var context = new Data.TMSDBContext())
+            {
+                using (var beginDBTransaction = context.Database.BeginTransaction())
+                {
+                    List<StopPoints> pendingStopPoints = new List<StopPoints>();
+                    try
+                    {
+                        DataModels.OrderDetail orderDetailData = context.OrderDetails.Where(t => t.ID == tripDetailId).FirstOrDefault();
+
+                        if (orderDetailData.SequenceNo != newSequenceNumber)
+                        {
+                            int originalSequenceNo = sequenceNumber;
+
+                            orderDetailData.SequenceNo = newSequenceNumber;
+                            context.Entry(orderDetailData).State = System.Data.Entity.EntityState.Modified;
+
+                            DataModels.OrderDetail swappingDetailData = context.OrderDetails.Where(t => t.OrderHeaderID == orderDetailData.OrderHeaderID && t.SequenceNo == newSequenceNumber).FirstOrDefault();
+                            swappingDetailData.SequenceNo = originalSequenceNo;
+                            context.Entry(swappingDetailData).State = System.Data.Entity.EntityState.Modified;
+                            context.SaveChanges();
+                            beginDBTransaction.Commit();
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        beginDBTransaction.Rollback();
+                        _logger.Log(LogLevel.Error, ex);
+                    }
+                }
+            }
+        }
+
+
         public OrderResponse CreateUpdateOrder(OrderRequest request)
         {
             OrderResponse response = new OrderResponse()
@@ -265,6 +301,20 @@ namespace TMS.DataGateway.Repositories
                                     context.OrderDetails.Add(orderDetail);
                                     context.SaveChanges();
                                     orderDetailId = orderDetail.ID;
+                                    #endregion
+                                    #region  Update Order Status
+                                    string orderStatusCode = order.OrderShipmentStatus.ToString();
+                                    Data.OrderStatusHistory orderStatusHistory = new Data.OrderStatusHistory()
+                                    {
+                                        OrderDetailID = orderDetailId,
+                                        OrderStatusID = context.OrderStatuses.Where(t => t.OrderStatusCode == orderStatusCode).FirstOrDefault().ID,
+                                        StatusDate = DateTime.Now,
+                                        Remarks = "Order Creted"
+                                    };
+
+                                    context.OrderStatusHistories.Add(orderStatusHistory);
+                                    context.SaveChanges();
+
                                     #endregion
                                 }
                                 #endregion
@@ -851,18 +901,26 @@ namespace TMS.DataGateway.Repositories
             {
                 using (var context = new Data.TMSDBContext())
                 {
+                    var userDetails = context.Tokens.Where(t => t.TokenKey == orderSearchRequest.Token).FirstOrDefault();
+                    var businessAreas = (from ur in context.UserRoles
+                                         where ur.UserID == userDetails.UserID && ur.IsDelete == false
+                                         select ur.BusinessAreaID).ToList();
+
                     orderList = (from oh in context.OrderHeaders
                                  join od in context.OrderDetails on oh.ID equals od.OrderHeaderID
                                  join ps in context.PackingSheets on od.ShippingListNo equals ps.ShippingListNo into pks
                                  from pksh in pks.DefaultIfEmpty()
-                                 where ((!String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.OrderNo == orderSearchRequest.GlobalSearch)
+                                 where businessAreas.Contains(oh.BusinessAreaId) &&
+                                 (
+                                        ((!String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.OrderNo == orderSearchRequest.GlobalSearch)
                                         || (String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.OrderNo == oh.OrderNo))
-                                        ||
+                                 ||
                                         ((!String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.VehicleNo == orderSearchRequest.GlobalSearch)
                                         || (String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.VehicleNo == oh.VehicleNo))
                                  ||
-                                 ((orderSearchRequest.GlobalSearch != string.Empty && pksh.PackingSheetNo == orderSearchRequest.GlobalSearch)
-                                 || (orderSearchRequest.GlobalSearch == string.Empty && pksh.PackingSheetNo == pksh.PackingSheetNo))
+                                         ((orderSearchRequest.GlobalSearch != string.Empty && pksh.PackingSheetNo == orderSearchRequest.GlobalSearch)
+                                         || (orderSearchRequest.GlobalSearch == string.Empty && pksh.PackingSheetNo == pksh.PackingSheetNo))
+                                 )
 
                                  select new Domain.OrderSearch
                                  {
@@ -872,7 +930,7 @@ namespace TMS.DataGateway.Repositories
                                      VehicleType = context.VehicleTypes.Where(v => v.ID.ToString() == oh.VehicleShipment).Select(vt => vt.VehicleTypeDescription).FirstOrDefault(),
                                      PoliceNumber = oh.VehicleNo,
                                      OrderStatus = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusValue,
-                                     PackingSheetNumber= pksh.PackingSheetNo == null? "": pksh.PackingSheetNo
+                                     PackingSheetNumber = pksh.PackingSheetNo == null ? "" : pksh.PackingSheetNo
                                  }).Distinct().ToList();
 
                     if (orderList != null && orderList.Count > 0)
@@ -1371,7 +1429,7 @@ namespace TMS.DataGateway.Repositories
                                                     ConfirmArrive = new TrackStep(),
                                                     StartLoad = new TrackStep(),
                                                     FinishLoad = new TrackStep(),
-                                                    StepHeaderNotification= "Unloaded at Main Dealer"
+                                                    StepHeaderNotification = "Unloaded at Main Dealer"
                                                 };
                                                 foreach (var unLoadStatus in unLoadStatusData)
                                                 {
@@ -1478,7 +1536,7 @@ namespace TMS.DataGateway.Repositories
                                                     ConfirmArrive = new TrackStep(),
                                                     StartLoad = new TrackStep(),
                                                     FinishLoad = new TrackStep(),
-                                                    StepHeaderNotification="Loaded at Main Dealer"
+                                                    StepHeaderNotification = "Loaded at Main Dealer"
                                                 };
                                                 foreach (var unLoadStatus in unLoadStatusData)
                                                 {
@@ -1798,7 +1856,7 @@ namespace TMS.DataGateway.Repositories
                         foreach (var item in orderDetailsData)
                         {
                             PackingSheet pack = new PackingSheet();
-                            pack.OrderNumber= context.OrderHeaders.Where(o => o.ID == item.OrderHeaderID).Select(p => p.OrderNo).FirstOrDefault();
+                            pack.OrderNumber = context.OrderHeaders.Where(o => o.ID == item.OrderHeaderID).Select(p => p.OrderNo).FirstOrDefault();
                             pack.Collie = item.TotalCollie;
                             pack.Katerangan = item.Katerangan;
                             pack.Notes = item.Instruction;
@@ -1806,8 +1864,8 @@ namespace TMS.DataGateway.Repositories
                             pack.ShippingListNo = item.ShippingListNo;
                             pack.Katerangan = item.Katerangan;
                             pack.DealerId = context.OrderPartnerDetails.Where(p => p.OrderDetailID == item.ID).Select(p => p.PartnerID).FirstOrDefault();
-                            pack.DealerNumber = context.Partners.Where(p => p.ID == pack.DealerId ).Select(p => p.PartnerNo).FirstOrDefault();
-                            pack.DealerName = context.Partners.Where(p => p.ID == pack.DealerId ).Select(p => p.PartnerName).FirstOrDefault();
+                            pack.DealerNumber = context.Partners.Where(p => p.ID == pack.DealerId).Select(p => p.PartnerNo).FirstOrDefault();
+                            pack.DealerName = context.Partners.Where(p => p.ID == pack.DealerId).Select(p => p.PartnerName).FirstOrDefault();
                             var packingSheetNos = context.PackingSheets.Where(ps => ps.ShippingListNo == item.ShippingListNo).Select(i => new Common { Id = i.ID, Value = i.PackingSheetNo }).ToList();
                             if (packingSheetNos.Count > 0)
                             {
@@ -2132,7 +2190,7 @@ namespace TMS.DataGateway.Repositories
                     {
                         int partnerId = Convert.ToInt32(partnerNo);
                         response = (from partner in context.Partners
-                                    //join postalcode in context.PostalCodes on partner.PostalCodeID equals postalcode.ID
+                                        //join postalcode in context.PostalCodes on partner.PostalCodeID equals postalcode.ID
                                     join subDistrict in context.SubDistricts on partner.SubDistrictID equals subDistrict.ID
                                     where partner.ID == partnerId
                                     select new Domain.Partner
@@ -2148,7 +2206,7 @@ namespace TMS.DataGateway.Repositories
                     else
                     {
                         response = (from partner in context.Partners
-                                    //join postalcode in context.PostalCodes on partner.PostalCodeID equals postalcode.ID
+                                        //join postalcode in context.PostalCodes on partner.PostalCodeID equals postalcode.ID
                                     join subDistrict in context.SubDistricts on partner.SubDistrictID equals subDistrict.ID
                                     where partner.PartnerNo == partnerNo
                                     select new Domain.Partner
@@ -2208,12 +2266,19 @@ namespace TMS.DataGateway.Repositories
                     {
                         int orderId = 0;
                         int orderDetailId = 0;
-                        orderId = context.OrderHeaders.FirstOrDefault(t => t.LegecyOrderNo == statusRequest.OrderNumber).ID;
+                        orderId = context.OrderHeaders.FirstOrDefault(t => t.OrderNo == statusRequest.OrderNumber).ID;
                         if (statusRequest.SequenceNumber > 0)
+                        {
                             orderDetailId = context.OrderDetails.FirstOrDefault(t => t.SequenceNo == statusRequest.SequenceNumber && t.OrderHeaderID == orderId).ID;
+
+                        }
                         else
                         {
                             orderDetailId = context.OrderDetails.FirstOrDefault(t => t.OrderHeaderID == orderId).ID;
+                        }
+                        if (statusRequest.SequenceNumber != statusRequest.NewSequenceNumber)
+                        {
+                            SwapeOrderSequence(orderDetailId, statusRequest.SequenceNumber, statusRequest.NewSequenceNumber);
                         }
 
                         DataModel.OrderStatusHistory statusHistory = new DataModel.OrderStatusHistory()
@@ -2242,6 +2307,70 @@ namespace TMS.DataGateway.Repositories
                         response.Status = DomainObjects.Resource.ResourceData.Success;
                         response.StatusCode = (int)HttpStatusCode.OK;
                         response.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log(LogLevel.Error, ex);
+                    response.Status = DomainObjects.Resource.ResourceData.Failure;
+                    response.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                    response.StatusMessage = ex.Message;
+                }
+            }
+
+            return response;
+        }
+
+        public OrderStatusResponse CancelOrder(OrderStatusRequest request)
+        {
+            OrderStatusResponse response = new OrderStatusResponse()
+            {
+                Data = new List<OrderStatus>()
+            };
+
+            using (var context = new DataModel.TMSDBContext())
+            {
+                try
+                {
+                    foreach (var statusRequest in request.Requests)
+                    {
+                        var orderHeader = context.OrderHeaders.Where(oh => oh.OrderNo == statusRequest.OrderNumber).FirstOrDefault();
+                        var orderDetailData = context.OrderDetails.Where(od => od.OrderHeaderID == orderHeader.ID).ToList();
+
+                        if (orderDetailData.Count > 0)
+                        {
+                            foreach (var orderDetail in orderDetailData)
+                            {
+                                DataModel.OrderStatusHistory statusHistory = new DataModel.OrderStatusHistory()
+                                {
+                                    OrderDetailID = orderDetail.ID,
+                                    OrderStatusID = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == "13").ID,
+                                    Remarks = statusRequest.Remarks,
+                                    StatusDate = DateTime.Now
+
+                                };
+                                context.OrderStatusHistories.Add(statusHistory);
+                                context.SaveChanges();
+                            }
+                            #region Update Order Header
+                            //var orderHeader2 = context.OrderHeaders.FirstOrDefault(t => t.ID == orderId);
+                            orderHeader.OrderStatusID = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == "13").ID;
+
+                            context.Entry(orderHeader).State = System.Data.Entity.EntityState.Modified;
+                            context.SaveChanges();
+                            context.Entry(orderHeader).State = System.Data.Entity.EntityState.Detached;
+                            #endregion
+                            response.Status = DomainObjects.Resource.ResourceData.Success;
+                            response.StatusCode = (int)HttpStatusCode.OK;
+                            response.StatusMessage = DomainObjects.Resource.ResourceData.OrderCanceled;
+                        }
+                        else
+                        {
+                            response.Status = DomainObjects.Resource.ResourceData.Success;
+                            response.StatusCode = (int)HttpStatusCode.NotFound;
+                            response.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
+                        }
+                        response.Data = request.Requests;
                     }
                 }
                 catch (Exception ex)

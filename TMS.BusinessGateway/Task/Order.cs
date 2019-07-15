@@ -94,6 +94,11 @@ namespace TMS.BusinessGateway.Task
         {
             return _orderRepository.UpdateOrderStatus(request);
         }
+
+        public override OrderStatusResponse CancelOrder(OrderStatusRequest request)
+        {
+            return _orderRepository.CancelOrder(request);
+        }
     }
 
 }
