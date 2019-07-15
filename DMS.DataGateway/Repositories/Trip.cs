@@ -21,7 +21,9 @@ namespace DMS.DataGateway.Repositories
     public class Trip : ITrip
     {
         #region Private variables and Methods
+
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+
         private string GetTripNumber(string businessAreaCode)
         {
             string tripNo = businessAreaCode.ToUpper() + "TRIP";
@@ -51,6 +53,7 @@ namespace DMS.DataGateway.Repositories
             }
             return tripNo;
         }
+
         private string GetLatestStopPointStatus(int stopPointId)
         {
             string lastStatus = string.Empty;
@@ -65,6 +68,7 @@ namespace DMS.DataGateway.Repositories
             }
             return lastStatus;
         }
+
         private int GetImageTypeId(int imageTypeCode)
         {
             int imageTypeId = 0;
@@ -90,28 +94,28 @@ namespace DMS.DataGateway.Repositories
                     try
                     {
                         DataModels.TripDetail tripDetailData = context.TripDetails.Where(t => t.ID == tripDetailId).FirstOrDefault();
-                         pendingStopPoints = (from sectionPage in context.TripStatusHistories
-                                                 group sectionPage by sectionPage.StopPointId into sectionGroup
-                                                 join b in context.TripStatusHistories on sectionGroup.Max(y => y.ID) equals b.ID
-                                                 join c in context.TripDetails on b.StopPointId equals c.ID
-                                                 where c.SequenceNumber > 0 && b.TripStatusId == 3 && c.TripID == tripDetailData.TripID
-                                                 select new StopPoints
-                                                 {
-                                                     ID = c.ID,
-                                                     TripId = c.TripID,
-                                                     SequenceNumber = c.SequenceNumber,
-                                                 }).ToList();
+                        pendingStopPoints = (from sectionPage in context.TripStatusHistories
+                                             group sectionPage by sectionPage.StopPointId into sectionGroup
+                                             join b in context.TripStatusHistories on sectionGroup.Max(y => y.ID) equals b.ID
+                                             join c in context.TripDetails on b.StopPointId equals c.ID
+                                             where c.SequenceNumber > 0 && b.TripStatusId == 3 && c.TripID == tripDetailData.TripID
+                                             select new StopPoints
+                                             {
+                                                 ID = c.ID,
+                                                 TripId = c.TripID,
+                                                 SequenceNumber = c.SequenceNumber,
+                                             }).ToList();
 
                         int minSequenceNo = pendingStopPoints.Min(f => f.SequenceNumber);
 
                         if (tripDetailData.SequenceNumber != minSequenceNo)
                         {
-                            int originalSequenceNo = tripDetailData.SequenceNumber;                            
+                            int originalSequenceNo = tripDetailData.SequenceNumber;
 
                             tripDetailData.SequenceNumber = minSequenceNo;
-                            context.Entry(tripDetailData).State = System.Data.Entity.EntityState.Modified;                                                      
+                            context.Entry(tripDetailData).State = System.Data.Entity.EntityState.Modified;
 
-                            DataModels.TripDetail swappingDetailData = context.TripDetails.Where(t => t.TripID  == tripDetailData.TripID && t.SequenceNumber == minSequenceNo ).FirstOrDefault();
+                            DataModels.TripDetail swappingDetailData = context.TripDetails.Where(t => t.TripID == tripDetailData.TripID && t.SequenceNumber == minSequenceNo).FirstOrDefault();
                             swappingDetailData.SequenceNumber = originalSequenceNo;
                             context.Entry(swappingDetailData).State = System.Data.Entity.EntityState.Modified;
                             context.SaveChanges();
@@ -119,7 +123,7 @@ namespace DMS.DataGateway.Repositories
                         }
 
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         beginDBTransaction.Rollback();
                         _logger.Log(LogLevel.Error, ex);
@@ -646,8 +650,9 @@ namespace DMS.DataGateway.Repositories
 
                         };
                         // For Changeinging stoppoint order
-                        if (tripStatusEventLogFilter.TripStatusId == 4) { 
-                        SwapeOrderSequence(tripStatusEventLogFilter.StopPointId);
+                        if (tripStatusEventLogFilter.TripStatusId == 4)
+                        {
+                            SwapeOrderSequence(tripStatusEventLogFilter.StopPointId);
                         }
                         //For getting trip deatails and updating trip status as assigned
                         var tripID = context.TripDetails.Where(t => t.ID == tripStatusEventLogFilter.StopPointId).Select(t => t.TripID).FirstOrDefault();
@@ -829,6 +834,7 @@ namespace DMS.DataGateway.Repositories
             }
             return 0;
         }
+
         public string GetOrderNumber(int stopPointId)
         {
             string orderNumber = "";
@@ -880,6 +886,7 @@ namespace DMS.DataGateway.Repositories
             }
             return sequnceNumber;
         }
+
         public StopPointsResponse GetLastTripStatusData(int stopPointId)
         {
             StopPointsResponse response = new StopPointsResponse()
@@ -922,6 +929,7 @@ namespace DMS.DataGateway.Repositories
             }
             return response;
         }
+
         public string GetDeviceId(string token)
         {
             string deviceId = "";
@@ -1142,6 +1150,7 @@ namespace DMS.DataGateway.Repositories
 
             return imageGuidsResponse;
         }
+
         public ImageGuidsResponse GetPhotoWithCustomerGuids(string orderNumber)
         {
             ImageGuidsResponse imageGuidsResponse = new ImageGuidsResponse()
@@ -1328,6 +1337,64 @@ namespace DMS.DataGateway.Repositories
                     response.StatusMessage = ex.Message;
                 }
             }
+            return response;
+        }
+
+        public ShipmentListResponse CreateUpdateShipmentList(ShipmentListRequest request)
+        {
+            int stopPointId = request.Requests[0].StopPointId;
+
+            ShipmentListResponse response = new ShipmentListResponse()
+            {
+                Data = new List<Domain.ShipmentListDetails>()
+            };
+
+            using (var context = new DMSDBContext())
+            {
+                foreach (Domain.ShipmentListDetails shipmentList in request.Requests)
+                {
+                    using (DbContextTransaction transaction = context.Database.BeginTransaction())
+                    {
+                        try
+                        {
+                            DataModel.ShipmentListDetails shipmentListDetails = new DataModel.ShipmentListDetails()
+                            {
+                                NumberOfBoxes = shipmentList.NumberOfBoxes,
+                                Note = shipmentList.Note,
+                                PackingSheetNumber = shipmentList.PackingSheetNumber,
+                                StopPointId = shipmentList.StopPointId
+                            };
+                            context.ShipmentListDetails.Add(shipmentListDetails);
+                            context.SaveChanges();
+                            transaction.Commit();
+                        }
+                        catch (Exception ex)
+                        {
+                            transaction.Rollback();
+                            _logger.Log(LogLevel.Error, ex);
+                            response.Status = DomainObjects.Resource.ResourceData.Failure;
+                            response.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                            response.StatusMessage = ex.Message;
+                        }
+                    }
+                }
+
+                response.Data = (from sl in context.ShipmentListDetails
+                                 where sl.StopPointId == stopPointId
+                                 select new DomainObjects.Objects.ShipmentListDetails
+                                 {
+                                     ID = sl.ID,
+                                     NumberOfBoxes = sl.NumberOfBoxes,
+                                     Note = sl.Note,
+                                     PackingSheetNumber = sl.PackingSheetNumber,
+                                     StopPointId = sl.StopPointId
+                                 }).ToList();
+            }
+
+            response.Status = DomainObjects.Resource.ResourceData.Success;
+            response.StatusCode = (int)HttpStatusCode.OK;
+            response.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+
             return response;
         }
     }

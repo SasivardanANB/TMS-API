@@ -104,5 +104,9 @@ namespace DMS.BusinessGateway.Task
         {
             return _tripRepository.CancelOrder(request);
         }
+        public override ShipmentListResponse CreateUpdateShipmentList(ShipmentListRequest request)
+        {
+            return _tripRepository.CreateUpdateShipmentList(request);
+        }
     }
 }
