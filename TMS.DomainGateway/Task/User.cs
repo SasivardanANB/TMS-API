@@ -37,7 +37,7 @@ namespace TMS.DomainGateway.Task
         public abstract RoleMenuResponse GetMenuWithActivities();
         public abstract ApplicationResponse GetApplications();
         public abstract CommonResponse GetUserNames();
-        public abstract CommonResponse GetRoleCodes();
+        public abstract CommonCodeAndDecsriptionResponse GetRoleCodes();
         public abstract CommonResponse GetRegionCodes();
         public abstract DashboardResponse GetUserDashboard(UserRequest user);
         public abstract RoleResponse GetUserMenus(int userId);

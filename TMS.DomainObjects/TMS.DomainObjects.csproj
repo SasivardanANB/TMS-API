@@ -53,6 +53,7 @@
     <Compile Include="Objects\AssignUserRole.cs" />
     <Compile Include="Objects\Authenticate.cs" />
     <Compile Include="Objects\BusinessArea.cs" />
+    <Compile Include="Objects\CommonCodeAndDecsription.cs" />
     <Compile Include="Objects\CommonCode.cs" />
     <Compile Include="Objects\Common.cs" />
     <Compile Include="Objects\AdminBoardReport.cs" />
@@ -123,6 +124,7 @@
     </Compile>
     <Compile Include="Response\ApplicationResponse.cs" />
     <Compile Include="Response\AssignUserRoleResponse.cs" />
+    <Compile Include="Response\CommonCodeAndDecsriptionResponse.cs" />
     <Compile Include="Response\CommonCodeResponse.cs" />
     <Compile Include="Response\CommonResponse.cs" />
     <Compile Include="Response\DashboardResponse.cs" />
