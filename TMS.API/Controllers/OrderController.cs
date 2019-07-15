@@ -818,6 +818,14 @@ namespace TMS.API.Controllers
         [AllowAnonymous, HttpPost]
         public IHttpActionResult GetOrders(OrderSearchRequest orderSearchRequest)
         {
+            IEnumerable<string> headerValues;
+            var tokenValue = string.Empty;
+            if (Request.Headers.TryGetValues("Token", out headerValues))
+            {
+                tokenValue = headerValues.FirstOrDefault();
+                orderSearchRequest.Token = tokenValue;
+            }
+
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
             OrderSearchResponse orderSearchResponse = orderTask.GetOrders(orderSearchRequest);
             return Ok(orderSearchResponse);

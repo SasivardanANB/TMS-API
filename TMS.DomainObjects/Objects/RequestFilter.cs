@@ -16,5 +16,6 @@ namespace TMS.DomainObjects.Objects
         public int? PageSize { get; set; }
         public int? PageNumber { get; set; }
         public string GlobalSearch { get; set; }
+        public string Token { get; set; }
     }
 }
