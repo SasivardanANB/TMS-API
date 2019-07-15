@@ -148,9 +148,9 @@ namespace TMS.BusinessGateway.Task
             return commonResponse;
         }
 
-        public override CommonResponse GetRoleCodes()
+        public override CommonCodeAndDecsriptionResponse GetRoleCodes()
         {
-            CommonResponse commonResponse = _userRepository.GetRoleCodes();
+            CommonCodeAndDecsriptionResponse commonResponse = _userRepository.GetRoleCodes();
             return commonResponse;
         }
 

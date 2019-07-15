@@ -112,6 +112,7 @@ namespace OMS.DataGateway.Repositories
                             userResponse.TokenKey = tokenData.TokenKey;
                             userResponse.TokenIssuedOn = tokenData.IssuedOn;
                             userResponse.TokenExpiresOn = tokenData.ExpiresOn;
+                            userResponse.ServerDateTime = DateTime.Now;
 
                             userResponse.Status = DomainObjects.Resource.ResourceData.Success;
                             userResponse.StatusCode = (int)HttpStatusCode.OK;
@@ -1545,6 +1546,7 @@ namespace OMS.DataGateway.Repositories
                          {
                              Id = role.ID,
                              Value = role.RoleCode,
+                             Description =role.RoleDescription
                          }).ToList();
                 }
 

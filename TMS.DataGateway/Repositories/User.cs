@@ -108,6 +108,7 @@ namespace TMS.DataGateway.Repositories
                             userResponse.TokenKey = tokenData.TokenKey;
                             userResponse.TokenIssuedOn = tokenData.IssuedOn;
                             userResponse.TokenExpiresOn = tokenData.ExpiresOn;
+                            userResponse.ServerDateTime = DateTime.Now;
 
                             userResponse.Status = DomainObjects.Resource.ResourceData.Success;
                             userResponse.StatusCode = (int)HttpStatusCode.OK;
@@ -1592,10 +1593,10 @@ namespace TMS.DataGateway.Repositories
             return commonResponse;
         }
 
-        public CommonResponse GetRoleCodes()
+        public CommonCodeAndDecsriptionResponse GetRoleCodes()
         {
-            CommonResponse commonResponse = new CommonResponse();
-            List<Domain.Common> commons = new List<Domain.Common>();
+            CommonCodeAndDecsriptionResponse commonResponse = new CommonCodeAndDecsriptionResponse();
+            List<Domain.CommonCodeAndDecsription> commons = new List<Domain.CommonCodeAndDecsription>();
             try
             {
                 using (var context = new TMSDBContext())
@@ -1604,10 +1605,11 @@ namespace TMS.DataGateway.Repositories
                         (from role in context.Roles
                          where !role.IsDelete
                          orderby role.RoleCode
-                         select new Domain.Common
+                         select new Domain.CommonCodeAndDecsription
                          {
                              Id = role.ID,
                              Value = role.RoleCode,
+                             Decsription = role.RoleDescription,
                          }).ToList();
                 }
 

@@ -391,7 +391,7 @@ namespace TMS.DataGateway.Repositories
                 }
                 else
                 {
-                    driverResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                    driverResponse.Status = DomainObjects.Resource.ResourceData.Success;
                     driverResponse.StatusCode = (int)HttpStatusCode.NotFound;
                     driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                 }

@@ -12,7 +12,7 @@ namespace TMS.DomainObjects.Objects
         public int ID { get; set; }
         [MaxLength(15)]
         public string PoolNo { get; set; }
-        [MaxLength(10)]
+        [MinLength(6,ErrorMessageResourceName = "InvalidPoolLength"),MaxLength(25, ErrorMessageResourceName = "InvalidPoolLength")]
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidPoolCode")]
         public string PoolName { get; set; }
         [MaxLength(50)]

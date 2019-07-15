@@ -565,6 +565,15 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Pool Name must be 6-25 characters only.
+        /// </summary>
+        public static string InvalidPoolLength {
+            get {
+                return ResourceManager.GetString("InvalidPoolLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Provide valid pool name.
         /// </summary>
         public static string InvalidPoolName {
@@ -615,6 +624,15 @@ namespace TMS.DomainObjects.Resource {
         public static string InvalidShipperID {
             get {
                 return ResourceManager.GetString("InvalidShipperID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid Sub District id.
+        /// </summary>
+        public static string InvalidSubDistrictID {
+            get {
+                return ResourceManager.GetString("InvalidSubDistrictID", resourceCulture);
             }
         }
         
@@ -732,6 +750,15 @@ namespace TMS.DomainObjects.Resource {
         public static string NoRecords {
             get {
                 return ResourceManager.GetString("NoRecords", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Order(s) cancelled successfully in TMS.
+        /// </summary>
+        public static string OrderCanceled {
+            get {
+                return ResourceManager.GetString("OrderCanceled", resourceCulture);
             }
         }
         

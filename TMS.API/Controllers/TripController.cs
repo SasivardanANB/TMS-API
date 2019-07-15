@@ -46,6 +46,13 @@ namespace TMS.API.Controllers
         [HttpPost]
         public IHttpActionResult GetTripList(TripRequest tripRequest)
         {
+            IEnumerable<string> headerValues;
+            var tokenValue = string.Empty;
+            if (Request.Headers.TryGetValues("Token", out headerValues))
+            {
+                tokenValue = headerValues.FirstOrDefault();
+                tripRequest.Token = tokenValue;
+            }
             ITripTask tripTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().TripTask;
             TripResponse tripResponse = tripTask.GetTripList(tripRequest);
             return Ok(tripResponse);

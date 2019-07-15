@@ -264,4 +264,7 @@
   <data name="PackingSheetUpdated" xml:space="preserve">
     <value>Packing sheet(s) updated successfully in OMS.</value>
   </data>
+  <data name="OrderCanceled" xml:space="preserve">
+    <value>Order(s) cancelled successfully in OMS</value>
+  </data>
 </root>

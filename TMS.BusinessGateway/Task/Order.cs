@@ -59,11 +59,11 @@ namespace TMS.BusinessGateway.Task
             return orderTrackResponse;
         }
 
-        public override CommonResponse GetOrderIds()
+        public override CommonResponse GetOrderIds(string tokenValue)
         {
             //If needed write business logic here for request.
 
-            CommonResponse commonResponse  = _orderRepository.GetOrderIds();
+            CommonResponse commonResponse  = _orderRepository.GetOrderIds(tokenValue);
 
             //If needed write business logic here for response.
             return commonResponse;
@@ -93,6 +93,11 @@ namespace TMS.BusinessGateway.Task
         public override OrderStatusResponse UpdateOrderStatus(OrderStatusRequest request)
         {
             return _orderRepository.UpdateOrderStatus(request);
+        }
+
+        public override OrderStatusResponse CancelOrder(OrderStatusRequest request)
+        {
+            return _orderRepository.CancelOrder(request);
         }
     }
 

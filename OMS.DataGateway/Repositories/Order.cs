@@ -20,6 +20,40 @@ namespace OMS.DataGateway.Repositories
     {
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
+        private void SwapeOrderSequence(int tripDetailId, int sequenceNumber, int newSequenceNumber)
+        {
+            using (var context = new Data.OMSDBContext())
+            {
+                using (var beginDBTransaction = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        DataModels.OrderDetail orderDetailData = context.OrderDetails.Where(t => t.ID == tripDetailId).FirstOrDefault();
+
+                        if (orderDetailData.SequenceNo != newSequenceNumber)
+                        {
+                            int originalSequenceNo = sequenceNumber;
+
+                            orderDetailData.SequenceNo = newSequenceNumber;
+                            context.Entry(orderDetailData).State = System.Data.Entity.EntityState.Modified;
+
+                            DataModels.OrderDetail swappingDetailData = context.OrderDetails.Where(t => t.OrderHeaderID == orderDetailData.OrderHeaderID && t.SequenceNo == newSequenceNumber).FirstOrDefault();
+                            swappingDetailData.SequenceNo = originalSequenceNo;
+                            context.Entry(swappingDetailData).State = System.Data.Entity.EntityState.Modified;
+                            context.SaveChanges();
+                            beginDBTransaction.Commit();
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        beginDBTransaction.Rollback();
+                        _logger.Log(LogLevel.Error, ex);
+                    }
+                }
+            }
+        }
+
         public OrderResponse GetOrders(DownloadOrderRequest orderRequest)
         {
             OrderResponse response = new OrderResponse()
@@ -73,7 +107,8 @@ namespace OMS.DataGateway.Repositories
                                       TotalPallet = details.TotalPallet,
                                       Instructions = details.Instruction,
                                       TotalCollie = details.TotalCollie,
-                                      ShippingListNo = details.ShippingListNo
+                                      ShippingListNo = details.ShippingListNo,
+                                      OrderCreatedTime = details.CreatedTime
 
                                   }).ToList();
                     }
@@ -122,11 +157,12 @@ namespace OMS.DataGateway.Repositories
                                 TotalPallet = details.TotalPallet,
                                 Instructions = details.Instruction,
                                 TotalCollie = details.TotalCollie,
-                                ShippingListNo = details.ShippingListNo
+                                ShippingListNo = details.ShippingListNo,
+                                OrderCreatedTime = details.CreatedTime
                             }
                             )
                         .Where(p => p.IsActive)
-                        .Where(p => filter.StatusId == 0 || p.OrderShipmentStatus == filter.StatusId)
+                        .Where(p => /*filter.StatusId == 0 || p.OrderShipmentStatus == filter.StatusId*/filter.StatusIds.Count > 0 ? filter.StatusIds.Contains(p.OrderShipmentStatus) : p.OrderShipmentStatus > 0)
                         .Where(p => String.IsNullOrEmpty(filter.OrderNumber) || p.OrderNo.Contains(filter.OrderNumber))
                         .Where(p => filter.FromDate == DateTime.MinValue || (DbFunctions.TruncateTime(p.OrderDate) >= filter.FromDate.Date))
                         .Where(p => filter.ToDate == DateTime.MinValue || (DbFunctions.TruncateTime(p.OrderDate) <= filter.ToDate.Date)).ToList();
@@ -135,10 +171,12 @@ namespace OMS.DataGateway.Repositories
 
                     foreach (var order in orders)
                     {
-                        order.EstimationShipmentDate = order.EstimationShipment.ToString("dd.MM.yyyy");
+                        order.EstimationShipmentDate = order.EstimationShipment.ToString("dd MMM yyyy");
                         order.EstimationShipmentTime = order.EstimationShipment.ToString("H:mm");
-                        order.ActualShipmentDate = order.ActualShipment.ToString("dd.MM.yyyy");
+                        order.ActualShipmentDate = order.ActualShipment.ToString("dd MMM yyyy");
                         order.ActualShipmentTime = order.ActualShipment.ToString("H:mm");
+                        order.OrderCreatedDate = order.OrderCreatedTime.ToString("dd MMM yyyy");
+                        order.OrderCreateTime = order.OrderCreatedTime.ToString("H:mm");
 
                         List<string> packingSheets = (from ps in context.PackingSheets
                                                       where ps.ShippingListNo == order.ShippingListNo
@@ -1718,18 +1756,47 @@ namespace OMS.DataGateway.Repositories
                     foreach (var statusRequest in request.Requests)
                     {
                         int orderId = 0;
+                        if (request.RequestFrom == "TMS")
+                        {
+                            #region Update Order Header
+                            var orderHeader = context.OrderHeaders.FirstOrDefault(t => t.OrderNo == statusRequest.OrderNumber);
+                            orderHeader.OrderStatusID = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == statusRequest.OrderStatusCode).ID;
+                            context.Entry(orderHeader).State = System.Data.Entity.EntityState.Modified;
+                            context.SaveChanges();
+                            context.Entry(orderHeader).State = System.Data.Entity.EntityState.Detached;
+                            int orderDetailId = 0;
+                            if (statusRequest.SequenceNumber > 0)
+                            {
+                                orderDetailId = context.OrderDetails.FirstOrDefault(t => t.SequenceNo == statusRequest.SequenceNumber && t.OrderHeaderID == orderHeader.ID).ID;
 
-                        orderId = context.OrderHeaders.FirstOrDefault(t => t.LegecyOrderNo == statusRequest.OrderNumber).ID;
+                            }
+                            else
+                            {
+                                orderDetailId = context.OrderDetails.FirstOrDefault(t => t.OrderHeaderID == orderHeader.ID).ID;
+                            }
 
-                        #region Update Order Header
-                        var orderHeader = context.OrderHeaders.FirstOrDefault(t => t.ID == orderId);
-                        orderHeader.OrderStatusID = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == statusRequest.OrderStatusCode).ID;
+                            // Swapping trip sequence 
+                            if (statusRequest.SequenceNumber != statusRequest.NewSequenceNumber)
+                            {
+                                SwapeOrderSequence(orderDetailId, statusRequest.SequenceNumber, statusRequest.NewSequenceNumber);
+                            }
 
-                        context.Entry(orderHeader).State = System.Data.Entity.EntityState.Modified;
-                        context.SaveChanges();
-                        context.Entry(orderHeader).State = System.Data.Entity.EntityState.Detached;
+                            #endregion
+                        }
+                        else
+                        {
+                            orderId = context.OrderHeaders.FirstOrDefault(t => t.LegecyOrderNo == statusRequest.OrderNumber).ID;
+                            #region Update Order Header
+                            var orderHeader = context.OrderHeaders.FirstOrDefault(t => t.ID == orderId);
+                            orderHeader.OrderStatusID = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == statusRequest.OrderStatusCode).ID;
 
-                        #endregion
+                            context.Entry(orderHeader).State = System.Data.Entity.EntityState.Modified;
+                            context.SaveChanges();
+                            context.Entry(orderHeader).State = System.Data.Entity.EntityState.Detached;
+                            #endregion
+                        }
+
+
 
                         response.Data = request.Requests;
                         response.Status = DomainObjects.Resource.ResourceData.Success;
@@ -1767,7 +1834,7 @@ namespace OMS.DataGateway.Repositories
                             var tripObj = context.OrderHeaders.Where(t => t.OrderNo == trip.OrderNumber).FirstOrDefault();
                             if (tripObj != null)
                             {
-                                tripObj.DriverNo =  trip.DriverNo ;
+                                tripObj.DriverNo = trip.DriverNo;
                                 tripObj.DriverName = trip.DriverName;
                                 tripObj.VehicleShipment = trip.VehicleType;
                                 tripObj.VehicleNo = trip.Vehicle;
@@ -1803,6 +1870,54 @@ namespace OMS.DataGateway.Repositories
                 response.StatusMessage = DomainObjects.Resource.ResourceData.TripReAssigned;
                 #endregion
 
+            }
+            return response;
+        }
+
+        public OrderStatusResponse CancelOrder(OrderStatusRequest request)
+        {
+            OrderStatusResponse response = new OrderStatusResponse()
+            {
+                Data = new List<OrderStatus>()
+            };
+
+            using (var context = new Data.OMSDBContext())
+            {
+                try
+                {
+                    foreach (var statusRequest in request.Requests)
+                    {
+                        var orderHeader = context.OrderHeaders.FirstOrDefault(t => t.OrderNo == statusRequest.OrderNumber);
+                        if (orderHeader != null)
+                        {
+                            #region Update Order Header
+                           
+                            orderHeader.OrderStatusID = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == "13").ID;
+
+                            context.Entry(orderHeader).State = System.Data.Entity.EntityState.Modified;
+                            context.SaveChanges();
+                            context.Entry(orderHeader).State = System.Data.Entity.EntityState.Detached;
+                            #endregion
+                            response.Status = DomainObjects.Resource.ResourceData.Success;
+                            response.StatusCode = (int)HttpStatusCode.OK;
+                            response.StatusMessage = DomainObjects.Resource.ResourceData.OrderCanceled;
+                        }
+                        else
+                        {
+                            response.Status = DomainObjects.Resource.ResourceData.Success;
+                            response.StatusCode = (int)HttpStatusCode.NotFound;
+                            response.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
+                        }
+                        response.Data = request.Requests;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log(LogLevel.Error, ex);
+                    response.Status = DomainObjects.Resource.ResourceData.Failure;
+                    response.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                    response.StatusMessage = ex.Message;
+                }
             }
             return response;
         }

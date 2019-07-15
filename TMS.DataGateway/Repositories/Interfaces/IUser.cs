@@ -36,7 +36,7 @@ namespace TMS.DataGateway.Repositories.Iterfaces
         RoleMenuResponse GetMenuWithActivities();
         ApplicationResponse GetApplications();
         CommonResponse GetUserNames();
-        CommonResponse GetRoleCodes();
+        CommonCodeAndDecsriptionResponse  GetRoleCodes();
         CommonResponse GetRegionCodes();
         DashboardResponse GetUserDashboard(UserRequest user);
         RoleResponse GetUserMenus(int userId);

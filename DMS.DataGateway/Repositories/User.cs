@@ -162,7 +162,7 @@ namespace DMS.DataGateway.Repositories
                             existingUserData.PhoneNumber = userData.PhoneNumber;
                             existingUserData.LastModifiedBy = user.LastModifiedBy;
                             existingUserData.LastModifiedTime = DateTime.Now;
-
+                            existingUserData.IsActive = userData.IsActive;
                             context.Entry(existingUserData).State = System.Data.Entity.EntityState.Modified;
                             context.SaveChanges();
                             userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UsersUpdated;

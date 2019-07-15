@@ -14,6 +14,7 @@ namespace TMS.DomainObjects.Objects
         public string TokenKey { get; set; }
         public DateTime TokenIssuedOn { get; set; }
         public DateTime TokenExpiresOn { get; set; }
+        public DateTime ServerDateTime { get; set; }
         public int NumberOfRecords { get; set; }
     }
 }

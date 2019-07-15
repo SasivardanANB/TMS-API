@@ -23,5 +23,11 @@ namespace DMS.DataGateway.Repositories.Iterfaces
         StopPointsResponse GetLastTripStatusData(int stopPointId);
         string GetDeviceId(string token);
         TripResponse ReAssignTrip(TripRequest tripRequest);
+        ImageGuidsResponse GetShippingListGuids(string orderNumber);
+        ImageGuidsResponse GetPodGuids(string orderNumber);
+        ImageGuidsResponse GetPhotoWithCustomerGuids(string orderNumber);
+        StopPointsResponse GetPendingStopPoints(int tripId);
+        OrderStatusResponse CancelOrder(OrderStatusRequest request);
+        ShipmentListResponse CreateUpdateShipmentList(ShipmentListRequest request);
     }
 }

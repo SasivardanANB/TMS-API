@@ -53,11 +53,13 @@
     <Compile Include="Objects\AssignUserRole.cs" />
     <Compile Include="Objects\Authenticate.cs" />
     <Compile Include="Objects\BusinessArea.cs" />
+    <Compile Include="Objects\CommonCodeAndDecsription.cs" />
     <Compile Include="Objects\CommonCode.cs" />
     <Compile Include="Objects\Common.cs" />
     <Compile Include="Objects\AdminBoardReport.cs" />
     <Compile Include="Objects\Driver.cs" />
     <Compile Include="Objects\Error.cs" />
+    <Compile Include="Objects\ImageGuids.cs" />
     <Compile Include="Objects\Message.cs" />
     <Compile Include="Objects\GoodsReceiveOrIssueReport.cs" />
     <Compile Include="Objects\OrderReport.cs" />
@@ -122,6 +124,7 @@
     </Compile>
     <Compile Include="Response\ApplicationResponse.cs" />
     <Compile Include="Response\AssignUserRoleResponse.cs" />
+    <Compile Include="Response\CommonCodeAndDecsriptionResponse.cs" />
     <Compile Include="Response\CommonCodeResponse.cs" />
     <Compile Include="Response\CommonResponse.cs" />
     <Compile Include="Response\DashboardResponse.cs" />
@@ -139,6 +142,7 @@
     <Compile Include="Response\DealerDetailsResponse.cs" />
     <Compile Include="Response\PartnerSearchResponse.cs" />
     <Compile Include="Response\OrderReportResponse.cs" />
+    <Compile Include="Response\ImageGuidsResponse.cs" />
     <Compile Include="Response\SAMAUserResponse.cs" />
     <Compile Include="Response\TripResponse.cs" />
     <Compile Include="Response\SubDistrictDetailsResponse.cs" />

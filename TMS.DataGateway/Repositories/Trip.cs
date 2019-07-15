@@ -35,13 +35,19 @@ namespace TMS.DataGateway.Repositories
             {
                 using (var context = new DataModel.TMSDBContext())
                 {
+                    var userDetails = context.Tokens.Where(t => t.TokenKey == tripRequest.Token).FirstOrDefault();
+                    var businessAreas = (from ur in context.UserRoles
+                                         where ur.UserID == userDetails.UserID && ur.IsDelete == false
+                                         select ur.BusinessAreaID).ToList();
+
+
                     var searchRequest = tripRequest.Requests[0];
                     if(searchRequest.OrderStatusId > 0) { 
                     tripList = (from oh in context.OrderHeaders
                                  join od in context.OrderDetails on oh.ID equals od.OrderHeaderID
                                  join ps in context.PackingSheets on od.ShippingListNo equals ps.ShippingListNo into pks
                                  from pksh in pks.DefaultIfEmpty()
-                                where( (((!String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.OrderNo == tripRequest.GlobalSearch)
+                                where businessAreas.Contains(oh.BusinessAreaId) && ( (((!String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.OrderNo == tripRequest.GlobalSearch)
                                        || (String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.OrderNo == oh.OrderNo))
                                        ||
                                        ((!String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.VehicleNo == tripRequest.GlobalSearch)
@@ -70,7 +76,7 @@ namespace TMS.DataGateway.Repositories
                                     join od in context.OrderDetails on oh.ID equals od.OrderHeaderID
                                     join ps in context.PackingSheets on od.ShippingListNo equals ps.ShippingListNo into pks
                                     from pksh in pks.DefaultIfEmpty()
-                                    where ((((!String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.OrderNo == tripRequest.GlobalSearch)
+                                    where businessAreas.Contains(oh.BusinessAreaId) && ((((!String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.OrderNo == tripRequest.GlobalSearch)
                                            || (String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.OrderNo == oh.OrderNo))
                                            ||
                                            ((!String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.VehicleNo == tripRequest.GlobalSearch)
@@ -323,9 +329,9 @@ namespace TMS.DataGateway.Repositories
                                                 {
                                                     ID = orderPartnerDetails.ID,
                                                     Address = orderPartnerDetails.Partner.PartnerAddress,
-                                                    CityName = orderPartnerDetails.Partner.PostalCode.SubDistrict.City.CityDescription,
-                                                    ProvinceName = orderPartnerDetails.Partner.PostalCode.SubDistrict.City.Province.ProvinceDescription,
-                                                    SubDistrictName = orderPartnerDetails.Partner.PostalCode.SubDistrict.SubdistrictName,
+                                                    CityName = orderPartnerDetails.Partner.SubDistrict.City.CityDescription,
+                                                    ProvinceName = orderPartnerDetails.Partner.SubDistrict.City.Province.ProvinceDescription,
+                                                    SubDistrictName = orderPartnerDetails.Partner.SubDistrict.SubdistrictName,
                                                     ActualShipmentDate = orderDetailsData.ActualShipmentDate.ToString(),
                                                     EstimationShipmentDate = orderDetailsData.EstimationShipmentDate.ToString(),
                                                     PartnerCode = orderPartnerDetails.Partner.PartnerNo,
@@ -412,9 +418,9 @@ namespace TMS.DataGateway.Repositories
                     else
                     {
                         orderDetailsResponse.NumberOfRecords = 0;
-                        orderDetailsResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                        orderDetailsResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         orderDetailsResponse.StatusCode = (int)HttpStatusCode.NotFound;
-                        orderDetailsResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                        orderDetailsResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                     }
 
 
@@ -491,7 +497,7 @@ namespace TMS.DataGateway.Repositories
                         }
                         else
                         {
-                            tripResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                            tripResponse.Status = DomainObjects.Resource.ResourceData.Success;
                             tripResponse.StatusCode = (int)HttpStatusCode.NotFound;
                             tripResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                         }

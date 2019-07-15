@@ -33,6 +33,14 @@ namespace TMS.API.Controllers
         [HttpPost]
         public IHttpActionResult GetGateList(GateRequest gateRequest)
         {
+            IEnumerable<string> headerValues;
+            string tokenValue = string.Empty;
+            if (Request.Headers.TryGetValues("Token", out headerValues))
+            {
+                tokenValue = headerValues.FirstOrDefault();
+                gateRequest.Token = tokenValue.ToString();
+            }
+
             IGateTask gateTask = DependencyResolver.GetImplementationOf<ITaskGateway>().GateTask;
             GateResponse gateResponse = gateTask.GetGateList(gateRequest);
             return Ok(gateResponse);

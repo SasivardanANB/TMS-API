@@ -153,6 +153,9 @@
   <data name="NewPasswordMustbeDifferent" xml:space="preserve">
     <value>New Password Must be Different</value>
   </data>
+  <data name="NoRecordsFound" xml:space="preserve">
+    <value>No records found</value>
+  </data>
   <data name="OldPasswordMismatch" xml:space="preserve">
     <value>Old Password Mismatch</value>
   </data>
@@ -167,6 +170,9 @@
   </data>
   <data name="TripAssigned" xml:space="preserve">
     <value>Trip(s) assigned successfully in DMS</value>
+  </data>
+  <data name="TripCanceled" xml:space="preserve">
+    <value>Trip(s) cancelled successfully in DMS</value>
   </data>
   <data name="TripCreated" xml:space="preserve">
     <value>Trip(s) created/updated successfully in DMS</value>

@@ -25,7 +25,9 @@ namespace TMS.DomainObjects.Objects
         public string PartnerEmail { get; set; }
         [MaxLength(200)]
         public string PartnerAddress { get; set; }
-        [Range(minimum: 1, maximum: int.MaxValue, ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidPostalCodeID")]
+        [Range(minimum: 1, maximum: int.MaxValue, ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidSubDistrictID")]
+        public int? SubDistrictID { get; set; }
+        
         public int? PostalCodeID { get; set; }
         [Range(minimum: 1, maximum: int.MaxValue, ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidPICID")]
         public int? PICID { get; set; }

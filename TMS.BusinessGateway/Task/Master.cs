@@ -81,5 +81,11 @@ namespace TMS.BusinessGateway.Task
             CommonResponse commonResponse = _masterRepository.GetTripStatusNames(requestType);
             return commonResponse;
         }
+
+        public override CommonCodeResponse GetDriversByTransporter(int transporterId)
+        {
+            CommonCodeResponse commonResponse = _masterRepository.GetDriversByTransporter(transporterId);
+            return commonResponse;
+        }
     }
 }

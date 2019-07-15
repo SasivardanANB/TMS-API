@@ -19,7 +19,7 @@ namespace DMS.DomainObjects.Resource {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class ResourceData {
@@ -169,6 +169,15 @@ namespace DMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No records found.
+        /// </summary>
+        public static string NoRecordsFound {
+            get {
+                return ResourceManager.GetString("NoRecordsFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Old Password Mismatch.
         /// </summary>
         public static string OldPasswordMismatch {
@@ -210,6 +219,15 @@ namespace DMS.DomainObjects.Resource {
         public static string TripAssigned {
             get {
                 return ResourceManager.GetString("TripAssigned", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Trip(s) cancelled successfully in DMS.
+        /// </summary>
+        public static string TripCanceled {
+            get {
+                return ResourceManager.GetString("TripCanceled", resourceCulture);
             }
         }
         

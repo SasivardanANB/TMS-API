@@ -761,7 +761,7 @@ namespace TMS.API.Controllers
         public IHttpActionResult GetRoleCodes()
         {
             IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
-            CommonResponse commonResponse = userTask.GetRoleCodes();
+            CommonCodeAndDecsriptionResponse commonResponse = userTask.GetRoleCodes();
             return Ok(commonResponse);
         }
 

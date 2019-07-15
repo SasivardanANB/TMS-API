@@ -97,10 +97,10 @@ namespace TMS.DataGateway.Repositories
                     else
                     {
                         VehicleResponse.StatusCode = (int)HttpStatusCode.NotFound;
-                        VehicleResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                        VehicleResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         VehicleResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                     }
-                   
+
                 }
             }
             catch (Exception ex)
@@ -124,15 +124,15 @@ namespace TMS.DataGateway.Repositories
                     {
                         ID = vehicle.ID,
                         VehicleTypeID = vehicle.VehicleTypeID,
-                        VehicleTypeDescription= vehicle.VehicleType.VehicleTypeDescription,
+                        VehicleTypeDescription = vehicle.VehicleType.VehicleTypeDescription,
                         //VehicleTypeName = vehicle.VehicleTypeName,
                         KIRNo = vehicle.KIRNo,
                         KIRExpiryDate = vehicle.KIRExpiryDate,
                         MaxDimension = vehicle.MaxDimension,
                         PoolID = vehicle.PoolID,
-                        PoolName=vehicle.Pool.PoolName,
+                        PoolName = vehicle.Pool.PoolName,
                         ShipperID = vehicle.ShipperID,
-                        ShipperName=vehicle.Partner.PartnerName,
+                        ShipperName = vehicle.Partner.PartnerName,
                         MaxWeight = vehicle.MaxWeight,
                         IsDedicated = vehicle.IsDedicated,
                         PlateNumber = vehicle.PlateNumber,
@@ -225,6 +225,7 @@ namespace TMS.DataGateway.Repositories
                     || s.MaxWeight.ToString().Contains(globalSearch)
                     || (s.PoolName != null && s.PoolName.ToLower().Contains(globalSearch))
                     || (s.VehicleTypeDescription != null && s.VehicleTypeDescription.ToLower().Contains(globalSearch))
+                    || (s.ShipperName != null && s.ShipperName.ToLower().Contains(globalSearch))
                     ).ToList();
                 }
 
@@ -339,6 +340,57 @@ namespace TMS.DataGateway.Repositories
                 vehicleResponse.StatusMessage = ex.Message;
             }
             return vehicleResponse;
+        }
+
+        public CommonCodeResponse GetVehiclesPlateNumbers(string searchText)
+        {
+            CommonCodeResponse commonCodeResponse = new CommonCodeResponse();
+            List<Domain.CommonCode> commonCodes;
+            try
+            {
+                using (var tMSDBContext = new TMSDBContext())
+                {
+                    if (searchText != string.Empty && searchText != null)
+                    {
+                        commonCodes = tMSDBContext.Vehicles.Where(v => !v.IsDelete && v.KIRNo.Contains(searchText)).Select(vehicle => new Domain.CommonCode
+                        {
+                            Id = vehicle.KIRNo,
+                            Value = vehicle.KIRNo
+                        }).ToList();
+                    }
+                    else
+                    {
+                        commonCodes = tMSDBContext.Vehicles.Where(v => !v.IsDelete).Select(vehicle => new Domain.CommonCode
+                        {
+                            Id = vehicle.KIRNo,
+                            Value = vehicle.KIRNo
+                        }).ToList();
+                    }
+                    if (commonCodes.Count > 0)
+                    {
+                        commonCodeResponse.Data = commonCodes;
+                        commonCodeResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        commonCodeResponse.StatusCode = (int)HttpStatusCode.OK;
+                        commonCodeResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                    }
+                    else
+                    {
+                        commonCodeResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                        commonCodeResponse.StatusCode = (int)HttpStatusCode.NotFound;
+                        commonCodeResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
+                    }
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+                commonCodeResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                commonCodeResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                commonCodeResponse.StatusMessage = ex.Message;
+            }
+            return commonCodeResponse;
         }
     }
 }
