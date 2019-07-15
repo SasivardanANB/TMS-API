@@ -1546,6 +1546,7 @@ namespace OMS.DataGateway.Repositories
                          {
                              Id = role.ID,
                              Value = role.RoleCode,
+                             Description =role.RoleDescription
                          }).ToList();
                 }
 
