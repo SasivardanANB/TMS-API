@@ -26,5 +26,6 @@ namespace DMS.DomainGateway.Task.Interfaces
         ImageGuidsResponse GetPodGuids(string orderNumber);
         ImageGuidsResponse GetPhotoWithCustomerGuids(string orderNumber);
         StopPointsResponse GetPendingStopPoints(int tripId);
+        ShipmentListResponse CreateUpdateShipmentList(ShipmentListRequest request);
     }
 }

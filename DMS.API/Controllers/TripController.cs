@@ -12,6 +12,7 @@ using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace DMS.API.Controllers
@@ -66,7 +67,7 @@ namespace DMS.API.Controllers
             ITripTask tripTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().TripTask;
             TripResponse tripData = tripTask.CreateUpdateTrip(request);
 
-            if (tripData.StatusCode == 200 && tripData.Status == "Success" && request.Requests.Count >0 && ConfigurationManager.AppSettings["AllowPushNotifications"].ToString() == "true" )
+            if (tripData.StatusCode == 200 && tripData.Status == "Success" && request.Requests.Count > 0 && ConfigurationManager.AppSettings["AllowPushNotifications"].ToString() == "true")
             {
                 int i = 0;
                 foreach (var reqObj in request.Requests)
@@ -91,8 +92,8 @@ namespace DMS.API.Controllers
                         notificationRequest.data = new Notification()
                         {
                             title = "Trip has been assigned to you.",
-                            
-                            message = " " + tripNumber ,
+
+                            message = " " + tripNumber,
                             click_action = "NOTIFICATIONACTIVITY",
                         };
 
@@ -358,7 +359,7 @@ namespace DMS.API.Controllers
         public IHttpActionResult GetShippingListGuids(string orderNumber)
         {
             ITripTask tripTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().TripTask;
-            ImageGuidsResponse  imageGuidsResponse  = tripTask.GetShippingListGuids(orderNumber);
+            ImageGuidsResponse imageGuidsResponse = tripTask.GetShippingListGuids(orderNumber);
             return Ok(imageGuidsResponse);
         }
 
@@ -389,5 +390,48 @@ namespace DMS.API.Controllers
             return Ok(stopPointsResponse);
         }
 
+        [HttpPost, Route("shippinglistocr")]
+        public async Task<IHttpActionResult> ShippingListOCR(int stopPointId)
+        {
+            if (!Request.Content.IsMimeMultipartContent("form-data"))
+            {
+                throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
+            }
+
+            var client = new HttpClient();
+            var response = await client.PostAsync(ConfigurationManager.AppSettings["ShipmentListOCRURL"], Request.Content);
+            var json = response.Content.ReadAsStringAsync().Result;
+
+            ShippingList shippingList = JsonConvert.DeserializeObject<ShippingList>(json);
+
+            ShipmentListRequest shipmentListRequest = new ShipmentListRequest()
+            {
+                Requests = new List<ShipmentListDetails>()
+            };
+
+            foreach (string packingSheetNo in shippingList.PKG_List)
+            {
+                ShipmentListDetails shipmentListDetails = new ShipmentListDetails();
+                int.TryParse(shippingList.Colie.Trim(), out int numberOfBoxes);
+                shipmentListDetails.NumberOfBoxes = numberOfBoxes;
+                shipmentListDetails.Note = "Pack";
+                shipmentListDetails.PackingSheetNumber = packingSheetNo;
+                shipmentListDetails.StopPointId = stopPointId;
+
+                shipmentListRequest.Requests.Add(shipmentListDetails);
+            }
+
+            ITripTask tripTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().TripTask;
+            ShipmentListResponse shipmentListResponse = tripTask.CreateUpdateShipmentList(shipmentListRequest);
+
+            return Ok(shipmentListResponse);
+        }
+
+        private class ShippingList
+        {
+            public string Colie { get; set; } = string.Empty;
+            public List<String> PKG_List { get; set; } = null;
+            public string SL_No { get; set; } = string.Empty;
+        }
     }
 }

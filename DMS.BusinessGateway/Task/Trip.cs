@@ -100,5 +100,9 @@ namespace DMS.BusinessGateway.Task
         {
            return _tripRepository.GetPendingStopPoints(tripId);
         }
+        public override ShipmentListResponse CreateUpdateShipmentList(ShipmentListRequest request)
+        {
+            return _tripRepository.CreateUpdateShipmentList(request);
+        }
     }
 }
