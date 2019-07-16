@@ -14,6 +14,8 @@ namespace DMS.DataGateway.DataModels
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
+        [MaxLength(20)]
+        public string ShippingListNo { get; set; }
         public int NumberOfBoxes { get; set; }
         [MaxLength(200)]
         public string Note { get; set; }

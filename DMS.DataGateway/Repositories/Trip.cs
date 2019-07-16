@@ -1359,6 +1359,7 @@ namespace DMS.DataGateway.Repositories
                         {
                             DataModel.ShipmentListDetails shipmentListDetails = new DataModel.ShipmentListDetails()
                             {
+                                ShippingListNo = shipmentList.ShippingListNo,
                                 NumberOfBoxes = shipmentList.NumberOfBoxes,
                                 Note = shipmentList.Note,
                                 PackingSheetNumber = shipmentList.PackingSheetNumber,

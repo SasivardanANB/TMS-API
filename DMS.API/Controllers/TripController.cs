@@ -421,6 +421,7 @@ namespace DMS.API.Controllers
             foreach (string packingSheetNo in shippingList.PKG_List)
             {
                 ShipmentListDetails shipmentListDetails = new ShipmentListDetails();
+                shipmentListDetails.ShippingListNo = shippingList.SL_No;
                 int.TryParse(shippingList.Colie.Trim(), out int numberOfBoxes);
                 shipmentListDetails.NumberOfBoxes = numberOfBoxes;
                 shipmentListDetails.Note = "Pack";
