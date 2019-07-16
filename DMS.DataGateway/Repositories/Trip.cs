@@ -1309,7 +1309,7 @@ namespace DMS.DataGateway.Repositories
                                 context.SaveChanges();
                             }
                             #region Update Order Header
-                            var tripHeader = context.TripHeaders.FirstOrDefault(t => t.ID == tripId );
+                            var tripHeader = context.TripHeaders.FirstOrDefault(t => t.ID == tripId);
                             tripHeader.CurrentTripStatusId = context.TripStatuses.FirstOrDefault(t => t.StatusCode == "13").ID;
 
                             context.Entry(tripHeader).State = System.Data.Entity.EntityState.Modified;
@@ -1385,6 +1385,7 @@ namespace DMS.DataGateway.Repositories
                                  select new DomainObjects.Objects.ShipmentListDetails
                                  {
                                      ID = sl.ID,
+                                     ShippingListNo = sl.ShippingListNo,
                                      NumberOfBoxes = sl.NumberOfBoxes,
                                      Note = sl.Note,
                                      PackingSheetNumber = sl.PackingSheetNumber,
