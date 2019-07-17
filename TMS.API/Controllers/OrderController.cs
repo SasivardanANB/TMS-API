@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using ActiveUp.Net.Mail;
+using Newtonsoft.Json;
 using NLog;
 using RestSharp;
 using System;
@@ -8,6 +9,7 @@ using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.ModelBinding;
 using TMS.API.Classes;
@@ -16,6 +18,7 @@ using TMS.DomainGateway.Task.Interfaces;
 using TMS.DomainObjects.Objects;
 using TMS.DomainObjects.Request;
 using TMS.DomainObjects.Response;
+using static TMS.API.Controllers.MediaController;
 
 namespace TMS.API.Controllers
 {
@@ -23,7 +26,7 @@ namespace TMS.API.Controllers
     [RoutePrefix("api/v1/order")]
     public class OrderController : ApiController
     {
-        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly NLog.Logger _logger = LogManager.GetCurrentClassLogger();
 
         #region Private Methods
         private static string GetApiResponse(string apiRoute, Method method, object requestQueryParameter, string token)
@@ -37,6 +40,22 @@ namespace TMS.API.Controllers
             if (requestQueryParameter != null)
             {
                 request.AddJsonBody(requestQueryParameter);
+            }
+            var result = client.Execute(request);
+            return result.Content;
+        }
+
+        private static string GetFileUploadApiResponse(string apiRoute, Method method, MimePart mimePart, string token)
+        {
+            var client = new RestClient(ConfigurationManager.AppSettings["ApiGatewayBaseURL"]);
+            if (token != null)
+                client.AddDefaultHeader("Token", token);
+            var request = new RestRequest(apiRoute, method) { RequestFormat = DataFormat.Json, AlwaysMultipartFormData = true };
+            request.Timeout = 500000;
+            if (mimePart != null)
+            {
+                client.AddDefaultHeader("Content-Type", "multipart/form-data");
+                request.AddFileBytes("file", mimePart.BinaryContent, mimePart.Filename, mimePart.ContentType.MimeType);// upload from file byte array
             }
             var result = client.Execute(request);
             return result.Content;
@@ -844,7 +863,7 @@ namespace TMS.API.Controllers
                 foreach (PackingSheet ps in packingSheetRequest.Requests)
                 {
                     ps.OrderNumber = packingSheetResponse.Data[0].OrderNumber;
-                   
+
                     ps.DealerNumber = (from pks in packingSheetResponse.Data
                                        where pks.DealerId == ps.DealerId
                                        select pks.DealerNumber).FirstOrDefault();
@@ -886,7 +905,6 @@ namespace TMS.API.Controllers
             PackingSheetResponse packingSheetResponse = orderTask.GetPackingSheetDetails(orderId);
             return Ok(packingSheetResponse);
         }
-
 
         [Route("trackorder")]
         [HttpGet]
@@ -954,7 +972,7 @@ namespace TMS.API.Controllers
                     OrderStatusCode = item.OrderStatusCode,
                     Remarks = "",
                     SequenceNumber = item.SequenceNumber,
-                    NewSequenceNumber=item.NewSequenceNumber
+                    NewSequenceNumber = item.NewSequenceNumber
                 };
 
                 omsRequest.Requests.Add(requestData);
@@ -1011,7 +1029,7 @@ namespace TMS.API.Controllers
             #endregion
 
             var response = JsonConvert.DeserializeObject<ImageGuidsResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
-                + "/v1/trip/getshippinglistguids?orderNumber="+ orderNumber, Method.GET, null, token));
+                + "/v1/trip/getshippinglistguids?orderNumber=" + orderNumber, Method.GET, null, token));
             #endregion
             return Ok(response);
         }
@@ -1172,7 +1190,65 @@ namespace TMS.API.Controllers
             return Ok(response);
         }
 
+        [Route("getshipmentschedulesfromemail")]
+        [HttpGet]
+        public IHttpActionResult GetShipmentSchedulesFromEmail()
+        {
+            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            OrderStatusResponse response = new OrderStatusResponse();
 
+            // Loin into Gamil and Get all Mails
+            var mailRepository = new MailRepository(
+                                    "imap.gmail.com",
+                                    993,
+                                    true,
+                                    "ranjit.k224@gmail.com",
+                                    "Prr@@nvj224"
+                                );
+
+            //Get all Unread Mails
+            var emailList = mailRepository.GetUnreadMails("inbox");
+
+            foreach (ActiveUp.Net.Mail.Message email in emailList)
+            {
+                if (email.Attachments.Count > 0)
+                {
+                    foreach (MimePart attachment in email.Attachments)
+                    {
+                        if (attachment.ContentType.MimeType.ToLower() == "application/pdf") // Checking For PDF files
+                        {
+                            // Uploading File into Blob storage and get GUID
+                            var fileuploadresponse = JsonConvert.DeserializeObject<ResponseDataForFileUpload>(GetFileUploadApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"] + "/v1/media/uploadfile", Method.POST, attachment, null));
+                            response.StatusMessage += ". " + fileuploadresponse.Guid;
+
+                            if (fileuploadresponse.StatusCode == (int)HttpStatusCode.OK && fileuploadresponse.Guid != "" && fileuploadresponse.Guid != null)
+                            {
+                                // Calling OCR to get shipmentschedule data
+                                var res = GetFileUploadApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"] + "/v1/order/shipmentscheduleocr", Method.POST, attachment, null);
+                                var data = res;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return Ok(response);
+        }
+
+        [HttpPost, Route("shipmentscheduleocr"), AllowAnonymous]
+        public async Task<IHttpActionResult> ShipmentScheduleOCR()
+        {
+            if (!Request.Content.IsMimeMultipartContent("form-data"))
+            {
+                throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
+            }
+
+            var client = new HttpClient();
+            var response = await client.PostAsync(ConfigurationManager.AppSettings["ShipmentScheduleOCRURL"], Request.Content);
+            var json = response.Content.ReadAsStringAsync().Result;
+
+            return Ok(json);
+        }
 
     }
 }
