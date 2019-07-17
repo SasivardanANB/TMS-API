@@ -22,5 +22,6 @@ namespace TMS.DataGateway.Repositories.Interfaces
         string GetBusinessAreaCode(int businessAreaId);
         OrderStatusResponse UpdateOrderStatus(OrderStatusRequest request);
         OrderStatusResponse CancelOrder(OrderStatusRequest request);
+        HargaResponse GetHarga(HargaRequest request);
     }
 }

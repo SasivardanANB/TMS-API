@@ -28,7 +28,6 @@ namespace TMS.DataGateway.Repositories
             {
                 using (var beginDBTransaction = context.Database.BeginTransaction())
                 {
-                    List<StopPoints> pendingStopPoints = new List<StopPoints>();
                     try
                     {
                         DataModels.OrderDetail orderDetailData = context.OrderDetails.Where(t => t.ID == tripDetailId).FirstOrDefault();
@@ -1917,8 +1916,8 @@ namespace TMS.DataGateway.Repositories
 
                     var orderData = (from orderHeader in context.OrderHeaders
                                      where businessAreas.Contains(orderHeader.BusinessAreaId) &&
-                                     orderHeader.OrderType == (context.OrderTypes.Where(ot => ot.OrderTypeCode == "INBD").Select(p => p.ID).FirstOrDefault() 
-                                    
+                                     orderHeader.OrderType == (context.OrderTypes.Where(ot => ot.OrderTypeCode == "INBD").Select(p => p.ID).FirstOrDefault()
+
                                      )
                                      select new Domain.Common
                                      {
@@ -2357,7 +2356,6 @@ namespace TMS.DataGateway.Repositories
                                 context.SaveChanges();
                             }
                             #region Update Order Header
-                            //var orderHeader2 = context.OrderHeaders.FirstOrDefault(t => t.ID == orderId);
                             orderHeader.OrderStatusID = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == "13").ID;
 
                             context.Entry(orderHeader).State = System.Data.Entity.EntityState.Modified;
@@ -2384,6 +2382,46 @@ namespace TMS.DataGateway.Repositories
                     response.StatusCode = (int)HttpStatusCode.ExpectationFailed;
                     response.StatusMessage = ex.Message;
                 }
+            }
+
+            return response;
+        }
+
+        public HargaResponse GetHarga(HargaRequest request)
+        {
+            HargaResponse response = new HargaResponse()
+            {
+                Data = new List<Harga>()
+            };
+
+            Harga hargaRequest = request.Requests[0];
+
+            using (var context = new DataModel.TMSDBContext())
+            {
+                DataModel.Harga result = context.Hargas.Where(h => h.TransporterID == hargaRequest.TransporterID && h.VechicleTypeID == hargaRequest.VechicleTypeID).FirstOrDefault();
+                if (result != null)
+                {
+                    Harga harga = new Harga()
+                    {
+                        ID = result.ID,
+                        TransporterID = result.TransporterID,
+                        VechicleTypeID = result.VechicleTypeID,
+                        Price = result.Price
+                    };
+                    response.Data.Add(harga);
+                }
+                else
+                {
+                    Harga harga = new Harga()
+                    {
+                        TransporterID = hargaRequest.TransporterID,
+                        VechicleTypeID = hargaRequest.VechicleTypeID
+                    };
+                    response.Data.Add(harga);
+                }
+                response.StatusCode = (int)HttpStatusCode.OK;
+                response.Status = DomainObjects.Resource.ResourceData.Success;
+                response.StatusMessage = DomainObjects.Resource.ResourceData.Success;
             }
 
             return response;

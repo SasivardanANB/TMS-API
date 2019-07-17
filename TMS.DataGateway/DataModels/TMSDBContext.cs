@@ -50,5 +50,6 @@ namespace TMS.DataGateway.DataModels
         public virtual DbSet<GateType> GateTypes { get; set; }
         public virtual DbSet<GateInGateOut> GateInGateOuts { get; set; }
         public virtual DbSet<PartnerPartnerType> PartnerPartnerTypes { get; set; }
+        public virtual DbSet<Harga> Hargas { get; set; }
     }
 }

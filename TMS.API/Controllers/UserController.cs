@@ -188,31 +188,6 @@ namespace TMS.API.Controllers
                 }
                 #endregion
 
-                #region Create DMSUserRequest - Feature Disabled
-                //UserRequest dmsRequest = null;
-                //if (userDetails.Applications.Contains(3))
-                //{
-                //    dmsRequest = new UserRequest()
-                //    {
-                //        Requests = new List<User>()
-                //        {
-                //            new User()
-                //            {
-                //                FirstName = userDetails.FirstName,
-                //                LastName = userDetails.LastName,
-                //                UserName = userDetails.UserName,
-                //                Password = userDetails.Password,
-                //                IsActive = true
-                //            }
-                //        },
-                //        CreatedBy = "SYSTEM",
-                //        LastModifiedBy = user.LastModifiedBy,
-                //        CreatedTime = user.CreatedTime,
-                //        LastModifiedTime = user.LastModifiedTime
-                //    };                    
-                //};
-                #endregion
-
                 #region Create SAMAUserRequest
                 SAMAUser samaUser = null;
                 if (userDetails.ID == 0) // New User
@@ -277,48 +252,8 @@ namespace TMS.API.Controllers
                 }
                 #endregion
 
-                #region CreateUpdateUser in DMS - Feature Disabled
-                //if (dmsRequest != null) //For DMS Application - Integrate Azure API Gateway
-                //{
-                //    //Login to DMS and get Token
-                //    loginRequest.UserName = ConfigurationManager.AppSettings["DMSLogin"];
-                //    loginRequest.UserPassword = ConfigurationManager.AppSettings["DMSPassword"];
-                //    var dmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
-                //        + "/v1/user/login", Method.POST, loginRequest, null));
-                //    if (dmsLoginResponse != null && dmsLoginResponse.Data.Count > 0)
-                //    {
-                //        token = dmsLoginResponse.TokenKey;
-                //    }
-
-                //    userResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
-                //        + "/v1/user/createupdateuser", Method.POST, dmsRequest, token));
-
-                //    #region Create Driver master data
-                //    DriverRequest driverRequest = new DriverRequest()
-                //    {
-                //        Requests = new List<Driver>()
-                //    };
-
-                //    var dmsDriver = dmsRequest.Requests[0];
-                //    //Driver driver = new Driver()
-                //    //{
-                //    //    IsActive = true,
-                //    //    DriverAddress = "",
-                //    //    DriverPhone = "",
-                //    //    FirstName = dmsDriver.FirstName,
-                //    //    LastName = dmsDriver.LastName,
-                //    //    Email = "",
-                //    //    UserName = dmsDriver.UserName,
-                //    //    Password = dmsDriver.Password,
-                //    //    DriverNo
-                //    //};
-
-                //IDriverTask driverTask = DependencyResolver.GetImplementationOf<ITaskGateway>().DriverTask;
-                //DriverResponse driverResponse = driverTask.CreateUpdateDriver(driverRequest);
-                #endregion
-
                 #region Create User in SAMA
-                if (samaUser != null && Convert.ToBoolean(ConfigurationManager.AppSettings["CreateSAMAUser"]) == true)
+                if (samaUser != null && Convert.ToBoolean(ConfigurationManager.AppSettings["CreateSAMAUser"]))
                 {
                     // Encrypt SAMA default password
                     var client = new RestClient(ConfigurationManager.AppSettings["SAMAApiGatewayBaseURL"]);

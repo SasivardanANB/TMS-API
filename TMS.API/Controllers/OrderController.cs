@@ -151,25 +151,6 @@ namespace TMS.API.Controllers
                         ModelState.Remove("order.Requests[" + i + "].BusinessAreaID");
                         ModelState.Remove("order.Requests[" + i + "]");
 
-                        //if (string.IsNullOrEmpty(order.Requests[i].ShippingListNo))
-                        //{
-                        //    ModelState.AddModelError($"{nameof(order)}.{nameof(order.Requests)}.[{i}].{nameof(Order.ShippingListNo)}", "Invalid Shipping List Number");
-                        //}
-                        //if (string.IsNullOrEmpty(order.Requests[i].PackingSheetNo))
-                        //{
-                        //    ModelState.AddModelError($"{nameof(order)}.{nameof(order.Requests)}.[{i}].{nameof(Order.PackingSheetNo)}", "Invalid Packing Sheet Number");
-                        //}
-                        //if (!string.IsNullOrEmpty(order.Requests[i].PackingSheetNo))
-                        //{
-                        //    string[] packingSheets = order.Requests[i].PackingSheetNo.Split(',');
-                        //    foreach (string packingSheet in packingSheets)
-                        //    {
-                        //        if (packingSheet.Length > 20)
-                        //        {
-                        //            ModelState.AddModelError($"{nameof(order)}.{nameof(order.Requests)}.[{i}].{nameof(Order.PackingSheetNo)}", "Packing Sheet Number should not exceed 20 characters");
-                        //        }
-                        //    }
-                        //}
                         if (order.Requests[i].TotalCollie == 0)
                         {
                             ModelState.AddModelError($"{nameof(order)}.{nameof(order.Requests)}.[{i}].{nameof(Order.TotalCollie)}", "Invalid Total Collie");
@@ -334,7 +315,7 @@ namespace TMS.API.Controllers
                                             TripLocation sourceLocation = new TripLocation()
                                             {
                                                 PartnerType = request.PartnerType2,
-                                                PartnerNo = sourcePartnerDetail.PartnerNo, //request.PartnerNo2, 
+                                                PartnerNo = sourcePartnerDetail.PartnerNo,
                                                 PartnerName = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
                                                 SequnceNumber = request.SequenceNo,
                                                 ActualDeliveryDate = actualShipmentDate,
@@ -1190,6 +1171,14 @@ namespace TMS.API.Controllers
             return Ok(response);
         }
 
+        [Route("getharga")]
+        [HttpPost]
+        public IHttpActionResult GetHarga(HargaRequest request)
+        {
+            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            HargaResponse response = orderTask.GetHarga(request);
+            return Ok(response);
+        }
         [Route("getshipmentschedulesfromemail")]
         [HttpGet]
         public IHttpActionResult GetShipmentSchedulesFromEmail()

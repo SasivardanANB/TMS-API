@@ -79,15 +79,15 @@ namespace OMS.DataGateway.Repositories
                                       OrderNo = headers.OrderNo,
                                       LegecyOrderNo = headers.LegecyOrderNo,
                                       SequenceNo = details.SequenceNo,
-                                      PartnerNo1 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "1").ID).PartnerID)).PartnerNo, //  GetPartner(details.ID, "1").PartnerNo,
+                                      PartnerNo1 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "1").ID).PartnerID)).PartnerNo, 
                                       PartnerType1 = 1,
-                                      PartnerName1 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "1").ID).PartnerID)).PartnerName,//GetPartner(details.ID, "1").PartnerName,
-                                      PartnerNo2 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "2").ID).PartnerID)).PartnerNo, //GetPartner(details.ID, "2").PartnerNo,
+                                      PartnerName1 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "1").ID).PartnerID)).PartnerName,
+                                      PartnerNo2 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "2").ID).PartnerID)).PartnerNo, 
                                       PartnerType2 = 2,
-                                      PartnerName2 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "2").ID).PartnerID)).PartnerName, //GetPartner(details.ID, "2").PartnerName,
-                                      PartnerNo3 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "3").ID).PartnerID)).PartnerNo,//GetPartner(details.ID, "3").PartnerNo,
+                                      PartnerName2 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "2").ID).PartnerID)).PartnerName, 
+                                      PartnerNo3 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "3").ID).PartnerID)).PartnerNo,
                                       PartnerType3 = 3,
-                                      PartnerName3 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "3").ID).PartnerID)).PartnerName, // GetPartner(details.ID, "3").PartnerName,
+                                      PartnerName3 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "3").ID).PartnerID)).PartnerName, 
                                       FleetType = headers.FleetType,
                                       OrderType = headers.OrderType,
                                       VehicleShipmentType = headers.VehicleShipment,
@@ -115,6 +115,10 @@ namespace OMS.DataGateway.Repositories
                     else if (orderRequest.Requests.Count > 0)
                     {
                         var filter = orderRequest.Requests[0];
+                        if(filter.StatusIds == null)
+                        {
+                            filter.StatusIds = new List<int>();
+                        }
 
                         orders = context.OrderDetails
                             .Join(
@@ -129,15 +133,15 @@ namespace OMS.DataGateway.Repositories
                                 OrderNo = headers.OrderNo,
                                 LegecyOrderNo = headers.LegecyOrderNo,
                                 SequenceNo = details.SequenceNo,
-                                PartnerNo1 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "1").ID).PartnerID)).PartnerNo, //  GetPartner(details.ID, "1").PartnerNo,
+                                PartnerNo1 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "1").ID).PartnerID)).PartnerNo,
                                 PartnerType1 = 1,
-                                PartnerName1 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "1").ID).PartnerID)).PartnerName,//GetPartner(details.ID, "1").PartnerName,
-                                PartnerNo2 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "2").ID).PartnerID)).PartnerNo, //GetPartner(details.ID, "2").PartnerNo,
+                                PartnerName1 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "1").ID).PartnerID)).PartnerName,
+                                PartnerNo2 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "2").ID).PartnerID)).PartnerNo, 
                                 PartnerType2 = 2,
-                                PartnerName2 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "2").ID).PartnerID)).PartnerName, //GetPartner(details.ID, "2").PartnerName,
-                                PartnerNo3 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "3").ID).PartnerID)).PartnerNo,//GetPartner(details.ID, "3").PartnerNo,
+                                PartnerName2 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "2").ID).PartnerID)).PartnerName,
+                                PartnerNo3 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "3").ID).PartnerID)).PartnerNo,
                                 PartnerType3 = 3,
-                                PartnerName3 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "3").ID).PartnerID)).PartnerName, // GetPartner(details.ID, "3").PartnerName,
+                                PartnerName3 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "3").ID).PartnerID)).PartnerName, 
                                 FleetType = headers.FleetType,
                                 OrderType = headers.OrderType,
                                 VehicleShipmentType = headers.VehicleShipment,
@@ -162,7 +166,7 @@ namespace OMS.DataGateway.Repositories
                             }
                             )
                         .Where(p => p.IsActive)
-                        .Where(p => /*filter.StatusId == 0 || p.OrderShipmentStatus == filter.StatusId*/filter.StatusIds.Count > 0 ? filter.StatusIds.Contains(p.OrderShipmentStatus) : p.OrderShipmentStatus > 0)
+                        .Where(p => filter.StatusIds.Count == 0 || (filter.StatusIds.Count > 0 && filter.StatusIds.Contains(p.OrderShipmentStatus)))
                         .Where(p => String.IsNullOrEmpty(filter.OrderNumber) || p.OrderNo.Contains(filter.OrderNumber))
                         .Where(p => filter.FromDate == DateTime.MinValue || (DbFunctions.TruncateTime(p.OrderDate) >= filter.FromDate.Date))
                         .Where(p => filter.ToDate == DateTime.MinValue || (DbFunctions.TruncateTime(p.OrderDate) <= filter.ToDate.Date)).ToList();
