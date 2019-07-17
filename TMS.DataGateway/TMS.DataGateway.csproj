@@ -102,6 +102,7 @@
     <Compile Include="DataModels\FleetType.cs" />
     <Compile Include="DataModels\GateInGateOut.cs" />
     <Compile Include="DataModels\G2G.cs" />
+    <Compile Include="DataModels\Harga.cs" />
     <Compile Include="DataModels\Menu.cs" />
     <Compile Include="DataModels\MenuActivity.cs" />
     <Compile Include="DataModels\ModelBase.cs" />
@@ -169,6 +170,10 @@
     <Compile Include="Migrations\201907040707140_Partner_SubdistrctColumn.Designer.cs">
       <DependentUpon>201907040707140_Partner_SubdistrctColumn.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201907170832210_HargaTable.cs" />
+    <Compile Include="Migrations\201907170832210_HargaTable.Designer.cs">
+      <DependentUpon>201907170832210_HargaTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\Authenticate.cs" />
@@ -222,6 +227,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201907040707140_Partner_SubdistrctColumn.resx">
       <DependentUpon>201907040707140_Partner_SubdistrctColumn.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201907170832210_HargaTable.resx">
+      <DependentUpon>201907170832210_HargaTable.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SeedData\Activities.csv" />
     <EmbeddedResource Include="SeedData\applications.csv" />

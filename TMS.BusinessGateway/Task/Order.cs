@@ -13,7 +13,7 @@ namespace TMS.BusinessGateway.Task
 {
     public partial class BusinessOrderTask : OrderTask
     {
-        private IOrder _orderRepository;
+        private readonly IOrder _orderRepository;
         public BusinessOrderTask(IOrder orderRepository)
         {
             _orderRepository = orderRepository;
@@ -98,6 +98,11 @@ namespace TMS.BusinessGateway.Task
         public override OrderStatusResponse CancelOrder(OrderStatusRequest request)
         {
             return _orderRepository.CancelOrder(request);
+        }
+
+        public override HargaResponse GetHarga(HargaRequest request)
+        {
+            return _orderRepository.GetHarga(request);
         }
     }
 
