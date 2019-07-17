@@ -69,6 +69,7 @@
     <Compile Include="Objects\DealerDetails.cs" />
     <Compile Include="Objects\OrderStatus.cs" />
     <Compile Include="Objects\SAMAUser.cs" />
+    <Compile Include="Objects\ShipmentScheduleOcr.cs" />
     <Compile Include="Objects\TrackStep.cs" />
     <Compile Include="Objects\TrackStepLoadUnload.cs" />
     <Compile Include="Objects\TripDMS.cs" />

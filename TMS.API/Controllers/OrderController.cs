@@ -1,5 +1,6 @@
 ﻿using ActiveUp.Net.Mail;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NLog;
 using RestSharp;
 using System;
@@ -1214,8 +1215,13 @@ namespace TMS.API.Controllers
                             if (fileuploadresponse.StatusCode == (int)HttpStatusCode.OK && fileuploadresponse.Guid != "" && fileuploadresponse.Guid != null)
                             {
                                 // Calling OCR to get shipmentschedule data
-                                var res = GetFileUploadApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"] + "/v1/order/shipmentscheduleocr", Method.POST, attachment, null);
-                                var data = res;
+                                var res =  GetFileUploadApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"] + "/v1/order/shipmentscheduleocr", Method.POST, attachment, null);
+                               var shipmentScheduleOcr = JsonConvert.DeserializeObject<dynamic>(res);
+                                var dat = res;
+
+                                var json = JObject.Parse(shipmentScheduleOcr);
+                                var docType = json.documentType;
+
                             }
                         }
                     }
