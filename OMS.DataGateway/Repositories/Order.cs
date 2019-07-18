@@ -7,8 +7,6 @@ using OMS.DomainObjects.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Domain = OMS.DomainObjects.Objects;
 using System.Net;
 using System.Data.Entity;
@@ -325,7 +323,6 @@ namespace OMS.DataGateway.Repositories
 
                             #region Step 1: Check if We have Order Status in Master data
                             int orderStatusId;
-                            string orderStatusValue = "";
                             var orderStatus = (from os in context.OrderStatuses
                                                where os.OrderStatusCode == order.OrderShipmentStatus.ToString()
                                                select new Domain.BusinessArea()
@@ -1033,7 +1030,6 @@ namespace OMS.DataGateway.Repositories
 
                             #region Step 1: Check if We have Order Status in Master data
                             int orderStatusId;
-                            string orderStatusValue = string.Empty;
                             var orderStatus = (from os in context.OrderStatuses
                                                where os.OrderStatusCode == order.OrderShipmentStatus.ToString()
                                                select new Domain.BusinessArea()
@@ -1824,14 +1820,14 @@ namespace OMS.DataGateway.Repositories
             return response;
         }
 
-        public TripResponse ReAssignTrip(TripRequest request)
+        public TripResponse ReAssignTrip(TripRequest tripRequest)
         {
             TripResponse response = new TripResponse();
             List<Trip> tripDetails = new List<Trip>();
 
             using (var context = new Data.OMSDBContext())
             {
-                foreach (var trip in request.Requests)
+                foreach (var trip in tripRequest.Requests)
                 {
                     Trip tripDetail = new Trip();
 
@@ -1846,8 +1842,8 @@ namespace OMS.DataGateway.Repositories
                                 tripObj.DriverName = trip.DriverName;
                                 tripObj.VehicleShipment = trip.VehicleType;
                                 tripObj.VehicleNo = trip.Vehicle;
-                                tripObj.LastModifiedBy = request.LastModifiedBy;
-                                tripObj.LastModifiedTime = request.LastModifiedTime;
+                                tripObj.LastModifiedBy = tripRequest.LastModifiedBy;
+                                tripObj.LastModifiedTime = tripRequest.LastModifiedTime;
                                 context.SaveChanges();
                             }
                             else
