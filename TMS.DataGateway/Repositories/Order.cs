@@ -29,7 +29,7 @@ namespace TMS.DataGateway.Repositories
                     {
                         DataModels.OrderDetail orderDetailData = context.OrderDetails.Where(t => t.ID == tripDetailId).FirstOrDefault();
 
-                        if (orderDetailData.SequenceNo != newSequenceNumber)
+                        if (orderDetailData.SequenceNo != newSequenceNumber && orderDetailData.SequenceNo > 0)
                         {
                             int originalSequenceNo = sequenceNumber;
 
@@ -2143,7 +2143,7 @@ namespace TMS.DataGateway.Repositories
                         {
                             orderDetailId = context.OrderDetails.FirstOrDefault(t => t.OrderHeaderID == orderId).ID;
                         }
-                        if (statusRequest.SequenceNumber != statusRequest.NewSequenceNumber)
+                        if (statusRequest.SequenceNumber != statusRequest.NewSequenceNumber && statusRequest.SequenceNumber > 0)
                         {
                             SwapeOrderSequence(orderDetailId, statusRequest.SequenceNumber, statusRequest.NewSequenceNumber);
                         }

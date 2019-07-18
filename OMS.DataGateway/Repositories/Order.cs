@@ -30,7 +30,7 @@ namespace OMS.DataGateway.Repositories
                     {
                         DataModels.OrderDetail orderDetailData = context.OrderDetails.Where(t => t.ID == tripDetailId).FirstOrDefault();
 
-                        if (orderDetailData.SequenceNo != newSequenceNumber)
+                        if (orderDetailData.SequenceNo != newSequenceNumber && orderDetailData.SequenceNo > 0)
                         {
                             int originalSequenceNo = sequenceNumber;
 
@@ -1780,7 +1780,7 @@ namespace OMS.DataGateway.Repositories
                             }
 
                             // Swapping trip sequence 
-                            if (statusRequest.SequenceNumber != statusRequest.NewSequenceNumber)
+                            if (statusRequest.SequenceNumber != statusRequest.NewSequenceNumber && statusRequest.SequenceNumber > 0)
                             {
                                 SwapeOrderSequence(orderDetailId, statusRequest.SequenceNumber, statusRequest.NewSequenceNumber);
                             }

@@ -108,7 +108,7 @@ namespace DMS.DataGateway.Repositories
 
                         int minSequenceNo = pendingStopPoints.Min(f => f.SequenceNumber);
 
-                        if (tripDetailData.SequenceNumber != minSequenceNo)
+                        if (tripDetailData.SequenceNumber != minSequenceNo && tripDetailData.SequenceNumber > 0)
                         {
                             int originalSequenceNo = tripDetailData.SequenceNumber;
 
