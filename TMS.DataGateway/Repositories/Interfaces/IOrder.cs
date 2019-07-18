@@ -23,5 +23,7 @@ namespace TMS.DataGateway.Repositories.Interfaces
         OrderStatusResponse UpdateOrderStatus(OrderStatusRequest request);
         OrderStatusResponse CancelOrder(OrderStatusRequest request);
         HargaResponse GetHarga(HargaRequest request);
+        ShipmentScheduleOcrResponse CreateOrderFromShipmentScheduleOcr(ShipmentScheduleOcrRequest request);
+
     }
 }

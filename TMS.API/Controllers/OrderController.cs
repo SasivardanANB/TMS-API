@@ -1186,8 +1186,7 @@ namespace TMS.API.Controllers
         public IHttpActionResult GetShipmentSchedulesFromEmail()
         {
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
-            OrderStatusResponse response = new OrderStatusResponse();
-
+            ShipmentScheduleOcrResponse response = new ShipmentScheduleOcrResponse();
             // Loin into Gamil and Get all Mails
             var mailRepository = new MailRepository(
                                     "imap.gmail.com",
@@ -1210,18 +1209,50 @@ namespace TMS.API.Controllers
                         {
                             // Uploading File into Blob storage and get GUID
                             var fileuploadresponse = JsonConvert.DeserializeObject<ResponseDataForFileUpload>(GetFileUploadApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"] + "/v1/media/uploadfile", Method.POST, attachment, null));
-                            response.StatusMessage += ". " + fileuploadresponse.Guid;
+                           // response.StatusMessage += ". " + fileuploadresponse.Guid;
 
                             if (fileuploadresponse.StatusCode == (int)HttpStatusCode.OK && fileuploadresponse.Guid != "" && fileuploadresponse.Guid != null)
                             {
                                 // Calling OCR to get shipmentschedule data
                                 var res =  GetFileUploadApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"] + "/v1/order/shipmentscheduleocr", Method.POST, attachment, null);
-                               var shipmentScheduleOcr = JsonConvert.DeserializeObject<dynamic>(res);
-                                var dat = res;
+                                var shipmentScheduleOcr = JsonConvert.DeserializeObject<dynamic>(res);
+                                var jsonObject = JObject.Parse(shipmentScheduleOcr);
+                                ShipmentScheduleOcrRequest shipmentScheduleOcrRequest = new ShipmentScheduleOcrRequest();
+                                if (jsonObject.success == true)
+                                {
+                                    //var docType = jsonObject.documentType;
+                                  
+                                    shipmentScheduleOcrRequest.Requests = new List<ShipmentScheduleOcr>();
+                                    ShipmentScheduleOcr shipmentSchedule = new ShipmentScheduleOcr()
+                                    {
+                                        ImageGUID= fileuploadresponse.Guid,
+                                        DocumentType = jsonObject.documentType,
+                                        Success = jsonObject.success,
+                                        Image = jsonObject.image,
+                                        EmailFrom = email.From.Email,
+                                        EmailDateTime=email.Date,
+                                        EmailSubject=email.Subject,
+                                        EmailText= email.BodyHtml.TextStripped,
+                                        Data = new DetailsOcr() {
+                                            DayShipment = jsonObject.data.DayShipment,
+                                            EstimatedTotalPallet = jsonObject.data.EstimatedTotalPallet,
+                                            MainDealerCode = jsonObject.data.MainDealerCode,
+                                            MainDealerName= jsonObject.data.MainDealerName,
+                                            MultiDropShipment= jsonObject.data.MultiDropShipment,
+                                            ShipmentScheduleNo= jsonObject.data.ShipmentScheduleNo,
+                                            ShipmentTime= jsonObject.data.ShipmentTime,
+                                            ShipToParty= jsonObject.data.ShipToParty,
+                                            VehicleType= jsonObject.data.VehicleType,
+                                            Weight= jsonObject.data.Weight
+                                        }
+                                    };
+                                    shipmentScheduleOcrRequest.Requests.Add(shipmentSchedule);
 
-                                var json = JObject.Parse(shipmentScheduleOcr);
-                                var docType = json.documentType;
-
+                                }
+                                if(shipmentScheduleOcrRequest.Requests.Count > 0)
+                                {
+                                     response = orderTask.CreateOrderFromShipmentScheduleOcr(shipmentScheduleOcrRequest);
+                                }
                             }
                         }
                     }
