@@ -26,5 +26,6 @@ namespace TMS.DomainGateway.Task
         public abstract OrderStatusResponse UpdateOrderStatus(OrderStatusRequest request);
         public abstract OrderStatusResponse CancelOrder(OrderStatusRequest request);
         public abstract HargaResponse GetHarga(HargaRequest request);
+        public abstract ShipmentScheduleOcrResponse CreateOrderFromShipmentScheduleOcr(ShipmentScheduleOcrRequest request);
     }
 }

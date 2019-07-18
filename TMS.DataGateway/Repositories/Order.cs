@@ -2426,5 +2426,820 @@ namespace TMS.DataGateway.Repositories
 
             return response;
         }
+
+
+        public ShipmentScheduleOcrResponse CreateOrderFromShipmentScheduleOcr(ShipmentScheduleOcrRequest request)
+        {
+
+
+            ShipmentScheduleOcrResponse response = new ShipmentScheduleOcrResponse()
+            {
+                Data = new List<Domain.ShipmentScheduleOcr>()
+            };
+
+            using (var context = new Data.TMSDBContext())
+            {
+                foreach (var shipment in request.Requests)
+                {
+                    using (DbContextTransaction transaction = context.Database.BeginTransaction())
+                    {
+                        try
+                        {
+                            string soPoNumber = String.Empty; 
+                            //string y = x.Split('-')[4];
+                            //string z = x.Split('-')[1] + "-" + x.Split('-')[2] + "-" + x.Split('-')[3];
+                            if (shipment.Data.ShipmentScheduleNo.Split('-').Length >0)
+                            {
+                                soPoNumber = shipment.Data.ShipmentScheduleNo.Split('-')[4];
+
+                                //DateTime estimationShipmentDate = DateTime.ParseExact(order.EstimationShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(order.EstimationShipmentTime);
+                                //DateTime actualShipmentDate = DateTime.ParseExact(order.ActualShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(order.ActualShipmentTime);
+
+                            }
+
+                            DataModel.ShipmentScheduleOCRDetails shipmentScheduleOCRDetails = new DataModel.ShipmentScheduleOCRDetails()
+                            {
+                                EmailFrom = shipment.EmailFrom,
+                                EmailDateTime = shipment.EmailDateTime,
+
+                                ShipmentScheduleNo =shipment.Data.ShipmentScheduleNo ,
+                                DayShipment = shipment.Data.DayShipment,
+                                ShipmentTime = shipment.Data.ShipmentTime,
+                                VehicleType = shipment.Data.VehicleType,
+                                MainDealerCode = shipment.Data.MainDealerCode,
+                                MainDealerName = shipment.Data.MainDealerName,
+                                ShipToParty = shipment.Data.ShipToParty,
+                                MultiDropShipment = shipment.Data.MultiDropShipment,
+                                EstimatedTotalPallet = shipment.Data.EstimatedTotalPallet,
+                                Weight = shipment.Data.Weight,
+
+                                IsProcessed = true,
+                                IsOrderCreated = false ,
+                                ImageGuid = shipment.ImageGUID,
+                                ProcessedDateTime = DateTime.Now,
+                                ProcessedBy = "System",
+                            };
+
+                            context.ShipmentScheduleOCRDetails.Add(shipmentScheduleOCRDetails);
+                            context.SaveChanges();
+                            transaction.Commit();
+                            response.StatusCode = (int)HttpStatusCode.OK;
+                            response.StatusMessage = DomainObjects.Resource.ResourceData.OrderCreated;
+                            //    string soPoNumber = String.Empty;
+                            //DateTime estimationShipmentDate = DateTime.ParseExact(order.EstimationShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(order.EstimationShipmentTime);
+                            //DateTime actualShipmentDate = DateTime.ParseExact(order.ActualShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(order.ActualShipmentTime);
+
+                            //    #region Step 1: Check if We have Business Area master data
+                            //    int businessAreaId;
+                            //    string businessAreaCode = string.Empty;
+                            //    if (request.UploadType == 2) // Upload via UI
+                            //    {
+                            //        var businessArea = (from ba in context.BusinessAreas
+                            //                            where ba.ID == order.BusinessAreaId
+                            //                            select new Domain.BusinessArea()
+                            //                            {
+                            //                                ID = ba.ID,
+                            //                                BusinessAreaCode = ba.BusinessAreaCode
+                            //                            }).FirstOrDefault();
+                            //        if (businessArea != null)
+                            //        {
+                            //            businessAreaId = businessArea.ID;
+                            //            businessAreaCode = businessArea.BusinessAreaCode;
+                            //        }
+                            //        else
+                            //        {
+                            //            //Return with Business Area not found
+                            //            transaction.Rollback();
+                            //            response.Status = DomainObjects.Resource.ResourceData.Failure;
+                            //            response.StatusCode = (int)HttpStatusCode.BadRequest;
+                            //            response.StatusMessage = order.BusinessAreaId + " Business Area ID not found in TMS.";
+                            //            return response;
+                            //        }
+
+                            //    }
+                            //    else
+                            //    {
+
+                            //        var businessArea = (from ba in context.BusinessAreas
+                            //                            where ba.BusinessAreaCode == order.BusinessArea
+                            //                            select new Domain.BusinessArea()
+                            //                            {
+                            //                                ID = ba.ID,
+                            //                                BusinessAreaCode = ba.BusinessAreaCode
+                            //                            }).FirstOrDefault();
+                            //        if (businessArea != null)
+                            //        {
+                            //            businessAreaId = businessArea.ID;
+                            //            businessAreaCode = businessArea.BusinessAreaCode;
+                            //        }
+                            //        else
+                            //        {
+                            //            //Return with Business Area not found
+                            //            transaction.Rollback();
+                            //            response.Status = DomainObjects.Resource.ResourceData.Failure;
+                            //            response.StatusCode = (int)HttpStatusCode.BadRequest;
+                            //            response.StatusMessage = order.BusinessArea + " Business Area not found in TMS.";
+                            //            return response;
+                            //        }
+                            //    }
+                            //    #endregion
+                            //    #region Step 4: Check if Order already existing then update/create accordingly
+
+                            //    int orderDetailId = 0;
+                            //    if (persistedOrderDataID > 0)
+                            //    {
+                            //        #region Update Order
+                            //        var updatedOrderHeader = context.OrderHeaders.Find(persistedOrderDataID);
+                            //        updatedOrderHeader.BusinessAreaId = businessAreaId;
+                            //        updatedOrderHeader.OrderType = order.OrderType;
+                            //        updatedOrderHeader.FleetTypeID = order.FleetType;
+                            //        updatedOrderHeader.VehicleShipment = order.VehicleShipmentType;
+                            //        updatedOrderHeader.DriverNo = order.DriverNo;
+                            //        updatedOrderHeader.DriverName = order.DriverName;
+                            //        updatedOrderHeader.VehicleNo = order.VehicleNo;
+                            //        updatedOrderHeader.OrderWeight = order.OrderWeight;
+                            //        updatedOrderHeader.OrderWeightUM = order.OrderWeightUM;
+                            //        updatedOrderHeader.IsActive = true;
+                            //        updatedOrderHeader.LastModifiedBy = request.LastModifiedBy;
+                            //        updatedOrderHeader.LastModifiedTime = DateTime.Now;
+                            //        updatedOrderHeader.OrderStatusID = orderStatusId;
+                            //        updatedOrderHeader.Harga = order.Harga;
+                            //        //updatedOrderHeader.SOPONumber = soPoNumber;
+                            //        Data.ImageGuid existingImageGuidDetails = null;
+                            //        string existingImageGUIDValue = string.Empty;
+                            //        int? shipmentScheduleImageID = null;
+
+                            //        // check if shipmentScheduleImage is changed
+                            //        if (updatedOrderHeader.ShipmentScheduleImageID > 0)
+                            //        {
+                            //            existingImageGuidDetails = context.ImageGuids.Where(i => i.ID == updatedOrderHeader.ShipmentScheduleImageID).FirstOrDefault();
+                            //            existingImageGUIDValue = existingImageGuidDetails.ImageGuIdValue;
+                            //        }
+                            //        if (existingImageGUIDValue != order.ShipmentScheduleImageGUID)
+                            //        {
+                            //            // Making IsActive false for existed record 
+                            //            if (updatedOrderHeader.ShipmentScheduleImageID > 0 && existingImageGuidDetails != null)
+                            //            {
+                            //                existingImageGuidDetails.IsActive = false;
+                            //            }
+
+                            //            //Inserting new record with IsActive true
+                            //            Data.ImageGuid imageGuid = new Data.ImageGuid()
+                            //            {
+                            //                ImageGuIdValue = order.ShipmentScheduleImageGUID,
+                            //                IsActive = true,
+                            //                CreatedBy = order.OrderLastModifiedBy,
+                            //                CreatedTime = DateTime.Now
+                            //            };
+
+                            //            context.ImageGuids.Add(imageGuid);
+                            //            context.SaveChanges();
+                            //            shipmentScheduleImageID = imageGuid.ID;
+                            //        }
+
+                            //        updatedOrderHeader.ShipmentScheduleImageID = shipmentScheduleImageID;
+
+                            //        context.Entry(updatedOrderHeader).State = System.Data.Entity.EntityState.Modified;
+                            //        context.SaveChanges();
+                            //        order.ID = updatedOrderHeader.ID;
+                            //        response.StatusMessage = DomainObjects.Resource.ResourceData.OrderUpdated;
+                            //        context.Entry(updatedOrderHeader).State = System.Data.Entity.EntityState.Detached;
+
+                            //        #region Step 3 : Check if Order Detail Exists
+                            //        var existingOrderDetail = context.OrderDetails.FirstOrDefault(t => t.OrderHeaderID == order.ID && t.SequenceNo == order.SequenceNo);
+
+                            //        if (existingOrderDetail != null)
+                            //        {
+                            //            #region Update Order Detail
+                            //            existingOrderDetail.SequenceNo = order.SequenceNo;
+                            //            existingOrderDetail.Sender = order.Sender;
+                            //            existingOrderDetail.Receiver = order.Receiver;
+                            //            existingOrderDetail.Dimension = order.Dimension;
+                            //            existingOrderDetail.TotalPallet = order.TotalPallet;
+                            //            existingOrderDetail.Instruction = order.Instructions;
+                            //            existingOrderDetail.ShippingListNo = order.ShippingListNo;
+                            //            existingOrderDetail.TotalCollie = order.TotalCollie;
+                            //            existingOrderDetail.LastModifiedBy = order.OrderLastModifiedBy;
+                            //            existingOrderDetail.LastModifiedTime = DateTime.Now;
+                            //            existingOrderDetail.EstimationShipmentDate = estimationShipmentDate;
+                            //            existingOrderDetail.ActualShipmentDate = actualShipmentDate;
+
+                            //            context.Entry(existingOrderDetail).State = System.Data.Entity.EntityState.Modified;
+                            //            context.SaveChanges();
+                            //            orderDetailId = existingOrderDetail.ID;
+                            //            context.Entry(existingOrderDetail).State = System.Data.Entity.EntityState.Detached;
+                            //            #endregion
+                            //        }
+                            //        else
+                            //        {
+                            //            #region Create Order Detail
+                            //            Data.OrderDetail orderDetail = new Data.OrderDetail()
+                            //            {
+                            //                OrderHeaderID = order.ID,
+                            //                SequenceNo = order.SequenceNo,
+                            //                Sender = order.Sender,
+                            //                Receiver = order.Receiver,
+                            //                Dimension = order.Dimension,
+                            //                TotalPallet = order.TotalPallet,
+                            //                Instruction = order.Instructions,
+                            //                ShippingListNo = order.ShippingListNo,
+                            //                TotalCollie = order.TotalCollie,
+                            //                CreatedBy = request.CreatedBy,
+                            //                CreatedTime = DateTime.Now,
+                            //                LastModifiedBy = "",
+                            //                LastModifiedTime = null,
+                            //                EstimationShipmentDate = estimationShipmentDate,
+                            //                ActualShipmentDate = actualShipmentDate
+                            //            };
+                            //            context.OrderDetails.Add(orderDetail);
+                            //            context.SaveChanges();
+                            //            orderDetailId = orderDetail.ID;
+                            //            #endregion
+                            //            #region  Update Order Status
+                            //            string orderStatusCode = order.OrderShipmentStatus.ToString();
+                            //            Data.OrderStatusHistory orderStatusHistory = new Data.OrderStatusHistory()
+                            //            {
+                            //                OrderDetailID = orderDetailId,
+                            //                OrderStatusID = context.OrderStatuses.Where(t => t.OrderStatusCode == orderStatusCode).FirstOrDefault().ID,
+                            //                StatusDate = DateTime.Now,
+                            //                Remarks = "Order Creted"
+                            //            };
+
+                            //            context.OrderStatusHistories.Add(orderStatusHistory);
+                            //            context.SaveChanges();
+
+                            //            #endregion
+                            //        }
+                            //        #endregion
+
+                            //        string partner1TypeId = order.PartnerType1.ToString();
+                            //        string partner2TypeId = order.PartnerType2.ToString();
+                            //        string partner3TypeId = order.PartnerType3.ToString();
+
+                            //        #region Check if Partner Type Exists or not
+                            //        var partnerType1 = context.PartnerTypes.FirstOrDefault(t => t.PartnerTypeCode == partner1TypeId);
+                            //        var partnerType2 = context.PartnerTypes.FirstOrDefault(t => t.PartnerTypeCode == partner2TypeId);
+                            //        var partnerType3 = context.PartnerTypes.FirstOrDefault(t => t.PartnerTypeCode == partner3TypeId);
+
+                            //        if (partnerType1 == null || partnerType2 == null || partnerType3 == null)
+                            //        {
+                            //            //Return with Partner Type not found.
+                            //            transaction.Rollback();
+                            //            response.Status = DomainObjects.Resource.ResourceData.Failure;
+                            //            response.StatusCode = (int)HttpStatusCode.BadRequest;
+                            //        }
+                            //        if (partnerType1 == null)
+                            //        {
+                            //            //Return with Partner Type not found.
+                            //            response.StatusMessage = order.PartnerType1.ToString() + " Partner Type not found in TMS.";
+                            //            return response;
+                            //        }
+                            //        if (partnerType2 == null)
+                            //        {
+                            //            //Return with Partner Type not found.
+                            //            response.StatusMessage = order.PartnerType2.ToString() + " Partner Type not found in TMS.";
+                            //            return response;
+                            //        }
+                            //        if (partnerType3 == null)
+                            //        {
+                            //            //Return with Partner Type not found.
+                            //            response.StatusMessage = order.PartnerType3.ToString() + " Partner Type not found in TMS.";
+                            //            return response;
+                            //        }
+
+                            //        #endregion
+
+                            //        int partner1Id;
+                            //        int partner2Id;
+                            //        int partner3Id;
+
+                            //        #region Check if Partner Exists or not
+                            //        if (request.UploadType == 2)
+                            //        {
+                            //            partner1Id = Convert.ToInt32(order.PartnerNo1);
+                            //            partner2Id = Convert.ToInt32(order.PartnerNo2);
+                            //            partner3Id = Convert.ToInt32(order.PartnerNo3);
+                            //        }
+                            //        else
+                            //        {
+                            //            var partner1 = (from p in context.Partners
+                            //                            join ppt in context.PartnerPartnerTypes on p.ID equals ppt.PartnerId
+                            //                            where p.PartnerNo == order.PartnerNo1 && ppt.PartnerTypeId == partnerType1.ID
+                            //                            select new Domain.Partner()
+                            //                            {
+                            //                                ID = p.ID
+                            //                            }).FirstOrDefault();
+                            //            var partner2 = (from p in context.Partners
+                            //                            join ppt in context.PartnerPartnerTypes on p.ID equals ppt.PartnerId
+                            //                            where p.PartnerNo == order.PartnerNo2 && ppt.PartnerTypeId == partnerType2.ID
+                            //                            select new Domain.Partner()
+                            //                            {
+                            //                                ID = p.ID
+                            //                            }).FirstOrDefault();
+
+                            //            var partner3 = (from p in context.Partners
+                            //                            join ppt in context.PartnerPartnerTypes on p.ID equals ppt.PartnerId
+                            //                            where p.PartnerNo == order.PartnerNo3 && ppt.PartnerTypeId == partnerType3.ID
+                            //                            select new Domain.Partner()
+                            //                            {
+                            //                                ID = p.ID
+                            //                            }).FirstOrDefault();
+
+                            //            if (partnerType1 == null || partnerType2 == null || partnerType3 == null)
+                            //            {
+                            //                //Return with Partner not found.
+                            //                transaction.Rollback();
+                            //                response.Status = DomainObjects.Resource.ResourceData.Failure;
+                            //                response.StatusCode = (int)HttpStatusCode.BadRequest;
+                            //            }
+
+                            //            if (partner1 == null)
+                            //            {
+
+                            //                response.StatusMessage = order.PartnerNo1 + " Partner not found in TMS.";
+                            //                return response;
+                            //            }
+                            //            else
+                            //            {
+                            //                partner1Id = partner1.ID;
+
+                            //            }
+                            //            if (partner2 == null)
+                            //            {
+                            //                //Return with Partner not found.
+                            //                response.StatusMessage = order.PartnerNo2 + " Partner not found in TMS.";
+                            //                return response;
+                            //            }
+                            //            else
+                            //            {
+                            //                partner2Id = partner2.ID;
+                            //            }
+                            //            if (partner3 == null)
+                            //            {
+                            //                //Return with Partner not found.
+                            //                response.StatusMessage = order.PartnerNo3 + " Partner not found in TMS.";
+                            //                return response;
+                            //            }
+                            //            else
+                            //            {
+                            //                partner3Id = partner3.ID;
+                            //            }
+                            //        }
+
+                            //        #endregion
+
+                            //        #region Check if Order Partner Expeditor Detail Exists or not
+                            //        var existingOrderPartner1Detail = context.OrderPartnerDetails.FirstOrDefault
+                            //            (t => t.OrderDetailID == orderDetailId && t.PartnerTypeId == partnerType1.ID && t.PartnerID == partner1Id);
+                            //        if (existingOrderPartner1Detail == null)
+                            //        {
+                            //            Data.OrderPartnerDetail orderPartner1Detail = new Data.OrderPartnerDetail()
+                            //            {
+                            //                OrderDetailID = orderDetailId,
+                            //                PartnerID = partner1Id,
+                            //                PartnerTypeId = partnerType1.ID,
+                            //                IsOriginal = true,
+                            //                IsParent = true,
+                            //                CreatedBy = "SYSTEM",
+                            //                CreatedTime = DateTime.Now,
+                            //                LastModifiedBy = "",
+                            //                LastModifiedTime = null
+                            //            };
+                            //            context.OrderPartnerDetails.Add(orderPartner1Detail);
+                            //            context.SaveChanges();
+                            //        }
+                            //        #endregion
+
+                            //        #region Check if Order Partner Source Detail Exists or not
+                            //        var existingOrderPartner2Detail = context.OrderPartnerDetails.FirstOrDefault
+                            //            (t => t.OrderDetailID == orderDetailId && t.PartnerTypeId == partnerType2.ID && t.PartnerID == partner2Id);
+                            //        if (existingOrderPartner2Detail == null)
+                            //        {
+                            //            Data.OrderPartnerDetail orderPartner2Detail = new Data.OrderPartnerDetail()
+                            //            {
+                            //                OrderDetailID = orderDetailId,
+                            //                PartnerID = partner2Id,
+                            //                PartnerTypeId = partnerType2.ID,
+                            //                IsOriginal = true,
+                            //                IsParent = true,
+                            //                CreatedBy = "SYSTEM",
+                            //                CreatedTime = DateTime.Now,
+                            //                LastModifiedBy = "",
+                            //                LastModifiedTime = null
+                            //            };
+                            //            context.OrderPartnerDetails.Add(orderPartner2Detail);
+                            //            context.SaveChanges();
+                            //        }
+                            //        #endregion
+
+                            //        #region Check if Order Partner Destination Detail Exists or not
+                            //        var existingOrderPartner3Detail = context.OrderPartnerDetails.FirstOrDefault
+                            //            (t => t.OrderDetailID == orderDetailId && t.PartnerTypeId == partnerType3.ID && t.PartnerID == partner3Id);
+                            //        if (existingOrderPartner3Detail == null)
+                            //        {
+                            //            Data.OrderPartnerDetail orderPartner3Detail = new Data.OrderPartnerDetail()
+                            //            {
+                            //                OrderDetailID = orderDetailId,
+                            //                PartnerID = partner3Id,
+                            //                PartnerTypeId = partnerType3.ID,
+                            //                IsOriginal = true,
+                            //                IsParent = true,
+                            //                CreatedBy = "SYSTEM",
+                            //                CreatedTime = DateTime.Now,
+                            //                LastModifiedBy = "",
+                            //                LastModifiedTime = null
+                            //            };
+                            //            context.OrderPartnerDetails.Add(orderPartner3Detail);
+                            //            context.SaveChanges();
+                            //        }
+                            //        #endregion
+
+                            //        #region Step 6: Insert Packing Sheet
+                            //        if (!string.IsNullOrEmpty(order.PackingSheetNo))
+                            //        {
+                            //            string[] packingSheets = order.PackingSheetNo.Split(',');
+                            //            foreach (string packinSheet in packingSheets)
+                            //            {
+                            //                var existingPackingSheet = context.PackingSheets.FirstOrDefault(t => t.ShippingListNo == order.ShippingListNo && t.PackingSheetNo == packinSheet);
+                            //                if (existingPackingSheet == null)
+                            //                {
+                            //                    Data.PackingSheet packingSheetRequest = new Data.PackingSheet()
+                            //                    {
+                            //                        ShippingListNo = order.ShippingListNo,
+                            //                        PackingSheetNo = packinSheet,
+                            //                        CreatedBy = request.CreatedBy,
+                            //                        CreatedTime = DateTime.Now,
+                            //                        LastModifiedBy = "",
+                            //                        LastModifiedTime = null
+                            //                    };
+
+                            //                    context.PackingSheets.Add(packingSheetRequest);
+                            //                    context.SaveChanges();
+                            //                }
+
+                            //            }
+                            //        }
+                            //        #endregion
+
+                            //        #region Step 7: Insert Shipment SAP
+                            //        if (!string.IsNullOrEmpty(order.ShipmentSAPNo))
+                            //        {
+                            //            string[] shipmentSAPs = order.ShipmentSAPNo.Split(',');
+                            //            foreach (string shipmentSAP in shipmentSAPs)
+                            //            {
+                            //                var existingShipmentSAP = context.ShipmentSAPs.FirstOrDefault(t => t.OrderDetailID == orderDetailId && t.ShipmentSAPNo == shipmentSAP);
+                            //                if (existingShipmentSAP == null)
+                            //                {
+                            //                    Data.ShipmentSAP shipmentSAPRequest = new Data.ShipmentSAP()
+                            //                    {
+                            //                        OrderDetailID = orderDetailId,
+                            //                        ShipmentSAPNo = shipmentSAP,
+                            //                        CreatedBy = request.CreatedBy,
+                            //                        CreatedTime = DateTime.Now,
+                            //                        LastModifiedBy = "",
+                            //                        LastModifiedTime = null
+                            //                    };
+
+                            //                    context.ShipmentSAPs.Add(shipmentSAPRequest);
+                            //                    context.SaveChanges();
+                            //                }
+                            //            }
+                            //        }
+                            //        #endregion
+
+                            //        #endregion
+                            //    }
+                            //    else
+                            //    {
+                            //        #region Create New Order Header
+                            //        int? shipmentScheduleImageID = null;
+
+                            //        if (!String.IsNullOrEmpty(order.ShipmentScheduleImageGUID))
+                            //        {
+                            //            //Inserting new record with IsActive true
+                            //            Data.ImageGuid imageGuid = new Data.ImageGuid()
+                            //            {
+                            //                ImageGuIdValue = order.ShipmentScheduleImageGUID,
+                            //                IsActive = true,
+                            //                CreatedBy = order.OrderLastModifiedBy,
+                            //                CreatedTime = DateTime.Now
+                            //            };
+
+                            //            context.ImageGuids.Add(imageGuid);
+                            //            context.SaveChanges();
+                            //            shipmentScheduleImageID = imageGuid.ID;
+                            //        }
+
+                            //        Data.OrderHeader orderHeader = new Data.OrderHeader()
+                            //        {
+                            //            LegecyOrderNo = order.OrderNo,
+                            //            OrderNo = order.OrderNo,
+                            //            OrderType = order.OrderType,
+                            //            FleetTypeID = order.FleetType,
+                            //            VehicleShipment = order.VehicleShipmentType,
+                            //            DriverNo = order.DriverNo,
+                            //            DriverName = order.DriverName,
+                            //            VehicleNo = order.VehicleNo,
+                            //            OrderWeight = order.OrderWeight,
+                            //            OrderWeightUM = order.OrderWeightUM,
+                            //            BusinessAreaId = businessAreaId,
+                            //            IsActive = true,
+                            //            OrderDate = DateTime.Now,
+                            //            OrderStatusID = orderStatusId,
+                            //            Harga = order.Harga,
+                            //            ShipmentScheduleImageID = shipmentScheduleImageID,
+                            //            CreatedBy = request.CreatedBy,
+                            //            CreatedTime = DateTime.Now,
+                            //            LastModifiedBy = "",
+                            //            LastModifiedTime = null,
+                            //            SOPONumber = soPoNumber,
+                            //            UploadType = request.UploadType
+                            //        };
+                            //        context.OrderHeaders.Add(orderHeader);
+                            //        context.SaveChanges();
+                            //        order.ID = orderHeader.ID;
+
+                            //        #region Step 3 : Create Order Detail
+
+                            //        Data.OrderDetail orderDetail = new Data.OrderDetail()
+                            //        {
+                            //            OrderHeaderID = order.ID,
+                            //            SequenceNo = order.SequenceNo,
+                            //            Sender = order.Sender,
+                            //            Receiver = order.Receiver,
+                            //            Dimension = order.Dimension,
+                            //            TotalPallet = order.TotalPallet,
+                            //            Instruction = order.Instructions,
+                            //            ShippingListNo = order.ShippingListNo,
+                            //            TotalCollie = order.TotalCollie,
+                            //            EstimationShipmentDate = estimationShipmentDate,
+                            //            ActualShipmentDate = actualShipmentDate,
+                            //            CreatedBy = request.CreatedBy,
+                            //            CreatedTime = DateTime.Now,
+                            //            LastModifiedBy = "",
+                            //            LastModifiedTime = null
+                            //        };
+                            //        context.OrderDetails.Add(orderDetail);
+                            //        context.SaveChanges();
+                            //        orderDetailId = orderDetail.ID;
+                            //        #endregion
+
+                            //        string partner1TypeId = order.PartnerType1.ToString();
+                            //        string partner2TypeId = order.PartnerType2.ToString();
+                            //        string partner3TypeId = order.PartnerType3.ToString();
+
+                            //        #region Check if Partner Type Exists or not
+                            //        var partnerType1 = context.PartnerTypes.FirstOrDefault(t => t.PartnerTypeCode == partner1TypeId);
+                            //        var partnerType2 = context.PartnerTypes.FirstOrDefault(t => t.PartnerTypeCode == partner2TypeId);
+                            //        var partnerType3 = context.PartnerTypes.FirstOrDefault(t => t.PartnerTypeCode == partner3TypeId);
+
+                            //        if (partnerType1 == null || partnerType2 == null || partnerType3 == null)
+                            //        {
+                            //            //Return with Partner Type not found.
+                            //            transaction.Rollback();
+                            //            response.Status = DomainObjects.Resource.ResourceData.Failure;
+                            //            response.StatusCode = (int)HttpStatusCode.BadRequest;
+                            //        }
+                            //        if (partnerType1 == null)
+                            //        {
+                            //            //Return with Partner Type not found.
+                            //            response.StatusMessage = order.PartnerType1.ToString() + " Partner Type not found in TMS.";
+                            //            return response;
+                            //        }
+                            //        if (partnerType2 == null)
+                            //        {
+                            //            //Return with Partner Type not found.
+                            //            response.StatusMessage = order.PartnerType2.ToString() + " Partner Type not found in TMS.";
+                            //            return response;
+                            //        }
+                            //        if (partnerType3 == null)
+                            //        {
+                            //            //Return with Partner Type not found.
+                            //            response.StatusMessage = order.PartnerType3.ToString() + " Partner Type not found in TMS.";
+                            //            return response;
+                            //        }
+
+                            //        #endregion
+
+                            //        int partner1Id;
+                            //        int partner2Id;
+                            //        int partner3Id;
+
+                            //        #region Check if Partner Exists or not
+                            //        if (request.UploadType == 2)
+                            //        {
+                            //            partner1Id = Convert.ToInt32(order.PartnerNo1);
+                            //            partner2Id = Convert.ToInt32(order.PartnerNo2);
+                            //            partner3Id = Convert.ToInt32(order.PartnerNo3);
+                            //        }
+                            //        else
+                            //        {
+                            //            var partner1 = (from p in context.Partners
+                            //                            join ppt in context.PartnerPartnerTypes on p.ID equals ppt.PartnerId
+                            //                            where p.PartnerNo == order.PartnerNo1 && ppt.PartnerTypeId == partnerType1.ID
+                            //                            select new Domain.Partner()
+                            //                            {
+                            //                                ID = p.ID
+                            //                            }).FirstOrDefault();
+                            //            var partner2 = (from p in context.Partners
+                            //                            join ppt in context.PartnerPartnerTypes on p.ID equals ppt.PartnerId
+                            //                            where p.PartnerNo == order.PartnerNo2 && ppt.PartnerTypeId == partnerType2.ID
+                            //                            select new Domain.Partner()
+                            //                            {
+                            //                                ID = p.ID
+                            //                            }).FirstOrDefault();
+
+                            //            var partner3 = (from p in context.Partners
+                            //                            join ppt in context.PartnerPartnerTypes on p.ID equals ppt.PartnerId
+                            //                            where p.PartnerNo == order.PartnerNo3 && ppt.PartnerTypeId == partnerType3.ID
+                            //                            select new Domain.Partner()
+                            //                            {
+                            //                                ID = p.ID
+                            //                            }).FirstOrDefault();
+
+                            //            if (partnerType1 == null || partnerType2 == null || partnerType3 == null)
+                            //            {
+                            //                //Return with Partner not found.
+                            //                transaction.Rollback();
+                            //                response.Status = DomainObjects.Resource.ResourceData.Failure;
+                            //                response.StatusCode = (int)HttpStatusCode.BadRequest;
+                            //            }
+
+                            //            if (partner1 == null)
+                            //            {
+
+                            //                response.StatusMessage = order.PartnerNo1 + " Partner not found in TMS.";
+                            //                return response;
+                            //            }
+                            //            else
+                            //            {
+                            //                partner1Id = partner1.ID;
+
+                            //            }
+                            //            if (partner2 == null)
+                            //            {
+                            //                //Return with Partner not found.
+                            //                response.StatusMessage = order.PartnerNo2 + " Partner not found in TMS.";
+                            //                return response;
+                            //            }
+                            //            else
+                            //            {
+                            //                partner2Id = partner2.ID;
+                            //            }
+                            //            if (partner3 == null)
+                            //            {
+                            //                //Return with Partner not found.
+                            //                response.StatusMessage = order.PartnerNo3 + " Partner not found in TMS.";
+                            //                return response;
+                            //            }
+                            //            else
+                            //            {
+                            //                partner3Id = partner3.ID;
+                            //            }
+                            //        }
+
+                            //        #endregion
+
+                            //        #region Step 5: Insert Expedetor Partner Detail
+                            //        Data.OrderPartnerDetail orderPartner1Detail = new Data.OrderPartnerDetail()
+                            //        {
+                            //            OrderDetailID = orderDetail.ID,
+                            //            PartnerID = partner1Id,
+                            //            PartnerTypeId = partnerType1.ID,
+                            //            IsOriginal = true,
+                            //            IsParent = true,
+                            //            CreatedBy = "SYSTEM",
+                            //            CreatedTime = DateTime.Now,
+                            //            LastModifiedBy = "",
+                            //            LastModifiedTime = null
+                            //        };
+                            //        context.OrderPartnerDetails.Add(orderPartner1Detail);
+                            //        context.SaveChanges();
+
+                            //        #endregion
+
+                            //        #region Insert Source Partner Detail
+                            //        Data.OrderPartnerDetail orderPartner2Detail = new Data.OrderPartnerDetail()
+                            //        {
+                            //            OrderDetailID = orderDetail.ID,
+                            //            PartnerID = partner2Id,
+                            //            PartnerTypeId = partnerType2.ID,
+                            //            IsOriginal = true,
+                            //            IsParent = true,
+                            //            CreatedBy = "SYSTEM",
+                            //            CreatedTime = DateTime.Now,
+                            //            LastModifiedBy = "",
+                            //            LastModifiedTime = null
+                            //        };
+                            //        context.OrderPartnerDetails.Add(orderPartner2Detail);
+                            //        context.SaveChanges();
+                            //        #endregion
+
+                            //        #region Insert Destination Partner Detail
+                            //        Data.OrderPartnerDetail orderPartner3Detail = new Data.OrderPartnerDetail()
+                            //        {
+                            //            OrderDetailID = orderDetail.ID,
+                            //            PartnerID = partner3Id,
+                            //            PartnerTypeId = partnerType3.ID,
+                            //            IsOriginal = true,
+                            //            IsParent = true,
+                            //            CreatedBy = "SYSTEM",
+                            //            CreatedTime = DateTime.Now,
+                            //            LastModifiedBy = "",
+                            //            LastModifiedTime = null
+                            //        };
+                            //        context.OrderPartnerDetails.Add(orderPartner3Detail);
+                            //        context.SaveChanges();
+                            //        #endregion
+
+                            //        #region Step 6: Insert Packing Sheet
+                            //        if (!string.IsNullOrEmpty(order.PackingSheetNo))
+                            //        {
+                            //            string[] packingSheets = order.PackingSheetNo.Split(',');
+                            //            foreach (string packinSheet in packingSheets)
+                            //            {
+                            //                var existingPackingSheet = context.PackingSheets.FirstOrDefault(t => t.ShippingListNo == order.ShippingListNo && t.PackingSheetNo == packinSheet);
+                            //                if (existingPackingSheet == null)
+                            //                {
+                            //                    Data.PackingSheet packingSheetRequest = new Data.PackingSheet()
+                            //                    {
+                            //                        ShippingListNo = order.ShippingListNo,
+                            //                        PackingSheetNo = packinSheet,
+                            //                        CreatedBy = request.CreatedBy,
+                            //                        CreatedTime = DateTime.Now,
+                            //                        LastModifiedBy = "",
+                            //                        LastModifiedTime = null
+                            //                    };
+
+                            //                    context.PackingSheets.Add(packingSheetRequest);
+                            //                    context.SaveChanges();
+                            //                }
+
+                            //            }
+                            //        }
+                            //        #endregion
+
+                            //        #region Step 7: Insert Shipment SAP
+
+                            //        if (!string.IsNullOrEmpty(order.ShipmentSAPNo))
+                            //        {
+                            //            string[] shipmentSAPs = order.ShipmentSAPNo.Split(',');
+                            //            foreach (string shipmentSAP in shipmentSAPs)
+                            //            {
+                            //                Data.ShipmentSAP shipmentSAPRequest = new Data.ShipmentSAP()
+                            //                {
+                            //                    OrderDetailID = orderDetailId,
+                            //                    ShipmentSAPNo = shipmentSAP,
+                            //                    CreatedBy = request.CreatedBy,
+                            //                    CreatedTime = DateTime.Now,
+                            //                    LastModifiedBy = "",
+                            //                    LastModifiedTime = null
+                            //                };
+
+                            //                context.ShipmentSAPs.Add(shipmentSAPRequest);
+                            //                context.SaveChanges();
+                            //            }
+                            //        }
+
+                            //        #endregion
+
+                            //        #region Step 8: Update Order Status
+                            //        string orderStatusCode = order.OrderShipmentStatus.ToString();
+                            //        Data.OrderStatusHistory orderStatusHistory = new Data.OrderStatusHistory()
+                            //        {
+                            //            OrderDetailID = orderDetailId,
+                            //            OrderStatusID = context.OrderStatuses.Where(t => t.OrderStatusCode == orderStatusCode).FirstOrDefault().ID,
+                            //            StatusDate = DateTime.Now,
+                            //            Remarks = "Order Creted"
+                            //        };
+
+                            //        context.OrderStatusHistories.Add(orderStatusHistory);
+                            //        context.SaveChanges();
+
+                            //        #endregion
+                            //        #endregion
+                            //    }
+
+                            //    #endregion
+
+                            //    transaction.Commit();
+                            //    response.Status = DomainObjects.Resource.ResourceData.Success;
+                            //    response.StatusCode = (int)HttpStatusCode.OK;
+                            //    response.StatusMessage = DomainObjects.Resource.ResourceData.OrderCreated;
+                        }
+                        catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        _logger.Log(LogLevel.Error, ex);
+                        response.Status = DomainObjects.Resource.ResourceData.Failure;
+                        response.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                        response.StatusMessage = ex.Message;
+                    }
+                }
+                }
+            }
+            return response;
+        }
+
     }
 }
