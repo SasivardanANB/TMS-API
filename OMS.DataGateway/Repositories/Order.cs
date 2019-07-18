@@ -175,11 +175,11 @@ namespace OMS.DataGateway.Repositories
 
                     foreach (var order in orders)
                     {
-                        order.EstimationShipmentDate = order.EstimationShipment.ToString("dd MMM yyyy");
+                        order.EstimationShipmentDate = order.EstimationShipment.ToString("dd.MM.yyyy");
                         order.EstimationShipmentTime = order.EstimationShipment.ToString("H:mm");
-                        order.ActualShipmentDate = order.ActualShipment.ToString("dd MMM yyyy");
+                        order.ActualShipmentDate = order.ActualShipment.ToString("dd.MM.yyyy");
                         order.ActualShipmentTime = order.ActualShipment.ToString("H:mm");
-                        order.OrderCreatedDate = order.OrderCreatedTime.ToString("dd MMM yyyy");
+                        order.OrderCreatedDate = order.OrderCreatedTime.ToString("dd.MM.yyyy");
                         order.OrderCreateTime = order.OrderCreatedTime.ToString("H:mm");
 
                         List<string> packingSheets = (from ps in context.PackingSheets

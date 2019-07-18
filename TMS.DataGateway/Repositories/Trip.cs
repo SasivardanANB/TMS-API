@@ -176,63 +176,71 @@ namespace TMS.DataGateway.Repositories
                     }
 
                     // Sorting
-                    if (tripList != null && tripList.Count > 0 && !string.IsNullOrEmpty(tripRequest.SortOrder))
+                    if (tripList != null && tripList.Count > 0)
                     {
-                        switch (tripRequest.SortOrder.ToLower())
+                        if(!string.IsNullOrEmpty(tripRequest.SortOrder))
                         {
-                            case "ordernumber":
-                                tripList = tripList.OrderBy(o => o.OrderNumber).ToList();
-                                break;
-                            case "ordernumber_desc":
-                                tripList = tripList.OrderByDescending(o => o.OrderNumber).ToList();
-                                break;
-                            case "source":
-                                tripList = tripList.OrderBy(o => o.Source).ToList();
-                                break;
-                            case "source_desc":
-                                tripList = tripList.OrderByDescending(o => o.Source).ToList();
-                                break;
-                            case "destination":
-                                tripList = tripList.OrderBy(o => o.Destination).ToList();
-                                break;
-                            case "destination_desc":
-                                tripList = tripList.OrderByDescending(o => o.Destination).ToList();
-                                break;
-                            case "estimatedarrivaldate":
-                                tripList = tripList.OrderBy(o => o.EstimatedArrivalDate).ToList();
-                                break;
-                            case "estimatedarrivaldate_desc":
-                                tripList = tripList.OrderByDescending(o => o.EstimatedArrivalDate).ToList();
-                                break;
-                            case "estimatedshipmentdate":
-                                tripList = tripList.OrderBy(o => o.EstimatedShipmentDate).ToList();
-                                break;
-                            case "estimatedshipmentdate_desc":
-                                tripList = tripList.OrderByDescending(o => o.EstimatedShipmentDate).ToList();
-                                break;
-                            case "policenumber":
-                                tripList = tripList.OrderBy(o => o.Vehicle).ToList();
-                                break;
-                            case "policenumber_desc":
-                                tripList = tripList.OrderByDescending(o => o.Vehicle).ToList();
-                                break;
-                            case "orderstatus":
-                                tripList = tripList.OrderBy(o => o.OrderStatus).ToList();
-                                break;
-                            case "orderstatus_desc":
-                                tripList = tripList.OrderByDescending(o => o.OrderStatus).ToList();
-                                break;
-                            case "dimensions":
-                                tripList = tripList.OrderBy(o => o.Dimensions).ToList();
-                                break;
-                            case "dimensions_desc":
-                                tripList = tripList.OrderByDescending(o => o.Dimensions).ToList();
-                                break;
-                            default:  // ID Descending 
-                                tripList = tripList.OrderByDescending(o => o.OrderId).ToList();
-                                break;
+                            switch (tripRequest.SortOrder.ToLower())
+                            {
+                                case "ordernumber":
+                                    tripList = tripList.OrderBy(o => o.OrderNumber).ToList();
+                                    break;
+                                case "ordernumber_desc":
+                                    tripList = tripList.OrderByDescending(o => o.OrderNumber).ToList();
+                                    break;
+                                case "source":
+                                    tripList = tripList.OrderBy(o => o.Source).ToList();
+                                    break;
+                                case "source_desc":
+                                    tripList = tripList.OrderByDescending(o => o.Source).ToList();
+                                    break;
+                                case "destination":
+                                    tripList = tripList.OrderBy(o => o.Destination).ToList();
+                                    break;
+                                case "destination_desc":
+                                    tripList = tripList.OrderByDescending(o => o.Destination).ToList();
+                                    break;
+                                case "estimatedarrivaldate":
+                                    tripList = tripList.OrderBy(o => o.EstimatedArrivalDate).ToList();
+                                    break;
+                                case "estimatedarrivaldate_desc":
+                                    tripList = tripList.OrderByDescending(o => o.EstimatedArrivalDate).ToList();
+                                    break;
+                                case "estimatedshipmentdate":
+                                    tripList = tripList.OrderBy(o => o.EstimatedShipmentDate).ToList();
+                                    break;
+                                case "estimatedshipmentdate_desc":
+                                    tripList = tripList.OrderByDescending(o => o.EstimatedShipmentDate).ToList();
+                                    break;
+                                case "policenumber":
+                                    tripList = tripList.OrderBy(o => o.Vehicle).ToList();
+                                    break;
+                                case "policenumber_desc":
+                                    tripList = tripList.OrderByDescending(o => o.Vehicle).ToList();
+                                    break;
+                                case "orderstatus":
+                                    tripList = tripList.OrderBy(o => o.OrderStatus).ToList();
+                                    break;
+                                case "orderstatus_desc":
+                                    tripList = tripList.OrderByDescending(o => o.OrderStatus).ToList();
+                                    break;
+                                case "dimensions":
+                                    tripList = tripList.OrderBy(o => o.Dimensions).ToList();
+                                    break;
+                                case "dimensions_desc":
+                                    tripList = tripList.OrderByDescending(o => o.Dimensions).ToList();
+                                    break;
+                                default:  // ID Descending 
+                                    tripList = tripList.OrderByDescending(o => o.OrderId).ToList();
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            tripList = tripList.OrderByDescending(o => o.OrderId).ToList();
                         }
                     }
+                    
 
                     // Total NumberOfRecords
                     if (tripList != null)
