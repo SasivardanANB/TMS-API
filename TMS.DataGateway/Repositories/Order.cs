@@ -1,9 +1,6 @@
-﻿using AutoMapper;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DataModel = TMS.DataGateway.DataModels;
 using Domain = TMS.DomainObjects.Objects;
 using TMS.DataGateway.Repositories.Interfaces;
@@ -78,7 +75,6 @@ namespace TMS.DataGateway.Repositories
 
                             #region Step 1: Check if We have Business Area master data
                             int businessAreaId;
-                            string businessAreaCode = string.Empty;
                             if (request.UploadType == 2) // Upload via UI
                             {
                                 var businessArea = (from ba in context.BusinessAreas
@@ -91,7 +87,6 @@ namespace TMS.DataGateway.Repositories
                                 if (businessArea != null)
                                 {
                                     businessAreaId = businessArea.ID;
-                                    businessAreaCode = businessArea.BusinessAreaCode;
                                 }
                                 else
                                 {
@@ -117,7 +112,6 @@ namespace TMS.DataGateway.Repositories
                                 if (businessArea != null)
                                 {
                                     businessAreaId = businessArea.ID;
-                                    businessAreaCode = businessArea.BusinessAreaCode;
                                 }
                                 else
                                 {
@@ -129,27 +123,6 @@ namespace TMS.DataGateway.Repositories
                                     return response;
                                 }
                             }
-                            #endregion
-
-                            #region Step 2: Check if We have Driver master data
-                            //string driverCode = string.Empty;
-                            //var driverData = (from ba in context.Drivers
-                            //                  where ba.DriverNo == order.DriverNo
-                            //                  select new Domain.Driver()
-                            //                  {
-                            //                      DriverNo = ba.DriverNo,
-                            //                      UserName = ba.UserName
-                            //                  }).FirstOrDefault();
-                            //if (driverData == null)
-                            //{
-                            //    //Return with Business Area not found
-                            //    transaction.Rollback();
-                            //    response.Status = DomainObjects.Resource.ResourceData.Failure;
-                            //    response.StatusCode = (int)HttpStatusCode.BadRequest;
-                            //    response.StatusMessage = order.DriverNo + " Driver Number not found in TMS.";
-                            //    return response;
-                            //}
-
                             #endregion
 
                             #region Step 3: Check if We have Order Status in Master data
@@ -184,11 +157,6 @@ namespace TMS.DataGateway.Repositories
                                 order.DriverNo = order.DriverNo;
                                 order.DriverName = context.Drivers.FirstOrDefault(t => t.DriverNo == order.DriverNo).UserName;
                                 soPoNumber = order.SOPONumber;
-                                //if (persistedOrderDataID == 0)
-                                //{
-                                //    order.OrderNo = GetOrderNumber(businessAreaId, businessAreaCode, "TMS", DateTime.Now.Year);
-                                //}
-                                //order.LegecyOrderNo = order.OrderNo;
                             }
 
                             int orderDetailId = 0;
@@ -210,7 +178,6 @@ namespace TMS.DataGateway.Repositories
                                 updatedOrderHeader.LastModifiedTime = DateTime.Now;
                                 updatedOrderHeader.OrderStatusID = orderStatusId;
                                 updatedOrderHeader.Harga = order.Harga;
-                                //updatedOrderHeader.SOPONumber = soPoNumber;
                                 Data.ImageGuid existingImageGuidDetails = null;
                                 string existingImageGUIDValue = string.Empty;
                                 int? shipmentScheduleImageID = null;
@@ -985,79 +952,6 @@ namespace TMS.DataGateway.Repositories
                         }
                     }
 
-                    //if (orderList != null && orderList.Count > 0)
-                    //{
-                    //    foreach (var order in orderList)
-                    //    {
-                    //        //Get Packing Sheet No
-                    //        var packingSheets = (from ps in context.PackingSheets
-                    //                             join od in context.OrderDetails on ps.ShippingListNo equals od.ShippingListNo
-                    //                             join oh in context.OrderHeaders on od.OrderHeaderID equals oh.ID
-                    //                             where od.OrderHeaderID == order.OrderId
-                    //                             select new
-                    //                             {
-                    //                                 packingSheetNo = ps.PackingSheetNo
-                    //                             }).ToList();
-                    //        if (packingSheets != null && packingSheets.Count > 0)
-                    //        {
-                    //            foreach (var packingSheet in packingSheets)
-                    //            {
-                    //                if (string.IsNullOrEmpty(order.PackingSheetNumber))
-                    //                    order.PackingSheetNumber = packingSheet.packingSheetNo;
-                    //                else
-                    //                    order.PackingSheetNumber += ", " + packingSheet.packingSheetNo;
-                    //            }
-                    //        }
-
-                    //        var orderData = (from od in context.OrderDetails
-                    //                         where od.OrderHeaderID == order.OrderId
-                    //                         group od by new { od.ID, od.SequenceNo } into gp
-                    //                         select new
-                    //                         {
-                    //                             OrderDetailId = gp.Key.ID,
-                    //                             SequenceNo = gp.Max(t => t.SequenceNo),
-                    //                         }).FirstOrDefault();
-                    //        if (orderData != null)
-                    //        {
-                    //            var partnerData = (from op in context.OrderPartnerDetails
-                    //                               where op.OrderDetailID == orderData.OrderDetailId
-                    //                               select new
-                    //                               {
-                    //                                   PrtnerID = op.PartnerID,
-                    //                                   PartnerName = context.Partners.Where(t => t.ID == op.PartnerID).FirstOrDefault().PartnerName,
-                    //                                   partnerTypeID = context.Partners.Where(t => t.ID == op.PartnerID).FirstOrDefault().PartnerTypeID
-                    //                               }).ToList();
-
-                    //            if (partnerData != null && partnerData.Count > 0)
-                    //            {
-                    //                var partners = (from pd in partnerData
-                    //                                join pt in context.PartnerTypes on pd.partnerTypeID equals pt.ID
-                    //                                select new
-                    //                                {
-                    //                                    PrtnerID = pd.PrtnerID,
-                    //                                    PartnerName = pd.PartnerName,
-                    //                                    partnerTypeID = pd.partnerTypeID,
-                    //                                    PartnerTypeCode = pt.PartnerTypeCode
-                    //                                }).ToList();
-                    //                if (partners != null && partners.Count > 0)
-                    //                {
-                    //                    foreach (var partner in partners)
-                    //                    {
-                    //                        if (partner.PartnerTypeCode == "1")
-                    //                            order.ExpeditionName = partner.PartnerName;
-                    //                        if (partner.PartnerTypeCode == "2")
-                    //                            order.Source = partner.PartnerName;
-                    //                        if (partner.PartnerTypeCode == "3")
-                    //                            order.Destination = partner.PartnerName;
-                    //                    }
-                    //                }
-                    //            }
-                    //        }
-                    //        //Add to List
-                    //        orderSearchResponse.Data.Add(order);
-                    //    }
-                    //}
-
                     // Filter
                     if (orderList != null && orderList.Count > 0 && orderSearchRequest.Requests != null && orderSearchRequest.Requests.Count > 0)
                     {
@@ -1084,7 +978,7 @@ namespace TMS.DataGateway.Repositories
                     }
 
                     // Sorting
-                    if (orderList.Count > 0)
+                    if (orderList != null && orderList.Count > 0)
                     {
 
                         if (!string.IsNullOrEmpty(orderSearchRequest.SortOrder))
@@ -1145,7 +1039,8 @@ namespace TMS.DataGateway.Repositories
                     }
 
                     // Total NumberOfRecords
-                    orderSearchResponse.NumberOfRecords = orderList.Count;
+                    if (orderList != null)
+                        orderSearchResponse.NumberOfRecords = orderList.Count;
 
                     // Paging
                     int pageNumber = (orderSearchRequest.PageNumber ?? 1);
@@ -1155,7 +1050,7 @@ namespace TMS.DataGateway.Repositories
                         orderList = orderList.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
                     }
 
-                    if (orderList.Count > 0)
+                    if (orderList != null && orderList.Count > 0)
                     {
                         orderSearchResponse.Data.AddRange(orderList);
                         orderSearchResponse.Status = DomainObjects.Resource.ResourceData.Success;
@@ -1744,35 +1639,6 @@ namespace TMS.DataGateway.Repositories
             return orderTrackResponse;
         }
 
-        //private string GetOrderNumber(int businessAreaId, string businessArea, string applicationCode, int year)
-        //{
-        //    string orderNo = businessArea + applicationCode;
-        //    using (var context = new Data.TMSDBContext())
-        //    {
-        //        var order = context.OrderHeaders.Where(t => t.BusinessAreaId == businessAreaId && t.UploadType == 2).OrderByDescending(t => t.OrderNo).FirstOrDefault();
-        //        if (order != null)
-        //        {
-        //            int lastOrderYear = order.OrderDate.Year;
-        //            if (year != lastOrderYear)
-        //            {
-        //                orderNo += "00000001";
-        //            }
-        //            else
-        //            {
-        //                string orderSequnceString = order.OrderNo.Substring(order.OrderNo.Length - 8);
-        //                int orderSequnceNumber = Convert.ToInt32(orderSequnceString) + 1;
-
-        //                orderNo += orderSequnceNumber.ToString().PadLeft(8, '0');
-        //            }
-        //        }
-        //        else
-        //        {
-        //            orderNo += "00000001";
-        //        }
-        //    }
-        //    return orderNo;
-        //}
-
         public PackingSheetResponse CreateUpdatePackingSheet(PackingSheetRequest packingSheetRequest)
         {
             PackingSheetResponse packingSheetResponse = new PackingSheetResponse();
@@ -1790,8 +1656,8 @@ namespace TMS.DataGateway.Repositories
                             var partnerdetails = context.OrderPartnerDetails.Where(x => x.OrderDetailID == packingSheet.OrderDetailId && x.PartnerID == packingSheet.DealerId).FirstOrDefault();
 
                             PackingSheet ps = new PackingSheet();
-                            ps.OrderNumber = context.OrderHeaders.Where(o => o.ID == orderDetailsData.OrderHeaderID).Select(oh => oh.OrderNo).FirstOrDefault();// orderDetailsData.OrderHeader.OrderNo;
-                            ps.DealerNumber = context.Partners.Where(o => o.ID == partnerdetails.PartnerID).Select(oh => oh.PartnerNo).FirstOrDefault(); // partnerdetails.Partner.PartnerNo;
+                            ps.OrderNumber = context.OrderHeaders.Where(o => o.ID == orderDetailsData.OrderHeaderID).Select(oh => oh.OrderNo).FirstOrDefault();
+                            ps.DealerNumber = context.Partners.Where(o => o.ID == partnerdetails.PartnerID).Select(oh => oh.PartnerNo).FirstOrDefault(); 
                             ps.DealerId = packingSheet.DealerId;
 
                             orderDetailsData.ShippingListNo = packingSheet.ShippingListNo;
@@ -2038,7 +1904,6 @@ namespace TMS.DataGateway.Repositories
                                      select new OrderDetailsResponse
                                      {
                                          ID = oH.ID,
-                                         //ActualShipment = oH.ActualShipmentDate,
                                          BusinessArea = oH.BusinessArea.BusinessAreaDescription,
                                          BusinessAreaId = oH.BusinessAreaId,
                                          DriverName = oH.DriverName,
@@ -2049,7 +1914,6 @@ namespace TMS.DataGateway.Repositories
                                          LegecyOrderNo = oH.LegecyOrderNo,
                                          VehicleNo = oH.VehicleNo,
                                          VehicleShipmentType = oH.VehicleShipment,
-                                         //OrderDate = oH.OrderDate,
                                          SOPONumber = oH.SOPONumber,
                                          OrderNo = oH.OrderNo,
                                          OrderShipmentStatus = oH.OrderStatusID,
@@ -2103,7 +1967,7 @@ namespace TMS.DataGateway.Repositories
                                               select data
                                                   ).FirstOrDefault();
                                 var destinations = (from data in orderPartnerData
-                                                    where data.PeartnerType == 3 // && data.SequenceNo == maxSeqNo
+                                                    where data.PeartnerType == 3
                                                     select data
                                                   ).ToList();
 
@@ -2130,7 +1994,7 @@ namespace TMS.DataGateway.Repositories
                                                    select data
                                                    ).FirstOrDefault();
                                 var source = (from data in orderPartnerData
-                                              where data.PeartnerType == 2 //&& data.SequenceNo == maxSeqNo
+                                              where data.PeartnerType == 2
                                               select data
                                                   ).ToList();
                                 var destinations = (from data in orderPartnerData
