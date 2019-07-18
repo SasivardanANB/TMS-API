@@ -7,8 +7,6 @@ using OMS.DomainObjects.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Domain = OMS.DomainObjects.Objects;
 using System.Net;
 using System.Data.Entity;
@@ -79,15 +77,15 @@ namespace OMS.DataGateway.Repositories
                                       OrderNo = headers.OrderNo,
                                       LegecyOrderNo = headers.LegecyOrderNo,
                                       SequenceNo = details.SequenceNo,
-                                      PartnerNo1 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "1").ID).PartnerID)).PartnerNo, 
+                                      PartnerNo1 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "1").ID).PartnerID)).PartnerNo,
                                       PartnerType1 = 1,
                                       PartnerName1 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "1").ID).PartnerID)).PartnerName,
-                                      PartnerNo2 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "2").ID).PartnerID)).PartnerNo, 
+                                      PartnerNo2 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "2").ID).PartnerID)).PartnerNo,
                                       PartnerType2 = 2,
-                                      PartnerName2 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "2").ID).PartnerID)).PartnerName, 
+                                      PartnerName2 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "2").ID).PartnerID)).PartnerName,
                                       PartnerNo3 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "3").ID).PartnerID)).PartnerNo,
                                       PartnerType3 = 3,
-                                      PartnerName3 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "3").ID).PartnerID)).PartnerName, 
+                                      PartnerName3 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "3").ID).PartnerID)).PartnerName,
                                       FleetType = headers.FleetType,
                                       OrderType = headers.OrderType,
                                       VehicleShipmentType = headers.VehicleShipment,
@@ -101,8 +99,8 @@ namespace OMS.DataGateway.Repositories
                                       OrderDate = headers.OrderDate,
                                       IsActive = headers.IsActive,
                                       OrderShipmentStatus = headers.OrderStatusID,
-                                      Sender = details.Sender,
-                                      Receiver = details.Receiver,
+                                      Sender = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "2").ID).PartnerID)).PartnerName,
+                                      Receiver = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "3").ID).PartnerID)).PartnerName,
                                       Dimension = details.Dimension,
                                       TotalPallet = details.TotalPallet,
                                       Instructions = details.Instruction,
@@ -115,7 +113,7 @@ namespace OMS.DataGateway.Repositories
                     else if (orderRequest.Requests.Count > 0)
                     {
                         var filter = orderRequest.Requests[0];
-                        if(filter.StatusIds == null)
+                        if (filter.StatusIds == null)
                         {
                             filter.StatusIds = new List<int>();
                         }
@@ -136,12 +134,12 @@ namespace OMS.DataGateway.Repositories
                                 PartnerNo1 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "1").ID).PartnerID)).PartnerNo,
                                 PartnerType1 = 1,
                                 PartnerName1 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "1").ID).PartnerID)).PartnerName,
-                                PartnerNo2 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "2").ID).PartnerID)).PartnerNo, 
+                                PartnerNo2 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "2").ID).PartnerID)).PartnerNo,
                                 PartnerType2 = 2,
                                 PartnerName2 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "2").ID).PartnerID)).PartnerName,
                                 PartnerNo3 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "3").ID).PartnerID)).PartnerNo,
                                 PartnerType3 = 3,
-                                PartnerName3 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "3").ID).PartnerID)).PartnerName, 
+                                PartnerName3 = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "3").ID).PartnerID)).PartnerName,
                                 FleetType = headers.FleetType,
                                 OrderType = headers.OrderType,
                                 VehicleShipmentType = headers.VehicleShipment,
@@ -155,8 +153,8 @@ namespace OMS.DataGateway.Repositories
                                 OrderDate = headers.OrderDate,
                                 IsActive = headers.IsActive,
                                 OrderShipmentStatus = headers.OrderStatusID,
-                                Sender = details.Sender,
-                                Receiver = details.Receiver,
+                                Sender = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "2").ID).PartnerID)).PartnerName,
+                                Receiver = context.Partners.FirstOrDefault(t => t.ID == (context.OrderPartnerDetails.FirstOrDefault(a => a.OrderDetailID == details.ID && a.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == "3").ID).PartnerID)).PartnerName,
                                 Dimension = details.Dimension,
                                 TotalPallet = details.TotalPallet,
                                 Instructions = details.Instruction,
@@ -232,6 +230,10 @@ namespace OMS.DataGateway.Repositories
                                 orders = orders.OrderByDescending(s => s.ID).ToList();
                                 break;
                         }
+                    }
+                    else
+                    {
+                        orders = orders.OrderByDescending(s => s.ID).ToList();
                     }
 
                     // Total NumberOfRecords
@@ -321,7 +323,6 @@ namespace OMS.DataGateway.Repositories
 
                             #region Step 1: Check if We have Order Status in Master data
                             int orderStatusId;
-                            string orderStatusValue = "";
                             var orderStatus = (from os in context.OrderStatuses
                                                where os.OrderStatusCode == order.OrderShipmentStatus.ToString()
                                                select new Domain.BusinessArea()
@@ -1029,7 +1030,6 @@ namespace OMS.DataGateway.Repositories
 
                             #region Step 1: Check if We have Order Status in Master data
                             int orderStatusId;
-                            string orderStatusValue = string.Empty;
                             var orderStatus = (from os in context.OrderStatuses
                                                where os.OrderStatusCode == order.OrderShipmentStatus.ToString()
                                                select new Domain.BusinessArea()
@@ -1820,14 +1820,14 @@ namespace OMS.DataGateway.Repositories
             return response;
         }
 
-        public TripResponse ReAssignTrip(TripRequest request)
+        public TripResponse ReAssignTrip(TripRequest tripRequest)
         {
             TripResponse response = new TripResponse();
             List<Trip> tripDetails = new List<Trip>();
 
             using (var context = new Data.OMSDBContext())
             {
-                foreach (var trip in request.Requests)
+                foreach (var trip in tripRequest.Requests)
                 {
                     Trip tripDetail = new Trip();
 
@@ -1842,8 +1842,8 @@ namespace OMS.DataGateway.Repositories
                                 tripObj.DriverName = trip.DriverName;
                                 tripObj.VehicleShipment = trip.VehicleType;
                                 tripObj.VehicleNo = trip.Vehicle;
-                                tripObj.LastModifiedBy = request.LastModifiedBy;
-                                tripObj.LastModifiedTime = request.LastModifiedTime;
+                                tripObj.LastModifiedBy = tripRequest.LastModifiedBy;
+                                tripObj.LastModifiedTime = tripRequest.LastModifiedTime;
                                 context.SaveChanges();
                             }
                             else
@@ -1895,7 +1895,7 @@ namespace OMS.DataGateway.Repositories
                         if (orderHeader != null)
                         {
                             #region Update Order Header
-                           
+
                             orderHeader.OrderStatusID = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == "13").ID;
 
                             context.Entry(orderHeader).State = System.Data.Entity.EntityState.Modified;
