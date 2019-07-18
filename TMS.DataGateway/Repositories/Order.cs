@@ -2309,18 +2309,8 @@ namespace TMS.DataGateway.Repositories
                     {
                         try
                         {
-                            string soPoNumber = String.Empty; 
-                            //string y = x.Split('-')[4];
-                            //string z = x.Split('-')[1] + "-" + x.Split('-')[2] + "-" + x.Split('-')[3];
-                            if (shipment.Data.ShipmentScheduleNo.Split('-').Length >0)
-                            {
-                                soPoNumber = shipment.Data.ShipmentScheduleNo.Split('-')[4];
 
-                                //DateTime estimationShipmentDate = DateTime.ParseExact(order.EstimationShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(order.EstimationShipmentTime);
-                                //DateTime actualShipmentDate = DateTime.ParseExact(order.ActualShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(order.ActualShipmentTime);
-
-                            }
-
+                            // save ShipmentScheduleOCRDetails into ShipmentScheduleOCRDetails log
                             DataModel.ShipmentScheduleOCRDetails shipmentScheduleOCRDetails = new DataModel.ShipmentScheduleOCRDetails()
                             {
                                 EmailFrom = shipment.EmailFrom,
@@ -2336,7 +2326,6 @@ namespace TMS.DataGateway.Repositories
                                 MultiDropShipment = shipment.Data.MultiDropShipment,
                                 EstimatedTotalPallet = shipment.Data.EstimatedTotalPallet,
                                 Weight = shipment.Data.Weight,
-
                                 IsProcessed = true,
                                 IsOrderCreated = false ,
                                 ImageGuid = shipment.ImageGUID,
@@ -2347,66 +2336,51 @@ namespace TMS.DataGateway.Repositories
                             context.ShipmentScheduleOCRDetails.Add(shipmentScheduleOCRDetails);
                             context.SaveChanges();
                             transaction.Commit();
+                            /////
                             response.StatusCode = (int)HttpStatusCode.OK;
                             response.StatusMessage = DomainObjects.Resource.ResourceData.OrderCreated;
                             //    string soPoNumber = String.Empty;
                             //DateTime estimationShipmentDate = DateTime.ParseExact(order.EstimationShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(order.EstimationShipmentTime);
                             //DateTime actualShipmentDate = DateTime.ParseExact(order.ActualShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(order.ActualShipmentTime);
 
-                            //    #region Step 1: Check if We have Business Area master data
-                            //    int businessAreaId;
-                            //    string businessAreaCode = string.Empty;
-                            //    if (request.UploadType == 2) // Upload via UI
-                            //    {
-                            //        var businessArea = (from ba in context.BusinessAreas
-                            //                            where ba.ID == order.BusinessAreaId
-                            //                            select new Domain.BusinessArea()
-                            //                            {
-                            //                                ID = ba.ID,
-                            //                                BusinessAreaCode = ba.BusinessAreaCode
-                            //                            }).FirstOrDefault();
-                            //        if (businessArea != null)
-                            //        {
-                            //            businessAreaId = businessArea.ID;
-                            //            businessAreaCode = businessArea.BusinessAreaCode;
-                            //        }
-                            //        else
-                            //        {
-                            //            //Return with Business Area not found
-                            //            transaction.Rollback();
-                            //            response.Status = DomainObjects.Resource.ResourceData.Failure;
-                            //            response.StatusCode = (int)HttpStatusCode.BadRequest;
-                            //            response.StatusMessage = order.BusinessAreaId + " Business Area ID not found in TMS.";
-                            //            return response;
-                            //        }
+                            string soPoNumber = String.Empty;
+                            //string y = x.Split('-')[4];
+                            //string z = x.Split('-')[1] + "-" + x.Split('-')[2] + "-" + x.Split('-')[3];
+                            if (shipment.Data.ShipmentScheduleNo.Split('-').Length > 0)
+                            {
+                                soPoNumber = shipment.Data.ShipmentScheduleNo.Split('-')[4];
 
-                            //    }
-                            //    else
-                            //    {
+                                //DateTime estimationShipmentDate = DateTime.ParseExact(order.EstimationShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(order.EstimationShipmentTime);
+                                //DateTime actualShipmentDate = DateTime.ParseExact(order.ActualShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(order.ActualShipmentTime);
 
-                            //        var businessArea = (from ba in context.BusinessAreas
-                            //                            where ba.BusinessAreaCode == order.BusinessArea
-                            //                            select new Domain.BusinessArea()
-                            //                            {
-                            //                                ID = ba.ID,
-                            //                                BusinessAreaCode = ba.BusinessAreaCode
-                            //                            }).FirstOrDefault();
-                            //        if (businessArea != null)
-                            //        {
-                            //            businessAreaId = businessArea.ID;
-                            //            businessAreaCode = businessArea.BusinessAreaCode;
-                            //        }
-                            //        else
-                            //        {
-                            //            //Return with Business Area not found
-                            //            transaction.Rollback();
-                            //            response.Status = DomainObjects.Resource.ResourceData.Failure;
-                            //            response.StatusCode = (int)HttpStatusCode.BadRequest;
-                            //            response.StatusMessage = order.BusinessArea + " Business Area not found in TMS.";
-                            //            return response;
-                            //        }
-                            //    }
-                            //    #endregion
+                            }
+
+                            #region Step 1: Check if We have Business Area master data
+                            int businessAreaId;
+                            string businessAreaCode = string.Empty;
+
+                                //var businessArea = (from ba in context.BusinessAreas
+                                //                    where ba.ID == order.BusinessAreaId
+                                //                    select new Domain.BusinessArea()
+                                //                    {
+                                //                        ID = ba.ID,
+                                //                        BusinessAreaCode = ba.BusinessAreaCode
+                                //                    }).FirstOrDefault();
+                                //if (businessArea != null)
+                                //{
+                                //    businessAreaId = businessArea.ID;
+                                //    businessAreaCode = businessArea.BusinessAreaCode;
+                                //}
+                                //else
+                                //{
+                                //    //Return with Business Area not found
+                                //    transaction.Rollback();
+                                //    response.Status = DomainObjects.Resource.ResourceData.Failure;
+                                //    response.StatusCode = (int)HttpStatusCode.BadRequest;
+                                //    response.StatusMessage = order.BusinessAreaId + " Business Area ID not found in TMS.";
+                                //    return response;
+                                //}
+                            #endregion
                             //    #region Step 4: Check if Order already existing then update/create accordingly
 
                             //    int orderDetailId = 0;

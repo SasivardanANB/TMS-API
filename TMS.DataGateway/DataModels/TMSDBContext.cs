@@ -52,5 +52,7 @@ namespace TMS.DataGateway.DataModels
         public virtual DbSet<PartnerPartnerType> PartnerPartnerTypes { get; set; }
         public virtual DbSet<Harga> Hargas { get; set; }
         public virtual DbSet<ShipmentScheduleOCRDetails> ShipmentScheduleOCRDetails { get; set; }
+        public virtual DbSet<MDBusinessAreaMapping> MDBusinessAreaMappings { get; set; }
+        public virtual DbSet<MDTransporterMapping> MDTransporterMappings { get; set; }
     }
 }
