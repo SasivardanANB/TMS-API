@@ -1,23 +1,14 @@
-﻿using OMS.DomainGateway.Gateway;
-using OMS.DomainGateway.Task;
-using OMS.DomainObjects.Request;
+﻿using OMS.DomainObjects.Request;
 using OMS.DomainObjects.Response;
 using OMS.DomainObjects.Objects;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
-using Helper.Model.DependencyResolver;
 using OMS.DomainGateway.Task.Interfaces;
 using OMS.DomainGateway.Gateway.Interfaces;
 using OMS.API.Classes;
 using RestSharp;
 using System.Configuration;
 using Newtonsoft.Json;
-using NLog;
-using Newtonsoft.Json.Linq;
 
 namespace OMS.API.Controllers
 {
@@ -25,8 +16,6 @@ namespace OMS.API.Controllers
     [RoutePrefix("api/v1/user")]
     public class UserController : ApiController
     {
-        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
-
         #region Private Methods
         private static string GetApiResponse(string apiRoute, Method method, object requestQueryParameter, string token)
         {

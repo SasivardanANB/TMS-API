@@ -385,11 +385,6 @@ namespace OMS.DataGateway.Repositories
                     {
                         usersList = usersList.Where(s => s.LastName.ToLower().Contains(userFilter.LastName.ToLower())).ToList();
                     }
-
-                    //if (userFilter.IsActive != null)
-                    //{
-                    //    usersList = usersList.Where(s => s.IsActive == userFilter.IsActive).ToList();
-                    //}
                 }
 
                 // Sorting
@@ -795,14 +790,6 @@ namespace OMS.DataGateway.Repositories
                             rolesList = rolesList.Where(s => s.RoleDescription.ToLower().Contains(filter.RoleDescription.ToLower())).ToList();
                         }
 
-                        //if (!filter.IsActive)
-                        //{
-                        //    rolesList = rolesList.Where(s => s.IsActive == false).ToList();
-                        //}
-                        //else
-                        //{
-                        //    rolesList = rolesList.Where(s => s.IsActive).ToList();
-                        //}
                     }
 
                     // Sorting
