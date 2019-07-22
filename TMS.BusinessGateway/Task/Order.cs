@@ -109,6 +109,11 @@ namespace TMS.BusinessGateway.Task
         {
             return _orderRepository.CreateOrderFromShipmentScheduleOcr(request);
         }
+
+        public override OrderResponse OcrOrderResponse(ShipmentScheduleOcrRequest shipmentScheduleOcrRequest)
+        {
+            return _orderRepository.OcrOrderResponse(shipmentScheduleOcrRequest);
+        }
     }
 
 }

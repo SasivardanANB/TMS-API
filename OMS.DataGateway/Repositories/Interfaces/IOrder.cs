@@ -13,6 +13,7 @@ namespace OMS.DataGateway.Repositories.Iterfaces
     {
         OrderResponse GetOrders(DownloadOrderRequest orderRequest);
         OrderResponse CreateUpdateOrders(OrderRequest request);
+        OrderResponse CreateOrdersFromShipmentListOCR(OrderRequest request);
         OrderStatusCodesResponse GetAllOrderStatus();
         OrderResponse SyncOrders(OrderRequest request);
         PackingSheetResponse CreateUpdatePackingSheet(PackingSheetRequest packingSheetRequest);

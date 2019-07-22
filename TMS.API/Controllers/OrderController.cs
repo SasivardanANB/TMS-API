@@ -68,6 +68,12 @@ namespace TMS.API.Controllers
             return orderTask.GetPartnerDetail(partnerNo, uploadType);
         }
 
+        private OrderResponse OcrOrderResponse(ShipmentScheduleOcrRequest  shipmentScheduleOcrRequest)
+        {
+            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            return orderTask.OcrOrderResponse(shipmentScheduleOcrRequest);
+        }
+
         private string GetBusinessAreaCode(int businessAreaId)
         {
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
@@ -1187,6 +1193,8 @@ namespace TMS.API.Controllers
         {
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
             ShipmentScheduleOcrResponse response = new ShipmentScheduleOcrResponse();
+            OrderResponse ocrOrderResponse = new OrderResponse();
+            OrderResponse omsOrderResponse = new OrderResponse();
             // Loin into Gamil and Get all Mails
             var mailRepository = new MailRepository(
                                     "imap.gmail.com",
@@ -1251,15 +1259,40 @@ namespace TMS.API.Controllers
                                 }
                                 if(shipmentScheduleOcrRequest.Requests.Count > 0)
                                 {
-                                     response = orderTask.CreateOrderFromShipmentScheduleOcr(shipmentScheduleOcrRequest);
+                                    //response = orderTask.CreateOrderFromShipmentScheduleOcr(shipmentScheduleOcrRequest);
+                                    //OcrOrderResponse
+                                    OrderRequest omsOrderRequest = new OrderRequest();
+                                    
+
+                                    ocrOrderResponse = OcrOrderResponse(shipmentScheduleOcrRequest);
+                                    if(ocrOrderResponse != null && ocrOrderResponse.StatusCode == (int)HttpStatusCode.OK)
+                                    {
+                                        LoginRequest omsLoginRequest = new LoginRequest();
+                                        string omsToken = "";
+                                        omsLoginRequest.UserName = ConfigurationManager.AppSettings["OMSLogin"];
+                                        omsLoginRequest.UserPassword = ConfigurationManager.AppSettings["OMSPassword"];
+                                        var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                                                                                                                          + "v1/user/login", Method.POST, omsLoginRequest, null));
+                                        if (tmsLoginResponse != null && tmsLoginResponse.Data.Count > 0)
+                                        {
+                                            omsToken = tmsLoginResponse.TokenKey;
+                                        }
+                                        omsOrderRequest.Requests = ocrOrderResponse.Data;
+
+                                        omsOrderResponse = JsonConvert.DeserializeObject<OrderResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                                                                                                             + "v1/order/createordersfromshipmentlistocr", Method.POST, omsOrderRequest, omsToken));
+                                    }
+
+                                    
                                 }
                             }
                         }
                     }
                 }
+
             }
 
-            return Ok(response);
+            return Ok(omsOrderResponse);
         }
 
         [HttpPost, Route("shipmentscheduleocr"), AllowAnonymous]

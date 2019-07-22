@@ -351,5 +351,133 @@ namespace OMS.API.Controllers
             return Ok(response);
         }
 
+        [Route("createordersfromshipmentlistocr")]
+        [HttpPost]
+        public IHttpActionResult CreateOrdersFromShipmentListOCR(OrderRequest request)
+        {
+
+
+            for (int i = 0; i < request.Requests.Count; i++)
+            {
+                
+                    ModelState.Remove("request.Requests[" + i + "].BusinessArea");
+                    ModelState.Remove("request.Requests[" + i + "].ShippingListNo");
+                    ModelState.Remove("request.Requests[" + i + "].PackingSheetNo");
+                    ModelState.Remove("request.Requests[" + i + "].TotalCollie");
+                    ModelState.Remove("request.Requests[" + i + "].PartnerName1");
+                    ModelState.Remove("request.Requests[" + i + "].PartnerName2");
+                    ModelState.Remove("request.Requests[" + i + "].PartnerName3");
+                    ModelState.Remove("request.Requests[" + i + "].Dimension");
+                    ModelState.Remove("request.Requests[" + i + "].ShipmentSAPNo");
+                    ModelState.Remove("request.Requests[" + i + "].OrderNo");
+
+                ModelState.Remove("request.Requests[" + i + "].OrderNo ");
+                ModelState.Remove("request.Requests[" + i + "].EstimationShipmentDate");
+                ModelState.Remove("request.Requests[" + i + "].EstimationShipmentTime");
+                ModelState.Remove("request.Requests[" + i + "].ActualShipmentDate");
+                ModelState.Remove("request.Requests[" + i + "].ActualShipmentTime");
+
+            }
+            if (!ModelState.IsValid)
+            {
+                ErrorResponse errorResponse = new ErrorResponse()
+                {
+                    Status = DomainObjects.Resource.ResourceData.Failure,
+                    Data = new List<Error>()
+                };
+                for (int i = 0; i < ModelState.Keys.Count; i++)
+                {
+                    Error errorData = new Error()
+                    {
+                        ErrorMessage = ModelState.Keys.ToList<string>()[i].Replace("request.Requests[", "Row Number[") + " : " + ModelState.Values.ToList<ModelState>()[i].Errors[0].ErrorMessage
+                    };
+
+                    errorResponse.Data.Add(errorData);
+                }
+                return Ok(errorResponse);
+            }
+
+            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            OrderResponse orderData = orderTask.CreateOrdersFromShipmentListOCR(request);
+
+            //if (orderData.StatusCode == 200 && orderData.Status == "Success" && request.orderGeneratedSystem != "TMS")
+            //{
+            //    #region Call TMS Order Request
+            //    if (orderData.StatusCode == (int)HttpStatusCode.OK)
+            //    {
+
+            //        OrderRequest tmsRequest = new OrderRequest()
+            //        {
+            //            Requests = new List<Order>(),
+            //            CreatedBy = "OMS System",
+            //            UploadType = 1,
+            //            orderGeneratedSystem = "OMS"
+            //        };
+
+            //        //Login to TMS and get Token
+            //        LoginRequest loginRequest = new LoginRequest();
+            //        string token = "";
+            //        loginRequest.UserName = ConfigurationManager.AppSettings["TMSLogin"];
+            //        loginRequest.UserPassword = ConfigurationManager.AppSettings["TMSPassword"];
+            //        var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+            //            + "/v1/user/login", Method.POST, loginRequest, null));
+            //        if (tmsLoginResponse != null && tmsLoginResponse.Data.Count > 0)
+            //        {
+            //            token = tmsLoginResponse.TokenKey;
+            //        }
+            //        foreach (var omsOrder in request.Requests)
+            //        {
+            //            Order tmsOrder = new Order()
+            //            {
+            //                BusinessArea = omsOrder.BusinessArea,
+            //                OrderNo = omsOrder.OrderNo,
+            //                SequenceNo = omsOrder.SequenceNo,
+            //                PartnerNo1 = omsOrder.PartnerNo1,
+            //                PartnerType1 = omsOrder.PartnerType1,
+            //                PartnerName1 = omsOrder.PartnerName1,
+            //                PartnerNo2 = omsOrder.PartnerNo2,
+            //                PartnerType2 = omsOrder.PartnerType2,
+            //                PartnerName2 = omsOrder.PartnerName2,
+            //                PartnerNo3 = omsOrder.PartnerNo3,
+            //                PartnerType3 = omsOrder.PartnerType3,
+            //                PartnerName3 = omsOrder.PartnerName3,
+            //                FleetType = omsOrder.FleetType,
+            //                OrderType = omsOrder.OrderType,
+            //                VehicleShipmentType = omsOrder.VehicleShipmentType,
+            //                DriverNo = omsOrder.DriverNo,
+            //                DriverName = omsOrder.DriverName,
+            //                VehicleNo = omsOrder.VehicleNo,
+            //                OrderWeight = omsOrder.OrderWeight,
+            //                OrderWeightUM = omsOrder.OrderWeightUM,
+            //                EstimationShipmentDate = omsOrder.EstimationShipmentDate,
+            //                EstimationShipmentTime = omsOrder.EstimationShipmentTime,
+            //                ActualShipmentDate = omsOrder.ActualShipmentDate,
+            //                ActualShipmentTime = omsOrder.ActualShipmentTime,
+            //                Sender = omsOrder.Sender,
+            //                Receiver = omsOrder.Receiver,
+            //                OrderShipmentStatus = omsOrder.OrderShipmentStatus,
+            //                Dimension = omsOrder.Dimension,
+            //                TotalPallet = omsOrder.TotalPallet,
+            //                Instructions = omsOrder.Instructions,
+            //                ShippingListNo = omsOrder.ShippingListNo,
+            //                PackingSheetNo = omsOrder.PackingSheetNo,
+            //                TotalCollie = omsOrder.TotalCollie,
+            //                ShipmentSAPNo = omsOrder.ShipmentSAPNo
+            //            };
+            //            tmsRequest.Requests.Add(tmsOrder);
+            //        }
+
+            //        OrderResponse tmsOrderData = JsonConvert.DeserializeObject<OrderResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+            //            + "/v1/order/createupdateorder", Method.POST, tmsRequest, token));
+            //        if (tmsOrderData.StatusCode == (int)HttpStatusCode.OK)
+            //        {
+            //            orderData.StatusMessage = orderData.StatusMessage + ". " + tmsOrderData.StatusMessage;
+            //        }
+            //    }
+            //    #endregion
+            //}
+            return Ok(orderData);
+        }
+
     }
 }
