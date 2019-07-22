@@ -18,7 +18,6 @@ namespace TMS.DomainGateway.Task.Interfaces
         UserResponse GetUsers(UserRequest userReq);
         UserResponse ChangePassword(ChangePasswordRequest changePasswordRequest,string type);
         UserResponse ForgotPassword(ForgotPasswordRequest forgotPasswordRequest);
-        UserResponse UpdateUserProfile(UserRequest user);
 
         // Role Management
         RoleResponse CreateUpdateRole(RoleRequest role);
