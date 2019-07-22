@@ -172,9 +172,7 @@ namespace TMS.DataGateway.Repositories
                         {
                             userDataModel.LastModifiedBy = user.LastModifiedBy;
                             userDataModel.LastModifiedTime = DateTime.Now;
-                            //userDataModel.Password = context.Users.Where(d => d.ID == userDataModel.ID).Select(p => p.Password).FirstOrDefault();
                             context.Entry(userDataModel).State = System.Data.Entity.EntityState.Modified;
-                            //context.Entry(userDataModel).Property(p => p.Password).IsModified = false;
                             context.SaveChanges();
                             var existedApplications = (from userApplication in context.UserApplications
                                                        where userApplication.UserID == userDataModel.ID
@@ -378,11 +376,6 @@ namespace TMS.DataGateway.Repositories
                     {
                         usersList = usersList.Where(s => s.LastName.ToLower().Contains(userFilter.LastName.ToLower())).ToList();
                     }
-
-                    //if (userFilter.IsActive != null)
-                    //{
-                    //    usersList = usersList.Where(s => s.IsActive == userFilter.IsActive).ToList();
-                    //}
                 }
 
                 // Sorting
@@ -390,8 +383,6 @@ namespace TMS.DataGateway.Repositories
                 {
                     if (!string.IsNullOrEmpty(userReq.SortOrder))
                     {
-
-
                         switch (userReq.SortOrder.ToLower())
                         {
                             case "username":
@@ -466,63 +457,6 @@ namespace TMS.DataGateway.Repositories
                 userResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
                 userResponse.StatusMessage = ex.Message;
             }
-            return userResponse;
-        }
-
-        public UserResponse UpdateUserProfile(UserRequest user)
-        {
-            UserResponse userResponse = new UserResponse();
-            try
-            {
-                Domain.User userData = user.Requests[0];
-
-                using (var context = new TMSDBContext())
-                {
-                    var userDataModelList = new List<DataModel.User>();
-
-                    var config = new MapperConfiguration(cfg =>
-                    {
-                        cfg.CreateMap<Domain.User, DataModel.User>().ReverseMap()
-                        .ForMember(x => x.ApplicationNames, opt => opt.Ignore());
-                    });
-
-                    IMapper mapper = config.CreateMapper();
-                    var userDetails = context.Users.Where(u => u.ID == userData.ID).FirstOrDefault();
-                    if (userDetails != null)
-                    {
-
-                        if (userData.ID > 0) //Update User
-                        {
-
-                            userDetails.FirstName = userData.FirstName;
-                            userDetails.LastName = userData.LastName;
-                            userDetails.Email = userData.Email;
-                            userDetails.PhoneNumber = userData.PhoneNumber;
-                            userDetails.LastModifiedBy = user.LastModifiedBy;
-                            userDetails.LastModifiedTime = DateTime.Now;
-
-                            context.SaveChanges();
-
-                            userDataModelList.Add(userDetails);
-                        }
-
-                        user.Requests = mapper.Map<List<DataModel.User>, List<Domain.User>>(userDataModelList);
-                        userResponse.Data = user.Requests;
-
-                        userResponse.StatusCode = (int)HttpStatusCode.OK;
-                        userResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                        userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UsersUpdated;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Log(LogLevel.Error, ex);
-                userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
-                userResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                userResponse.StatusMessage = ex.Message;
-            }
-
             return userResponse;
         }
 
@@ -1700,12 +1634,12 @@ namespace TMS.DataGateway.Repositories
                     var orders = context.OrderHeaders.ToList();
                     #endregion
 
-                    dashboardResponse.AllOrderCount = orders.Count();
-                    dashboardResponse.BookedCount = orders.Where(o => o.OrderStatusID == 1).Count();   // For status booked
-                    dashboardResponse.ConfirmedCount = orders.Where(o => o.OrderStatusID == 2).Count();   // For status confirmed
-                    dashboardResponse.Acceptedcount = orders.Where(o => o.OrderStatusID == 15).Count();   // For status accepted
-                    dashboardResponse.PODCount = orders.Where(o => o.OrderStatusID == 11).Count();   // For status pod
-                    dashboardResponse.CancelledCount = orders.Where(o => o.OrderStatusID == 13).Count();   // For status cancelled
+                    dashboardResponse.AllOrderCount = orders.Count;
+                    dashboardResponse.BookedCount = orders.Count(o => o.OrderStatusID == 1);   // For status booked
+                    dashboardResponse.ConfirmedCount = orders.Count(o => o.OrderStatusID == 2);   // For status confirmed
+                    dashboardResponse.Acceptedcount = orders.Count(o => o.OrderStatusID == 15);   // For status accepted
+                    dashboardResponse.PODCount = orders.Count(o => o.OrderStatusID == 11);   // For status pod
+                    dashboardResponse.CancelledCount = orders.Count(o => o.OrderStatusID == 13);   // For status cancelled
                     dashboardResponse.LoadingCount = GetLoadingUnloadingCount(orders, "Load");
                     dashboardResponse.UnloadingCount = GetLoadingUnloadingCount(orders, "Unload");
                     dashboardResponse.PickUpCount = GetPrickupDropOffCount(orders, "Load");
@@ -1960,6 +1894,5 @@ namespace TMS.DataGateway.Repositories
             }
             return userRoles;
         }
-
     }
 }

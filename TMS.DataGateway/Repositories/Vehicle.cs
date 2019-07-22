@@ -112,6 +112,7 @@ namespace TMS.DataGateway.Repositories
             }
             return VehicleResponse;
         }
+
         public VehicleResponse GetVehicles(VehicleRequest vehicleRequest)
         {
             VehicleResponse vehicleResponse = new VehicleResponse();
@@ -366,8 +367,10 @@ namespace TMS.DataGateway.Repositories
                             Value = vehicle.KIRNo
                         }).ToList();
                     }
+
                     if (commonCodes.Count > 0)
                     {
+                        commonCodeResponse.NumberOfRecords = commonCodes.Count;
                         commonCodeResponse.Data = commonCodes;
                         commonCodeResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         commonCodeResponse.StatusCode = (int)HttpStatusCode.OK;
@@ -379,9 +382,7 @@ namespace TMS.DataGateway.Repositories
                         commonCodeResponse.StatusCode = (int)HttpStatusCode.NotFound;
                         commonCodeResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                     }
-
                 }
-
             }
             catch (Exception ex)
             {

@@ -1,11 +1,7 @@
 ﻿using DMS.DomainGateway.Task.Interfaces;
+using DMS.DomainObjects.Objects;
 using DMS.DomainObjects.Request;
 using DMS.DomainObjects.Response;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DMS.DomainGateway.Task
 {
@@ -31,6 +27,6 @@ namespace DMS.DomainGateway.Task
 
         public abstract OrderStatusResponse CancelOrder(OrderStatusRequest request);
 
-        public abstract ShipmentListResponse CreateUpdateShipmentList(ShipmentListRequest request);
+        public abstract ShipmentListResponse CreateUpdateShipmentList(int stopPointId, ShippingList request);
     }
 }

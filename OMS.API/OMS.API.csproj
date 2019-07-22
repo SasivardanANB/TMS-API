@@ -299,6 +299,8 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="AppConfig.config" />
+    <Content Include="ConnString.config" />
     <None Include="packages.config" />
     <Content Include="WebWindSorCastle.config" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />

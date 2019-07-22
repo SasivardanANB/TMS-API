@@ -3,17 +3,37 @@ using TMS.DataGateway.Repositories.Iterfaces;
 using TMS.DomainGateway.Task;
 using TMS.DomainObjects.Request;
 using TMS.DomainObjects.Response;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Domain = TMS.DomainObjects.Objects;
+using System.Configuration;
+using Newtonsoft.Json;
+using RestSharp;
 
 namespace TMS.BusinessGateway.Task
 {
     public partial class BusinessUserTask : UserTask
     {
         private readonly IUser _userRepository;
+
+        #region Private Methods
+        private static string GetApiResponse(string apiRoute, Method method, object requestQueryParameter, string token)
+        {
+            var client = new RestClient(ConfigurationManager.AppSettings["ApiGatewayBaseURL"]);
+            client.AddDefaultHeader("Content-Type", "application/json");
+            if (token != null)
+                client.AddDefaultHeader("Token", token);
+            var request = new RestRequest(apiRoute, method) { RequestFormat = DataFormat.Json };
+            request.Timeout = 500000;
+            if (requestQueryParameter != null)
+            {
+                request.AddJsonBody(requestQueryParameter);
+            }
+            var result = client.Execute(request);
+            return result.Content;
+        }
+        #endregion
+
         public BusinessUserTask(IUser userRepository)
         {
             _userRepository = userRepository;
@@ -32,12 +52,78 @@ namespace TMS.BusinessGateway.Task
         #region "User Application"
         public override UserResponse CreateUpdateUser(UserRequest user)
         {
-            //If needed write business logic here for request.
+            UserResponse userResponse = new UserResponse();
 
-            UserResponse userData = _userRepository.CreateUpdateUser(user);
+            foreach (Domain.User userDetails in user.Requests)
+            {
+                #region Create OMSUserRequest
+                UserRequest omsRequest = null;
+                if (userDetails.Applications.Contains(1))
+                {
+                    omsRequest = new UserRequest()
+                    {
+                        Requests = new List<Domain.User>()
+                        {
+                            new Domain.User()
+                            {
+                                Applications = new List<int>(){
+                                    1
+                                },
+                                FirstName = userDetails.FirstName,
+                                LastName = userDetails.LastName,
+                                UserName = userDetails.UserName,
+                                Password = userDetails.Password,
+                                ConfirmPassword = userDetails.ConfirmPassword,
+                                Email = userDetails.Email,
+                                PhoneNumber = userDetails.PhoneNumber
+                            }
+                        },
+                        CreatedBy = "SYSTEM",
+                        LastModifiedBy = user.LastModifiedBy,
+                        CreatedTime = user.CreatedTime,
+                        LastModifiedTime = user.LastModifiedTime
+                    };
+                }
+                #endregion
 
-            //If needed write business logic here for response.
-            return userData;
+                #region CreateUpdateUser in TMS
+                if (userDetails.Applications.Contains(2))
+                {
+                    userResponse = _userRepository.CreateUpdateUser(user);
+                }
+                #endregion
+
+                #region CreateUpdateUser in OMS
+                if (omsRequest != null) //For OMS Application - Integrate Azure API Gateway
+                {
+                    LoginRequest loginRequest = new LoginRequest();
+                    //Login to TMS and get Token
+                    string token = string.Empty;
+                    loginRequest.UserName = ConfigurationManager.AppSettings["OMSLogin"];
+                    loginRequest.UserPassword = ConfigurationManager.AppSettings["OMSPassword"];
+                    var OmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                        + "/v1/user/login", Method.POST, loginRequest, null));
+                    if (OmsLoginResponse != null && OmsLoginResponse.Data.Count > 0)
+                    {
+                        token = OmsLoginResponse.TokenKey;
+                    }
+
+                    UserResponse omsUserResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                         + "/v1/user/createupdateuser", Method.POST, omsRequest, token));
+
+                    if (!userDetails.Applications.Contains(2))
+                    {
+                        userResponse = omsUserResponse;
+                    }
+                    else
+                    {
+                        userResponse.StatusMessage = userResponse.StatusMessage + ". " + omsUserResponse.StatusMessage;
+                    }
+                }
+                #endregion
+            }
+
+            return userResponse;
         }
 
         public override UserResponse DeleteUser(int UserID)
@@ -50,11 +136,6 @@ namespace TMS.BusinessGateway.Task
         public override UserResponse GetUsers(UserRequest userReq)
         {
             UserResponse usersList = _userRepository.GetUsers(userReq);
-            return usersList;
-        }
-        public override UserResponse UpdateUserProfile(UserRequest user)
-        {
-            UserResponse usersList = _userRepository.UpdateUserProfile(user);
             return usersList;
         }
 
