@@ -60,12 +60,6 @@ namespace OMS.BusinessGateway.Task
             return userResponse;
         }
 
-        public override UserResponse UpdateUserProfile(UserRequest user)
-        {
-            UserResponse usersList = _userRepository.UpdateUserProfile(user);
-            return usersList;
-        }
-
         #endregion
 
         #region "Role Management"

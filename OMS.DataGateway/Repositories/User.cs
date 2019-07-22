@@ -519,58 +519,6 @@ namespace OMS.DataGateway.Repositories
 
         }
 
-        public UserResponse UpdateUserProfile(UserRequest user)
-        {
-            UserResponse userResponse = new UserResponse();
-            try
-            {
-                Domain.User userData = user.Requests[0];
-
-                using (var context = new OMSDBContext())
-                {
-                    var userDataModelList = new List<DataModel.User>();
-
-                    var config = new MapperConfiguration(cfg =>
-                    {
-                        cfg.CreateMap<Domain.User, DataModel.User>().ReverseMap()
-                        .ForMember(x => x.ApplicationNames, opt => opt.Ignore());
-                    });
-
-                    IMapper mapper = config.CreateMapper();
-
-                    var userDetails = context.Users.Where(u => u.ID == userData.ID).FirstOrDefault();
-                    if (userDetails != null)
-                    {
-                        userDetails.FirstName = userData.FirstName;
-                        userDetails.LastName = userData.LastName;
-                        userDetails.Email = userData.Email;
-                        userDetails.PhoneNumber = userData.PhoneNumber;
-                        userDetails.LastModifiedBy = user.LastModifiedBy;
-                        userDetails.LastModifiedTime = DateTime.Now;
-
-                        context.SaveChanges();
-
-                        userDataModelList.Add(userDetails);
-
-                        user.Requests = mapper.Map<List<DataModel.User>, List<Domain.User>>(userDataModelList);
-                        userResponse.Data = user.Requests;
-
-                        userResponse.StatusCode = (int)HttpStatusCode.OK;
-                        userResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                        userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UsersUpdated;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Log(LogLevel.Error, ex);
-                userResponse.Status = DomainObjects.Resource.ResourceData.Failure;
-                userResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                userResponse.StatusMessage = ex.Message;
-            }
-
-            return userResponse;
-        }
         #endregion
 
         #region "Role Management"

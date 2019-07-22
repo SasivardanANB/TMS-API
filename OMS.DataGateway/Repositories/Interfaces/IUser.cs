@@ -17,7 +17,6 @@ namespace OMS.DataGateway.Repositories.Iterfaces
         UserResponse CreateUpdateUser(UserRequest user);
         UserResponse DeleteUser(int userId);
         UserResponse GetUsers(UserRequest userReq);
-        UserResponse UpdateUserProfile(UserRequest user);
 
         // Role Management
         RoleResponse CreateUpdateRole(RoleRequest role);
