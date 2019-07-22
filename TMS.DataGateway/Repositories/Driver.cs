@@ -82,7 +82,7 @@ namespace TMS.DataGateway.Repositories
                             var checkDriverIdentityNo = tMSDBContext.Drivers.Where(d => d.IdentityNo == driverData.IdentityNo).FirstOrDefault();
                             var checkDriverUserName = tMSDBContext.Drivers.Where(d => d.UserName == driverData.UserName).FirstOrDefault();
 
-                            if (checkDrivingLicenseNo == null && checkDriverIdentityNo == null && checkDriverUserName != null)
+                            if (checkDrivingLicenseNo == null && checkDriverIdentityNo == null && checkDriverUserName == null)
                             {
                                 driverData.DriverNo = GetDriverNumber();
                                 driverData.CreatedBy = driverRequest.CreatedBy;
