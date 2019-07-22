@@ -80,8 +80,9 @@ namespace TMS.DataGateway.Repositories
                         {
                             var checkDrivingLicenseNo = tMSDBContext.Drivers.Where(d => d.DrivingLicenseNo == driverData.DrivingLicenseNo).FirstOrDefault();
                             var checkDriverIdentityNo = tMSDBContext.Drivers.Where(d => d.IdentityNo == driverData.IdentityNo).FirstOrDefault();
+                            var checkDriverUserName = tMSDBContext.Drivers.Where(d => d.UserName == driverData.UserName).FirstOrDefault();
 
-                            if (checkDrivingLicenseNo == null && checkDriverIdentityNo == null)
+                            if (checkDrivingLicenseNo == null && checkDriverIdentityNo == null && checkDriverUserName != null)
                             {
                                 driverData.DriverNo = GetDriverNumber();
                                 driverData.CreatedBy = driverRequest.CreatedBy;
@@ -100,9 +101,10 @@ namespace TMS.DataGateway.Repositories
                             }
                             else
                             {
-                                //if(checkDriverNo != null) {
-                                //    driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.DriverNoExisted;
-                                //}
+                                if (checkDriverUserName != null)
+                                {
+                                    driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.DriverUserNameExisted;
+                                }
                                 if (checkDrivingLicenseNo != null)
                                 {
                                     driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.DrivingLicenseNoExisted;
