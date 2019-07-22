@@ -484,6 +484,6 @@
     <value>Order(s) cancelled successfully in TMS</value>
   </data>
   <data name="DriverUserNameExisted" xml:space="preserve">
-    <value>Driver user name alredy exists</value>
+    <value>Driver user name already exists</value>
   </data>
 </root>

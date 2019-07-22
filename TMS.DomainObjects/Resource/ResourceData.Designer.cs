@@ -133,7 +133,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Driver user name alredy exists.
+        ///   Looks up a localized string similar to Driver user name already exists.
         /// </summary>
         public static string DriverUserNameExisted {
             get {
