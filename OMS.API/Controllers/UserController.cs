@@ -16,23 +16,6 @@ namespace OMS.API.Controllers
     [RoutePrefix("api/v1/user")]
     public class UserController : ApiController
     {
-        #region Private Methods
-        private static string GetApiResponse(string apiRoute, Method method, object requestQueryParameter, string token)
-        {
-            var client = new RestClient(ConfigurationManager.AppSettings["ApiGatewayBaseURL"]);
-            client.AddDefaultHeader("Content-Type", "application/json");
-            if (token != null)
-                client.AddDefaultHeader("Token", token);
-            var request = new RestRequest(apiRoute, method) { RequestFormat = DataFormat.Json };
-            request.Timeout = 500000;
-            if (requestQueryParameter != null)
-            {
-                request.AddJsonBody(requestQueryParameter);
-            }
-            var result = client.Execute(request);
-            return result.Content;
-        }
-        #endregion
 
         [Route("login")]
         [AllowAnonymous, HttpPost]
@@ -85,77 +68,8 @@ namespace OMS.API.Controllers
                 return BadRequest(ModelState);
             #endregion
 
-            UserResponse userResponse = new UserResponse();
-
-            foreach (User userDetails in user.Requests)
-            {
-                #region Create TMSUserRequest
-                UserRequest tmsRequest = null;
-                if (userDetails.Applications.Contains(2))
-                {
-                    tmsRequest = new UserRequest()
-                    {
-                        Requests = new List<User>()
-                        {
-                            new User()
-                            {
-                                Applications = new List<int>(){
-                                    2
-                                },
-                                FirstName = userDetails.FirstName,
-                                LastName = userDetails.LastName,
-                                UserName = userDetails.UserName,
-                                Password = userDetails.Password,
-                                ConfirmPassword = userDetails.ConfirmPassword,
-                                Email = userDetails.Email,
-                                PhoneNumber = userDetails.PhoneNumber
-                            }
-                        },
-                        CreatedBy = "SYSTEM",
-                        LastModifiedBy = user.LastModifiedBy,
-                        CreatedTime = user.CreatedTime,
-                        LastModifiedTime = user.LastModifiedTime
-                    };
-                }
-                #endregion
-
-                #region CreateUpdateUser in OMS
-                if (userDetails.Applications.Contains(1))
-                {
-                    IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
-                    userResponse = userTask.CreateUpdateUser(user);
-                }
-                #endregion
-
-                #region CreateUpdateUser in TMS
-                if (tmsRequest != null) //For TMS Application - Integrate Azure API Gateway
-                {
-                    LoginRequest loginRequest = new LoginRequest();
-                    //Login to TMS and get Token
-                    string token = string.Empty;
-                    loginRequest.UserName = ConfigurationManager.AppSettings["TMSLogin"];
-                    loginRequest.UserPassword = ConfigurationManager.AppSettings["TMSPassword"];
-                    var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
-                        + "/v1/user/login", Method.POST, loginRequest, null));
-                    if (tmsLoginResponse != null && tmsLoginResponse.Data.Count > 0)
-                    {
-                        token = tmsLoginResponse.TokenKey;
-                    }
-
-                    UserResponse tmsUserResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
-                         + "/v1/user/createupdateuser", Method.POST, tmsRequest, token));
-
-                    if (!userDetails.Applications.Contains(1))
-                    {
-                        userResponse = tmsUserResponse;
-                    }
-                    else
-                    {
-                        userResponse.StatusMessage = userResponse.StatusMessage + ". " + tmsUserResponse.StatusMessage;
-                    }
-                }
-                #endregion
-            }
+            IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
+            UserResponse userResponse = userTask.CreateUpdateUser(user);
 
             return Ok(userResponse);
         }
