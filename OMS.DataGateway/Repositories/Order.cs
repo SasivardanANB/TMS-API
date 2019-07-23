@@ -1304,7 +1304,9 @@ namespace OMS.DataGateway.Repositories
                             else
                             {
                                 #region Create New Order Header
+                                request.UploadType = 3; /// Order FROM ShipmentOCR
                                 string orderNumber = GetOrderNumber(businessAreaId, businessAreaCode, "OMS", DateTime.Now.Year);
+                                order.OrderNo = orderNumber;
 
                                 Data.OrderHeader orderHeader = new Data.OrderHeader()
                                 {
@@ -1326,7 +1328,8 @@ namespace OMS.DataGateway.Repositories
                                     CreatedBy = request.CreatedBy,
                                     CreatedTime = DateTime.Now,
                                     LastModifiedBy = "",
-                                    LastModifiedTime = null
+                                    LastModifiedTime = null,
+                                    UploadType= request.UploadType
                                 };
                                 context.OrderHeaders.Add(orderHeader);
                                 context.SaveChanges();
@@ -1564,6 +1567,7 @@ namespace OMS.DataGateway.Repositories
                             #endregion
 
                             transaction.Commit();
+                            response.Data = request.Requests;
                             response.Status = DomainObjects.Resource.ResourceData.Success;
                             response.StatusCode = (int)HttpStatusCode.OK;
                             response.StatusMessage = DomainObjects.Resource.ResourceData.OrderCreated;
@@ -2310,7 +2314,7 @@ namespace OMS.DataGateway.Repositories
             string orderNo = businessArea + applicationCode;
             using (var context = new Data.OMSDBContext())
             {
-                var order = context.OrderHeaders.Where(t => t.BusinessAreaId == businessAreaId && t.UploadType == 2).OrderByDescending(t => t.OrderNo).FirstOrDefault();
+                var order = context.OrderHeaders.Where(t => t.BusinessAreaId == businessAreaId && (t.UploadType == 2 || t.UploadType == 3)).OrderByDescending(t => t.OrderNo).FirstOrDefault();
                 if (order != null)
                 {
                     int lastOrderYear = order.OrderDate.Year;
