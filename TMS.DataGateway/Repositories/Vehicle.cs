@@ -353,18 +353,18 @@ namespace TMS.DataGateway.Repositories
                 {
                     if (searchText != string.Empty && searchText != null)
                     {
-                        commonCodes = tMSDBContext.Vehicles.Where(v => !v.IsDelete && v.KIRNo.Contains(searchText)).Select(vehicle => new Domain.CommonCode
+                        commonCodes = tMSDBContext.Vehicles.Where(v => !v.IsDelete && v.PoliceNo.Contains(searchText)).Select(vehicle => new Domain.CommonCode
                         {
-                            Id = vehicle.KIRNo,
-                            Value = vehicle.KIRNo
+                            Id = vehicle.ID.ToString(),
+                            Value = vehicle.PoliceNo
                         }).ToList();
                     }
                     else
                     {
                         commonCodes = tMSDBContext.Vehicles.Where(v => !v.IsDelete).Select(vehicle => new Domain.CommonCode
                         {
-                            Id = vehicle.KIRNo,
-                            Value = vehicle.KIRNo
+                            Id = vehicle.ID.ToString(),
+                            Value = vehicle.PoliceNo
                         }).ToList();
                     }
 
