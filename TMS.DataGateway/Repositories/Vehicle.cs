@@ -356,7 +356,7 @@ namespace TMS.DataGateway.Repositories
                         commonCodes = tMSDBContext.Vehicles.Where(v => !v.IsDelete && v.PoliceNo.Contains(searchText)).Select(vehicle => new Domain.CommonCode
                         {
                             Id = vehicle.ID.ToString(),
-                            Value = vehicle.PoliceNo
+                            Value = vehicle.PlateNumber
                         }).ToList();
                     }
                     else
@@ -364,7 +364,7 @@ namespace TMS.DataGateway.Repositories
                         commonCodes = tMSDBContext.Vehicles.Where(v => !v.IsDelete).Select(vehicle => new Domain.CommonCode
                         {
                             Id = vehicle.ID.ToString(),
-                            Value = vehicle.PoliceNo
+                            Value = vehicle.PlateNumber
                         }).ToList();
                     }
 
