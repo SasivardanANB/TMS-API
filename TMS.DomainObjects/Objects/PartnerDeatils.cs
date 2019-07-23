@@ -18,6 +18,6 @@ namespace TMS.DomainObjects.Objects
         public int ProvinceId { get; set; }
         public string ProvinceName { get; set; }
         public string Address { get; set; }
-
+        public int PICID { get; set; }
     }
 }

@@ -85,10 +85,10 @@ namespace DMS.DataGateway.Repositories
                                              }).FirstOrDefault();
 
                             //Device Token Insertion
-                            if(!string.IsNullOrEmpty(login.DeviceToken))
+                            if (!string.IsNullOrEmpty(login.DeviceToken))
                             {
                                 var deviceData = context.DeviceTokens.Where(x => x.DriverId == userData.ID).FirstOrDefault();
-                                if(deviceData != null)
+                                if (deviceData != null)
                                 {
                                     deviceData.DeviceKey = login.DeviceToken;
                                     deviceData.LastModifiedTime = System.DateTime.Now;
@@ -153,6 +153,12 @@ namespace DMS.DataGateway.Repositories
                             userData.Password = Encryption.EncryptionLibrary.EncryptPassword(userData.Password);
                         }
 
+                        var driver = context.Drivers.Where(d => d.UserName == userData.UserName).FirstOrDefault();
+                        if (driver != null)
+                        {
+                            userData.ID = driver.ID;
+                        }
+
                         if (userData.ID > 0) //Update User
                         {
                             var existingUserData = context.Drivers.FirstOrDefault(t => t.ID == userData.ID);
@@ -163,6 +169,9 @@ namespace DMS.DataGateway.Repositories
                             existingUserData.LastModifiedBy = user.LastModifiedBy;
                             existingUserData.LastModifiedTime = DateTime.Now;
                             existingUserData.IsActive = userData.IsActive;
+                            existingUserData.PICEmail = userData.PICEmail;
+                            existingUserData.PICName = userData.PICName;
+                            existingUserData.PICPhone = userData.PICPhone;
                             context.Entry(existingUserData).State = System.Data.Entity.EntityState.Modified;
                             context.SaveChanges();
                             userResponse.StatusMessage = DomainObjects.Resource.ResourceData.UsersUpdated;
