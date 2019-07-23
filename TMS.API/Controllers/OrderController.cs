@@ -1194,14 +1194,15 @@ namespace TMS.API.Controllers
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
             ShipmentScheduleOcrResponse response = new ShipmentScheduleOcrResponse();
             OrderResponse ocrOrderResponse = new OrderResponse();
+            OrderResponse tmsOrderResponse = new OrderResponse();
             OrderResponse omsOrderResponse = new OrderResponse();
             // Loin into Gamil and Get all Mails
             var mailRepository = new MailRepository(
-                                    "imap.gmail.com",
+                                    ConfigurationManager.AppSettings["GmailURL"], 
                                     993,
                                     true,
-                                    "ranjit.k224@gmail.com",
-                                    "Prr@@nvj224"
+                                    ConfigurationManager.AppSettings["UserEmailID"] ,
+                                    ConfigurationManager.AppSettings["UserPassword"]
                                 );
 
             //Get all Unread Mails
@@ -1281,6 +1282,20 @@ namespace TMS.API.Controllers
 
                                         omsOrderResponse = JsonConvert.DeserializeObject<OrderResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
                                                                                                              + "v1/order/createordersfromshipmentlistocr", Method.POST, omsOrderRequest, omsToken));
+
+                                        if(omsOrderResponse.Data != null && omsOrderResponse.StatusCode == (int)HttpStatusCode.OK)
+                                        {
+                                            var tmsToken = Request.Headers.GetValues("Token").FirstOrDefault();
+                                            if(tmsToken != null)
+                                            {
+                                                OrderRequest tmsOrderRequest = new OrderRequest();
+                                                tmsOrderRequest.Requests = omsOrderResponse.Data;
+                                                tmsOrderRequest.UploadType = 3;
+                                                tmsOrderResponse = JsonConvert.DeserializeObject<OrderResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                                                                                                                                                           + "v1/order/createordersfromshipmentlistocr", Method.POST, tmsOrderRequest, tmsToken));
+                                            }
+                                        }
+
                                     }
 
                                     
@@ -1291,8 +1306,7 @@ namespace TMS.API.Controllers
                 }
 
             }
-
-            return Ok(omsOrderResponse);
+            return Ok(tmsOrderResponse);
         }
 
         [HttpPost, Route("shipmentscheduleocr"), AllowAnonymous]
@@ -1309,6 +1323,56 @@ namespace TMS.API.Controllers
 
             return Ok(json);
         }
+
+        [Route("createordersfromshipmentlistocr")]
+        [HttpPost]
+        public IHttpActionResult CreateOrdersFromShipmentListOCR(OrderRequest request)
+        {
+            for (int i = 0; i < request.Requests.Count; i++)
+            {
+
+                ModelState.Remove("request.Requests[" + i + "].BusinessArea");
+                ModelState.Remove("request.Requests[" + i + "].ShippingListNo");
+                ModelState.Remove("request.Requests[" + i + "].PackingSheetNo");
+                ModelState.Remove("request.Requests[" + i + "].TotalCollie");
+                ModelState.Remove("request.Requests[" + i + "].PartnerName1");
+                ModelState.Remove("request.Requests[" + i + "].PartnerName2");
+                ModelState.Remove("request.Requests[" + i + "].PartnerName3");
+                ModelState.Remove("request.Requests[" + i + "].Dimension");
+                ModelState.Remove("request.Requests[" + i + "].ShipmentSAPNo");
+                ModelState.Remove("request.Requests[" + i + "].OrderNo");
+                ModelState.Remove("request.Requests[" + i + "].EstimationShipmentDate");
+                ModelState.Remove("request.Requests[" + i + "].EstimationShipmentTime");
+                ModelState.Remove("request.Requests[" + i + "].ActualShipmentDate");
+                ModelState.Remove("request.Requests[" + i + "].ActualShipmentTime");
+
+            }
+            if (!ModelState.IsValid)
+            {
+                ErrorResponse errorResponse = new ErrorResponse()
+                {
+                    Status = DomainObjects.Resource.ResourceData.Failure,
+                    Data = new List<Error>()
+                };
+                for (int i = 0; i < ModelState.Keys.Count; i++)
+                {
+                    Error errorData = new Error()
+                    {
+                        ErrorMessage = ModelState.Keys.ToList<string>()[i].Replace("request.Requests[", "Row Number[") + " : " + ModelState.Values.ToList<ModelState>()[i].Errors[0].ErrorMessage
+                    };
+
+                    errorResponse.Data.Add(errorData);
+                }
+                return Ok(errorResponse);
+            }
+
+            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            OrderResponse orderData = orderTask.CreateOrdersFromShipmentListOCR(request);
+
+           
+            return Ok(orderData);
+        }
+
 
     }
 }

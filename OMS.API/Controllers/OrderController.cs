@@ -370,12 +370,10 @@ namespace OMS.API.Controllers
                     ModelState.Remove("request.Requests[" + i + "].Dimension");
                     ModelState.Remove("request.Requests[" + i + "].ShipmentSAPNo");
                     ModelState.Remove("request.Requests[" + i + "].OrderNo");
-
-                ModelState.Remove("request.Requests[" + i + "].OrderNo ");
-                ModelState.Remove("request.Requests[" + i + "].EstimationShipmentDate");
-                ModelState.Remove("request.Requests[" + i + "].EstimationShipmentTime");
-                ModelState.Remove("request.Requests[" + i + "].ActualShipmentDate");
-                ModelState.Remove("request.Requests[" + i + "].ActualShipmentTime");
+                    ModelState.Remove("request.Requests[" + i + "].EstimationShipmentDate");
+                    ModelState.Remove("request.Requests[" + i + "].EstimationShipmentTime");
+                    ModelState.Remove("request.Requests[" + i + "].ActualShipmentDate");
+                    ModelState.Remove("request.Requests[" + i + "].ActualShipmentTime");
 
             }
             if (!ModelState.IsValid)

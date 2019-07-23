@@ -25,6 +25,6 @@ namespace TMS.DataGateway.Repositories.Interfaces
         HargaResponse GetHarga(HargaRequest request);
         ShipmentScheduleOcrResponse CreateOrderFromShipmentScheduleOcr(ShipmentScheduleOcrRequest request);
         OrderResponse OcrOrderResponse(ShipmentScheduleOcrRequest shipmentScheduleOcrRequest);
-
+        OrderResponse CreateOrdersFromShipmentListOCR(OrderRequest request);
     }
 }
