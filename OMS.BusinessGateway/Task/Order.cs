@@ -34,6 +34,11 @@ namespace OMS.BusinessGateway.Task
             OrderResponse orderData = _orderRepository.CreateUpdateOrders(request);
             return orderData;
         }
+        public override OrderResponse CreateOrdersFromShipmentListOCR(OrderRequest request)
+        {
+            OrderResponse orderData = _orderRepository.CreateOrdersFromShipmentListOCR(request);
+            return orderData;
+        }
 
         public override OrderStatusCodesResponse GetAllOrderStatus()
         {

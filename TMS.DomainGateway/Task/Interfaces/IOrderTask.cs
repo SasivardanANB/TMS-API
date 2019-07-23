@@ -25,5 +25,6 @@ namespace TMS.DomainGateway.Task.Interfaces
         OrderStatusResponse CancelOrder(OrderStatusRequest request);
         HargaResponse GetHarga(HargaRequest request);
         ShipmentScheduleOcrResponse CreateOrderFromShipmentScheduleOcr(ShipmentScheduleOcrRequest request);
+        OrderResponse OcrOrderResponse(ShipmentScheduleOcrRequest shipmentScheduleOcrRequest);
     }
 }

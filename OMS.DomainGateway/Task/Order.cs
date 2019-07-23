@@ -13,6 +13,7 @@ namespace OMS.DomainGateway.Task
     {
         public abstract OrderResponse GetOrders(DownloadOrderRequest order);
         public abstract OrderResponse CreateUpdateOrders(OrderRequest request);
+        public abstract OrderResponse CreateOrdersFromShipmentListOCR(OrderRequest request);
         public abstract OrderStatusCodesResponse GetAllOrderStatus();
         public abstract OrderResponse SyncOrders(OrderRequest request);
         public abstract PackingSheetResponse CreateUpdatePackingSheet(PackingSheetRequest packingSheetRequest);
