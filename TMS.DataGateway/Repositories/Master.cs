@@ -205,7 +205,8 @@ namespace TMS.DataGateway.Repositories
                                               ProvinceId = subDistrict.City.Province.ID,
                                               ProvinceName = subDistrict.City.Province.ProvinceDescription,
                                               PostalCode = lp.PostalCodeNo,
-                                              PostalCodeId = lp.ID
+                                              PostalCodeId = lp.ID,
+                                              PICID = partner.PICID.Value
                                           }).ToList();
 
                     if (partnerDetails.Count > 0)

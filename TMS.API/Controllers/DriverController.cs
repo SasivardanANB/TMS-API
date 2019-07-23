@@ -22,7 +22,7 @@ namespace TMS.API.Controllers
     public class DriverController : ApiController
     {
         #region Private Methods
-        private static string GetApiResponse(string apiRoute, Method method, object requestQueryParameter, string token)
+        private static string GetApiResponse(string apiRoute, Method method, object requestQueryParameter, string token, Parameter item = null)
         {
             var client = new RestClient(ConfigurationManager.AppSettings["ApiGatewayBaseURL"]);
             client.AddDefaultHeader("Content-Type", "application/json");
@@ -33,6 +33,11 @@ namespace TMS.API.Controllers
             if (requestQueryParameter != null)
             {
                 request.AddJsonBody(requestQueryParameter);
+            }
+
+            if (item != null)
+            {
+                request.Parameters.Add(item);
             }
             var result = client.Execute(request);
             return result.Content;
@@ -57,7 +62,29 @@ namespace TMS.API.Controllers
                 return BadRequest(ModelState);
 
             #region Creating Driver for DMS request
-            //TODO: Get PIC Detail for Driver
+
+            // Get transporter details
+
+            Parameter partnerId = new Parameter("partnerId", driverRequest.Requests[0].TransporterId.Value, ParameterType.QueryString);
+
+            PartnerDetilasResponse partnerDetails = JsonConvert.DeserializeObject<PartnerDetilasResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                         + "v1/master/getpartnerdetails", Method.GET, null, Request.Headers.GetValues("Token").First(), partnerId));
+
+            // Get PIC Details
+            PICRequest request = new PICRequest()
+            {
+                Requests = new List<PIC>()
+                {
+                    new PIC()
+                    {
+                        ID=partnerDetails.Data[0].PICID
+                    }
+                }
+            };
+
+            PICResponse picDetails = JsonConvert.DeserializeObject<PICResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                         + "v1/pic/getpics", Method.POST, request, Request.Headers.GetValues("Token").First()));
+
             UserRequest dmsRequest = new UserRequest()
             {
                 Requests = new List<User>()
@@ -71,9 +98,9 @@ namespace TMS.API.Controllers
                                 LastName = driverRequest.Requests[0].LastName,
                                 Email = driverRequest.Requests[0].Email,
                                 PhoneNumber = driverRequest.Requests[0].DriverPhone,
-                                PICName = "",
-                                PICEmail = "",
-                                PICPhone = "",
+                                PICName = picDetails.Data[0].PICName,
+                                PICEmail = picDetails.Data[0].PICEmail,
+                                PICPhone = picDetails.Data[0].PICPhone,
                                 IsActive = driverRequest.Requests[0].IsActive,
                                 CreatedBy = "SYSTEM"
                             }
@@ -88,7 +115,7 @@ namespace TMS.API.Controllers
             IDriverTask driverTask = DependencyResolver.GetImplementationOf<ITaskGateway>().DriverTask;
             DriverResponse driverResponse = driverTask.CreateUpdateDriver(driverRequest);
 
-            if (driverResponse != null && driverResponse.StatusCode == (int)HttpStatusCode.OK && driverResponse.StatusMessage == DomainObjects.Resource.ResourceData.DriversCreated)
+            if (driverResponse != null && driverResponse.StatusCode == (int)HttpStatusCode.OK && driverResponse.Status == DomainObjects.Resource.ResourceData.Success)
             {
                 #region Create Driver in DMS
                 dmsRequest.Requests[0].DriverNo = driverResponse.Data[0].DriverNo;
