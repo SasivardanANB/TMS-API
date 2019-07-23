@@ -3368,8 +3368,8 @@ namespace TMS.DataGateway.Repositories
                                     CreatedTime = DateTime.Now,
                                     LastModifiedBy = "",
                                     LastModifiedTime = null,
-                                    SOPONumber = soPoNumber,
-                                    UploadType = request.UploadType
+                                    SOPONumber = order.SOPONumber,
+                                    UploadType = request.UploadType,
                                 };
                                 context.OrderHeaders.Add(orderHeader);
                                 context.SaveChanges();
