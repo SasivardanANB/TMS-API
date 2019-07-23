@@ -1198,11 +1198,11 @@ namespace TMS.API.Controllers
             OrderResponse omsOrderResponse = new OrderResponse();
             // Loin into Gamil and Get all Mails
             var mailRepository = new MailRepository(
-                                    ConfigurationManager.AppSettings["ApiGatewayTMSURL"],
+                                    ConfigurationManager.AppSettings["GmailURL"], 
                                     993,
                                     true,
-                                    ConfigurationManager.AppSettings["ApiGatewayTMSURL"] ,
-                                    ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                                    ConfigurationManager.AppSettings["UserEmailID"] ,
+                                    ConfigurationManager.AppSettings["UserPassword"]
                                 );
 
             //Get all Unread Mails
