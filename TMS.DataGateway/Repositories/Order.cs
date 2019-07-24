@@ -2151,7 +2151,7 @@ namespace TMS.DataGateway.Repositories
                             SwapeOrderSequence(orderDetailId, statusRequest.SequenceNumber, statusRequest.NewSequenceNumber);
 
                             //Get new OrderDetailsID for min sequence number
-                            orderDetailId = context.OrderDetails.FirstOrDefault(t => t.SequenceNo == statusRequest.SequenceNumber && t.OrderHeaderID == orderId).ID;
+                            orderDetailId = context.OrderDetails.FirstOrDefault(t => t.SequenceNo == statusRequest.NewSequenceNumber && t.OrderHeaderID == orderId).ID;
                         }
 
                         DataModel.OrderStatusHistory statusHistory = new DataModel.OrderStatusHistory()
