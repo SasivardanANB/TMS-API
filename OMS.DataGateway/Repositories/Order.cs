@@ -1329,7 +1329,8 @@ namespace OMS.DataGateway.Repositories
                                     CreatedTime = DateTime.Now,
                                     LastModifiedBy = "",
                                     LastModifiedTime = null,
-                                    UploadType= request.UploadType
+                                    UploadType= request.UploadType,
+                                    SOPONumber=order.SOPONumber
                                 };
                                 context.OrderHeaders.Add(orderHeader);
                                 context.SaveChanges();

@@ -2725,7 +2725,7 @@ namespace TMS.DataGateway.Repositories
                         {
                             EmailFrom = shipment.EmailFrom,
                             EmailDateTime = shipment.EmailDateTime,
-
+                            
                             ShipmentScheduleNo = shipment.Data.ShipmentScheduleNo,
                             DayShipment = shipment.Data.DayShipment,
                             ShipmentTime = shipment.Data.ShipmentTime,
@@ -2871,6 +2871,7 @@ namespace TMS.DataGateway.Repositories
                         order.ShipmentScheduleImageGUID = shipment.ImageGUID;
                         order.OrderWeight = 100;
                         order.OrderWeightUM = "KG";
+                        order.OrderType = 1;
                         orderResponse.Data.Add(order);
                         orderResponse.StatusCode = (int)HttpStatusCode.OK;
                     }
@@ -3373,8 +3374,8 @@ namespace TMS.DataGateway.Repositories
                                     CreatedTime = DateTime.Now,
                                     LastModifiedBy = "",
                                     LastModifiedTime = null,
-                                    SOPONumber = soPoNumber,
-                                    UploadType = request.UploadType
+                                    SOPONumber = order.SOPONumber,
+                                    UploadType = request.UploadType,
                                 };
                                 context.OrderHeaders.Add(orderHeader);
                                 context.SaveChanges();
