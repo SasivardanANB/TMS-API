@@ -954,11 +954,12 @@ namespace OMS.DataGateway.Repositories
                                                 select new Domain.BusinessArea()
                                                 {
                                                     ID = ba.ID,
-                                                    BusinessAreaCode=ba.BusinessAreaCode
+                                                    BusinessAreaCode = ba.BusinessAreaCode
                                                 }).FirstOrDefault();
-                            if (businessArea != null) { 
+                            if (businessArea != null)
+                            {
                                 businessAreaId = businessArea.ID;
-                            businessAreaCode = businessArea.BusinessAreaCode;
+                                businessAreaCode = businessArea.BusinessAreaCode;
                             }
                             else
                             {
@@ -974,7 +975,7 @@ namespace OMS.DataGateway.Repositories
                             #region Step 1: Check if We have Order Status in Master data
                             int orderStatusId;
                             order.OrderShipmentStatus = 1;
-                           var orderStatus = (from os in context.OrderStatuses
+                            var orderStatus = (from os in context.OrderStatuses
                                                where os.OrderStatusCode == order.OrderShipmentStatus.ToString()
                                                select new Domain.BusinessArea()
                                                {
@@ -1046,7 +1047,7 @@ namespace OMS.DataGateway.Repositories
                                 else
                                 {
                                     #region Create Order Detail
-                                  
+
                                     Data.OrderDetail orderDetail = new Data.OrderDetail()
                                     {
                                         OrderHeaderID = order.ID,
@@ -1329,8 +1330,8 @@ namespace OMS.DataGateway.Repositories
                                     CreatedTime = DateTime.Now,
                                     LastModifiedBy = "",
                                     LastModifiedTime = null,
-                                    UploadType= request.UploadType,
-                                    SOPONumber=order.SOPONumber
+                                    UploadType = request.UploadType,
+                                    SOPONumber = order.SOPONumber
                                 };
                                 context.OrderHeaders.Add(orderHeader);
                                 context.SaveChanges();
@@ -2429,20 +2430,17 @@ namespace OMS.DataGateway.Repositories
                             context.SaveChanges();
                             context.Entry(orderHeader).State = System.Data.Entity.EntityState.Detached;
                             int orderDetailId = 0;
-                            if (statusRequest.SequenceNumber > 0)
+
+
+                            if (statusRequest.OrderStatusCode == "4" && statusRequest.SequenceNumber > 0)
                             {
                                 orderDetailId = context.OrderDetails.FirstOrDefault(t => t.SequenceNo == statusRequest.SequenceNumber && t.OrderHeaderID == orderHeader.ID).ID;
 
-                            }
-                            else
-                            {
-                                orderDetailId = context.OrderDetails.FirstOrDefault(t => t.OrderHeaderID == orderHeader.ID).ID;
-                            }
-
-                            // Swapping trip sequence 
-                            if (statusRequest.SequenceNumber != statusRequest.NewSequenceNumber && statusRequest.SequenceNumber > 0)
-                            {
-                                SwapeOrderSequence(orderDetailId, statusRequest.SequenceNumber, statusRequest.NewSequenceNumber);
+                                // Swapping trip sequence 
+                                if (statusRequest.SequenceNumber != statusRequest.NewSequenceNumber)
+                                {
+                                    SwapeOrderSequence(orderDetailId, statusRequest.SequenceNumber, statusRequest.NewSequenceNumber);
+                                }
                             }
 
                             #endregion
@@ -2459,8 +2457,6 @@ namespace OMS.DataGateway.Repositories
                             context.Entry(orderHeader).State = System.Data.Entity.EntityState.Detached;
                             #endregion
                         }
-
-
 
                         response.Data = request.Requests;
                         response.Status = DomainObjects.Resource.ResourceData.Success;
