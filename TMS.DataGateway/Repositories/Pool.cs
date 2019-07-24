@@ -113,7 +113,7 @@ namespace TMS.DataGateway.Repositories
                         poolResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         poolResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                     }
-                   
+
                 }
             }
             catch (Exception ex)
@@ -147,9 +147,9 @@ namespace TMS.DataGateway.Repositories
                             CityName = pool.City.CityDescription,
                             ContactNumber = pool.ContactNumber,
                             Address = pool.Address,
-                            PhotoId = pool.PhotoId.Value,
+                            PhotoId = pool.PhotoId ?? 0,
                             PhotoGuId = pool.ImageGuid.ImageGuIdValue,
-                            PoolNo=pool.PoolNo
+                            PoolNo = pool.PoolNo
                         }).ToList();
                     }
                     else if (poolRequest.Requests.Count > 0)
@@ -172,10 +172,10 @@ namespace TMS.DataGateway.Repositories
                             CityName = pool.City.CityDescription,
                             ContactNumber = pool.ContactNumber,
                             Address = pool.Address,
-                            PhotoId = pool.PhotoId.Value,
+                            PhotoId = pool.PhotoId ?? 0,
                             PhotoGuId = pool.ImageGuid.ImageGuIdValue,
-                            PoolNo=pool.PoolNo,
-                            IsDelete=pool.IsDelete
+                            PoolNo = pool.PoolNo,
+                            IsDelete = pool.IsDelete
                         }).ToList();
                     }
                 }
