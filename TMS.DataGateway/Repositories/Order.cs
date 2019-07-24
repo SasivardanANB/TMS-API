@@ -2134,18 +2134,24 @@ namespace TMS.DataGateway.Repositories
                         int orderId = 0;
                         int orderDetailId = 0;
                         orderId = context.OrderHeaders.FirstOrDefault(t => t.OrderNo == statusRequest.OrderNumber).ID;
+
+                        // Get OrderDetailID for old sequence Number
                         if (statusRequest.SequenceNumber > 0)
                         {
                             orderDetailId = context.OrderDetails.FirstOrDefault(t => t.SequenceNo == statusRequest.SequenceNumber && t.OrderHeaderID == orderId).ID;
-
                         }
                         else
                         {
                             orderDetailId = context.OrderDetails.FirstOrDefault(t => t.OrderHeaderID == orderId).ID;
                         }
+
+                        // Swap 
                         if (statusRequest.SequenceNumber != statusRequest.NewSequenceNumber && statusRequest.SequenceNumber > 0)
                         {
                             SwapeOrderSequence(orderDetailId, statusRequest.SequenceNumber, statusRequest.NewSequenceNumber);
+
+                            //Get new OrderDetailsID for min sequence number
+                            orderDetailId = context.OrderDetails.FirstOrDefault(t => t.SequenceNo == statusRequest.SequenceNumber && t.OrderHeaderID == orderId).ID;
                         }
 
                         DataModel.OrderStatusHistory statusHistory = new DataModel.OrderStatusHistory()
