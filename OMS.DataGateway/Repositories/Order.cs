@@ -2429,19 +2429,19 @@ namespace OMS.DataGateway.Repositories
                             context.Entry(orderHeader).State = System.Data.Entity.EntityState.Modified;
                             context.SaveChanges();
                             context.Entry(orderHeader).State = System.Data.Entity.EntityState.Detached;
-                            int orderDetailId = 0;
+                            //int orderDetailId = 0;
 
 
-                            if (statusRequest.OrderStatusCode == "4" && statusRequest.SequenceNumber > 0)
-                            {
-                                orderDetailId = context.OrderDetails.FirstOrDefault(t => t.SequenceNo == statusRequest.SequenceNumber && t.OrderHeaderID == orderHeader.ID).ID;
+                            //if (statusRequest.OrderStatusCode == "4" && statusRequest.SequenceNumber > 0)
+                            //{
+                            //    orderDetailId = context.OrderDetails.FirstOrDefault(t => t.SequenceNo == statusRequest.SequenceNumber && t.OrderHeaderID == orderHeader.ID).ID;
 
-                                // Swapping trip sequence 
-                                if (statusRequest.SequenceNumber != statusRequest.NewSequenceNumber)
-                                {
-                                    SwapeOrderSequence(orderDetailId, statusRequest.SequenceNumber, statusRequest.NewSequenceNumber);
-                                }
-                            }
+                            //    // Swapping trip sequence 
+                            //    if (statusRequest.SequenceNumber != statusRequest.NewSequenceNumber)
+                            //    {
+                            //        SwapeOrderSequence(orderDetailId, statusRequest.SequenceNumber, statusRequest.NewSequenceNumber);
+                            //    }
+                            //}
 
                             #endregion
                         }

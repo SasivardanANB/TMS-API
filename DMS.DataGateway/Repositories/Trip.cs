@@ -650,10 +650,10 @@ namespace DMS.DataGateway.Repositories
 
                         };
                         // For Changeinging stoppoint order
-                        if (tripStatusEventLogFilter.TripStatusId == 4)
-                        {
-                            SwapeOrderSequence(tripStatusEventLogFilter.StopPointId);
-                        }
+                        //if (tripStatusEventLogFilter.TripStatusId == 4)
+                        //{
+                        //    SwapeOrderSequence(tripStatusEventLogFilter.StopPointId);
+                        //}
                         //For getting trip deatails and updating trip status as assigned
                         var tripID = context.TripDetails.Where(t => t.ID == tripStatusEventLogFilter.StopPointId).Select(t => t.TripID).FirstOrDefault();
                         var tripDetails = context.TripHeaders.Where(t => t.ID == tripID).FirstOrDefault();
