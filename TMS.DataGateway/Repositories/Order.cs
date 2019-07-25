@@ -53,7 +53,6 @@ namespace TMS.DataGateway.Repositories
             }
         }
 
-
         public OrderResponse CreateUpdateOrder(OrderRequest request)
         {
             OrderResponse response = new OrderResponse()
@@ -1548,25 +1547,37 @@ namespace TMS.DataGateway.Repositories
                                                             {
                                                                 unLoadData.StartTrip.StepHeaderName = "START TRIP";
                                                                 unLoadData.StartTrip.StepHeaderDescription = "On the way to " + context.OrderPartnerDetails.Where(o => o.OrderDetailID == loadStatus.OrderDetailId && o.PartnerTypeId == 3).Select(n => n.Partner.PartnerName).FirstOrDefault();
-                                                                unLoadData.StartTrip.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
+                                                                if (orderDetail.OrderDetailId == loadStatus.OrderDetailId)
+                                                                {
+                                                                    unLoadData.StartTrip.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
+                                                                }
                                                             }
                                                             else if (loadStatus.StatusCode == "5")
                                                             {
                                                                 unLoadData.ConfirmArrive.StepHeaderName = "CONFIRM ARRIVE";
                                                                 unLoadData.ConfirmArrive.StepHeaderDescription = "Arrived at " + context.OrderPartnerDetails.Where(o => o.OrderDetailID == loadStatus.OrderDetailId && o.PartnerTypeId == 3).Select(n => n.Partner.PartnerName).FirstOrDefault();
-                                                                unLoadData.ConfirmArrive.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
+                                                                if (orderDetail.OrderDetailId == loadStatus.OrderDetailId)
+                                                                {
+                                                                    unLoadData.ConfirmArrive.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
+                                                                }
                                                             }
                                                             else if (loadStatus.StatusCode == "9")
                                                             {
                                                                 unLoadData.StartLoad.StepHeaderName = "START UNLOAD";
                                                                 unLoadData.StartLoad.StepHeaderDescription = "Unloading parts at " + context.OrderPartnerDetails.Where(o => o.OrderDetailID == loadStatus.OrderDetailId && o.PartnerTypeId == 3).Select(n => n.Partner.PartnerName).FirstOrDefault();
-                                                                unLoadData.StartLoad.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
+                                                                if (orderDetail.OrderDetailId == loadStatus.OrderDetailId)
+                                                                {
+                                                                    unLoadData.StartLoad.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
+                                                                }
                                                             }
                                                             else if (loadStatus.StatusCode == "10")
                                                             {
                                                                 unLoadData.FinishLoad.StepHeaderName = "FINISH UNLOAD";
                                                                 unLoadData.FinishLoad.StepHeaderDescription = "Parts unloaded at " + context.OrderPartnerDetails.Where(o => o.OrderDetailID == loadStatus.OrderDetailId && o.PartnerTypeId == 3).Select(n => n.Partner.PartnerName).FirstOrDefault();
-                                                                unLoadData.FinishLoad.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
+                                                                if (orderDetail.OrderDetailId == loadStatus.OrderDetailId)
+                                                                {
+                                                                    unLoadData.FinishLoad.StepHeaderDateTime = loadStatus.StatusDate.ToString("dd MMM yyyy HH:mm");
+                                                                }
                                                             }
                                                         }
                                                         orderTrackResponse.Data.Unloads.Add(unLoadData);
@@ -1766,7 +1777,6 @@ namespace TMS.DataGateway.Repositories
             }
             return packingSheetResponse;
         }
-
 
         public CommonResponse GetOrderIds(string tokenValue)
         {
@@ -2135,7 +2145,7 @@ namespace TMS.DataGateway.Repositories
                         int orderDetailId = 0;
                         orderId = context.OrderHeaders.FirstOrDefault(t => t.OrderNo == statusRequest.OrderNumber).ID;
 
-                        if(statusRequest.SequenceNumber>0)
+                        if (statusRequest.SequenceNumber > 0)
                         {
                             orderDetailId = context.OrderDetails.FirstOrDefault(t => t.SequenceNo == statusRequest.SequenceNumber && t.OrderHeaderID == orderId).ID;
                         }
@@ -2309,7 +2319,6 @@ namespace TMS.DataGateway.Repositories
             return response;
         }
 
-
         public ShipmentScheduleOcrResponse CreateOrderFromShipmentScheduleOcr(ShipmentScheduleOcrRequest request)
         {
 
@@ -2328,7 +2337,7 @@ namespace TMS.DataGateway.Repositories
                         try
                         {
 
-                          
+
                             response.StatusCode = (int)HttpStatusCode.OK;
                             response.StatusMessage = DomainObjects.Resource.ResourceData.OrderCreated;
 
@@ -2737,7 +2746,7 @@ namespace TMS.DataGateway.Repositories
                         {
                             EmailFrom = shipment.EmailFrom,
                             EmailDateTime = shipment.EmailDateTime,
-                            
+
                             ShipmentScheduleNo = shipment.Data.ShipmentScheduleNo,
                             DayShipment = shipment.Data.DayShipment,
                             ShipmentTime = shipment.Data.ShipmentTime,
@@ -2766,11 +2775,11 @@ namespace TMS.DataGateway.Repositories
                         {
                             soPoNumber = shipment.Data.ShipmentScheduleNo.Split('-')[4];
                         }
-                        if(shipment.Data.DayShipment.Split(',').Length > 0)
+                        if (shipment.Data.DayShipment.Split(',').Length > 0)
                         {
                             actualShipmentDate = shipment.Data.DayShipment.Split(',')[1];
                         }
-                        if(shipment.Data.ShipmentTime.Split(' ').Length > 0)
+                        if (shipment.Data.ShipmentTime.Split(' ').Length > 0)
                         {
                             actualShipmentTime = shipment.Data.ShipmentTime.Split(' ')[0];
                         }
@@ -2787,10 +2796,11 @@ namespace TMS.DataGateway.Repositories
                         var sourceDetails = (from partner in context.Partners
                                              join partnerType in context.PartnerPartnerTypes on partner.ID equals partnerType.PartnerId
                                              where partner.PartnerInitial == "AHM" && partnerType.PartnerTypeId == context.PartnerTypes.Where(p => p.PartnerTypeCode == "2").Select(p => p.ID).FirstOrDefault()
-                                             select new Domain.Partner {
-                                                 PartnerNo=partner.PartnerNo,
-                                                 PartnerName=partner.PartnerName,
-                                             }  
+                                             select new Domain.Partner
+                                             {
+                                                 PartnerNo = partner.PartnerNo,
+                                                 PartnerName = partner.PartnerName,
+                                             }
                                            ).FirstOrDefault();
                         // Destination Partner: Partner number with initial as maindealer code
                         var destinationDetails = (from partner in context.Partners
@@ -2801,7 +2811,7 @@ namespace TMS.DataGateway.Repositories
                                                   {
                                                       PartnerNo = partner.PartnerNo,
                                                       PartnerName = partner.PartnerName,
-                                                      ID=partner.ID
+                                                      ID = partner.ID
                                                   }
                                            ).FirstOrDefault();
 
@@ -2815,7 +2825,7 @@ namespace TMS.DataGateway.Repositories
                                                   {
                                                       PartnerNo = partner.PartnerNo,
                                                       PartnerName = partner.PartnerName,
-                                                      ID=partner.ID
+                                                      ID = partner.ID
                                                   }
                                           ).FirstOrDefault();
 
@@ -2864,7 +2874,7 @@ namespace TMS.DataGateway.Repositories
                         Domain.Order order = new Domain.Order();
                         order.ActualShipment = Convert.ToDateTime(actualShipmentDate);
                         order.SOPONumber = soPoNumber;
-                        order.EstimationShipment= Convert.ToDateTime(actualShipmentDate);
+                        order.EstimationShipment = Convert.ToDateTime(actualShipmentDate);
                         order.FleetType = 1;
                         order.PartnerType1 = 1;
                         order.PartnerNo1 = transporterDetails.PartnerNo;
@@ -2877,8 +2887,8 @@ namespace TMS.DataGateway.Repositories
                         order.PartnerName3 = destinationDetails.PartnerName;
                         order.BusinessArea = businessAreaCode;
                         order.BusinessAreaId = businessAreaId;
-                        order.TotalPallet = shipment.Data.EstimatedTotalPallet.Split(' ')[0] == "" ? 0 : Convert.ToInt32 (shipment.Data.EstimatedTotalPallet.Split(' ')[0]);
-                        order.Dimension = shipment.Data.EstimatedTotalPallet.Split(' ')[1] == "" ? "" :  shipment.Data.EstimatedTotalPallet.Split(' ')[1];
+                        order.TotalPallet = shipment.Data.EstimatedTotalPallet.Split(' ')[0] == "" ? 0 : Convert.ToInt32(shipment.Data.EstimatedTotalPallet.Split(' ')[0]);
+                        order.Dimension = shipment.Data.EstimatedTotalPallet.Split(' ')[1] == "" ? "" : shipment.Data.EstimatedTotalPallet.Split(' ')[1];
                         order.SequenceNo = 10;
                         order.ShipmentScheduleImageGUID = shipment.ImageGUID;
                         order.OrderWeight = 100;
