@@ -34,22 +34,24 @@ namespace TMS.DataGateway.Repositories
                 {
                     if (string.IsNullOrEmpty(partnerSearch.SearchText))
                     {
-                        partnerList =
-                                                (from partner in context.Partners
-                                                 join ppt in context.PartnerPartnerTypes on partner.ID equals ppt.PartnerId
-                                                 where ppt.PartnerTypeId == partnerSearch.PartnerTypeId && partner.IsActive == true
-                                                 select new Domain.Common
-                                                 {
-                                                     Id = partner.ID,
-                                                     Value = partner.PartnerName
-                                                 }).ToList();
+                        partnerList = (from partner in context.Partners
+                                       join ppt in context.PartnerPartnerTypes on partner.ID equals ppt.PartnerId
+                                       where ppt.PartnerTypeId == partnerSearch.PartnerTypeId && partner.IsActive
+                                       join subdistrict in context.SubDistricts on partner.SubDistrictID equals subdistrict.ID
+                                       join city in context.Cities on subdistrict.CityID equals city.ID
+                                       where !partner.IsDeleted
+                                       select new Domain.Common
+                                       {
+                                           Id = partner.ID,
+                                           Value = partner.PartnerName
+                                       }).ToList();
                     }
                     else
                     {
                         partnerList =
                             (from partner in context.Partners
                              join ppt in context.PartnerPartnerTypes on partner.ID equals ppt.PartnerId
-                             where partner.PartnerName.Contains(partnerSearch.SearchText) && ppt.PartnerTypeId == partnerSearch.PartnerTypeId && partner.IsActive == true
+                             where partner.PartnerName.Contains(partnerSearch.SearchText) && ppt.PartnerTypeId == partnerSearch.PartnerTypeId && partner.IsActive
                              select new Domain.Common
                              {
                                  Id = partner.ID,
@@ -85,7 +87,6 @@ namespace TMS.DataGateway.Repositories
             }
             return partnerSearchResponse;
         }
-
 
         public CommonCodeResponse GetDriverNames()
         {
@@ -189,7 +190,7 @@ namespace TMS.DataGateway.Repositories
                 using (var context = new TMSDBContext())
                 {
                     var partnerDetails = (from partner in context.Partners
-                                          //join postalcode in context.PostalCodes on partner.PostalCodeID equals postalcode.ID
+                                              //join postalcode in context.PostalCodes on partner.PostalCodeID equals postalcode.ID
                                           join subDistrict in context.SubDistricts on partner.SubDistrictID equals subDistrict.ID
                                           join postalcode in context.PostalCodes on subDistrict.ID equals postalcode.SubDistrictID into lpost
                                           from lp in lpost.DefaultIfEmpty()
@@ -204,7 +205,8 @@ namespace TMS.DataGateway.Repositories
                                               ProvinceId = subDistrict.City.Province.ID,
                                               ProvinceName = subDistrict.City.Province.ProvinceDescription,
                                               PostalCode = lp.PostalCodeNo,
-                                              PostalCodeId = lp.ID
+                                              PostalCodeId = lp.ID,
+                                              PICID = partner.PICID.Value
                                           }).ToList();
 
                     if (partnerDetails.Count > 0)
@@ -247,35 +249,35 @@ namespace TMS.DataGateway.Repositories
                     if (string.IsNullOrEmpty(searchText))
                     {
                         subDistrictDateils = (from subDistrict in context.SubDistricts
-                                                  join postlCode in context.PostalCodes on subDistrict.ID equals postlCode.SubDistrictID into pos
-                                                  from pc in pos.DefaultIfEmpty()
-                                                  select new Domain.SubDistrictDeatils
-                                                  {
-                                                      SubDistrictId=subDistrict.ID,
-                                                      SubDistrictName = subDistrict.SubdistrictName,
-                                                      CityName = subDistrict.City.CityDescription,
-                                                      ProvinceName = subDistrict.City.Province.ProvinceDescription,
-                                                      PostalCodeId = pc.ID,
-                                                      PostalCode = pc.PostalCodeNo
-                                                  }).ToList();
+                                              join postlCode in context.PostalCodes on subDistrict.ID equals postlCode.SubDistrictID into pos
+                                              from pc in pos.DefaultIfEmpty()
+                                              select new Domain.SubDistrictDeatils
+                                              {
+                                                  SubDistrictId = subDistrict.ID,
+                                                  SubDistrictName = subDistrict.SubdistrictName,
+                                                  CityName = subDistrict.City.CityDescription,
+                                                  ProvinceName = subDistrict.City.Province.ProvinceDescription,
+                                                  PostalCodeId = pc.ID,
+                                                  PostalCode = pc.PostalCodeNo
+                                              }).ToList();
                     }
                     else
                     {
                         subDistrictDateils = (from subDistrict in context.SubDistricts
-                                                  join postlCode in context.PostalCodes on subDistrict.ID equals postlCode.SubDistrictID into pos
-                                                  from pc in pos.DefaultIfEmpty()
-                                                  where subDistrict.SubdistrictName.Contains(searchText)
-                                                  select new Domain.SubDistrictDeatils
-                                                  {
-                                                      SubDistrictId = subDistrict.ID,
-                                                      SubDistrictName = subDistrict.SubdistrictName,
-                                                      CityName = subDistrict.City.CityDescription,
-                                                      ProvinceName = subDistrict.City.Province.ProvinceDescription,
-                                                      PostalCodeId = pc.ID,
-                                                      PostalCode = pc.PostalCodeNo
-                                                  }).ToList();
+                                              join postlCode in context.PostalCodes on subDistrict.ID equals postlCode.SubDistrictID into pos
+                                              from pc in pos.DefaultIfEmpty()
+                                              where subDistrict.SubdistrictName.Contains(searchText)
+                                              select new Domain.SubDistrictDeatils
+                                              {
+                                                  SubDistrictId = subDistrict.ID,
+                                                  SubDistrictName = subDistrict.SubdistrictName,
+                                                  CityName = subDistrict.City.CityDescription,
+                                                  ProvinceName = subDistrict.City.Province.ProvinceDescription,
+                                                  PostalCodeId = pc.ID,
+                                                  PostalCode = pc.PostalCodeNo
+                                              }).ToList();
                     }
-                    
+
                     if (subDistrictDateils.Count > 0)
                     {
                         subDistrictDetailsResponse.Data = subDistrictDateils;
@@ -376,6 +378,8 @@ namespace TMS.DataGateway.Repositories
                     {
                         shipperData = (from partner in context.Partners
                                        join ppt in context.PartnerPartnerTypes on partner.ID equals ppt.PartnerId
+                                       join subdistrict in context.SubDistricts on partner.SubDistrictID equals subdistrict.ID
+                                       join city in context.Cities on subdistrict.CityID equals city.ID
                                        where partner.PartnerName.Contains(searchText) && ppt.PartnerTypeId == context.PartnerTypes.FirstOrDefault(t => t.PartnerTypeCode == "1").ID
                                        select new Domain.Common
                                        {
@@ -387,6 +391,8 @@ namespace TMS.DataGateway.Repositories
                     {
                         shipperData = (from partner in context.Partners
                                        join ppt in context.PartnerPartnerTypes on partner.ID equals ppt.PartnerId
+                                       join subdistrict in context.SubDistricts on partner.SubDistrictID equals subdistrict.ID
+                                       join city in context.Cities on subdistrict.CityID equals city.ID
                                        where ppt.PartnerTypeId == context.PartnerTypes.FirstOrDefault(t => t.PartnerTypeCode == "1").ID // partner.PartnerName.Contains(searchText) && 
                                        select new Domain.Common
                                        {
@@ -487,9 +493,10 @@ namespace TMS.DataGateway.Repositories
                 {
                     var gateData = new List<Domain.Common>();
 
-                    gateData = context.G2Gs.Where(b => b.BusinessAreaId == businessAreaId && b.GateTypeId== gateTypeId).Select(data=>new Domain.Common {
-                        Id=data.ID,
-                        Value=data.G2GName
+                    gateData = context.G2Gs.Where(b => b.BusinessAreaId == businessAreaId && b.GateTypeId == gateTypeId).Select(data => new Domain.Common
+                    {
+                        Id = data.ID,
+                        Value = data.G2GName
                     }).ToList();
 
                     if (gateData.Count > 0)
@@ -530,8 +537,8 @@ namespace TMS.DataGateway.Repositories
                     var tripstatusData = new List<Domain.Common>();
                     if (!string.IsNullOrEmpty(requestType))
                     {
-                        tripstatusData = context.OrderStatuses.Where(c=>c.OrderStatusCode=="1"|| c.OrderStatusCode == "2"|| 
-                        c.OrderStatusCode == "3" || c.OrderStatusCode == "13"|| c.OrderStatusCode == "15" || c.OrderStatusCode == "16").Select(data => new Domain.Common
+                        tripstatusData = context.OrderStatuses.Where(c => c.OrderStatusCode == "1" || c.OrderStatusCode == "2" ||
+                        c.OrderStatusCode == "3" || c.OrderStatusCode == "13" || c.OrderStatusCode == "15" || c.OrderStatusCode == "16").Select(data => new Domain.Common
                         {
                             Id = data.ID,
                             Value = data.OrderStatusValue

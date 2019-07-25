@@ -11,7 +11,7 @@ namespace TMS.DomainObjects.Request
     public class OrderRequest : RequestFilter
     {
         public List<Order> Requests { get; set; }
-        [Range(1,2)]
+        [Range(1,3)]
         public int UploadType { get; set; }
         public string orderGeneratedSystem { get; set; }
     }

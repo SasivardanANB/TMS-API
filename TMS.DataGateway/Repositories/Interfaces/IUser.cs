@@ -19,7 +19,6 @@ namespace TMS.DataGateway.Repositories.Iterfaces
         UserResponse ChangePassword(ChangePasswordRequest changePasswordRequest,string type);
         UserResponse ForgotPassword(ForgotPasswordRequest forgotPasswordRequest);
 
-        UserResponse UpdateUserProfile(UserRequest user);
         // Role Management
         RoleResponse CreateUpdateRole(RoleRequest role);
         RoleResponse DeleteRole(int id);

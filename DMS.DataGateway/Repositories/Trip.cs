@@ -90,11 +90,10 @@ namespace DMS.DataGateway.Repositories
             {
                 using (var beginDBTransaction = context.Database.BeginTransaction())
                 {
-                    List<StopPoints> pendingStopPoints = new List<StopPoints>();
                     try
                     {
                         DataModels.TripDetail tripDetailData = context.TripDetails.Where(t => t.ID == tripDetailId).FirstOrDefault();
-                        pendingStopPoints = (from sectionPage in context.TripStatusHistories
+                        List<StopPoints> pendingStopPoints = (from sectionPage in context.TripStatusHistories
                                              group sectionPage by sectionPage.StopPointId into sectionGroup
                                              join b in context.TripStatusHistories on sectionGroup.Max(y => y.ID) equals b.ID
                                              join c in context.TripDetails on b.StopPointId equals c.ID
@@ -108,7 +107,7 @@ namespace DMS.DataGateway.Repositories
 
                         int minSequenceNo = pendingStopPoints.Min(f => f.SequenceNumber);
 
-                        if (tripDetailData.SequenceNumber != minSequenceNo)
+                        if (tripDetailData.SequenceNumber != minSequenceNo && tripDetailData.SequenceNumber > 0)
                         {
                             int originalSequenceNo = tripDetailData.SequenceNumber;
 
@@ -647,13 +646,13 @@ namespace DMS.DataGateway.Repositories
                             StopPointId = tripStatusEventLogFilter.StopPointId,
                             Remarks = tripStatusEventLogFilter.Remarks,
                             StatusDate = DateTime.Now,
-
                         };
                         // For Changeinging stoppoint order
                         if (tripStatusEventLogFilter.TripStatusId == 4)
                         {
                             SwapeOrderSequence(tripStatusEventLogFilter.StopPointId);
                         }
+
                         //For getting trip deatails and updating trip status as assigned
                         var tripID = context.TripDetails.Where(t => t.ID == tripStatusEventLogFilter.StopPointId).Select(t => t.TripID).FirstOrDefault();
                         var tripDetails = context.TripHeaders.Where(t => t.ID == tripID).FirstOrDefault();
@@ -1309,7 +1308,7 @@ namespace DMS.DataGateway.Repositories
                                 context.SaveChanges();
                             }
                             #region Update Order Header
-                            var tripHeader = context.TripHeaders.FirstOrDefault(t => t.ID == tripId );
+                            var tripHeader = context.TripHeaders.FirstOrDefault(t => t.ID == tripId);
                             tripHeader.CurrentTripStatusId = context.TripStatuses.FirstOrDefault(t => t.StatusCode == "13").ID;
 
                             context.Entry(tripHeader).State = System.Data.Entity.EntityState.Modified;
@@ -1359,6 +1358,7 @@ namespace DMS.DataGateway.Repositories
                         {
                             DataModel.ShipmentListDetails shipmentListDetails = new DataModel.ShipmentListDetails()
                             {
+                                ShippingListNo = shipmentList.ShippingListNo,
                                 NumberOfBoxes = shipmentList.NumberOfBoxes,
                                 Note = shipmentList.Note,
                                 PackingSheetNumber = shipmentList.PackingSheetNumber,
@@ -1384,6 +1384,7 @@ namespace DMS.DataGateway.Repositories
                                  select new DomainObjects.Objects.ShipmentListDetails
                                  {
                                      ID = sl.ID,
+                                     ShippingListNo = sl.ShippingListNo,
                                      NumberOfBoxes = sl.NumberOfBoxes,
                                      Note = sl.Note,
                                      PackingSheetNumber = sl.PackingSheetNumber,

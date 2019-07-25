@@ -112,6 +112,7 @@ namespace TMS.DataGateway.Repositories
             }
             return VehicleResponse;
         }
+
         public VehicleResponse GetVehicles(VehicleRequest vehicleRequest)
         {
             VehicleResponse vehicleResponse = new VehicleResponse();
@@ -352,22 +353,24 @@ namespace TMS.DataGateway.Repositories
                 {
                     if (searchText != string.Empty && searchText != null)
                     {
-                        commonCodes = tMSDBContext.Vehicles.Where(v => !v.IsDelete && v.KIRNo.Contains(searchText)).Select(vehicle => new Domain.CommonCode
+                        commonCodes = tMSDBContext.Vehicles.Where(v => !v.IsDelete && v.PoliceNo.Contains(searchText)).Select(vehicle => new Domain.CommonCode
                         {
-                            Id = vehicle.KIRNo,
-                            Value = vehicle.KIRNo
+                            Id = vehicle.PlateNumber,
+                            Value = vehicle.PlateNumber
                         }).ToList();
                     }
                     else
                     {
                         commonCodes = tMSDBContext.Vehicles.Where(v => !v.IsDelete).Select(vehicle => new Domain.CommonCode
                         {
-                            Id = vehicle.KIRNo,
-                            Value = vehicle.KIRNo
+                            Id = vehicle.PlateNumber,
+                            Value = vehicle.PlateNumber
                         }).ToList();
                     }
+
                     if (commonCodes.Count > 0)
                     {
+                        commonCodeResponse.NumberOfRecords = commonCodes.Count;
                         commonCodeResponse.Data = commonCodes;
                         commonCodeResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         commonCodeResponse.StatusCode = (int)HttpStatusCode.OK;
@@ -379,9 +382,7 @@ namespace TMS.DataGateway.Repositories
                         commonCodeResponse.StatusCode = (int)HttpStatusCode.NotFound;
                         commonCodeResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                     }
-
                 }
-
             }
             catch (Exception ex)
             {

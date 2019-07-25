@@ -1,19 +1,14 @@
-﻿using AutoMapper;
-using NLog;
+﻿using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using TMS.DataGateway.DataModels;
-using TMS.DataGateway.Repositories.Interfaces;
 using TMS.DomainObjects.Request;
 using TMS.DomainObjects.Response;
 using Domain = TMS.DomainObjects.Objects;
 using DataModel = TMS.DataGateway.DataModels;
 using TMS.DataGateway.Repositories.Iterfaces;
-
 
 namespace TMS.DataGateway.Repositories
 {
@@ -23,7 +18,6 @@ namespace TMS.DataGateway.Repositories
 
         public TripResponse GetTripList(TripRequest tripRequest)
         {
-            //TripResponse tripResponse = new TripResponse();
             TripResponse tripResponse = new TripResponse()
             {
                 Data = new List<Domain.Trip>()
@@ -37,38 +31,39 @@ namespace TMS.DataGateway.Repositories
                 {
                     var userDetails = context.Tokens.Where(t => t.TokenKey == tripRequest.Token).FirstOrDefault();
                     var businessAreas = (from ur in context.UserRoles
-                                         where ur.UserID == userDetails.UserID && ur.IsDelete == false
+                                         where ur.UserID == userDetails.UserID && !ur.IsDelete
                                          select ur.BusinessAreaID).ToList();
 
 
                     var searchRequest = tripRequest.Requests[0];
-                    if(searchRequest.OrderStatusId > 0) { 
-                    tripList = (from oh in context.OrderHeaders
-                                 join od in context.OrderDetails on oh.ID equals od.OrderHeaderID
-                                 join ps in context.PackingSheets on od.ShippingListNo equals ps.ShippingListNo into pks
-                                 from pksh in pks.DefaultIfEmpty()
-                                where businessAreas.Contains(oh.BusinessAreaId) && ( (((!String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.OrderNo == tripRequest.GlobalSearch)
-                                       || (String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.OrderNo == oh.OrderNo))
-                                       ||
-                                       ((!String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.VehicleNo == tripRequest.GlobalSearch)
-                                       || (String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.VehicleNo == oh.VehicleNo))
-                                ||
-                                ((tripRequest.GlobalSearch != string.Empty && pksh.PackingSheetNo == tripRequest.GlobalSearch)
-                                || (tripRequest.GlobalSearch == string.Empty && pksh.PackingSheetNo == pksh.PackingSheetNo))) && (oh.DriverName != null) && (oh.VehicleNo != null) && oh.OrderStatusID == searchRequest.OrderStatusId) 
+                    if (searchRequest.OrderStatusId > 0)
+                    {
+                        tripList = (from oh in context.OrderHeaders
+                                    join od in context.OrderDetails on oh.ID equals od.OrderHeaderID
+                                    join ps in context.PackingSheets on od.ShippingListNo equals ps.ShippingListNo into pks
+                                    from pksh in pks.DefaultIfEmpty()
+                                    where businessAreas.Contains(oh.BusinessAreaId) && ((((!String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.OrderNo == tripRequest.GlobalSearch)
+                                           || (String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.OrderNo == oh.OrderNo))
+                                           ||
+                                           ((!String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.VehicleNo == tripRequest.GlobalSearch)
+                                           || (String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.VehicleNo == oh.VehicleNo))
+                                    ||
+                                    ((tripRequest.GlobalSearch != string.Empty && pksh.PackingSheetNo == tripRequest.GlobalSearch)
+                                    || (tripRequest.GlobalSearch == string.Empty && pksh.PackingSheetNo == pksh.PackingSheetNo))) && (oh.DriverName != null) && (oh.VehicleNo != null) && oh.OrderStatusID == searchRequest.OrderStatusId)
 
-                                select new Domain.Trip
-                                 {
-                                     OrderId = oh.ID,
-                                     OrderType = oh.OrderType,
-                                     OrderNumber = oh.OrderNo,
-                                     VehicleType = oh.VehicleShipment,
-                                     Vehicle = oh.VehicleNo,
-                                     EstimatedArrivalDate=od.ActualShipmentDate,
-                                     EstimatedShipmentDate=od.EstimationShipmentDate,
-                                     Dimensions=oh.OrderWeight+" "+oh.OrderWeightUM,
-                                     OrderStatusId=oh.OrderStatusID,
-                                     OrderStatus = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusValue
-                                 }).Distinct().ToList();
+                                    select new Domain.Trip
+                                    {
+                                        OrderId = oh.ID,
+                                        OrderType = oh.OrderType,
+                                        OrderNumber = oh.OrderNo,
+                                        VehicleType = oh.VehicleShipment,
+                                        Vehicle = oh.VehicleNo,
+                                        EstimatedArrivalDate = od.ActualShipmentDate,
+                                        EstimatedShipmentDate = od.EstimationShipmentDate,
+                                        Dimensions = oh.OrderWeight + " " + oh.OrderWeightUM,
+                                        OrderStatusId = oh.OrderStatusID,
+                                        OrderStatus = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusValue
+                                    }).Distinct().ToList();
                     }
                     else
                     {
@@ -104,7 +99,7 @@ namespace TMS.DataGateway.Repositories
                     {
                         foreach (var order in tripList)
                         {
-                            if(order.OrderStatusCode == "3" || order.OrderStatusCode == "13" || order.OrderStatusCode == "15" || order.OrderStatusCode == "16")
+                            if (order.OrderStatusCode == "3" || order.OrderStatusCode == "13" || order.OrderStatusCode == "15" || order.OrderStatusCode == "16")
                             {
                                 order.IsChangeAllowed = true;
                             }
@@ -148,8 +143,6 @@ namespace TMS.DataGateway.Repositories
                                     {
                                         foreach (var partner in partners)
                                         {
-                                            //if (partner.PartnerTypeCode == "1")
-                                            //    order.Transporter = partner.PartnerName;
                                             if (partner.PartnerTypeCode == "2")
                                                 order.Source = partner.PartnerName;
                                             if (partner.PartnerTypeCode == "3")
@@ -180,73 +173,78 @@ namespace TMS.DataGateway.Repositories
                         {
                             tripList = tripList.Where(o => o.Vehicle.Contains(orderFilter.Vehicle)).ToList();
                         }
-                        //if (orderFilter.OrderType != 0)
-                        //{
-                        //    tripList = tripList.Where(o => o.OrderType == orderFilter.OrderType).ToList();
-                        //}
                     }
 
                     // Sorting
-                    if (tripList.Count > 0 && !string.IsNullOrEmpty(tripRequest.SortOrder))
+                    if (tripList != null && tripList.Count > 0)
                     {
-                        switch (tripRequest.SortOrder.ToLower())
+                        if(!string.IsNullOrEmpty(tripRequest.SortOrder))
                         {
-                            case "ordernumber":
-                                tripList = tripList.OrderBy(o => o.OrderNumber).ToList();
-                                break;
-                            case "ordernumber_desc":
-                                tripList = tripList.OrderByDescending(o => o.OrderNumber).ToList();
-                                break;
-                            case "source":
-                                tripList = tripList.OrderBy(o => o.Source).ToList();
-                                break;
-                            case "source_desc":
-                                tripList = tripList.OrderByDescending(o => o.Source).ToList();
-                                break;
-                            case "destination":
-                                tripList = tripList.OrderBy(o => o.Destination).ToList();
-                                break;
-                            case "destination_desc":
-                                tripList = tripList.OrderByDescending(o => o.Destination).ToList();
-                                break;
-                            case "estimatedarrivaldate":
-                                tripList = tripList.OrderBy(o => o.EstimatedArrivalDate).ToList();
-                                break;
-                            case "estimatedarrivaldate_desc":
-                                tripList = tripList.OrderByDescending(o => o.EstimatedArrivalDate).ToList();
-                                break;
-                            case "estimatedshipmentdate":
-                                tripList = tripList.OrderBy(o => o.EstimatedShipmentDate).ToList();
-                                break;
-                            case "estimatedshipmentdate_desc":
-                                tripList = tripList.OrderByDescending(o => o.EstimatedShipmentDate).ToList();
-                                break;
-                            case "policenumber":
-                                tripList = tripList.OrderBy(o => o.Vehicle).ToList();
-                                break;
-                            case "policenumber_desc":
-                                tripList = tripList.OrderByDescending(o => o.Vehicle).ToList();
-                                break;
-                            case "orderstatus":
-                                tripList = tripList.OrderBy(o => o.OrderStatus).ToList();
-                                break;
-                            case "orderstatus_desc":
-                                tripList = tripList.OrderByDescending(o => o.OrderStatus).ToList();
-                                break;
-                            case "dimensions":
-                                tripList = tripList.OrderBy(o => o.Dimensions).ToList();
-                                break;
-                            case "dimensions_desc":
-                                tripList = tripList.OrderByDescending(o => o.Dimensions).ToList();
-                                break;
-                            default:  // ID Descending 
-                                tripList = tripList.OrderByDescending(o => o.OrderId).ToList();
-                                break;
+                            switch (tripRequest.SortOrder.ToLower())
+                            {
+                                case "ordernumber":
+                                    tripList = tripList.OrderBy(o => o.OrderNumber).ToList();
+                                    break;
+                                case "ordernumber_desc":
+                                    tripList = tripList.OrderByDescending(o => o.OrderNumber).ToList();
+                                    break;
+                                case "source":
+                                    tripList = tripList.OrderBy(o => o.Source).ToList();
+                                    break;
+                                case "source_desc":
+                                    tripList = tripList.OrderByDescending(o => o.Source).ToList();
+                                    break;
+                                case "destination":
+                                    tripList = tripList.OrderBy(o => o.Destination).ToList();
+                                    break;
+                                case "destination_desc":
+                                    tripList = tripList.OrderByDescending(o => o.Destination).ToList();
+                                    break;
+                                case "estimatedarrivaldate":
+                                    tripList = tripList.OrderBy(o => o.EstimatedArrivalDate).ToList();
+                                    break;
+                                case "estimatedarrivaldate_desc":
+                                    tripList = tripList.OrderByDescending(o => o.EstimatedArrivalDate).ToList();
+                                    break;
+                                case "estimatedshipmentdate":
+                                    tripList = tripList.OrderBy(o => o.EstimatedShipmentDate).ToList();
+                                    break;
+                                case "estimatedshipmentdate_desc":
+                                    tripList = tripList.OrderByDescending(o => o.EstimatedShipmentDate).ToList();
+                                    break;
+                                case "policenumber":
+                                    tripList = tripList.OrderBy(o => o.Vehicle).ToList();
+                                    break;
+                                case "policenumber_desc":
+                                    tripList = tripList.OrderByDescending(o => o.Vehicle).ToList();
+                                    break;
+                                case "orderstatus":
+                                    tripList = tripList.OrderBy(o => o.OrderStatus).ToList();
+                                    break;
+                                case "orderstatus_desc":
+                                    tripList = tripList.OrderByDescending(o => o.OrderStatus).ToList();
+                                    break;
+                                case "dimensions":
+                                    tripList = tripList.OrderBy(o => o.Dimensions).ToList();
+                                    break;
+                                case "dimensions_desc":
+                                    tripList = tripList.OrderByDescending(o => o.Dimensions).ToList();
+                                    break;
+                                default:  // ID Descending 
+                                    tripList = tripList.OrderByDescending(o => o.OrderId).ToList();
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            tripList = tripList.OrderByDescending(o => o.OrderId).ToList();
                         }
                     }
+                    
 
                     // Total NumberOfRecords
-                    tripResponse.NumberOfRecords = tripList.Count;
+                    if (tripList != null)
+                        tripResponse.NumberOfRecords = tripList.Count;
 
                     // Paging
                     int pageNumber = (tripRequest.PageNumber ?? 1);
@@ -256,7 +254,7 @@ namespace TMS.DataGateway.Repositories
                         tripList = tripList.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
                     }
 
-                    if (tripList.Count > 0)                           
+                    if (tripList != null && tripList.Count > 0)
                     {
                         tripResponse.Data.AddRange(tripList);
                         tripResponse.Status = DomainObjects.Resource.ResourceData.Success;
@@ -278,7 +276,6 @@ namespace TMS.DataGateway.Repositories
                 tripResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
                 tripResponse.StatusMessage = ex.Message;
             }
-            //return orderSearchResponse;
             return tripResponse;
         }
 
@@ -289,13 +286,11 @@ namespace TMS.DataGateway.Repositories
             {
                 using (var context = new DataModel.TMSDBContext())
                 {
-
                     var orderData = (from oH in context.OrderHeaders
                                      where oH.ID == orderId
                                      select new OrderDetailsResponse
                                      {
                                          ID = oH.ID,
-                                         //ActualShipment = oH.ActualShipmentDate,
                                          BusinessArea = oH.BusinessArea.BusinessAreaDescription,
                                          BusinessAreaId = oH.BusinessAreaId,
                                          DriverName = oH.DriverName,
@@ -306,7 +301,7 @@ namespace TMS.DataGateway.Repositories
                                          LegecyOrderNo = oH.LegecyOrderNo,
                                          VehicleNo = oH.VehicleNo,
                                          VehicleShipmentType = oH.VehicleShipment,
-                                         //OrderDate = oH.OrderDate,
+                                         SOPONumber = oH.SOPONumber,
                                          OrderNo = oH.OrderNo,
                                          OrderShipmentStatus = oH.OrderStatusID,
                                          OrderType = oH.OrderType,
@@ -346,7 +341,7 @@ namespace TMS.DataGateway.Repositories
                                                 ).ToList();
                         if (orderPartnerData.Count > 0)
                         {
-                            if (orderData.OrderType == 1)
+                            if (orderData.OrderType == 2) //Out Bound
                             {
 
                                 int maxSeqNo = orderPartnerData.Max(x => x.SequenceNo);
@@ -359,7 +354,7 @@ namespace TMS.DataGateway.Repositories
                                               select data
                                                   ).FirstOrDefault();
                                 var destinations = (from data in orderPartnerData
-                                                    where data.PeartnerType == 3 // && data.SequenceNo == maxSeqNo
+                                                    where data.PeartnerType == 3 
                                                     select data
                                                   ).ToList();
 
@@ -378,7 +373,7 @@ namespace TMS.DataGateway.Repositories
                                 orderDetailsResponse.TotalPallet = transporter.TotalPallet;
                                 orderDetailsResponse.SourceOrDestinations = stopPoints;
                             }
-                            else
+                            else //In Bound
                             {
                                 int maxSeqNo = orderPartnerData.Max(x => x.SequenceNo);
                                 var transporter = (from data in orderPartnerData
@@ -386,7 +381,7 @@ namespace TMS.DataGateway.Repositories
                                                    select data
                                                    ).FirstOrDefault();
                                 var source = (from data in orderPartnerData
-                                              where data.PeartnerType == 2 //&& data.SequenceNo == maxSeqNo
+                                              where data.PeartnerType == 2
                                               select data
                                                   ).ToList();
                                 var destinations = (from data in orderPartnerData
@@ -395,7 +390,6 @@ namespace TMS.DataGateway.Repositories
                                                   ).FirstOrDefault();
 
                                 List<Domain.StopPoints> stopPoints = new List<Domain.StopPoints>();
-                                stopPoints.Add(destinations);
                                 if (source.Count > 0)
                                 {
                                     foreach (var item in source)
@@ -403,6 +397,7 @@ namespace TMS.DataGateway.Repositories
                                         stopPoints.Add(item);
                                     }
                                 }
+                                stopPoints.Add(destinations);
                                 orderDetailsResponse = orderData;
                                 orderDetailsResponse.Transporter = transporter;
                                 orderDetailsResponse.Instructions = transporter.Instruction;
@@ -410,7 +405,6 @@ namespace TMS.DataGateway.Repositories
                                 orderDetailsResponse.SourceOrDestinations = stopPoints;
                             }
                         }
-                        //orderResponse.NumberOfRecords = delearData.Count;
                         orderDetailsResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         orderDetailsResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
                         orderDetailsResponse.StatusCode = (int)HttpStatusCode.OK;
@@ -422,10 +416,7 @@ namespace TMS.DataGateway.Repositories
                         orderDetailsResponse.StatusCode = (int)HttpStatusCode.NotFound;
                         orderDetailsResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                     }
-
-
                 }
-
             }
             catch (Exception ex)
             {
@@ -435,12 +426,10 @@ namespace TMS.DataGateway.Repositories
                 orderDetailsResponse.StatusMessage = ex.Message;
             }
             return orderDetailsResponse;
-
         }
 
         public TripResponse UpdateTripDetails(TripRequest tripRequest)
         {
-            //TripResponse tripResponse = new TripResponse();
             TripResponse tripResponse = new TripResponse();
             List<Domain.Trip> trips = new List<Domain.Trip>();
 
@@ -452,10 +441,10 @@ namespace TMS.DataGateway.Repositories
                     {
                         Domain.Trip trip = new Domain.Trip();
 
-                      var   orderHeadeData = (from data in context.OrderHeaders
-                                          where data.ID == request.OrderId
-                                          select data).FirstOrDefault();
-                        if(orderHeadeData != null)
+                        var orderHeadeData = (from data in context.OrderHeaders
+                                              where data.ID == request.OrderId
+                                              select data).FirstOrDefault();
+                        if (orderHeadeData != null)
                         {
                             orderHeadeData.DriverName = context.Drivers.Where(o => o.DriverNo == request.DriverName && o.IsActive).Select(d => d.UserName).FirstOrDefault();
                             orderHeadeData.DriverNo = context.Drivers.Where(o => o.DriverNo == request.DriverName && o.IsActive).Select(d => d.DriverNo).FirstOrDefault();
@@ -513,7 +502,6 @@ namespace TMS.DataGateway.Repositories
                 tripResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
                 tripResponse.StatusMessage = ex.Message;
             }
-            //return orderSearchResponse;
             return tripResponse;
         }
     }

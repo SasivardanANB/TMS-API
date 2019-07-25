@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using ActiveUp.Net.Mail;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NLog;
 using RestSharp;
 using System;
@@ -8,6 +10,7 @@ using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.ModelBinding;
 using TMS.API.Classes;
@@ -16,6 +19,7 @@ using TMS.DomainGateway.Task.Interfaces;
 using TMS.DomainObjects.Objects;
 using TMS.DomainObjects.Request;
 using TMS.DomainObjects.Response;
+using static TMS.API.Controllers.MediaController;
 
 namespace TMS.API.Controllers
 {
@@ -23,7 +27,7 @@ namespace TMS.API.Controllers
     [RoutePrefix("api/v1/order")]
     public class OrderController : ApiController
     {
-        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly NLog.Logger _logger = LogManager.GetCurrentClassLogger();
 
         #region Private Methods
         private static string GetApiResponse(string apiRoute, Method method, object requestQueryParameter, string token)
@@ -42,10 +46,32 @@ namespace TMS.API.Controllers
             return result.Content;
         }
 
+        private static string GetFileUploadApiResponse(string apiRoute, Method method, MimePart mimePart, string token)
+        {
+            var client = new RestClient(ConfigurationManager.AppSettings["ApiGatewayBaseURL"]);
+            if (token != null)
+                client.AddDefaultHeader("Token", token);
+            var request = new RestRequest(apiRoute, method) { RequestFormat = DataFormat.Json, AlwaysMultipartFormData = true };
+            request.Timeout = 500000;
+            if (mimePart != null)
+            {
+                client.AddDefaultHeader("Content-Type", "multipart/form-data");
+                request.AddFileBytes("file", mimePart.BinaryContent, mimePart.Filename, mimePart.ContentType.MimeType);// upload from file byte array
+            }
+            var result = client.Execute(request);
+            return result.Content;
+        }
+
         private Partner GetPartnerDetail(string partnerNo, int uploadType)
         {
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
             return orderTask.GetPartnerDetail(partnerNo, uploadType);
+        }
+
+        private OrderResponse OcrOrderResponse(ShipmentScheduleOcrRequest  shipmentScheduleOcrRequest)
+        {
+            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            return orderTask.OcrOrderResponse(shipmentScheduleOcrRequest);
         }
 
         private string GetBusinessAreaCode(int businessAreaId)
@@ -132,25 +158,6 @@ namespace TMS.API.Controllers
                         ModelState.Remove("order.Requests[" + i + "].BusinessAreaID");
                         ModelState.Remove("order.Requests[" + i + "]");
 
-                        //if (string.IsNullOrEmpty(order.Requests[i].ShippingListNo))
-                        //{
-                        //    ModelState.AddModelError($"{nameof(order)}.{nameof(order.Requests)}.[{i}].{nameof(Order.ShippingListNo)}", "Invalid Shipping List Number");
-                        //}
-                        //if (string.IsNullOrEmpty(order.Requests[i].PackingSheetNo))
-                        //{
-                        //    ModelState.AddModelError($"{nameof(order)}.{nameof(order.Requests)}.[{i}].{nameof(Order.PackingSheetNo)}", "Invalid Packing Sheet Number");
-                        //}
-                        //if (!string.IsNullOrEmpty(order.Requests[i].PackingSheetNo))
-                        //{
-                        //    string[] packingSheets = order.Requests[i].PackingSheetNo.Split(',');
-                        //    foreach (string packingSheet in packingSheets)
-                        //    {
-                        //        if (packingSheet.Length > 20)
-                        //        {
-                        //            ModelState.AddModelError($"{nameof(order)}.{nameof(order.Requests)}.[{i}].{nameof(Order.PackingSheetNo)}", "Packing Sheet Number should not exceed 20 characters");
-                        //        }
-                        //    }
-                        //}
                         if (order.Requests[i].TotalCollie == 0)
                         {
                             ModelState.AddModelError($"{nameof(order)}.{nameof(order.Requests)}.[{i}].{nameof(Order.TotalCollie)}", "Invalid Total Collie");
@@ -315,7 +322,7 @@ namespace TMS.API.Controllers
                                             TripLocation sourceLocation = new TripLocation()
                                             {
                                                 PartnerType = request.PartnerType2,
-                                                PartnerNo = sourcePartnerDetail.PartnerNo, //request.PartnerNo2, 
+                                                PartnerNo = sourcePartnerDetail.PartnerNo,
                                                 PartnerName = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
                                                 SequnceNumber = request.SequenceNo,
                                                 ActualDeliveryDate = actualShipmentDate,
@@ -844,7 +851,7 @@ namespace TMS.API.Controllers
                 foreach (PackingSheet ps in packingSheetRequest.Requests)
                 {
                     ps.OrderNumber = packingSheetResponse.Data[0].OrderNumber;
-                   
+
                     ps.DealerNumber = (from pks in packingSheetResponse.Data
                                        where pks.DealerId == ps.DealerId
                                        select pks.DealerNumber).FirstOrDefault();
@@ -886,7 +893,6 @@ namespace TMS.API.Controllers
             PackingSheetResponse packingSheetResponse = orderTask.GetPackingSheetDetails(orderId);
             return Ok(packingSheetResponse);
         }
-
 
         [Route("trackorder")]
         [HttpGet]
@@ -954,7 +960,7 @@ namespace TMS.API.Controllers
                     OrderStatusCode = item.OrderStatusCode,
                     Remarks = "",
                     SequenceNumber = item.SequenceNumber,
-                    NewSequenceNumber=item.NewSequenceNumber
+                    NewSequenceNumber = item.NewSequenceNumber
                 };
 
                 omsRequest.Requests.Add(requestData);
@@ -1011,7 +1017,7 @@ namespace TMS.API.Controllers
             #endregion
 
             var response = JsonConvert.DeserializeObject<ImageGuidsResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
-                + "/v1/trip/getshippinglistguids?orderNumber="+ orderNumber, Method.GET, null, token));
+                + "/v1/trip/getshippinglistguids?orderNumber=" + orderNumber, Method.GET, null, token));
             #endregion
             return Ok(response);
         }
@@ -1172,6 +1178,200 @@ namespace TMS.API.Controllers
             return Ok(response);
         }
 
+        [Route("getharga")]
+        [HttpPost]
+        public IHttpActionResult GetHarga(HargaRequest request)
+        {
+            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            HargaResponse response = orderTask.GetHarga(request);
+            return Ok(response);
+        }
+
+        [Route("getshipmentschedulesfromemail")]
+        [HttpGet]
+        public IHttpActionResult GetShipmentSchedulesFromEmail()
+        {
+            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            ShipmentScheduleOcrResponse response = new ShipmentScheduleOcrResponse();
+            OrderResponse ocrOrderResponse = new OrderResponse();
+            OrderResponse tmsOrderResponse = new OrderResponse();
+            OrderResponse omsOrderResponse = new OrderResponse();
+            // Loin into Gamil and Get all Mails
+            var mailRepository = new MailRepository(
+                                    ConfigurationManager.AppSettings["GmailURL"], 
+                                    993,
+                                    true,
+                                    ConfigurationManager.AppSettings["UserEmailID"] ,
+                                    ConfigurationManager.AppSettings["UserPassword"]
+                                );
+
+            //Get all Unread Mails
+            var emailList = mailRepository.GetUnreadMails("inbox");
+
+            foreach (ActiveUp.Net.Mail.Message email in emailList)
+            {
+                if (email.Attachments.Count > 0)
+                {
+                    foreach (MimePart attachment in email.Attachments)
+                    {
+                        if (attachment.ContentType.MimeType.ToLower() == "application/pdf") // Checking For PDF files
+                        {
+                            // Uploading File into Blob storage and get GUID
+                            var fileuploadresponse = JsonConvert.DeserializeObject<ResponseDataForFileUpload>(GetFileUploadApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"] + "/v1/media/uploadfile", Method.POST, attachment, null));
+                           // response.StatusMessage += ". " + fileuploadresponse.Guid;
+
+                            if (fileuploadresponse.StatusCode == (int)HttpStatusCode.OK && fileuploadresponse.Guid != "" && fileuploadresponse.Guid != null)
+                            {
+                                // Calling OCR to get shipmentschedule data
+                                var res =  GetFileUploadApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"] + "/v1/order/shipmentscheduleocr", Method.POST, attachment, null);
+                                var shipmentScheduleOcr = JsonConvert.DeserializeObject<dynamic>(res);
+                                var jsonObject = JObject.Parse(shipmentScheduleOcr);
+                                ShipmentScheduleOcrRequest shipmentScheduleOcrRequest = new ShipmentScheduleOcrRequest();
+                                if (jsonObject.success == true)
+                                {
+                                    //var docType = jsonObject.documentType;
+                                  
+                                    shipmentScheduleOcrRequest.Requests = new List<ShipmentScheduleOcr>();
+                                    ShipmentScheduleOcr shipmentSchedule = new ShipmentScheduleOcr()
+                                    {
+                                        ImageGUID= fileuploadresponse.Guid,
+                                        DocumentType = jsonObject.documentType,
+                                        Success = jsonObject.success,
+                                        Image = jsonObject.image,
+                                        EmailFrom = email.From.Email,
+                                        EmailDateTime=email.Date,
+                                        EmailSubject=email.Subject,
+                                        EmailText= email.BodyHtml.TextStripped,
+                                        Data = new DetailsOcr() {
+                                            DayShipment = jsonObject.data.DayShipment,
+                                            EstimatedTotalPallet = jsonObject.data.EstimatedTotalPallet,
+                                            MainDealerCode = jsonObject.data.MainDealerCode,
+                                            MainDealerName= jsonObject.data.MainDealerName,
+                                            MultiDropShipment= jsonObject.data.MultiDropShipment,
+                                            ShipmentScheduleNo= jsonObject.data.ShipmentScheduleNo,
+                                            ShipmentTime= jsonObject.data.ShipmentTime,
+                                            ShipToParty= jsonObject.data.ShipToParty,
+                                            VehicleType= jsonObject.data.VehicleType,
+                                            Weight= jsonObject.data.Weight
+                                        }
+                                    };
+                                    shipmentScheduleOcrRequest.Requests.Add(shipmentSchedule);
+
+                                }
+                                if(shipmentScheduleOcrRequest.Requests.Count > 0)
+                                {
+                                    //response = orderTask.CreateOrderFromShipmentScheduleOcr(shipmentScheduleOcrRequest);
+                                    //OcrOrderResponse
+                                    OrderRequest omsOrderRequest = new OrderRequest();
+                                    
+
+                                    ocrOrderResponse = OcrOrderResponse(shipmentScheduleOcrRequest);
+                                    if(ocrOrderResponse != null && ocrOrderResponse.StatusCode == (int)HttpStatusCode.OK)
+                                    {
+                                        LoginRequest omsLoginRequest = new LoginRequest();
+                                        string omsToken = "";
+                                        omsLoginRequest.UserName = ConfigurationManager.AppSettings["OMSLogin"];
+                                        omsLoginRequest.UserPassword = ConfigurationManager.AppSettings["OMSPassword"];
+                                        var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                                                                                                                          + "v1/user/login", Method.POST, omsLoginRequest, null));
+                                        if (tmsLoginResponse != null && tmsLoginResponse.Data.Count > 0)
+                                        {
+                                            omsToken = tmsLoginResponse.TokenKey;
+                                        }
+                                        omsOrderRequest.Requests = ocrOrderResponse.Data;
+
+                                        omsOrderResponse = JsonConvert.DeserializeObject<OrderResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                                                                                                             + "v1/order/createordersfromshipmentlistocr", Method.POST, omsOrderRequest, omsToken));
+
+                                        if(omsOrderResponse.Data != null && omsOrderResponse.StatusCode == (int)HttpStatusCode.OK)
+                                        {
+                                            var tmsToken = Request.Headers.GetValues("Token").FirstOrDefault();
+                                            if(tmsToken != null)
+                                            {
+                                                OrderRequest tmsOrderRequest = new OrderRequest();
+                                                tmsOrderRequest.Requests = omsOrderResponse.Data;
+                                                tmsOrderRequest.UploadType = 3;
+                                                tmsOrderResponse = JsonConvert.DeserializeObject<OrderResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                                                                                                                                                           + "v1/order/createordersfromshipmentlistocr", Method.POST, tmsOrderRequest, tmsToken));
+                                            }
+                                        }
+
+                                    }
+
+                                    
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+            return Ok(tmsOrderResponse);
+        }
+
+        [HttpPost, Route("shipmentscheduleocr"), AllowAnonymous]
+        public async Task<IHttpActionResult> ShipmentScheduleOCR()
+        {
+            if (!Request.Content.IsMimeMultipartContent("form-data"))
+            {
+                throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
+            }
+
+            var client = new HttpClient();
+            var response = await client.PostAsync(ConfigurationManager.AppSettings["ShipmentScheduleOCRURL"], Request.Content);
+            var json = response.Content.ReadAsStringAsync().Result;
+
+            return Ok(json);
+        }
+
+        [Route("createordersfromshipmentlistocr")]
+        [HttpPost]
+        public IHttpActionResult CreateOrdersFromShipmentListOCR(OrderRequest request)
+        {
+            for (int i = 0; i < request.Requests.Count; i++)
+            {
+
+                ModelState.Remove("request.Requests[" + i + "].BusinessArea");
+                ModelState.Remove("request.Requests[" + i + "].ShippingListNo");
+                ModelState.Remove("request.Requests[" + i + "].PackingSheetNo");
+                ModelState.Remove("request.Requests[" + i + "].TotalCollie");
+                ModelState.Remove("request.Requests[" + i + "].PartnerName1");
+                ModelState.Remove("request.Requests[" + i + "].PartnerName2");
+                ModelState.Remove("request.Requests[" + i + "].PartnerName3");
+                ModelState.Remove("request.Requests[" + i + "].Dimension");
+                ModelState.Remove("request.Requests[" + i + "].ShipmentSAPNo");
+                ModelState.Remove("request.Requests[" + i + "].OrderNo");
+                ModelState.Remove("request.Requests[" + i + "].EstimationShipmentDate");
+                ModelState.Remove("request.Requests[" + i + "].EstimationShipmentTime");
+                ModelState.Remove("request.Requests[" + i + "].ActualShipmentDate");
+                ModelState.Remove("request.Requests[" + i + "].ActualShipmentTime");
+
+            }
+            if (!ModelState.IsValid)
+            {
+                ErrorResponse errorResponse = new ErrorResponse()
+                {
+                    Status = DomainObjects.Resource.ResourceData.Failure,
+                    Data = new List<Error>()
+                };
+                for (int i = 0; i < ModelState.Keys.Count; i++)
+                {
+                    Error errorData = new Error()
+                    {
+                        ErrorMessage = ModelState.Keys.ToList<string>()[i].Replace("request.Requests[", "Row Number[") + " : " + ModelState.Values.ToList<ModelState>()[i].Errors[0].ErrorMessage
+                    };
+
+                    errorResponse.Data.Add(errorData);
+                }
+                return Ok(errorResponse);
+            }
+
+            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            OrderResponse orderData = orderTask.CreateOrdersFromShipmentListOCR(request);
+
+           
+            return Ok(orderData);
+        }
 
 
     }

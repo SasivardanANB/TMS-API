@@ -145,11 +145,8 @@ namespace TMS.DataGateway.Repositories
                     partnerList =
                         (from partner in context.Partners
                          join ppt in context.PartnerPartnerTypes on partner.ID equals ppt.PartnerId
-                        // join postalcode in context.PostalCodes on partner.PostalCodeID equals postalcode.ID
                          join subdistrict in context.SubDistricts on partner.SubDistrictID equals subdistrict.ID
                          join city in context.Cities on subdistrict.CityID equals city.ID
-                        //join postalcode in context.PostalCodes on subdistrict.ID equals postalcode.SubDistrictID into ldata
-                        //from ld in ldata.DefaultIfEmpty()
                          where !partner.IsDeleted
                          select new Domain.Partner
                          {
@@ -211,14 +208,8 @@ namespace TMS.DataGateway.Repositories
                     ).ToList();
                 }
 
-                //Sorting
-                //if (partnerRequest.SortOrder == null)
-                //{
-                //    partnerRequest.SortOrder = "ID";
-                //}
                 if (partnerList.Count > 0)
                 {
-
                     if (!string.IsNullOrEmpty(partnerRequest.SortOrder))
                     {
                         switch (partnerRequest.SortOrder.ToLower())

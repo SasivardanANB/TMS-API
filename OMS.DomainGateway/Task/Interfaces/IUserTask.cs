@@ -17,7 +17,6 @@ namespace OMS.DomainGateway.Task.Interfaces
         UserResponse DeleteUser(int userID);
         UserResponse GetUsers(UserRequest userReq);
         UserResponse ChangePassword(ChangePasswordRequest changePasswordRequest);
-        UserResponse UpdateUserProfile(UserRequest user);
 
         // Role Management
         RoleResponse CreateUpdateRole(RoleRequest role);

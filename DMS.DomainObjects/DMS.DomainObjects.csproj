@@ -54,6 +54,7 @@
     <Compile Include="Objects\Notification.cs" />
     <Compile Include="Objects\OrderStatus.cs" />
     <Compile Include="Objects\ImageGuid.cs" />
+    <Compile Include="Objects\ShippingList.cs" />
     <Compile Include="Objects\TripLocation.cs" />
     <Compile Include="Objects\Location.cs" />
     <Compile Include="Objects\PostalCode.cs" />

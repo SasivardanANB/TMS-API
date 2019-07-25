@@ -9,6 +9,7 @@ namespace DMS.DomainObjects.Objects
     public class ShipmentListDetails
     {
         public int ID { get; set; }
+        public string ShippingListNo { get; set; }
         public int NumberOfBoxes { get; set; }
         public string Note { get; set; }
         public string PackingSheetNumber { get; set; }
