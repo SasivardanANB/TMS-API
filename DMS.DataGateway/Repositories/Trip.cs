@@ -90,11 +90,10 @@ namespace DMS.DataGateway.Repositories
             {
                 using (var beginDBTransaction = context.Database.BeginTransaction())
                 {
-                    List<StopPoints> pendingStopPoints = new List<StopPoints>();
                     try
                     {
                         DataModels.TripDetail tripDetailData = context.TripDetails.Where(t => t.ID == tripDetailId).FirstOrDefault();
-                        pendingStopPoints = (from sectionPage in context.TripStatusHistories
+                        List<StopPoints> pendingStopPoints = (from sectionPage in context.TripStatusHistories
                                              group sectionPage by sectionPage.StopPointId into sectionGroup
                                              join b in context.TripStatusHistories on sectionGroup.Max(y => y.ID) equals b.ID
                                              join c in context.TripDetails on b.StopPointId equals c.ID
@@ -647,13 +646,13 @@ namespace DMS.DataGateway.Repositories
                             StopPointId = tripStatusEventLogFilter.StopPointId,
                             Remarks = tripStatusEventLogFilter.Remarks,
                             StatusDate = DateTime.Now,
-
                         };
                         // For Changeinging stoppoint order
-                        //if (tripStatusEventLogFilter.TripStatusId == 4)
-                        //{
-                        //    SwapeOrderSequence(tripStatusEventLogFilter.StopPointId);
-                        //}
+                        if (tripStatusEventLogFilter.TripStatusId == 4)
+                        {
+                            SwapeOrderSequence(tripStatusEventLogFilter.StopPointId);
+                        }
+
                         //For getting trip deatails and updating trip status as assigned
                         var tripID = context.TripDetails.Where(t => t.ID == tripStatusEventLogFilter.StopPointId).Select(t => t.TripID).FirstOrDefault();
                         var tripDetails = context.TripHeaders.Where(t => t.ID == tripID).FirstOrDefault();

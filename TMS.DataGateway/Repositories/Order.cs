@@ -2148,33 +2148,19 @@ namespace TMS.DataGateway.Repositories
                         if (statusRequest.SequenceNumber > 0)
                         {
                             orderDetailId = context.OrderDetails.FirstOrDefault(t => t.SequenceNo == statusRequest.SequenceNumber && t.OrderHeaderID == orderId).ID;
+
+                            if (statusRequest.OrderStatusCode == "4" && statusRequest.SequenceNumber != statusRequest.NewSequenceNumber) // StartTrip
+                            {
+                                SwapeOrderSequence(orderDetailId, statusRequest.SequenceNumber, statusRequest.NewSequenceNumber);
+
+                                //Get new OrderDetailsID for min sequence number
+                                orderDetailId = context.OrderDetails.FirstOrDefault(t => t.SequenceNo == statusRequest.NewSequenceNumber && t.OrderHeaderID == orderId).ID;
+                            }
                         }
                         else
                         {
                             orderDetailId = context.OrderDetails.FirstOrDefault(t => t.OrderHeaderID == orderId).ID;
                         }
-
-                        //if (statusRequest.OrderStatusCode == "4") // StartTrip
-                        //{
-                        //    // Get OrderDetailID for old sequence Number
-                        //    if (statusRequest.SequenceNumber > 0)
-                        //    {
-                        //        orderDetailId = context.OrderDetails.FirstOrDefault(t => t.SequenceNo == statusRequest.SequenceNumber && t.OrderHeaderID == orderId).ID;
-
-                        //        // Swap 
-                        //        if (statusRequest.SequenceNumber != statusRequest.NewSequenceNumber)
-                        //        {
-                        //            SwapeOrderSequence(orderDetailId, statusRequest.SequenceNumber, statusRequest.NewSequenceNumber);
-
-                        //            //Get new OrderDetailsID for min sequence number
-                        //            orderDetailId = context.OrderDetails.FirstOrDefault(t => t.SequenceNo == statusRequest.NewSequenceNumber && t.OrderHeaderID == orderId).ID;
-                        //        }
-                        //    }
-                        //}
-                        //else
-                        //{
-                        //    orderDetailId = context.OrderDetails.FirstOrDefault(t => t.SequenceNo == statusRequest.NewSequenceNumber && t.OrderHeaderID == orderId).ID;
-                        //}                       
 
                         DataModel.OrderStatusHistory statusHistory = new DataModel.OrderStatusHistory()
                         {
