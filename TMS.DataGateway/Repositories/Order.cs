@@ -2135,7 +2135,7 @@ namespace TMS.DataGateway.Repositories
                         int orderDetailId = 0;
                         orderId = context.OrderHeaders.FirstOrDefault(t => t.OrderNo == statusRequest.OrderNumber).ID;
 
-                        orderDetailId = context.OrderDetails.FirstOrDefault(t => t.SequenceNo == statusRequest.NewSequenceNumber && t.OrderHeaderID == orderId).ID;
+                        orderDetailId = context.OrderDetails.FirstOrDefault(t => t.SequenceNo == statusRequest.SequenceNumber && t.OrderHeaderID == orderId).ID;
 
                         //if (statusRequest.OrderStatusCode == "4") // StartTrip
                         //{

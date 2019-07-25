@@ -90,7 +90,8 @@ namespace DMS.BusinessGateway.Task
                     OrderNumber = orderNumber,
                     OrderStatusCode = orderStatusCode,
                     Remarks = item.Remarks,
-                    SequenceNumber = item.SequenceNumber,
+                    //SequenceNumber = item.SequenceNumber,
+                    SequenceNumber = orderSequenceNumber,
                     NewSequenceNumber = orderSequenceNumber
                 };
 
@@ -149,7 +150,7 @@ namespace DMS.BusinessGateway.Task
                 #endregion
 
                 #region Get Trip Sequnce Number
-                int orderSequenceNumber = 0;
+                int orderSequenceNumber = GetOrderSequnceNumber(item.ID);
                 #endregion
 
                 OrderStatus requestData = new OrderStatus()
