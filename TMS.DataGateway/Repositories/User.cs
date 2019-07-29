@@ -108,7 +108,7 @@ namespace TMS.DataGateway.Repositories
                             userResponse.TokenKey = tokenData.TokenKey;
                             userResponse.TokenIssuedOn = tokenData.IssuedOn;
                             userResponse.TokenExpiresOn = tokenData.ExpiresOn;
-                            userResponse.ServerDateTime = DateTime.Now;
+                            userResponse.ServerDateTime = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
 
                             userResponse.Status = DomainObjects.Resource.ResourceData.Success;
                             userResponse.StatusCode = (int)HttpStatusCode.OK;

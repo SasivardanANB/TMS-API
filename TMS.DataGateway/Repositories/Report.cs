@@ -398,7 +398,7 @@ namespace TMS.DataGateway.Repositories
                             loadUnloacOrdersByDate.Day = dayValue;
                             loadUnloacOrdersByDate.OrderCount = avgLoadOrderReports.Where(i => i.Day == dayValue).Select(d => d.OrderCount).FirstOrDefault();
                             loadUnloacOrdersByDate.TotlLoadingTime = Math.Round(decimal.Parse(avgLoadOrderReports.Where(i => i.Day == dayValue).Select(d => d.TotlLoadingTime).FirstOrDefault()), 2).ToString();
-                            loadUnloacOrdersByDate.AvgTotlLoadingTime = avgLoadOrderReports.Where(i => i.Day == dayValue).Select(d => d.AvgTotlLoadingTime).FirstOrDefault();
+                            loadUnloacOrdersByDate.AvgTotlLoadingTime = Math.Round(decimal.Parse(avgLoadOrderReports.Where(i => i.Day == dayValue).Select(d => d.AvgTotlLoadingTime).FirstOrDefault()), 2).ToString();
                         }
                         else
                         {
