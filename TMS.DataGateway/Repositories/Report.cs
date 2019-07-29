@@ -450,11 +450,11 @@ namespace TMS.DataGateway.Repositories
                                                                 DbFunctions.TruncateTime(opd.OrderDetail.OrderHeader.OrderDate) <= DbFunctions.TruncateTime(goodsReceiveOrIssueRequest.Request.EndDate)
                                                               group new { opd.OrderDetail.OrderHeader, opd.OrderDetail } by new
                                                               {
-                                                                  Column1 = (DateTime?)DbFunctions.TruncateTime(opd.OrderDetail.OrderHeader.OrderDate)
+                                                                  Column1 = DbFunctions.TruncateTime(opd.OrderDetail.OrderHeader.OrderDate)
                                                               } into g
                                                               select new
                                                               {
-                                                                  Order_Qty = (int?)g.Sum(p => p.OrderDetail.TotalCollie),
+                                                                  Order_Qty = g.Sum(p => p.OrderDetail.TotalCollie),
                                                                   CreatedDate = g.Key.Column1
                                                               })
                                                    join B in (from opd in tMSDBContext.OrderPartnerDetails
@@ -466,23 +466,27 @@ namespace TMS.DataGateway.Repositories
                                                                 DbFunctions.TruncateTime(osh.StatusDate) <= DbFunctions.TruncateTime(goodsReceiveOrIssueRequest.Request.EndDate)
                                                               group new { osh, opd.OrderDetail } by new
                                                               {
-                                                                  Column1 = (DateTime?)DbFunctions.TruncateTime(osh.StatusDate)
+                                                                  Column1 = DbFunctions.TruncateTime(osh.StatusDate)
                                                               } into g
                                                               select new
                                                               {
-                                                                  Order_Qty = (int?)g.Sum(p => p.OrderDetail.TotalCollie),
+                                                                  Order_Qty = g.Sum(p => p.OrderDetail.TotalCollie),
                                                                   CreatedDate = g.Key.Column1
                                                               })
                                                                on new { CreatedDate = DbFunctions.TruncateTime(A.CreatedDate).Value } equals new { CreatedDate = DbFunctions.TruncateTime(B.CreatedDate).Value } into B_join
+                                                   where A.Order_Qty > 0
                                                    from B in B_join.DefaultIfEmpty()
                                                    select new Domain.GoodsReceiveOrIssue
                                                    {
                                                        OrderQty = A.Order_Qty.ToString(),
-                                                       GRQty = goodsReceiveOrIssueRequest.Request.OrderTypeId == 1 ? (string.IsNullOrEmpty(B.Order_Qty.ToString()) ? "0" : B.Order_Qty.ToString()) : "0",
-                                                       GIQty = goodsReceiveOrIssueRequest.Request.OrderTypeId == 2 ? (string.IsNullOrEmpty(B.Order_Qty.ToString()) ? "0" : B.Order_Qty.ToString()) : "0",
-                                                       Percentage = string.IsNullOrEmpty(((A.Order_Qty / B.Order_Qty) * 100).ToString()) ? "0" : ((A.Order_Qty / B.Order_Qty) * 100).ToString(),
-                                                       Date = A.CreatedDate.Value != null ? A.CreatedDate.Value : B.CreatedDate.Value
+                                                       GRQty = goodsReceiveOrIssueRequest.Request.OrderTypeId == 1 ? B.Order_Qty.ToString() : "0",
+                                                       GIQty = goodsReceiveOrIssueRequest.Request.OrderTypeId == 2 ? B.Order_Qty.ToString() : "0",
+                                                       Percentage = Math.Round(((B.Order_Qty * 100.00) / A.Order_Qty), 2).ToString(),
+                                                       Date = (A.CreatedDate ?? B.CreatedDate.Value).ToString()
                                                    }).ToList();
+
+                    foreach (Domain.GoodsReceiveOrIssue g in goodsReceiveOrIssueData)
+                        g.Date = Convert.ToDateTime(g.Date).ToString("dd.MM.yyyy");
 
                     goodsReceiveOrIssueResponse.NumberOfRecords = goodsReceiveOrIssueData.Count;
                     goodsReceiveOrIssueResponse.Data = new Domain.GoodsReceiveOrIssueReport()
