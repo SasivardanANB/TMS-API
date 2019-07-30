@@ -168,9 +168,12 @@ namespace TMS.DataGateway.Repositories
 
                     foreach (var item in comletedOrderprogresses)
                     {
-                        int loadingTime = 0;
-                        int unLoadingTime = 0;
-                        int travellingTime = 0;
+                        item.ETA = Convert.ToDateTime(item.ETA).ToString("MMM dd yyyy hh:mmtt");
+                        item.FinishDelivery = Convert.ToDateTime(item.FinishDelivery).ToString("MMM dd yyyy hh:mmtt");
+
+                        decimal loadingTime = 0;
+                        decimal unLoadingTime = 0;
+                        decimal travellingTime = 0;
                         var orderDetails = tMSDBContext.OrderDetails.Where(i => i.OrderHeaderID == item.OrderId).ToList();
                         foreach (var orderItem in orderDetails)
                         {
@@ -263,25 +266,25 @@ namespace TMS.DataGateway.Repositories
 
                             if (orderDetailEndLoaingTime != null && orderDetailStartLoadingTime != null)
                             {
-                                loadingTime += Convert.ToInt32((orderDetailEndLoaingTime.Date - orderDetailStartLoadingTime.Date).TotalHours);
+                                loadingTime += Convert.ToDecimal((orderDetailEndLoaingTime.Date - orderDetailStartLoadingTime.Date).TotalHours);
                             }
                             if (orderDetailEndUnLoaingTime != null && orderDetailStartUnLoadingTime != null)
                             {
-                                unLoadingTime += Convert.ToInt32((orderDetailEndUnLoaingTime.Date - orderDetailStartUnLoadingTime.Date).TotalHours);
+                                unLoadingTime += Convert.ToDecimal((orderDetailEndUnLoaingTime.Date - orderDetailStartUnLoadingTime.Date).TotalHours);
                             }
                             if (orderCompletedTime != null && orderDetailLoadStartTripTime != null)
                             {
-                                item.ShippingTime = Convert.ToInt32((orderCompletedTime.Date - orderDetailLoadStartTripTime.Date).TotalHours).ToString();
+                                item.ShippingTime = Convert.ToDecimal((orderCompletedTime.Date - orderDetailLoadStartTripTime.Date).TotalHours).ToString();
                             }
-                            int travelLoadTime = 0;
-                            int travelUnLoadTime = 0;
+                            decimal travelLoadTime = 0;
+                            decimal travelUnLoadTime = 0;
                             if (orderDetailLoadConfirmArriveTime != null && orderDetailLoadStartTripTime != null)
                             {
-                                travelLoadTime = Convert.ToInt32((orderDetailLoadConfirmArriveTime.Date - orderDetailLoadStartTripTime.Date).TotalHours);
+                                travelLoadTime = Convert.ToDecimal((orderDetailLoadConfirmArriveTime.Date - orderDetailLoadStartTripTime.Date).TotalHours);
                             }
                             if (orderDetailUnLoadConfirmArriveTime != null && orderDetailUnLoadStartTripTime != null)
                             {
-                                travelUnLoadTime = Convert.ToInt32((orderDetailUnLoadConfirmArriveTime.Date - orderDetailUnLoadStartTripTime.Date).TotalHours);
+                                travelUnLoadTime = Convert.ToDecimal((orderDetailUnLoadConfirmArriveTime.Date - orderDetailUnLoadStartTripTime.Date).TotalHours);
                             }
                             travellingTime += travelLoadTime + travelUnLoadTime;
                         }
