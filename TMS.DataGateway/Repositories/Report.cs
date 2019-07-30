@@ -274,7 +274,7 @@ namespace TMS.DataGateway.Repositories
                             }
                             if (orderCompletedTime != null && orderDetailLoadStartTripTime != null)
                             {
-                                item.ShippingTime = Convert.ToDecimal((orderCompletedTime.Date - orderDetailLoadStartTripTime.Date).TotalHours).ToString();
+                                item.ShippingTime = Math.Round(Convert.ToDecimal((orderCompletedTime.Date - orderDetailLoadStartTripTime.Date).TotalHours), 2).ToString();
                             }
                             decimal travelLoadTime = 0;
                             decimal travelUnLoadTime = 0;
@@ -288,9 +288,9 @@ namespace TMS.DataGateway.Repositories
                             }
                             travellingTime += travelLoadTime + travelUnLoadTime;
                         }
-                        item.LoadingTime = loadingTime.ToString();
-                        item.UnloadingTime = unLoadingTime.ToString();
-                        item.TravellingTime = travellingTime.ToString();
+                        item.LoadingTime = Math.Round(loadingTime, 2).ToString();
+                        item.UnloadingTime = Math.Round(unLoadingTime, 2).ToString();
+                        item.TravellingTime = Math.Round(travellingTime, 2).ToString();
                     }
 
                     orderReportResponse.Data = new Domain.OrderReport()
