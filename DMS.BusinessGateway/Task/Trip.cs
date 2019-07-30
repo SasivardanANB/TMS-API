@@ -148,17 +148,13 @@ namespace DMS.BusinessGateway.Task
                 string orderStatusCode = GetOrderStatusCode(item.TripStatusId.Value);
                 #endregion
 
-                #region Get Trip Sequnce Number
-                int orderSequenceNumber = 0;
-                #endregion
-
                 OrderStatus requestData = new OrderStatus()
                 {
                     IsLoad = null,
                     OrderNumber = orderNumber,
                     OrderStatusCode = orderStatusCode,
                     Remarks = "",
-                    SequenceNumber = orderSequenceNumber
+                    SequenceNumber = 0
                 };
 
                 tmsRequest.Requests.Add(requestData);

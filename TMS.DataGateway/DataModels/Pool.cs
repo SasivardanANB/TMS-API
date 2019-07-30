@@ -31,7 +31,7 @@ namespace TMS.DataGateway.DataModels
         public virtual City City { get; set; }
         public bool IsDelete { get; set; }
         [ForeignKey("ImageGuid")]
-        public int PhotoId { get; set; }
+        public int? PhotoId { get; set; }
         public virtual ImageGuid ImageGuid { get; set; }
         
     }

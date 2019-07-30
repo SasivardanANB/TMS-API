@@ -17,7 +17,7 @@ namespace TMS.DomainObjects.Objects
     }
     public class GoodsReceiveOrIssue
     {
-        public DateTime Date { get; set; }
+        public string Date { get; set; }
         public string GRQty { get; set; }
         public string GIQty { get; set; }
         public string OrderQty { get; set; }
