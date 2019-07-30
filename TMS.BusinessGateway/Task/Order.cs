@@ -119,6 +119,11 @@ namespace TMS.BusinessGateway.Task
         {
             return _orderRepository.CreateOrdersFromShipmentListOCR(request);
         }
+
+        public override InvoiceResponse GetInvoiceRequest(OrderStatusRequest request)
+        {
+            return _orderRepository.GetInvoiceRequest(request);
+        }
     }
 
 }

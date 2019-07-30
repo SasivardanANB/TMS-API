@@ -3671,5 +3671,101 @@ namespace TMS.DataGateway.Repositories
             return response;
         }
 
+        public InvoiceResponse GetInvoiceRequest(OrderStatusRequest request)
+
+        {
+            InvoiceResponse invoiceResponse = new InvoiceResponse()
+            {
+                Data = new List<Domain.Invoice>()
+            };
+
+            using (var context = new Data.TMSDBContext())
+            {
+                foreach (var reqData in request.Requests)
+                {
+                    using (DbContextTransaction transaction = context.Database.BeginTransaction())
+                    {
+                        try
+                        {
+                            var orderHeader = (from oh in context.OrderHeaders
+                                               where oh.OrderNo == reqData.OrderNumber
+                                               select oh).FirstOrDefault();
+
+                            var orderDetails = (from od in context.OrderDetails
+                                                where od.OrderHeaderID == orderHeader.ID
+                                                select od).FirstOrDefault();
+
+                            Domain.Invoice invoice = new Domain.Invoice
+                            {
+                                GeneralPOHeader = new GeneralPOHeader
+                                {
+                                    GeneralPOHeaderId = "",
+                                    DepartementId = "",
+                                    OrderDate = orderHeader.OrderDate.ToShortDateString(),
+                                    OrderNo = orderHeader.OrderNo,
+                                    LocationId = "",
+                                    VendorCode = "",
+                                    ReviewerDepartementId = "",
+                                    TotalPrice = orderHeader.Harga.ToString(),
+                                    Currency = "",
+                                    Reference = "",
+                                    Status = context.OrderStatuses.Where(s => s.OrderStatusCode == reqData.OrderStatusCode).Select(x => x.OrderStatusValue).FirstOrDefault(),
+                                    StatusSAP = "",
+                                    IsDeleted = "",
+                                    CreatedDate = DateTime.Now.ToShortDateString(),
+                                    CreatedBy = "SYSTEM",
+                                    ModifiedDate = "",
+                                    ModifiedBy = "",
+                                    Note = "",
+                                    IsFromSAP = "",
+                                    BusinessArea = context.BusinessAreas.Where(ba => ba.ID == orderHeader.BusinessAreaId).Select(x => x.BusinessAreaCode).FirstOrDefault(),
+                                    CompanyCode = "",
+                                    GRNumber = "",
+                                    GRDate = "",
+                                    GRTime = ""
+
+                                },
+                                GeneralPODetails = new GeneralPODetails()
+                                {
+                                    GRNumber = "",
+                                    MaterialNumber = orderDetails.ShippingListNo,
+                                    GeneralPODetailId = "",
+                                    GeneralPOHeaderId = "",
+                                    OrderDescription = "",
+                                    Qty = orderDetails.TotalCollie.ToString(),
+                                    DeliveryDate = orderDetails.ActualShipmentDate.ToShortDateString(),
+                                    UnitPrice = "",
+                                    PPN = "",
+                                    TotalPrice = orderHeader.Harga.ToString(),
+                                    Jenis = "",
+                                    DepartementId = "",
+                                    Currency = "",
+                                    ItemNo = "",
+                                    IsDeleted = "",
+                                    CreatedDate = "",
+                                    CreatedBy = "",
+                                    ModifiedDate = "",
+                                    ModifiedBy = "",
+                                    MaterialDesc = ""
+                                }
+
+                            };
+
+                            invoiceResponse.Data.Add(invoice);
+                        }
+                        catch (Exception ex)
+                        {
+                            transaction.Rollback();
+                            _logger.Log(LogLevel.Error, ex);
+                            invoiceResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                            invoiceResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                            invoiceResponse.StatusMessage = ex.Message;
+                        }
+                    }
+                }
+            }
+            return invoiceResponse;
+        }
+
     }
 }

@@ -943,7 +943,6 @@ namespace TMS.API.Controllers
         {
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
             OrderStatusResponse response = orderTask.UpdateOrderStatus(request);
-
             #region Update Status to OMS 
             OrderStatusRequest omsRequest = new OrderStatusRequest()
             {
@@ -993,7 +992,24 @@ namespace TMS.API.Controllers
                 #endregion
             }
             #endregion
-
+            #region Invoice Generation
+            if (request.Requests[0].OrderStatusCode == "12")
+            {
+                InvoiceResponse invoiceResponse = orderTask.GetInvoiceRequest(request);
+                InvoiceResponse invoiceResponseData = new InvoiceResponse();
+                if(invoiceResponse != null && invoiceResponse.Data.Count > 0)
+                {
+                    InvoiceRequest invoiceRequest = new InvoiceRequest();
+                    invoiceRequest.Requests = invoiceResponse.Data;
+                    var tmsToken = Request.Headers.GetValues("Token").FirstOrDefault();
+                    if (tmsToken != null)
+                    {
+                        invoiceResponseData = JsonConvert.DeserializeObject<InvoiceResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                                                                                                                                   + "v1/invoice/generateinvoice", Method.POST, invoiceRequest, tmsToken));
+                    }
+                }
+            }
+            #endregion
             return Ok(response);
         }
 
