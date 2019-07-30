@@ -154,22 +154,17 @@ namespace TMS.DataGateway.Repositories
                                                        OrderId = ord.Select(p => p.oh.ID).FirstOrDefault(),
                                                        OrderNo = ord.Select(p => p.oh.OrderNo).FirstOrDefault(),
                                                        Transporter = tMSDBContext.Partners.Where(pa => pa.ID == tMSDBContext.OrderPartnerDetails.Where(i => i.OrderDetailID == tMSDBContext.OrderDetails.Where(o => o.OrderHeaderID == ord.Select(id => id.oh.ID).FirstOrDefault()).Select(od => od.ID).Take(1).FirstOrDefault() && i.PartnerTypeId == 1).Select(pt => pt.PartnerID).FirstOrDefault()).Select(pn => pn.PartnerName).FirstOrDefault(),
-                                                       //Source = tMSDBContext.Partners.Where(pa => pa.ID == tMSDBContext.OrderPartnerDetails.Where(i => i.OrderDetailID == tMSDBContext.OrderDetails.Where(o => o.OrderHeaderID == ord.Select(id => id.oh.ID).FirstOrDefault()).Select(od => od.ID).Take(1).FirstOrDefault() && i.PartnerTypeId == 2).Select(pt => pt.PartnerID).FirstOrDefault()).Select(pn => pn.PartnerName).FirstOrDefault(),
-                                                       //Destination = tMSDBContext.Partners.Where(pa => pa.ID == tMSDBContext.OrderPartnerDetails.Where(i => i.OrderDetailID == tMSDBContext.OrderDetails.Where(o => o.OrderHeaderID == ord.Select(id => id.oh.ID).FirstOrDefault()).Select(od => od.ID).Take(1).FirstOrDefault() && i.PartnerTypeId == 3).Select(pt => pt.PartnerID).FirstOrDefault()).Select(pn => pn.PartnerName).FirstOrDefault(),
                                                        Drivername = ord.Select(p => p.oh.DriverName).FirstOrDefault(),
                                                        OrderCreatedDate = ord.Select(p => p.oh.OrderDate).FirstOrDefault().ToString(),
-                                                       //Vehicle = tMSDBContext.VehicleTypes.Where(v => v.ID.ToString() == ord.Select(p => p.oh.VehicleShipment).FirstOrDefault()).Select(d => d.VehicleTypeDescription).FirstOrDefault(),
-
-                                                       //ShippingTime = DbFunctions.DiffHours(ord.Where(i => i.osh.ID == 12).Select(o => o.osh.StatusDate).FirstOrDefault(), ord.Where(i => i.osh.ID == 4 && i.osh.IsLoad == false).Select(o => o.osh.StatusDate).FirstOrDefault()).ToString(),
                                                        ETA = ord.OrderByDescending(i => i.od.ID).Select(o => o.od.EstimationShipmentDate).FirstOrDefault().ToString(),
                                                        FinishDelivery = ord.Where(od => od.osh.OrderStatusID == 12).Select(o => o.osh.StatusDate).FirstOrDefault().ToString(),
-                                                       //ServiceRate = oh.Harga.ToString(),                                                       
                                                    }).ToList();
 
                     foreach (var item in comletedOrderprogresses)
                     {
                         item.ETA = Convert.ToDateTime(item.ETA).ToString("MMM dd yyyy hh:mmtt");
                         item.FinishDelivery = Convert.ToDateTime(item.FinishDelivery).ToString("MMM dd yyyy hh:mmtt");
+                        item.ServiceRate = Math.Round((Convert.ToDateTime(item.FinishDelivery) - Convert.ToDateTime(item.ETA)).TotalHours, 2).ToString();
 
                         decimal loadingTime = 0;
                         decimal unLoadingTime = 0;
