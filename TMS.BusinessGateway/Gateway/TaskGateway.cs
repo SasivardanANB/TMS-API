@@ -66,5 +66,9 @@ namespace TMS.BusinessGateway.Gateway
         {
             get { return new BusinessReportTask(new Report()); }
         }
+        public IInvoiceTask InvoiceTask
+        {
+            get { return new  BusinessInvoiceTask(new Invoice()); }
+        }
     }
 }
