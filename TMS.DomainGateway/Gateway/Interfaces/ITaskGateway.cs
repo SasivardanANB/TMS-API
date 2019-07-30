@@ -21,5 +21,6 @@ namespace TMS.DomainGateway.Gateway.Interfaces
         IGateTask GateTask { get; }
         ITripTask TripTask { get; }
         IReportTask ReportTask { get; }
+        IInvoiceTask InvoiceTask { get; }
     }
 }

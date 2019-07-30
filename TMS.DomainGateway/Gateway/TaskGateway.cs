@@ -22,5 +22,6 @@ namespace TMS.DomainGateway.Gateway
         public abstract IGateTask GateTask { get; set; }
         public abstract ITripTask TripTask { get; set; }
         public abstract IReportTask ReportTask { get; set; }
+        public abstract IInvoiceTask InvoiceTask { get; set; }
     }
 }
