@@ -42,22 +42,6 @@ namespace TMS.BusinessGateway.Task
             _orderRepository = orderRepository;
         }
 
-        private static string GetApiResponse(string apiRoute, Method method, object requestQueryParameter, string token)
-        {
-            var client = new RestClient(ConfigurationManager.AppSettings["ApiGatewayBaseURL"]);
-            client.AddDefaultHeader("Content-Type", "application/json");
-            if (token != null)
-                client.AddDefaultHeader("Token", token);
-            var request = new RestRequest(apiRoute, method) { RequestFormat = DataFormat.Json };
-            request.Timeout = 500000;
-            if (requestQueryParameter != null)
-            {
-                request.AddJsonBody(requestQueryParameter);
-            }
-            var result = client.Execute(request);
-            return result.Content;
-        }
-
         public override OrderResponse CreateUpdateOrder(OrderRequest order)
         {
             OrderResponse tmsOrderResponse = new OrderResponse();
