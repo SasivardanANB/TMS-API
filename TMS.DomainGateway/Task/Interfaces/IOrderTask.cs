@@ -29,5 +29,6 @@ namespace TMS.DomainGateway.Task.Interfaces
         OrderResponse OcrOrderResponse(ShipmentScheduleOcrRequest shipmentScheduleOcrRequest);
 
         InvoiceResponse GetInvoiceRequest(OrderStatusRequest request);
+        OrderStatusResponse SwapeStopPoints(OrderStatusRequest orderStatusRequest);
     }
 }

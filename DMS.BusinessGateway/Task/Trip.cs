@@ -154,7 +154,7 @@ namespace DMS.BusinessGateway.Task
                     OrderNumber = orderNumber,
                     OrderStatusCode = orderStatusCode,
                     Remarks = "",
-                    SequenceNumber = 0
+                    SequenceNumber = 0,
                 };
 
                 tmsRequest.Requests.Add(requestData);
@@ -351,6 +351,75 @@ namespace DMS.BusinessGateway.Task
             }
 
             return _tripRepository.CreateUpdateShipmentList(shipmentListRequest);
+        }
+
+        public override StopPointsResponse SwapeStopPoints(UpdateTripStatusRequest updateTripStatusRequest)
+        {
+            StopPointsResponse stopPointsResponse = _tripRepository.SwapeStopPoints(updateTripStatusRequest);
+
+            #region Swape Stop Points in TMS 
+            OrderStatusRequest tmsRequest = new OrderStatusRequest()
+            {
+                Requests = new List<OrderStatus>()
+            };
+
+            foreach (var item in updateTripStatusRequest.Requests)
+            {
+                #region Get Order Number by Stop Point
+                string orderNumber = GetOrderNumber(item.StopPointId);
+                #endregion
+
+                #region Get Trip Status Code by Status ID
+                string orderStatusCode = GetOrderStatusCode(item.TripStatusId);
+                #endregion
+
+                #region Get Trip Sequnce Number
+                int orderSequenceNumber = GetOrderSequnceNumber(item.StopPointId);
+                #endregion
+
+                OrderStatus requestData = new OrderStatus()
+                {
+                    IsLoad = item.IsLoad,
+                    OrderNumber = orderNumber,
+                    OrderStatusCode = orderStatusCode,
+                    Remarks = item.Remarks,
+                    SequenceNumber = item.SequenceNumber,
+                    NewSequenceNumber = orderSequenceNumber
+                };
+                if (requestData.SequenceNumber != requestData.NewSequenceNumber)
+                {
+                    tmsRequest.Requests.Add(requestData);
+                }
+
+            }
+
+            if (tmsRequest.Requests.Count > 0)
+            {
+                #region Call TMS API to Swape Stop Points in TMS 
+                #region Login to TMS and get Token
+                LoginRequest loginRequest = new LoginRequest();
+                string token = "";
+
+                loginRequest.UserName = ConfigurationManager.AppSettings["TMSLogin"];
+                loginRequest.UserPassword = ConfigurationManager.AppSettings["TMSPassword"];
+                var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                    + "/v1/user/login", Method.POST, loginRequest, null));
+                if (tmsLoginResponse != null && tmsLoginResponse.Data.Count > 0)
+                {
+                    token = tmsLoginResponse.TokenKey;
+                }
+                #endregion
+
+                var response = JsonConvert.DeserializeObject<OrderStatusResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                    + "/v1/order/swapestoppoints", Method.POST, tmsRequest, token));
+                if (response != null)
+                {
+                    stopPointsResponse.StatusMessage += ". " + response.StatusMessage;
+                }
+                #endregion
+            }
+            #endregion
+            return stopPointsResponse;
         }
     }
 }

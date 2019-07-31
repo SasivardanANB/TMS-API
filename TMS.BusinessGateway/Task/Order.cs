@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using RestSharp;
+using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +16,23 @@ namespace TMS.BusinessGateway.Task
 {
     public partial class BusinessOrderTask : OrderTask
     {
+
+        private static string GetApiResponse(string apiRoute, Method method, object requestQueryParameter, string token)
+        {
+            var client = new RestClient(ConfigurationManager.AppSettings["ApiGatewayBaseURL"]);
+            client.AddDefaultHeader("Content-Type", "application/json");
+            if (token != null)
+                client.AddDefaultHeader("Token", token);
+            var request = new RestRequest(apiRoute, method) { RequestFormat = DataFormat.Json };
+            request.Timeout = 500000;
+            if (requestQueryParameter != null)
+            {
+                request.AddJsonBody(requestQueryParameter);
+            }
+            var result = client.Execute(request);
+            return result.Content;
+        }
+
         private readonly IOrder _orderRepository;
         public BusinessOrderTask(IOrder orderRepository)
         {
@@ -123,6 +143,64 @@ namespace TMS.BusinessGateway.Task
         public override InvoiceResponse GetInvoiceRequest(OrderStatusRequest request)
         {
             return _orderRepository.GetInvoiceRequest(request);
+        }
+
+        public override OrderStatusResponse SwapeStopPoints(OrderStatusRequest orderStatusRequest)
+        {
+            OrderStatusResponse orderStatusResponse = _orderRepository.SwapeStopPoints(orderStatusRequest);
+
+            #region Update Status to OMS 
+            OrderStatusRequest omsRequest = new OrderStatusRequest()
+            {
+                Requests = new List<OrderStatus>()
+            };
+
+            foreach (var item in orderStatusRequest.Requests)
+            {
+
+                OrderStatus requestData = new OrderStatus()
+                {
+                    IsLoad = null,
+                    OrderNumber = item.OrderNumber,
+                    OrderStatusCode = item.OrderStatusCode,
+                    Remarks = "",
+                    SequenceNumber = item.SequenceNumber,
+                    NewSequenceNumber = item.NewSequenceNumber
+                };
+
+                omsRequest.Requests.Add(requestData);
+                omsRequest.RequestFrom = "TMS";
+            }
+
+            if (omsRequest.Requests.Count > 0)
+            {
+                #region Call OMS API to Update Order
+                #region Login to OMS and get Token
+                LoginRequest loginRequest = new LoginRequest();
+                string token = "";
+
+                loginRequest.UserName = ConfigurationManager.AppSettings["OMSLogin"];
+                loginRequest.UserPassword = ConfigurationManager.AppSettings["OMSPassword"];
+                var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                    + "/v1/user/login", Method.POST, loginRequest, null));
+                if (tmsLoginResponse != null && tmsLoginResponse.Data.Count > 0)
+                {
+                    token = tmsLoginResponse.TokenKey;
+                }
+                #endregion
+
+                var omsresponse = JsonConvert.DeserializeObject<OrderStatusResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                    + "/v1/order/swapestoppoints", Method.POST, omsRequest, token));
+                if (omsresponse != null)
+                {
+                    orderStatusResponse.StatusMessage += ". " + omsresponse.StatusMessage;
+                }
+                #endregion
+            }
+            #endregion
+
+
+            return orderStatusResponse;
         }
     }
 

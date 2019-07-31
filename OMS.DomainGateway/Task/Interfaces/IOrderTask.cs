@@ -19,5 +19,6 @@ namespace OMS.DomainGateway.Task.Interfaces
         OrderStatusResponse UpdateOrderStatus(OrderStatusRequest request);
         TripResponse ReAssignTrip(TripRequest tripRequest);
         OrderStatusResponse CancelOrder(OrderStatusRequest request);
+        OrderStatusResponse SwapeStopPoints(OrderStatusRequest orderStatusRequest);
     }
 }
