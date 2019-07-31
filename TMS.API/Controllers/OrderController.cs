@@ -27,8 +27,6 @@ namespace TMS.API.Controllers
     [RoutePrefix("api/v1/order")]
     public class OrderController : ApiController
     {
-        private readonly NLog.Logger _logger = LogManager.GetCurrentClassLogger();
-
         #region Private Methods
         private static string GetApiResponse(string apiRoute, Method method, object requestQueryParameter, string token)
         {
@@ -62,23 +60,12 @@ namespace TMS.API.Controllers
             return result.Content;
         }
 
-        private Partner GetPartnerDetail(string partnerNo, int uploadType)
-        {
-            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
-            return orderTask.GetPartnerDetail(partnerNo, uploadType);
-        }
-
         private OrderResponse OcrOrderResponse(ShipmentScheduleOcrRequest  shipmentScheduleOcrRequest)
         {
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
             return orderTask.OcrOrderResponse(shipmentScheduleOcrRequest);
         }
 
-        private string GetBusinessAreaCode(int businessAreaId)
-        {
-            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
-            return orderTask.GetBusinessAreaCode(businessAreaId);
-        }
         #endregion
 
         [Route("createupdateorder")]
@@ -206,619 +193,16 @@ namespace TMS.API.Controllers
                 return Ok(errorResponse);
             }
 
-            //Login to OMS and get Token
-            LoginRequest omsLoginRequest = new LoginRequest();
-            string omsToken = "";
-            omsLoginRequest.UserName = ConfigurationManager.AppSettings["OMSLogin"];
-            omsLoginRequest.UserPassword = ConfigurationManager.AppSettings["OMSPassword"];
-            var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
-                                                                                              + "v1/user/login", Method.POST, omsLoginRequest, null));
-            if (tmsLoginResponse != null && tmsLoginResponse.Data.Count > 0)
+            if (Request.Headers.Contains("Token"))
             {
-                omsToken = tmsLoginResponse.TokenKey;
+                order.Token = Request.Headers.GetValues("Token").First();
             }
 
-            // Prepare OMSRequest
-            OrderRequest omsRequest = new OrderRequest()
-            {
-                Requests = new List<Order>(),
-                CreatedBy = "TMS System",
-                orderGeneratedSystem = "TMS"  // Useful for creating order only on OMS
-            };
+            // Create Order in TMS
+            IOrderTask tmsOrderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            OrderResponse tmsOrderResponse = tmsOrderTask.CreateUpdateOrder(order);
 
-
-            OrderResponse omsOrderResponse = new OrderResponse();
-            OrderResponse tmsOrderResponse = new OrderResponse();
-            if (order.UploadType == 1) // Excel
-            {
-                omsRequest.UploadType = 1;
-
-                if (order.orderGeneratedSystem != "OMS") // TMS
-                {
-                    foreach (var tmsOrder in order.Requests)
-                    {
-                        Partner partner1Data = GetPartnerDetail(tmsOrder.PartnerNo1, order.UploadType);
-                        Partner partner2Data = GetPartnerDetail(tmsOrder.PartnerNo2, order.UploadType);
-                        Partner partner3Data = GetPartnerDetail(tmsOrder.PartnerNo3, order.UploadType);
-
-                        Order omsOrder = new Order()
-                        {
-                            BusinessArea = tmsOrder.BusinessArea,
-                            OrderNo = tmsOrder.OrderNo,
-                            SequenceNo = tmsOrder.SequenceNo,
-                            PartnerNo1 = partner1Data.PartnerNo,
-                            PartnerType1 = tmsOrder.PartnerType1,
-                            PartnerName1 = partner1Data.PartnerName,
-                            PartnerNo2 = partner2Data.PartnerNo,
-                            PartnerType2 = tmsOrder.PartnerType2,
-                            PartnerName2 = partner2Data.PartnerName,
-                            PartnerNo3 = partner3Data.PartnerNo,
-                            PartnerType3 = tmsOrder.PartnerType3,
-                            PartnerName3 = partner3Data.PartnerName,
-                            FleetType = tmsOrder.FleetType,
-                            OrderType = tmsOrder.OrderType,
-                            VehicleShipmentType = tmsOrder.VehicleShipmentType,
-                            DriverNo = tmsOrder.DriverNo,
-                            DriverName = tmsOrder.DriverName,
-                            VehicleNo = tmsOrder.VehicleNo,
-                            OrderWeight = tmsOrder.OrderWeight,
-                            OrderWeightUM = tmsOrder.OrderWeightUM,
-                            EstimationShipmentDate = tmsOrder.EstimationShipmentDate,
-                            EstimationShipmentTime = tmsOrder.EstimationShipmentTime,
-                            ActualShipmentDate = tmsOrder.ActualShipmentDate,
-                            ActualShipmentTime = tmsOrder.ActualShipmentTime,
-                            Sender = tmsOrder.Sender,
-                            Receiver = tmsOrder.Receiver,
-                            OrderShipmentStatus = tmsOrder.OrderShipmentStatus,
-                            Dimension = tmsOrder.Dimension,
-                            TotalPallet = tmsOrder.TotalPallet,
-                            Instructions = tmsOrder.Instructions,
-                            ShippingListNo = tmsOrder.ShippingListNo,
-                            PackingSheetNo = tmsOrder.PackingSheetNo,
-                            TotalCollie = tmsOrder.TotalCollie,
-                            ShipmentSAPNo = tmsOrder.ShipmentSAPNo
-                        };
-                        omsRequest.Requests.Add(omsOrder);
-                    }
-                    omsOrderResponse = JsonConvert.DeserializeObject<OrderResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
-                                                                                                              + "v1/order/createupdateorders", Method.POST, omsRequest, omsToken));
-                }
-
-                if ((order.orderGeneratedSystem != "OMS" && omsOrderResponse.StatusCode == (int)HttpStatusCode.OK) || order.orderGeneratedSystem == "OMS")
-                {
-                    // Create Order in TMS
-                    IOrderTask tmsOrderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
-                    tmsOrderResponse = tmsOrderTask.CreateUpdateOrder(order);
-
-                    if (order.orderGeneratedSystem != "OMS")
-                    {
-                        omsOrderResponse.StatusMessage = omsOrderResponse.StatusMessage + ". " + tmsOrderResponse.StatusMessage;
-                    }
-
-                    if (tmsOrderResponse.StatusCode == 200 && tmsOrderResponse.Status == "Success")
-                    {
-                        #region Call DMS API to send Order as Trip if Driver assignment exists
-                        TripRequestDMS requestDMS = new TripRequestDMS()
-                        {
-                            Requests = new List<TripDMS>()
-                        };
-
-                        foreach (var request in order.Requests)
-                        {
-                            if (!string.IsNullOrEmpty(request.DriverName))
-                            {
-                                DateTime estimationShipmentDate = DateTime.ParseExact(request.EstimationShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(request.EstimationShipmentTime);
-                                DateTime actualShipmentDate = DateTime.ParseExact(request.ActualShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(request.ActualShipmentTime);
-
-                                if (requestDMS.Requests.Count > 0)
-                                {
-                                    var existingTrip = requestDMS.Requests.FirstOrDefault(t => t.OrderNumber == request.OrderNo);
-                                    if (existingTrip != null)
-                                    {
-                                        if (request.OrderType == 1)
-                                        {
-                                            #region Add Source Location
-                                            Partner sourcePartnerDetail = GetPartnerDetail(request.PartnerNo2, order.UploadType);
-                                            TripLocation sourceLocation = new TripLocation()
-                                            {
-                                                PartnerType = request.PartnerType2,
-                                                PartnerNo = sourcePartnerDetail.PartnerNo,
-                                                PartnerName = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
-                                                SequnceNumber = request.SequenceNo,
-                                                ActualDeliveryDate = actualShipmentDate,
-                                                EstimatedDeliveryDate = estimationShipmentDate
-                                            };
-                                            existingTrip.TripLocations.Add(sourceLocation);
-                                            requestDMS.Requests.Remove(existingTrip);
-                                            requestDMS.Requests.Add(existingTrip);
-                                            #endregion
-                                        }
-                                        else if (request.OrderType == 2)
-                                        {
-                                            #region Add Destination Location
-
-                                            Partner destinationPartnerDetail = GetPartnerDetail(request.PartnerNo3, order.UploadType);
-
-                                            TripLocation destinationLocation = new TripLocation()
-                                            {
-                                                PartnerType = request.PartnerType3,
-                                                PartnerNo = destinationPartnerDetail.PartnerNo,//request.PartnerNo3,
-                                                PartnerName = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
-                                                SequnceNumber = request.SequenceNo,
-                                                ActualDeliveryDate = actualShipmentDate,
-                                                EstimatedDeliveryDate = estimationShipmentDate
-                                            };
-                                            existingTrip.TripLocations.Add(destinationLocation);
-                                            requestDMS.Requests.Remove(existingTrip);
-                                            requestDMS.Requests.Add(existingTrip);
-                                            #endregion
-                                        }
-                                    }
-                                    else
-                                    {
-                                        string businessArea = "";
-                                        if (string.IsNullOrEmpty(request.BusinessArea))
-                                            businessArea = GetBusinessAreaCode(request.BusinessAreaId);
-                                        else
-                                            businessArea = request.BusinessArea;
-                                        Partner transporterPartnerDetail = GetPartnerDetail(request.PartnerNo1, order.UploadType);
-                                        TripDMS tripDMS = new TripDMS()
-                                        {
-                                            OrderNumber = request.OrderNo,
-                                            TransporterName = transporterPartnerDetail.PartnerName,
-                                            TransporterCode = transporterPartnerDetail.PartnerNo,
-                                            DriverName = request.DriverName,
-                                            DriverNo = request.DriverNo,
-                                            VehicleType = request.VehicleShipmentType,
-                                            VehicleNumber = request.VehicleNo,
-                                            TripType = Convert.ToString(request.FleetType),
-                                            Weight = request.OrderWeight,
-                                            PoliceNumber = request.VehicleNo,
-                                            TripStatusCode = "3",
-                                            OrderType = request.OrderType,
-                                            BusinessAreaCode = businessArea,
-                                            ShipmentScheduleImageGUID = request.ShipmentScheduleImageGUID,
-                                            TripLocations = new List<TripLocation>()
-                                        };
-
-                                        #region Add Source Location
-                                        Partner sourcePartnerDetail = GetPartnerDetail(request.PartnerNo2, order.UploadType);
-                                        TripLocation sourceLocation = new TripLocation()
-                                        {
-                                            PartnerType = request.PartnerType2,
-                                            PartnerNo = request.PartnerNo2,
-                                            PartnerName = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
-                                            SequnceNumber = request.OrderType == 1 ? request.SequenceNo : 0,
-                                            ActualDeliveryDate = actualShipmentDate,
-                                            EstimatedDeliveryDate = estimationShipmentDate
-                                        };
-                                        tripDMS.TripLocations.Add(sourceLocation);
-                                        #endregion
-
-                                        #region Add Destination Location
-                                        Partner destinationPartnerDetail = GetPartnerDetail(request.PartnerNo3, order.UploadType);
-                                        TripLocation destinationLocation = new TripLocation()
-                                        {
-                                            PartnerType = request.PartnerType3,
-                                            PartnerNo = request.PartnerNo3,
-                                            PartnerName = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
-                                            SequnceNumber = request.OrderType == 1 ? 0 : request.SequenceNo,
-                                            ActualDeliveryDate = actualShipmentDate,
-                                            EstimatedDeliveryDate = estimationShipmentDate
-                                        };
-                                        tripDMS.TripLocations.Add(destinationLocation);
-                                        requestDMS.Requests.Add(tripDMS);
-                                        #endregion
-                                    }
-                                }
-                                else
-                                {
-                                    string businessArea = "";
-                                    if (string.IsNullOrEmpty(request.BusinessArea))
-                                        businessArea = GetBusinessAreaCode(request.BusinessAreaId);
-                                    else
-                                        businessArea = request.BusinessArea;
-                                    Partner transporterPartnerDetail = GetPartnerDetail(request.PartnerNo1, order.UploadType);
-
-                                    TripDMS tripDMS = new TripDMS()
-                                    {
-                                        OrderNumber = request.OrderNo,
-                                        TransporterName = transporterPartnerDetail.PartnerName,
-                                        TransporterCode = transporterPartnerDetail.PartnerNo,
-                                        DriverNo = request.DriverNo,
-                                        DriverName = request.DriverName,
-                                        VehicleType = request.VehicleShipmentType,
-                                        VehicleNumber = request.VehicleNo,
-                                        TripType = Convert.ToString(request.FleetType),
-                                        Weight = request.OrderWeight,
-                                        PoliceNumber = request.VehicleNo,
-                                        TripStatusCode = "3",
-                                        OrderType = request.OrderType,
-                                        BusinessAreaCode = businessArea,
-                                        ShipmentScheduleImageGUID = request.ShipmentScheduleImageGUID,
-                                        TripLocations = new List<TripLocation>()
-                                    };
-
-                                    #region Add Source Location
-                                    Partner sourcePartnerDetail = GetPartnerDetail(request.PartnerNo2, order.UploadType);
-                                    TripLocation sourceLocation = new TripLocation()
-                                    {
-                                        PartnerType = request.PartnerType2,
-                                        PartnerNo = sourcePartnerDetail.PartnerNo,// request.PartnerNo2,
-                                        PartnerName = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
-                                        SequnceNumber = request.OrderType == 1 ? request.SequenceNo : 0,
-                                        ActualDeliveryDate = actualShipmentDate,
-                                        EstimatedDeliveryDate = estimationShipmentDate
-                                    };
-                                    tripDMS.TripLocations.Add(sourceLocation);
-                                    #endregion
-
-                                    #region Add Destination Location
-                                    Partner destinationPartnerDetail = GetPartnerDetail(request.PartnerNo3, order.UploadType);
-                                    TripLocation destinationLocation = new TripLocation()
-                                    {
-                                        PartnerType = request.PartnerType3,
-                                        PartnerNo = destinationPartnerDetail.PartnerNo,// request.PartnerNo3,
-                                        PartnerName = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
-                                        SequnceNumber = request.OrderType == 1 ? 0 : request.SequenceNo,
-                                        ActualDeliveryDate = actualShipmentDate,
-                                        EstimatedDeliveryDate = estimationShipmentDate
-                                    };
-                                    tripDMS.TripLocations.Add(destinationLocation);
-                                    #endregion
-
-                                    requestDMS.Requests.Add(tripDMS);
-                                }
-                            }
-                        }
-                        #endregion
-                        if (requestDMS.Requests.Count > 0)
-                        {
-                            #region Call DMS API to assign order to driver
-                            #region Login to DMS and get Token
-                            LoginRequest loginRequest = new LoginRequest();
-                            string token = "";
-
-                            loginRequest.UserName = ConfigurationManager.AppSettings["DMSLogin"];
-                            loginRequest.UserPassword = ConfigurationManager.AppSettings["DMSPassword"];
-                            var dmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
-                                + "/v1/user/login", Method.POST, loginRequest, null));
-                            if (dmsLoginResponse != null && dmsLoginResponse.Data.Count > 0)
-                            {
-                                token = dmsLoginResponse.TokenKey;
-                            }
-                            #endregion
-
-                            var response = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
-                                + "/v1/trip/createupdatetrip", Method.POST, requestDMS, token));
-
-                            if (response != null)
-                            {
-                                if (order.orderGeneratedSystem != "OMS") // TMS
-                                {
-                                    omsOrderResponse.StatusMessage += ". " + response.StatusMessage;
-                                }
-                                else
-                                {
-                                    tmsOrderResponse.StatusMessage += ". " + response.StatusMessage;
-                                }
-                            }
-                            #endregion
-                        }
-                    }
-                }
-            }
-            else
-            {
-                omsRequest.UploadType = 2;
-
-                DriverRequest driverRequest = new DriverRequest();
-                driverRequest.Requests = new List<Driver>();
-                driverRequest.Requests.Add(new Driver
-                {
-                    DriverNo = order.Requests[0].DriverNo
-                });
-
-                string tmsToken = string.Empty;
-                if (Request.Headers.Contains("Token"))
-                {
-                    tmsToken = Request.Headers.GetValues("Token").First();
-                }
-
-                var driverData = JsonConvert.DeserializeObject<DriverResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
-                                                                                                          + "v1/driver/getdrivers", Method.POST, driverRequest, tmsToken));
-                string driverName = string.Empty; string driverNumber = string.Empty;
-                if (driverData.StatusCode == (int)HttpStatusCode.OK && driverData.Status == DomainObjects.Resource.ResourceData.Success)
-                {
-                    driverName = driverData.Data[0].UserName;
-                    driverNumber = driverData.Data[0].DriverNo;
-                }
-
-
-                foreach (var tmsOrder in order.Requests)
-                {
-                    string businessArea = "";
-                    if (string.IsNullOrEmpty(tmsOrder.BusinessArea))
-                        businessArea = GetBusinessAreaCode(tmsOrder.BusinessAreaId);
-                    else
-                        businessArea = tmsOrder.BusinessArea;
-                    Partner partner1Data = GetPartnerDetail(tmsOrder.PartnerNo1, order.UploadType);
-                    Partner partner2Data = GetPartnerDetail(tmsOrder.PartnerNo2, order.UploadType);
-                    Partner partner3Data = GetPartnerDetail(tmsOrder.PartnerNo3, order.UploadType);
-
-                    Order omsOrder = new Order()
-                    {
-                        BusinessArea = businessArea,
-                        OrderNo = tmsOrder.OrderNo,
-                        SequenceNo = tmsOrder.SequenceNo,
-                        PartnerNo1 = partner1Data.PartnerNo,
-                        PartnerType1 = tmsOrder.PartnerType1,
-                        PartnerName1 = partner1Data.PartnerName,
-                        PartnerNo2 = partner2Data.PartnerNo,
-                        PartnerType2 = tmsOrder.PartnerType2,
-                        PartnerName2 = partner2Data.PartnerName,
-                        PartnerNo3 = partner3Data.PartnerNo,
-                        PartnerType3 = tmsOrder.PartnerType3,
-                        PartnerName3 = partner3Data.PartnerName,
-                        FleetType = tmsOrder.FleetType,
-                        OrderType = tmsOrder.OrderType,
-                        VehicleShipmentType = tmsOrder.VehicleShipmentType,
-                        DriverNo = driverNumber,
-                        DriverName = driverName,
-                        VehicleNo = tmsOrder.VehicleNo,
-                        OrderWeight = tmsOrder.OrderWeight,
-                        OrderWeightUM = tmsOrder.OrderWeightUM,
-                        EstimationShipmentDate = tmsOrder.EstimationShipmentDate,
-                        EstimationShipmentTime = tmsOrder.EstimationShipmentTime,
-                        ActualShipmentDate = tmsOrder.ActualShipmentDate,
-                        ActualShipmentTime = tmsOrder.ActualShipmentTime,
-                        Sender = tmsOrder.Sender,
-                        Receiver = tmsOrder.Receiver,
-                        OrderShipmentStatus = tmsOrder.OrderShipmentStatus,
-                        Dimension = tmsOrder.Dimension,
-                        TotalPallet = tmsOrder.TotalPallet,
-                        Instructions = tmsOrder.Instructions,
-                        ShippingListNo = tmsOrder.ShippingListNo,
-                        PackingSheetNo = tmsOrder.PackingSheetNo,
-                        TotalCollie = tmsOrder.TotalCollie,
-                        ShipmentSAPNo = tmsOrder.ShipmentSAPNo
-                    };
-                    omsRequest.Requests.Add(omsOrder);
-                }
-
-                omsOrderResponse = JsonConvert.DeserializeObject<OrderResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
-                                                                                                          + "v1/order/syncorders", Method.POST, omsRequest, omsToken));
-
-                if (omsOrderResponse.StatusCode == (int)HttpStatusCode.OK)
-                {
-                    // Get orderNumber from oms response and update tmsRequest
-                    foreach (var ord in order.Requests)
-                    {
-                        ord.OrderNo = omsOrderResponse.Data[0].OrderNo;
-                        ord.LegecyOrderNo = omsOrderResponse.Data[0].OrderNo;
-                    }
-
-                    // Create Order in TMS
-                    IOrderTask tmsOrderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
-                    tmsOrderResponse = tmsOrderTask.CreateUpdateOrder(order);
-
-                    omsOrderResponse.StatusMessage = omsOrderResponse.StatusMessage + ". " + tmsOrderResponse.StatusMessage;
-
-                    if (tmsOrderResponse.StatusCode == 200 && tmsOrderResponse.Status == "Success")
-                    {
-                        #region Call DMS API to send Order as Trip if Driver assignment exists
-                        TripRequestDMS requestDMS = new TripRequestDMS()
-                        {
-                            Requests = new List<TripDMS>()
-                        };
-
-                        foreach (var request in order.Requests)
-                        {
-                            if (!string.IsNullOrEmpty(request.DriverName))
-                            {
-                                DateTime estimationShipmentDate = DateTime.ParseExact(request.EstimationShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(request.EstimationShipmentTime);
-                                DateTime actualShipmentDate = DateTime.ParseExact(request.ActualShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(request.ActualShipmentTime);
-
-                                if (requestDMS.Requests.Count > 0)
-                                {
-                                    var existingTrip = requestDMS.Requests.FirstOrDefault(t => t.OrderNumber == request.OrderNo);
-                                    if (existingTrip != null)
-                                    {
-                                        if (request.OrderType == 1)
-                                        {
-                                            #region Add Source Location
-                                            Partner sourcePartnerDetail = GetPartnerDetail(request.PartnerNo2, order.UploadType);
-                                            TripLocation sourceLocation = new TripLocation()
-                                            {
-                                                PartnerType = request.PartnerType2,
-                                                PartnerNo = sourcePartnerDetail.PartnerNo, //request.PartnerNo2, 
-                                                PartnerName = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
-                                                SequnceNumber = request.SequenceNo,
-                                                ActualDeliveryDate = actualShipmentDate,
-                                                EstimatedDeliveryDate = estimationShipmentDate
-                                            };
-                                            existingTrip.TripLocations.Add(sourceLocation);
-                                            requestDMS.Requests.Remove(existingTrip);
-                                            requestDMS.Requests.Add(existingTrip);
-                                            #endregion
-                                        }
-                                        else if (request.OrderType == 2)
-                                        {
-                                            #region Add Destination Location
-
-                                            Partner destinationPartnerDetail = GetPartnerDetail(request.PartnerNo3, order.UploadType);
-
-                                            TripLocation destinationLocation = new TripLocation()
-                                            {
-                                                PartnerType = request.PartnerType3,
-                                                PartnerNo = destinationPartnerDetail.PartnerNo,//request.PartnerNo3,
-                                                PartnerName = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
-                                                SequnceNumber = request.SequenceNo,
-                                                ActualDeliveryDate = actualShipmentDate,
-                                                EstimatedDeliveryDate = estimationShipmentDate
-                                            };
-                                            existingTrip.TripLocations.Add(destinationLocation);
-                                            requestDMS.Requests.Remove(existingTrip);
-                                            requestDMS.Requests.Add(existingTrip);
-                                            #endregion
-                                        }
-                                    }
-                                    else
-                                    {
-                                        string businessArea = "";
-                                        if (string.IsNullOrEmpty(request.BusinessArea))
-                                            businessArea = GetBusinessAreaCode(request.BusinessAreaId);
-                                        else
-                                            businessArea = request.BusinessArea;
-                                        Partner transporterPartnerDetail = GetPartnerDetail(request.PartnerNo1, order.UploadType);
-                                        TripDMS tripDMS = new TripDMS()
-                                        {
-                                            OrderNumber = request.OrderNo,
-                                            TransporterName = transporterPartnerDetail.PartnerName,
-                                            TransporterCode = transporterPartnerDetail.PartnerNo,
-                                            DriverName = request.DriverName,
-                                            DriverNo = request.DriverNo,
-                                            VehicleType = request.VehicleShipmentType,
-                                            VehicleNumber = request.VehicleNo,
-                                            TripType = Convert.ToString(request.FleetType),
-                                            Weight = request.OrderWeight,
-                                            PoliceNumber = request.VehicleNo,
-                                            TripStatusCode = "3",
-                                            OrderType = request.OrderType,
-                                            BusinessAreaCode = businessArea,
-                                            ShipmentScheduleImageGUID = request.ShipmentScheduleImageGUID,
-                                            TripLocations = new List<TripLocation>()
-                                        };
-
-                                        #region Add Source Location
-                                        Partner sourcePartnerDetail = GetPartnerDetail(request.PartnerNo2, order.UploadType);
-                                        TripLocation sourceLocation = new TripLocation()
-                                        {
-                                            PartnerType = request.PartnerType2,
-                                            PartnerNo = request.PartnerNo2,
-                                            PartnerName = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
-                                            SequnceNumber = request.OrderType == 1 ? request.SequenceNo : 0,
-                                            ActualDeliveryDate = actualShipmentDate,
-                                            EstimatedDeliveryDate = estimationShipmentDate
-                                        };
-                                        tripDMS.TripLocations.Add(sourceLocation);
-                                        #endregion
-
-                                        #region Add Destination Location
-                                        Partner destinationPartnerDetail = GetPartnerDetail(request.PartnerNo3, order.UploadType);
-                                        TripLocation destinationLocation = new TripLocation()
-                                        {
-                                            PartnerType = request.PartnerType3,
-                                            PartnerNo = request.PartnerNo3,
-                                            PartnerName = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
-                                            SequnceNumber = request.OrderType == 1 ? 0 : request.SequenceNo,
-                                            ActualDeliveryDate = actualShipmentDate,
-                                            EstimatedDeliveryDate = estimationShipmentDate
-                                        };
-                                        tripDMS.TripLocations.Add(destinationLocation);
-                                        requestDMS.Requests.Add(tripDMS);
-                                        #endregion
-                                    }
-                                }
-                                else
-                                {
-                                    string businessArea = "";
-                                    if (string.IsNullOrEmpty(request.BusinessArea))
-                                        businessArea = GetBusinessAreaCode(request.BusinessAreaId);
-                                    else
-                                        businessArea = request.BusinessArea;
-                                    Partner transporterPartnerDetail = GetPartnerDetail(request.PartnerNo1, order.UploadType);
-
-                                    TripDMS tripDMS = new TripDMS()
-                                    {
-                                        OrderNumber = request.OrderNo,
-                                        TransporterName = transporterPartnerDetail.PartnerName,
-                                        TransporterCode = transporterPartnerDetail.PartnerNo,
-                                        DriverNo = request.DriverNo,
-                                        DriverName = request.DriverName,
-                                        VehicleType = request.VehicleShipmentType,
-                                        VehicleNumber = request.VehicleNo,
-                                        TripType = Convert.ToString(request.FleetType),
-                                        Weight = request.OrderWeight,
-                                        PoliceNumber = request.VehicleNo,
-                                        TripStatusCode = "3",
-                                        OrderType = request.OrderType,
-                                        BusinessAreaCode = businessArea,
-                                        ShipmentScheduleImageGUID = request.ShipmentScheduleImageGUID,
-                                        TripLocations = new List<TripLocation>()
-                                    };
-
-                                    #region Add Source Location
-                                    Partner sourcePartnerDetail = GetPartnerDetail(request.PartnerNo2, order.UploadType);
-                                    TripLocation sourceLocation = new TripLocation()
-                                    {
-                                        PartnerType = request.PartnerType2,
-                                        PartnerNo = sourcePartnerDetail.PartnerNo,// request.PartnerNo2,
-                                        PartnerName = request.PartnerName2 == null ? sourcePartnerDetail.PartnerName : request.PartnerName2,
-                                        SequnceNumber = request.OrderType == 1 ? request.SequenceNo : 0,
-                                        ActualDeliveryDate = actualShipmentDate,
-                                        EstimatedDeliveryDate = estimationShipmentDate
-                                    };
-                                    tripDMS.TripLocations.Add(sourceLocation);
-                                    #endregion
-
-                                    #region Add Destination Location
-                                    Partner destinationPartnerDetail = GetPartnerDetail(request.PartnerNo3, order.UploadType);
-                                    TripLocation destinationLocation = new TripLocation()
-                                    {
-                                        PartnerType = request.PartnerType3,
-                                        PartnerNo = destinationPartnerDetail.PartnerNo,// request.PartnerNo3,
-                                        PartnerName = request.PartnerName3 == null ? destinationPartnerDetail.PartnerName : request.PartnerName3,
-                                        SequnceNumber = request.OrderType == 1 ? 0 : request.SequenceNo,
-                                        ActualDeliveryDate = actualShipmentDate,
-                                        EstimatedDeliveryDate = estimationShipmentDate
-                                    };
-                                    tripDMS.TripLocations.Add(destinationLocation);
-                                    #endregion
-
-                                    requestDMS.Requests.Add(tripDMS);
-                                }
-                            }
-                        }
-                        #endregion
-                        if (requestDMS.Requests.Count > 0)
-                        {
-                            #region Call DMS API to assign order to driver
-                            #region Login to DMS and get Token
-                            LoginRequest loginRequest = new LoginRequest();
-                            string token = "";
-
-                            loginRequest.UserName = ConfigurationManager.AppSettings["DMSLogin"];
-                            loginRequest.UserPassword = ConfigurationManager.AppSettings["DMSPassword"];
-                            var dmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
-                                + "/v1/user/login", Method.POST, loginRequest, null));
-                            if (dmsLoginResponse != null && dmsLoginResponse.Data.Count > 0)
-                            {
-                                token = dmsLoginResponse.TokenKey;
-                            }
-                            #endregion
-
-                            var response = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
-                                + "/v1/trip/createupdatetrip", Method.POST, requestDMS, token));
-
-                            if (response != null)
-                            {
-                                omsOrderResponse.StatusMessage += ". " + response.StatusMessage;
-                            }
-                            #endregion
-                        }
-                    }
-                }
-            }
-
-            if (order.orderGeneratedSystem != "OMS") // TMS
-            {
-                return Ok(omsOrderResponse);
-            }
-            else
-            {
-                return Ok(tmsOrderResponse);
-            }
+            return Ok(tmsOrderResponse);
         }
 
         [Route("getorders")]
@@ -1207,11 +591,8 @@ namespace TMS.API.Controllers
         [HttpGet]
         public IHttpActionResult GetShipmentSchedulesFromEmail()
         {
-            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
-            ShipmentScheduleOcrResponse response = new ShipmentScheduleOcrResponse();
-            OrderResponse ocrOrderResponse = new OrderResponse();
             OrderResponse tmsOrderResponse = new OrderResponse();
-            OrderResponse omsOrderResponse = new OrderResponse();
+
             // Loin into Gamil and Get all Mails
             var mailRepository = new MailRepository(
                                     ConfigurationManager.AppSettings["GmailURL"],
@@ -1234,19 +615,16 @@ namespace TMS.API.Controllers
                         {
                             // Uploading File into Blob storage and get GUID
                             var fileuploadresponse = JsonConvert.DeserializeObject<ResponseDataForFileUpload>(GetFileUploadApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"] + "/v1/media/uploadfile", Method.POST, attachment, null));
-                           // response.StatusMessage += ". " + fileuploadresponse.Guid;
 
-                            if (fileuploadresponse.StatusCode == (int)HttpStatusCode.OK && fileuploadresponse.Guid != "" && fileuploadresponse.Guid != null)
+                            if (fileuploadresponse.StatusCode == (int)HttpStatusCode.OK && !String.IsNullOrEmpty(fileuploadresponse.Guid))
                             {
                                 // Calling OCR to get shipmentschedule data
                                 var res =  GetFileUploadApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"] + "/v1/order/shipmentscheduleocr", Method.POST, attachment, null);
                                 var shipmentScheduleOcr = JsonConvert.DeserializeObject<dynamic>(res);
                                 var jsonObject = JObject.Parse(shipmentScheduleOcr);
                                 ShipmentScheduleOcrRequest shipmentScheduleOcrRequest = new ShipmentScheduleOcrRequest();
-                                if (jsonObject.success == true)
+                                if (jsonObject.success)
                                 {
-                                    //var docType = jsonObject.documentType;
-                                  
                                     shipmentScheduleOcrRequest.Requests = new List<ShipmentScheduleOcr>();
                                     ShipmentScheduleOcr shipmentSchedule = new ShipmentScheduleOcr()
                                     {
@@ -1272,16 +650,13 @@ namespace TMS.API.Controllers
                                         }
                                     };
                                     shipmentScheduleOcrRequest.Requests.Add(shipmentSchedule);
-
                                 }
-                                if(shipmentScheduleOcrRequest.Requests.Count > 0)
+
+                                if (shipmentScheduleOcrRequest.Requests.Count > 0)
                                 {
-                                    //response = orderTask.CreateOrderFromShipmentScheduleOcr(shipmentScheduleOcrRequest);
                                     //OcrOrderResponse
                                     OrderRequest omsOrderRequest = new OrderRequest();
-                                    
-
-                                    ocrOrderResponse = OcrOrderResponse(shipmentScheduleOcrRequest);
+                                    OrderResponse ocrOrderResponse = OcrOrderResponse(shipmentScheduleOcrRequest);
                                     if(ocrOrderResponse != null && ocrOrderResponse.StatusCode == (int)HttpStatusCode.OK)
                                     {
                                         LoginRequest omsLoginRequest = new LoginRequest();
@@ -1296,7 +671,7 @@ namespace TMS.API.Controllers
                                         }
                                         omsOrderRequest.Requests = ocrOrderResponse.Data;
 
-                                        omsOrderResponse = JsonConvert.DeserializeObject<OrderResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                                        OrderResponse omsOrderResponse = JsonConvert.DeserializeObject<OrderResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
                                                                                                              + "v1/order/createordersfromshipmentlistocr", Method.POST, omsOrderRequest, omsToken));
 
                                         if(omsOrderResponse.Data != null && omsOrderResponse.StatusCode == (int)HttpStatusCode.OK)
@@ -1311,16 +686,12 @@ namespace TMS.API.Controllers
                                                                                                                                                            + "v1/order/createordersfromshipmentlistocr", Method.POST, tmsOrderRequest, tmsToken));
                                             }
                                         }
-
                                     }
-
-                                    
                                 }
                             }
                         }
                     }
                 }
-
             }
             return Ok(tmsOrderResponse);
         }
@@ -1346,7 +717,6 @@ namespace TMS.API.Controllers
         {
             for (int i = 0; i < request.Requests.Count; i++)
             {
-
                 ModelState.Remove("request.Requests[" + i + "].BusinessArea");
                 ModelState.Remove("request.Requests[" + i + "].ShippingListNo");
                 ModelState.Remove("request.Requests[" + i + "].PackingSheetNo");
@@ -1361,8 +731,8 @@ namespace TMS.API.Controllers
                 ModelState.Remove("request.Requests[" + i + "].EstimationShipmentTime");
                 ModelState.Remove("request.Requests[" + i + "].ActualShipmentDate");
                 ModelState.Remove("request.Requests[" + i + "].ActualShipmentTime");
-
             }
+
             if (!ModelState.IsValid)
             {
                 ErrorResponse errorResponse = new ErrorResponse()
@@ -1370,13 +740,13 @@ namespace TMS.API.Controllers
                     Status = DomainObjects.Resource.ResourceData.Failure,
                     Data = new List<Error>()
                 };
+
                 for (int i = 0; i < ModelState.Keys.Count; i++)
                 {
                     Error errorData = new Error()
                     {
                         ErrorMessage = ModelState.Keys.ToList<string>()[i].Replace("request.Requests[", "Row Number[") + " : " + ModelState.Values.ToList<ModelState>()[i].Errors[0].ErrorMessage
                     };
-
                     errorResponse.Data.Add(errorData);
                 }
                 return Ok(errorResponse);
@@ -1384,11 +754,8 @@ namespace TMS.API.Controllers
 
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
             OrderResponse orderData = orderTask.CreateOrdersFromShipmentListOCR(request);
-
            
             return Ok(orderData);
         }
-
-
     }
 }
