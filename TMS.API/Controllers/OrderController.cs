@@ -757,5 +757,16 @@ namespace TMS.API.Controllers
            
             return Ok(orderData);
         }
+
+        [Route("swapestoppoints")]
+        [HttpPost]
+        public IHttpActionResult SwapeStopPoints(OrderStatusRequest orderStatusRequest)
+        {
+            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            OrderStatusResponse orderStatusResponse = orderTask.SwapeStopPoints(orderStatusRequest);
+
+            return Ok(orderStatusResponse);
+        }
+
     }
 }

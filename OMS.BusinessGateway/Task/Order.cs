@@ -173,5 +173,10 @@ namespace OMS.BusinessGateway.Task
         {
             return _orderRepository.CancelOrder(request);
         }
+
+        public override OrderStatusResponse SwapeStopPoints(OrderStatusRequest orderStatusRequest)
+        {
+            return _orderRepository.SwapeStopPoints(orderStatusRequest);
+        }
     }
 }

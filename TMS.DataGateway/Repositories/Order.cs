@@ -19,39 +19,39 @@ namespace TMS.DataGateway.Repositories
     {
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-        private void SwapeOrderSequence(int tripDetailId, int sequenceNumber, int newSequenceNumber)
-        {
-            using (var context = new Data.TMSDBContext())
-            {
-                using (var beginDBTransaction = context.Database.BeginTransaction())
-                {
-                    try
-                    {
-                        DataModels.OrderDetail orderDetailData = context.OrderDetails.Where(t => t.ID == tripDetailId).FirstOrDefault();
+        //private void SwapeOrderSequence(int tripDetailId, int sequenceNumber, int newSequenceNumber)
+        //{
+        //    using (var context = new Data.TMSDBContext())
+        //    {
+        //        using (var beginDBTransaction = context.Database.BeginTransaction())
+        //        {
+        //            try
+        //            {
+        //                DataModels.OrderDetail orderDetailData = context.OrderDetails.Where(t => t.ID == tripDetailId).FirstOrDefault();
 
-                        if (orderDetailData.SequenceNo != newSequenceNumber && orderDetailData.SequenceNo > 0)
-                        {
-                            int originalSequenceNo = sequenceNumber;
+        //                if (orderDetailData.SequenceNo != newSequenceNumber && orderDetailData.SequenceNo > 0)
+        //                {
+        //                    int originalSequenceNo = sequenceNumber;
 
-                            orderDetailData.SequenceNo = newSequenceNumber;
-                            context.Entry(orderDetailData).State = System.Data.Entity.EntityState.Modified;
+        //                    orderDetailData.SequenceNo = newSequenceNumber;
+        //                    context.Entry(orderDetailData).State = System.Data.Entity.EntityState.Modified;
 
-                            DataModels.OrderDetail swappingDetailData = context.OrderDetails.Where(t => t.OrderHeaderID == orderDetailData.OrderHeaderID && t.SequenceNo == newSequenceNumber).FirstOrDefault();
-                            swappingDetailData.SequenceNo = originalSequenceNo;
-                            context.Entry(swappingDetailData).State = System.Data.Entity.EntityState.Modified;
-                            context.SaveChanges();
-                            beginDBTransaction.Commit();
-                        }
+        //                    DataModels.OrderDetail swappingDetailData = context.OrderDetails.Where(t => t.OrderHeaderID == orderDetailData.OrderHeaderID && t.SequenceNo == newSequenceNumber).FirstOrDefault();
+        //                    swappingDetailData.SequenceNo = originalSequenceNo;
+        //                    context.Entry(swappingDetailData).State = System.Data.Entity.EntityState.Modified;
+        //                    context.SaveChanges();
+        //                    beginDBTransaction.Commit();
+        //                }
 
-                    }
-                    catch (Exception ex)
-                    {
-                        beginDBTransaction.Rollback();
-                        _logger.Log(LogLevel.Error, ex);
-                    }
-                }
-            }
-        }
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                beginDBTransaction.Rollback();
+        //                _logger.Log(LogLevel.Error, ex);
+        //            }
+        //        }
+        //    }
+        //}
 
         public OrderResponse CreateUpdateOrder(OrderRequest request)
         {
@@ -2149,13 +2149,13 @@ namespace TMS.DataGateway.Repositories
                         {
                             orderDetailId = context.OrderDetails.FirstOrDefault(t => t.SequenceNo == statusRequest.SequenceNumber && t.OrderHeaderID == orderId).ID;
 
-                            if (statusRequest.OrderStatusCode == "4" && statusRequest.SequenceNumber != statusRequest.NewSequenceNumber) // StartTrip
-                            {
-                                SwapeOrderSequence(orderDetailId, statusRequest.SequenceNumber, statusRequest.NewSequenceNumber);
+                            //if (statusRequest.OrderStatusCode == "4" && statusRequest.SequenceNumber != statusRequest.NewSequenceNumber) // StartTrip
+                            //{
+                            //    SwapeOrderSequence(orderDetailId, statusRequest.SequenceNumber, statusRequest.NewSequenceNumber);
 
-                                //Get new OrderDetailsID for min sequence number
-                                orderDetailId = context.OrderDetails.FirstOrDefault(t => t.SequenceNo == statusRequest.NewSequenceNumber && t.OrderHeaderID == orderId).ID;
-                            }
+                            //    //Get new OrderDetailsID for min sequence number
+                            //    orderDetailId = context.OrderDetails.FirstOrDefault(t => t.SequenceNo == statusRequest.NewSequenceNumber && t.OrderHeaderID == orderId).ID;
+                            //}
                         }
                         else
                         {
@@ -3765,6 +3765,61 @@ namespace TMS.DataGateway.Repositories
                 }
             }
             return invoiceResponse;
+        }
+
+        public OrderStatusResponse SwapeStopPoints(OrderStatusRequest orderStatusRequest)
+        {
+            _logger.Log(LogLevel.Error, orderStatusRequest);
+            OrderStatusResponse response = new OrderStatusResponse()
+            {
+                Data = new List<OrderStatus>()
+            };
+
+            using (var context = new DataModel.TMSDBContext())
+            {
+                try
+                {
+                    foreach (var statusRequest in orderStatusRequest.Requests)
+                    {
+                        int orderId = 0;
+                        orderId = context.OrderHeaders.FirstOrDefault(t => t.OrderNo == statusRequest.OrderNumber).ID;
+
+                        if (statusRequest.SequenceNumber > 0)
+                        {
+                            DataModels.OrderDetail orderDetailData = context.OrderDetails.Where(t => t.SequenceNo == statusRequest.SequenceNumber && t.OrderHeaderID == orderId ).FirstOrDefault();
+
+                            if (orderDetailData.SequenceNo != statusRequest.NewSequenceNumber && orderDetailData.SequenceNo > 0)
+                            {
+                                int originalSequenceNo = orderDetailData.SequenceNo;
+
+                                orderDetailData.SequenceNo = statusRequest.NewSequenceNumber;
+                                context.Entry(orderDetailData).State = System.Data.Entity.EntityState.Modified;
+
+                                DataModels.OrderDetail swappingDetailData = context.OrderDetails.Where(t => t.OrderHeaderID == orderDetailData.OrderHeaderID && t.SequenceNo == statusRequest.NewSequenceNumber).FirstOrDefault();
+                                swappingDetailData.SequenceNo = originalSequenceNo;
+                                context.Entry(swappingDetailData).State = System.Data.Entity.EntityState.Modified;
+                                context.SaveChanges();
+                            }
+
+
+                        }
+
+                        response.Data = orderStatusRequest.Requests;
+                        response.Status = DomainObjects.Resource.ResourceData.Success;
+                        response.StatusCode = (int)HttpStatusCode.OK;
+                        response.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log(LogLevel.Error, ex);
+                    response.Status = DomainObjects.Resource.ResourceData.Failure;
+                    response.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                    response.StatusMessage = ex.Message;
+                }
+            }
+
+            return response;
         }
 
     }

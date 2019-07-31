@@ -20,5 +20,6 @@ namespace OMS.DataGateway.Repositories.Iterfaces
         OrderStatusResponse UpdateOrderStatus(OrderStatusRequest request);
         TripResponse ReAssignTrip(TripRequest tripRequest);
         OrderStatusResponse CancelOrder(OrderStatusRequest request);
+        OrderStatusResponse SwapeStopPoints(OrderStatusRequest orderStatusRequest);
     }
 }

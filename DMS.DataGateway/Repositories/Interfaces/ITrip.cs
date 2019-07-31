@@ -29,5 +29,6 @@ namespace DMS.DataGateway.Repositories.Iterfaces
         StopPointsResponse GetPendingStopPoints(int tripId);
         OrderStatusResponse CancelOrder(OrderStatusRequest request);
         ShipmentListResponse CreateUpdateShipmentList(ShipmentListRequest request);
+        StopPointsResponse SwapeStopPoints(UpdateTripStatusRequest updateTripStatusRequest);
     }
 }

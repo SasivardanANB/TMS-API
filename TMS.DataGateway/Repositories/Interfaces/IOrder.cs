@@ -27,5 +27,6 @@ namespace TMS.DataGateway.Repositories.Interfaces
         OrderResponse OcrOrderResponse(ShipmentScheduleOcrRequest shipmentScheduleOcrRequest);
         OrderResponse CreateOrdersFromShipmentListOCR(OrderRequest request);
         InvoiceResponse GetInvoiceRequest(OrderStatusRequest request);
+        OrderStatusResponse SwapeStopPoints(OrderStatusRequest orderStatusRequest);
     }
 }

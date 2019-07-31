@@ -185,5 +185,15 @@ namespace DMS.API.Controllers
 
             return Ok(shipmentListResponse);
         }
+
+        [Route("swapestoppoints")]
+        [HttpPost]
+        public IHttpActionResult SwapeStopPoints(UpdateTripStatusRequest updateTripStatusRequest)
+        {
+            ITripTask tripTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().TripTask;
+            StopPointsResponse stopPointsResponse = tripTask.SwapeStopPoints(updateTripStatusRequest);
+
+            return Ok(stopPointsResponse);
+        }
     }
 }

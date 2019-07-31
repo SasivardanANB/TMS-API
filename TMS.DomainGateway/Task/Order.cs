@@ -30,5 +30,6 @@ namespace TMS.DomainGateway.Task
         public abstract OrderResponse OcrOrderResponse(ShipmentScheduleOcrRequest shipmentScheduleOcrRequest);
         public abstract OrderResponse CreateOrdersFromShipmentListOCR(OrderRequest request);
         public abstract InvoiceResponse GetInvoiceRequest(OrderStatusRequest request);
+        public abstract OrderStatusResponse SwapeStopPoints(OrderStatusRequest orderStatusRequest);
     }
 }
