@@ -1452,6 +1452,10 @@ namespace DMS.DataGateway.Repositories
                                                  ID = c.ID,
                                                  TripId = c.TripID,
                                                  SequenceNumber = c.SequenceNumber,
+                                                 LocationId = c.Partner.ID,
+                                                 LocationName = c.Partner.PartnerName,
+                                                 ActualDeliveryDate = c.ActualDeliveryDate,
+                                                 EstimatedDeliveryDate = c.EstimatedDeliveryDate
                                              }).ToList();
                         tripResponse.Data.AddRange(pendingStopPoints);
                         tripResponse.Status = DomainObjects.Resource.ResourceData.Success;

@@ -48,6 +48,8 @@ namespace TMS.API.Controllers
         [HttpPost]
         public IHttpActionResult GetPartners(PartnerRequest partnerRequest)
         {
+            var tmsToken = Request.Headers.GetValues("Token").FirstOrDefault();
+            partnerRequest.Token = tmsToken;
             IPartnerTask partnerTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().PartnerTask;
             PartnerResponse partnerResponse = partnerTask.GetPartners(partnerRequest);
             return Ok(partnerResponse);
