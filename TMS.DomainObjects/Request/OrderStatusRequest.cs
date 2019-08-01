@@ -7,7 +7,7 @@ using TMS.DomainObjects.Objects;
 
 namespace TMS.DomainObjects.Request
 {
-    public class OrderStatusRequest 
+    public class OrderStatusRequest : RequestFilter
     {
         public List<OrderStatus> Requests { get; set; }
         public string RequestFrom { get; set; }
