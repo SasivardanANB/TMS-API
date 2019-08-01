@@ -1945,12 +1945,12 @@ namespace TMS.DataGateway.Repositories
 
                         if(orderPackingSheetData != null){
                             orderData.PackingSheetNo = orderPackingSheetData.PackingSheetNo;
-                            orderData.IsPackinsSheetAvailable = true;
+                            orderData.IsPackingSheetAvailable = true;
                         }
                         else
                         {
                             orderData.PackingSheetNo = "";
-                            orderData.IsPackinsSheetAvailable = false;
+                            orderData.IsPackingSheetAvailable = false;
                         }
 
                         var orderPartnerData = (from orderPartnerDetails in context.OrderPartnerDetails
