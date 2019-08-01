@@ -1528,7 +1528,7 @@ namespace TMS.DataGateway.Repositories
                                             {
                                                 foreach (var partner in partners)
                                                 {
-                                                    var loadStatusData = statusData.Where(t => t.IsLoad == false).ToList();
+                                                    var loadStatusData = statusData.Where(t => t.IsLoad == false && t.OrderDetailId == orderDetail.OrderDetailId).ToList();
                                                     if (loadStatusData != null && loadStatusData.Count > 0)
                                                     {
                                                         TrackStepLoadUnload unLoadData = new TrackStepLoadUnload()
