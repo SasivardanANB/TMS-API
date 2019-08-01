@@ -161,6 +161,8 @@ namespace TMS.API.Controllers
         [HttpPost]
         public IHttpActionResult GetDrivers(DriverRequest driverRequest)
         {
+            string Token = Request.Headers.GetValues("Token").FirstOrDefault();
+            driverRequest.Token = Token;
             IDriverTask driverTask = DependencyResolver.GetImplementationOf<ITaskGateway>().DriverTask;
             DriverResponse driverResponse = driverTask.GetDrivers(driverRequest);
             return Ok(driverResponse);

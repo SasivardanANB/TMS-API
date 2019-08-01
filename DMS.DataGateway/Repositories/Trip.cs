@@ -1446,13 +1446,26 @@ namespace DMS.DataGateway.Repositories
                                              group sectionPage by sectionPage.StopPointId into sectionGroup
                                              join b in context.TripStatusHistories on sectionGroup.Max(y => y.ID) equals b.ID
                                              join c in context.TripDetails on b.StopPointId equals c.ID
-                                             where c.SequenceNumber > 0 && b.TripStatusId == 3 && c.TripID == tripDetailData.TripID
+                                             where  b.TripStatusId == 3 && c.TripID == tripDetailData.TripID
                                              select new StopPoints
                                              {
                                                  ID = c.ID,
                                                  TripId = c.TripID,
                                                  SequenceNumber = c.SequenceNumber,
+                                                 LocationId = c.Partner.ID,
+                                                 LocationName = c.Partner.PartnerName,
+                                                 ActualDeliveryDate = c.ActualDeliveryDate,
+                                                 EstimatedDeliveryDate = c.EstimatedDeliveryDate
                                              }).ToList();
+
+                        if (pendingStopPoints != null && pendingStopPoints.Count > 0)
+                        {
+                            foreach (var stopPoint in pendingStopPoints)
+                            {
+                                stopPoint.TripStatusCode = GetLatestStopPointStatus(stopPoint.ID);
+                            }
+                        }
+
                         tripResponse.Data.AddRange(pendingStopPoints);
                         tripResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         tripResponse.StatusCode = (int)HttpStatusCode.OK;

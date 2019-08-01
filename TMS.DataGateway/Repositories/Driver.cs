@@ -181,7 +181,18 @@ namespace TMS.DataGateway.Repositories
             {
                 using (var tMSDBContext = new TMSDBContext())
                 {
-                    driversList = tMSDBContext.Drivers.Where(d => !d.IsDelete).Select(driver => new Domain.Driver
+                    var userTokenDetails = tMSDBContext.Tokens.Where(t => t.TokenKey == driverRequest.Token).FirstOrDefault();
+                    var userDetails = tMSDBContext.Users.Where(t => t.ID == userTokenDetails.UserID).FirstOrDefault();
+                    var picDetails = tMSDBContext.Pics.Where(p => p.PICEmail == userDetails.Email && p.IsActive == true && p.IsDeleted == false).Select(x => x.ID).ToList();
+                 //  List<Domain.Partner> partnerList = new List<Domain.Partner>();
+                   var  partnerList =
+                        (from partner in tMSDBContext.Partners
+                         join ppt in tMSDBContext.PartnerPartnerTypes on partner.ID equals ppt.PartnerId
+                         where !partner.IsDeleted && ppt.PartnerTypeId == 1  && picDetails.Contains(partner.PICID.Value)
+                         select partner.ID).ToList();
+
+                    if (partnerList.Count > 0) { 
+                    driversList = tMSDBContext.Drivers.Where(d => !d.IsDelete && partnerList.Contains(d.TransporterId.Value)).Select(driver => new Domain.Driver
                     {
                         ID = driver.ID,
                         TransporterId=driver.TransporterId,
@@ -207,6 +218,35 @@ namespace TMS.DataGateway.Repositories
                         IdentityImageGuId = tMSDBContext.ImageGuids.Where(d => d.ID == driver.IdentityImageId).Select(g => g.ImageGuIdValue).FirstOrDefault(),
                     }).ToList();
 
+                    }
+                    else
+                    {
+                        driversList = tMSDBContext.Drivers.Where(d => !d.IsDelete).Select(driver => new Domain.Driver
+                        {
+                            ID = driver.ID,
+                            TransporterId = driver.TransporterId,
+                            TransporterName = driver.Partner.PartnerName,
+                            DriverAddress = driver.DriverAddress,
+                            FirstName = driver.FirstName,
+                            LastName = driver.LastName,
+                            DriverNo = driver.DriverNo,
+                            DriverPhone = driver.DriverPhone,
+                            Password = driver.Password,
+                            Email = driver.Email,
+                            UserName = driver.UserName,
+                            IsActive = driver.IsActive,
+                            IdentityNo = driver.IdentityNo,
+                            DrivingLicenseExpiredDate = driver.DrivingLicenseExpiredDate,
+                            DrivingLicenseNo = driver.DrivingLicenseNo,
+                            DrivingLicenceImageId = driver.DrivingLicenceImageId,
+                            IdentityImageId = driver.IdentityImageId,
+                            DriverImageId = driver.DriverImageId,
+                            IsDelete = driver.IsDelete,
+                            DriverImageGuId = tMSDBContext.ImageGuids.Where(d => d.ID == driver.DriverImageId).Select(g => g.ImageGuIdValue).FirstOrDefault(),
+                            DrivingLicenceImageGuId = tMSDBContext.ImageGuids.Where(d => d.ID == driver.DrivingLicenceImageId).Select(g => g.ImageGuIdValue).FirstOrDefault(),
+                            IdentityImageGuId = tMSDBContext.ImageGuids.Where(d => d.ID == driver.IdentityImageId).Select(g => g.ImageGuIdValue).FirstOrDefault(),
+                        }).ToList();
+                    }
                     if (driversList.Count > 0)
                     {
                         foreach (var item in driversList)
