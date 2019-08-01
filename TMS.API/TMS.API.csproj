@@ -242,7 +242,6 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Classes\AzureStorageMultipartFormDataStreamProvider.cs" />
     <Compile Include="Classes\CustomAuthorize.cs" />
-    <Compile Include="Classes\MailRepository.cs" />
     <Compile Include="Controllers\DriverController.cs" />
     <Compile Include="Controllers\MediaController.cs" />
     <Compile Include="Controllers\OrderController.cs" />

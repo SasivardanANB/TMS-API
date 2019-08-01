@@ -11,6 +11,7 @@ using System.Net.Http;
 using System.Web.Http;
 using TMS.API.Classes;
 using System.Threading.Tasks;
+using TMS.DomainObjects.Objects;
 
 namespace TMS.API.Controllers
 {
@@ -96,13 +97,6 @@ namespace TMS.API.Controllers
                     };
                 }
             }
-        }
-        public class ResponseDataForFileUpload
-        {
-            public string Status { get; set; }
-            public int StatusCode { get; set; }
-            public string StatusMessage { get; set; }
-            public string Guid { get; set; }
         }
     }
 }

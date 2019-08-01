@@ -71,6 +71,7 @@
     <Compile Include="Objects\Order.cs" />
     <Compile Include="Objects\DealerDetails.cs" />
     <Compile Include="Objects\OrderStatus.cs" />
+    <Compile Include="Objects\ResponseDataForFileUpload.cs" />
     <Compile Include="Objects\SAMAUser.cs" />
     <Compile Include="Objects\ShipmentScheduleOcr.cs" />
     <Compile Include="Objects\TrackStep.cs" />
