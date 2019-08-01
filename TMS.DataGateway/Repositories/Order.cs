@@ -1932,13 +1932,26 @@ namespace TMS.DataGateway.Repositories
                                          OrderWeightUM = oH.OrderWeightUM,
                                          ShipmentScheduleImageGUID = context.ImageGuids.FirstOrDefault(t => t.ID == oH.ShipmentScheduleImageID).ImageGuIdValue,
                                          ShipmentScheduleImageID = oH.ShipmentScheduleImageID
-
                                      }).FirstOrDefault();
 
 
                     if (orderData != null)
                     {
+                        var orderPackingSheetData = (from od in context.OrderDetails
+                                               join ps in context.PackingSheets on od.ShippingListNo equals ps.ShippingListNo
+                                               where od.OrderHeaderID == orderData.ID
+                                               select ps
+                                               ).FirstOrDefault();
 
+                        if(orderPackingSheetData != null){
+                            orderData.PackingSheetNo = orderPackingSheetData.PackingSheetNo;
+                            orderData.IsPackinsSheetAvailable = true;
+                        }
+                        else
+                        {
+                            orderData.PackingSheetNo = "";
+                            orderData.IsPackinsSheetAvailable = false;
+                        }
 
                         var orderPartnerData = (from orderPartnerDetails in context.OrderPartnerDetails
                                                 join orderDetailsData in context.OrderDetails on orderPartnerDetails.OrderDetailID equals orderDetailsData.ID
@@ -3786,7 +3799,7 @@ namespace TMS.DataGateway.Repositories
 
                         if (statusRequest.SequenceNumber > 0)
                         {
-                            DataModels.OrderDetail orderDetailData = context.OrderDetails.Where(t => t.SequenceNo == statusRequest.SequenceNumber && t.OrderHeaderID == orderId ).FirstOrDefault();
+                            DataModels.OrderDetail orderDetailData = context.OrderDetails.Where(t => t.SequenceNo == statusRequest.SequenceNumber && t.OrderHeaderID == orderId).FirstOrDefault();
 
                             if (orderDetailData.SequenceNo != statusRequest.NewSequenceNumber && orderDetailData.SequenceNo > 0)
                             {
