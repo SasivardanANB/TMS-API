@@ -1,4 +1,4 @@
-﻿namespace TMS.DomainObjects.Objects
+﻿namespace DMS.DomainObjects.Objects
 {
     public class ResponseDataForFileUpload
     {

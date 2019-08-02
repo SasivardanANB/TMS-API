@@ -1,13 +1,11 @@
 ﻿using Microsoft.WindowsAzure.Storage.Blob;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Web;
 
-namespace TMS.API.Classes
+namespace DMS.BusinessGateway.Classes
 {
     public class AzureStorageMultipartFormDataStreamProvider : MultipartFormDataStreamProvider
     {
