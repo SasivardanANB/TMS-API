@@ -894,8 +894,8 @@ namespace TMS.DataGateway.Repositories
                                      OrderNumber = oh.OrderNo,
                                      VehicleType = context.VehicleTypes.Where(v => v.ID.ToString() == oh.VehicleShipment).Select(vt => vt.VehicleTypeDescription).FirstOrDefault(),
                                      PoliceNumber = oh.VehicleNo,
-                                     OrderStatus = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusValue,
-                                     PackingSheetNumber = pksh.PackingSheetNo == null ? "" : pksh.PackingSheetNo
+                                     OrderStatus = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusValue
+                                    // PackingSheetNumber = pksh.PackingSheetNo == null ? "" : pksh.PackingSheetNo
                                  }).Distinct().ToList();
 
                     if (orderList != null && orderList.Count > 0)
