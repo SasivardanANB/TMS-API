@@ -36,9 +36,9 @@ namespace TMS.BusinessGateway.Task
             VehicleResponse vehicleResponse = _vehicleRepository.GetVehicles(vehicleRequest);
             return vehicleResponse;
         }
-        public override CommonCodeResponse GetVehiclesPlateNumbers(string searchText)
+        public override CommonCodeResponse GetVehiclesPlateNumbers(string searchText, int transporterId)
         {
-            return _vehicleRepository.GetVehiclesPlateNumbers(searchText);
+            return _vehicleRepository.GetVehiclesPlateNumbers(searchText,transporterId);
         }
     }
 }

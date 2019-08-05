@@ -343,7 +343,7 @@ namespace TMS.DataGateway.Repositories
             return vehicleResponse;
         }
 
-        public CommonCodeResponse GetVehiclesPlateNumbers(string searchText)
+        public CommonCodeResponse GetVehiclesPlateNumbers(string searchText, int transporterId)
         {
             CommonCodeResponse commonCodeResponse = new CommonCodeResponse();
             List<Domain.CommonCode> commonCodes;
@@ -351,9 +351,25 @@ namespace TMS.DataGateway.Repositories
             {
                 using (var tMSDBContext = new TMSDBContext())
                 {
-                    if (searchText != string.Empty && searchText != null)
+                    if (searchText != string.Empty && searchText != null && transporterId > 0)
+                    {
+                        commonCodes = tMSDBContext.Vehicles.Where(v => !v.IsDelete && v.PoliceNo.Contains(searchText) && v.ShipperID == transporterId).Select(vehicle => new Domain.CommonCode
+                        {
+                            Id = vehicle.PlateNumber,
+                            Value = vehicle.PlateNumber
+                        }).ToList();
+                    }
+                    else if (searchText != string.Empty && searchText != null && transporterId == 0)
                     {
                         commonCodes = tMSDBContext.Vehicles.Where(v => !v.IsDelete && v.PoliceNo.Contains(searchText)).Select(vehicle => new Domain.CommonCode
+                        {
+                            Id = vehicle.PlateNumber,
+                            Value = vehicle.PlateNumber
+                        }).ToList();
+                    }
+                    else if ((searchText == string.Empty || searchText == null) && transporterId >0)
+                    {
+                        commonCodes = tMSDBContext.Vehicles.Where(v => !v.IsDelete && v.ShipperID == transporterId ).Select(vehicle => new Domain.CommonCode
                         {
                             Id = vehicle.PlateNumber,
                             Value = vehicle.PlateNumber
