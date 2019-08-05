@@ -9,30 +9,13 @@ using Domain = TMS.DomainObjects.Objects;
 using System.Configuration;
 using Newtonsoft.Json;
 using RestSharp;
+using TMS.BusinessGateway.Classes;
 
 namespace TMS.BusinessGateway.Task
 {
     public partial class BusinessUserTask : UserTask
     {
         private readonly IUser _userRepository;
-
-        #region Private Methods
-        private static string GetApiResponse(string apiRoute, Method method, object requestQueryParameter, string token)
-        {
-            var client = new RestClient(ConfigurationManager.AppSettings["ApiGatewayBaseURL"]);
-            client.AddDefaultHeader("Content-Type", "application/json");
-            if (token != null)
-                client.AddDefaultHeader("Token", token);
-            var request = new RestRequest(apiRoute, method) { RequestFormat = DataFormat.Json };
-            request.Timeout = 500000;
-            if (requestQueryParameter != null)
-            {
-                request.AddJsonBody(requestQueryParameter);
-            }
-            var result = client.Execute(request);
-            return result.Content;
-        }
-        #endregion
 
         public BusinessUserTask(IUser userRepository)
         {
@@ -101,14 +84,14 @@ namespace TMS.BusinessGateway.Task
                     string token = string.Empty;
                     loginRequest.UserName = ConfigurationManager.AppSettings["OMSLogin"];
                     loginRequest.UserPassword = ConfigurationManager.AppSettings["OMSPassword"];
-                    var OmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                    var OmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
                         + "/v1/user/login", Method.POST, loginRequest, null));
                     if (OmsLoginResponse != null && OmsLoginResponse.Data.Count > 0)
                     {
                         token = OmsLoginResponse.TokenKey;
                     }
 
-                    UserResponse omsUserResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                    UserResponse omsUserResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
                          + "/v1/user/createupdateuser", Method.POST, omsRequest, token));
 
                     if (!userDetails.Applications.Contains(2))

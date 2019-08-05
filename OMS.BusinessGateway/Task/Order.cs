@@ -11,6 +11,7 @@ using System.Net;
 using System.Configuration;
 using Newtonsoft.Json;
 using RestSharp;
+using OMS.BusinessGateway.Classes;
 
 namespace OMS.BusinessGateway.Task
 {
@@ -22,24 +23,6 @@ namespace OMS.BusinessGateway.Task
         {
             _orderRepository = orderRepository;
         }
-
-        #region Private Methods
-        private static string GetApiResponse(string apiRoute, Method method, object requestQueryParameter, string token)
-        {
-            var client = new RestClient(ConfigurationManager.AppSettings["ApiGatewayBaseURL"]);
-            client.AddDefaultHeader("Content-Type", "application/json");
-            if (token != null)
-                client.AddDefaultHeader("Token", token);
-            var request = new RestRequest(apiRoute, method) { RequestFormat = DataFormat.Json };
-            request.Timeout = 500000;
-            if (requestQueryParameter != null)
-            {
-                request.AddJsonBody(requestQueryParameter);
-            }
-            var result = client.Execute(request);
-            return result.Content;
-        }
-        #endregion
 
         public override OrderResponse GetOrders(DownloadOrderRequest order)
         {
@@ -72,7 +55,7 @@ namespace OMS.BusinessGateway.Task
                 string token = "";
                 loginRequest.UserName = ConfigurationManager.AppSettings["TMSLogin"];
                 loginRequest.UserPassword = ConfigurationManager.AppSettings["TMSPassword"];
-                var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
                     + "/v1/user/login", Method.POST, loginRequest, null));
 
                 if (tmsLoginResponse != null && tmsLoginResponse.Data.Count > 0)
@@ -122,7 +105,7 @@ namespace OMS.BusinessGateway.Task
                     tmsRequest.Requests.Add(tmsOrder);
                 }
 
-                OrderResponse tmsOrderData = JsonConvert.DeserializeObject<OrderResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                OrderResponse tmsOrderData = JsonConvert.DeserializeObject<OrderResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
                     + "/v1/order/createupdateorder", Method.POST, tmsRequest, token));
                 if (tmsOrderData.StatusCode == (int)HttpStatusCode.OK)
                 {

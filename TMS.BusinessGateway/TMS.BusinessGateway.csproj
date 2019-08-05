@@ -99,6 +99,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\AzureStorageMultipartFormDataStreamProvider.cs" />
+    <Compile Include="Classes\Utility.cs" />
     <Compile Include="Classes\MailRepository.cs" />
     <Compile Include="Gateway\TaskGateway.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -53,6 +53,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\Utility.cs" />
     <Compile Include="Gateway\TaskGateway.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Task\Order.cs" />

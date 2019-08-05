@@ -1,4 +1,5 @@
-﻿using DMS.DataGateway.Repositories;
+﻿using DMS.BusinessGateway.Classes;
+using DMS.DataGateway.Repositories;
 using DMS.DataGateway.Repositories.Iterfaces;
 using DMS.DomainGateway.Task;
 using DMS.DomainObjects.Objects;
@@ -20,22 +21,6 @@ namespace DMS.BusinessGateway.Task
     public partial class BusinessTripTask : TripTask
     {
         private readonly ITrip _tripRepository;
-
-        private static string GetApiResponse(string apiRoute, Method method, object requestQueryParameter, string token)
-        {
-            var client = new RestClient(ConfigurationManager.AppSettings["ApiGatewayBaseURL"]);
-            client.AddDefaultHeader("Content-Type", "application/json");
-            if (token != null)
-                client.AddDefaultHeader("Token", token);
-            var request = new RestRequest(apiRoute, method) { RequestFormat = DataFormat.Json };
-            request.Timeout = 500000;
-            if (requestQueryParameter != null)
-            {
-                request.AddJsonBody(requestQueryParameter);
-            }
-            var result = client.Execute(request);
-            return result.Content;
-        }
 
         public BusinessTripTask(ITrip tripRepository)
         {
@@ -106,7 +91,7 @@ namespace DMS.BusinessGateway.Task
 
                 loginRequest.UserName = ConfigurationManager.AppSettings["TMSLogin"];
                 loginRequest.UserPassword = ConfigurationManager.AppSettings["TMSPassword"];
-                var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
                     + "/v1/user/login", Method.POST, loginRequest, null));
                 if (tmsLoginResponse != null && tmsLoginResponse.Data.Count > 0)
                 {
@@ -114,7 +99,7 @@ namespace DMS.BusinessGateway.Task
                 }
                 #endregion
 
-                var response = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                var response = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
                     + "/v1/order/updateorderstatus", Method.POST, tmsRequest, token));
                 if (response != null)
                 {
@@ -169,7 +154,7 @@ namespace DMS.BusinessGateway.Task
 
                 loginRequest.UserName = ConfigurationManager.AppSettings["TMSLogin"];
                 loginRequest.UserPassword = ConfigurationManager.AppSettings["TMSPassword"];
-                var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
                     + "/v1/user/login", Method.POST, loginRequest, null));
                 if (tmsLoginResponse != null && tmsLoginResponse.Data.Count > 0)
                 {
@@ -177,7 +162,7 @@ namespace DMS.BusinessGateway.Task
                 }
                 #endregion
 
-                var response = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                var response = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
                     + "/v1/order/updateorderstatus", Method.POST, tmsRequest, token));
                 if (response != null)
                 {
@@ -402,7 +387,7 @@ namespace DMS.BusinessGateway.Task
 
                 loginRequest.UserName = ConfigurationManager.AppSettings["TMSLogin"];
                 loginRequest.UserPassword = ConfigurationManager.AppSettings["TMSPassword"];
-                var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
                     + "/v1/user/login", Method.POST, loginRequest, null));
                 if (tmsLoginResponse != null && tmsLoginResponse.Data.Count > 0)
                 {
@@ -410,7 +395,7 @@ namespace DMS.BusinessGateway.Task
                 }
                 #endregion
 
-                var response = JsonConvert.DeserializeObject<OrderStatusResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                var response = JsonConvert.DeserializeObject<OrderStatusResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
                     + "/v1/order/swapestoppoints", Method.POST, tmsRequest, token));
                 if (response != null)
                 {

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using TMS.BusinessGateway.Classes;
 using TMS.DataGateway.Repositories.Interfaces;
 using TMS.DataGateway.Repositories.Iterfaces;
 using TMS.DomainGateway.Task;
@@ -24,24 +25,6 @@ namespace TMS.BusinessGateway.Task
         {
             _tripRepository = tripRepository;
         }
-
-        #region Private Methods
-        private static string GetApiResponse(string apiRoute, Method method, object requestQueryParameter, string token)
-        {
-            var client = new RestClient(ConfigurationManager.AppSettings["ApiGatewayBaseURL"]);
-            client.AddDefaultHeader("Content-Type", "application/json");
-            if (token != null)
-                client.AddDefaultHeader("Token", token);
-            var request = new RestRequest(apiRoute, method) { RequestFormat = DataFormat.Json };
-            request.Timeout = 500000;
-            if (requestQueryParameter != null)
-            {
-                request.AddJsonBody(requestQueryParameter);
-            }
-            var result = client.Execute(request);
-            return result.Content;
-        }
-        #endregion
 
         public override TripResponse GetTripList(TripRequest tripRequest)
         {
@@ -89,7 +72,7 @@ namespace TMS.BusinessGateway.Task
                     string token = string.Empty;
                     loginRequest.UserName = ConfigurationManager.AppSettings["DMSLogin"];
                     loginRequest.UserPassword = ConfigurationManager.AppSettings["DMSPassword"];
-                    var dmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
+                    var dmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
                         + "/v1/user/login", Method.POST, loginRequest, null));
 
                     if (dmsLoginResponse != null && dmsLoginResponse.Data.Count > 0)
@@ -98,7 +81,7 @@ namespace TMS.BusinessGateway.Task
                     }
 
                     // Call DMS API to assign order to driver
-                    var response = JsonConvert.DeserializeObject<TripResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
+                    var response = JsonConvert.DeserializeObject<TripResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
                         + "/v1/trip/reassigntrip", Method.POST, tripRequest1, token));
 
                     #endregion
@@ -134,7 +117,7 @@ namespace TMS.BusinessGateway.Task
                             string tokenOMS = string.Empty;
                             loginRequest.UserName = ConfigurationManager.AppSettings["OMSLogin"];
                             loginRequest.UserPassword = ConfigurationManager.AppSettings["OMSPassword"];
-                            var omsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                            var omsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
                                 + "/v1/user/login", Method.POST, loginRequest, null));
 
                             if (omsLoginResponse != null && omsLoginResponse.Data.Count > 0)
@@ -143,7 +126,7 @@ namespace TMS.BusinessGateway.Task
                             }
 
                             //Call OMS API to assign order to driver
-                            var omsResponse = JsonConvert.DeserializeObject<TripResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                            var omsResponse = JsonConvert.DeserializeObject<TripResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
                                 + "/v1/order/reassigntrip", Method.POST, omsTripRequest, tokenOMS));
                             if (omsResponse != null)
                             {
