@@ -26,11 +26,7 @@ namespace OMS.BusinessGateway.Task
 
         public override OrderResponse GetOrders(DownloadOrderRequest order)
         {
-            //If needed write business logic here for request.
-
             OrderResponse orderData = _orderRepository.GetOrders(order);
-
-            //If needed write business logic here for response.
             return orderData;
         }
 

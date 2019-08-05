@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using Helper.Model.DependencyResolver;
+﻿using Helper.Model.DependencyResolver;
 using System.Web.Http;
 using TMS.DomainGateway.Task.Interfaces;
 using TMS.DomainObjects.Request;

@@ -1,10 +1,7 @@
-﻿using RestSharp;
+﻿using ActiveUp.Net.Mail;
+using RestSharp;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TMS.BusinessGateway.Classes
 {
@@ -26,6 +23,22 @@ namespace TMS.BusinessGateway.Classes
             if (item != null)
             {
                 request.Parameters.Add(item);
+            }
+            var result = client.Execute(request);
+            return result.Content;
+        }
+
+        public static string GetFileUploadApiResponse(string apiRoute, Method method, MimePart mimePart, string token)
+        {
+            var client = new RestClient(ConfigurationManager.AppSettings["ApiGatewayBaseURL"]);
+            if (token != null)
+                client.AddDefaultHeader("Token", token);
+            var request = new RestRequest(apiRoute, method) { RequestFormat = DataFormat.Json, AlwaysMultipartFormData = true };
+            request.Timeout = Convert.ToInt32(ConfigurationManager.AppSettings["RequestTimeout"]);
+            if (mimePart != null)
+            {
+                client.AddDefaultHeader("Content-Type", "multipart/form-data");
+                request.AddFileBytes("file", mimePart.BinaryContent, mimePart.Filename, mimePart.ContentType.MimeType);// upload from file byte array
             }
             var result = client.Execute(request);
             return result.Content;

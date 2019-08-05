@@ -8,8 +8,6 @@ using System.Configuration;
 using System.Globalization;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using TMS.BusinessGateway.Classes;
 using TMS.DataGateway.Repositories.Interfaces;
 using TMS.DomainGateway.Task;
@@ -21,22 +19,6 @@ namespace TMS.BusinessGateway.Task
 {
     public partial class BusinessOrderTask : OrderTask
     {
-
-        private static string GetFileUploadApiResponse(string apiRoute, Method method, MimePart mimePart, string token)
-        {
-            var client = new RestClient(ConfigurationManager.AppSettings["ApiGatewayBaseURL"]);
-            if (token != null)
-                client.AddDefaultHeader("Token", token);
-            var request = new RestRequest(apiRoute, method) { RequestFormat = DataFormat.Json, AlwaysMultipartFormData = true };
-            request.Timeout = 500000;
-            if (mimePart != null)
-            {
-                client.AddDefaultHeader("Content-Type", "multipart/form-data");
-                request.AddFileBytes("file", mimePart.BinaryContent, mimePart.Filename, mimePart.ContentType.MimeType);// upload from file byte array
-            }
-            var result = client.Execute(request);
-            return result.Content;
-        }
 
         private readonly IOrder _orderRepository;
 
@@ -1103,12 +1085,12 @@ namespace TMS.BusinessGateway.Task
                         if (attachment.ContentType.MimeType.ToLower() == "application/pdf") // Checking For PDF files
                         {
                             // Uploading File into Blob storage and get GUID
-                            var fileuploadresponse = JsonConvert.DeserializeObject<ResponseDataForFileUpload>(GetFileUploadApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"] + "/v1/media/uploadfile", Method.POST, attachment, null));
+                            var fileuploadresponse = JsonConvert.DeserializeObject<ResponseDataForFileUpload>(Utility.GetFileUploadApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"] + "/v1/media/uploadfile", Method.POST, attachment, null));
 
                             if (fileuploadresponse.StatusCode == (int)HttpStatusCode.OK && !String.IsNullOrEmpty(fileuploadresponse.Guid))
                             {
                                 // Calling OCR to get shipmentschedule data
-                                var res = GetFileUploadApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"] + "/v1/order/shipmentscheduleocr", Method.POST, attachment, null);
+                                var res = Utility.GetFileUploadApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"] + "/v1/order/shipmentscheduleocr", Method.POST, attachment, null);
                                 var shipmentScheduleOcr = JsonConvert.DeserializeObject<dynamic>(res);
                                 var jsonObject = JObject.Parse(shipmentScheduleOcr);
                                 ShipmentScheduleOcrRequest shipmentScheduleOcrRequest = new ShipmentScheduleOcrRequest();

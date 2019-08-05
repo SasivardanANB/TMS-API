@@ -1,14 +1,10 @@
 ﻿using OMS.DomainObjects.Request;
 using OMS.DomainObjects.Response;
 using OMS.DomainObjects.Objects;
-using System.Collections.Generic;
 using System.Web.Http;
 using OMS.DomainGateway.Task.Interfaces;
 using OMS.DomainGateway.Gateway.Interfaces;
 using OMS.API.Classes;
-using RestSharp;
-using System.Configuration;
-using Newtonsoft.Json;
 
 namespace OMS.API.Controllers
 {
@@ -16,7 +12,6 @@ namespace OMS.API.Controllers
     [RoutePrefix("api/v1/user")]
     public class UserController : ApiController
     {
-
         [Route("login")]
         [AllowAnonymous, HttpPost]
         public IHttpActionResult LoginUser(LoginRequest login)

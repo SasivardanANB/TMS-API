@@ -24,11 +24,7 @@ namespace OMS.BusinessGateway.Task
 
         public override UserResponse LoginUser(LoginRequest login)
         {
-            //If needed write business logic here for request.
-
             UserResponse userData = _userRepository.LoginUser(login);
-
-            //If needed write business logic here for response.
             return userData;
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -25,15 +26,15 @@ namespace TMS.BusinessGateway.Task
 
         public override InvoiceResponse GenerateInvoice(InvoiceRequest invoiceRequest)
         {
+            InvoiceResponse invoiceResponse = new InvoiceResponse
+            {
+                Data = new List<Invoice>()
+            };
 
-            InvoiceResponse invoiceResponse = new InvoiceResponse();
-            invoiceResponse.Data = new List<Invoice>();
             try
             {
                 foreach (var invoice in invoiceRequest.Requests)
                 {
-
-                   
                     string headerData = string.Empty; string detailData = string.Empty;
                     //headerData = "HS|27|20190625|H101OMS00000002||5103992943||10000000||1304901930|APPROVED|1||20190625|SYSTEM|||Jangan Dibanting||H101|0005||||0|"; // Sample String
                     headerData = invoice.GeneralPOHeader.GeneralPOHeaderId + "|" +
@@ -93,7 +94,7 @@ namespace TMS.BusinessGateway.Task
 
                     //(2) string.Empty makes cleaner code
                     XmlElement element1 = doc.CreateElement("GeneralPO");
-                    element1.SetAttribute("xmlns", "http://schemas.datacontract.org/2004/07/AstraVendorInvoicing.Service");
+                    element1.SetAttribute("xmlns", ConfigurationManager.AppSettings["B2BElementURL1"]);
                     doc.AppendChild(element1);
 
                     // Order Node
@@ -102,13 +103,13 @@ namespace TMS.BusinessGateway.Task
 
                     // Order Header Node
                     XmlElement item1 = doc.CreateElement("string");
-                    item1.SetAttribute("xmlns", "http://schemas.microsoft.com/2003/10/Serialization/Arrays");
+                    item1.SetAttribute("xmlns", ConfigurationManager.AppSettings["B2BElementURL2"]);
                     XmlText text1 = doc.CreateTextNode(headerData);
                     item1.AppendChild(text1);
                     element2.AppendChild(item1);
                     // Order Details Node
                     XmlElement item2 = doc.CreateElement("string");
-                    item2.SetAttribute("xmlns", "http://schemas.microsoft.com/2003/10/Serialization/Arrays");
+                    item2.SetAttribute("xmlns", ConfigurationManager.AppSettings["B2BElementURL2"]);
                     XmlText text2 = doc.CreateTextNode(detailData);
                     item2.AppendChild(text2);
                     element2.AppendChild(item2);
@@ -133,12 +134,8 @@ namespace TMS.BusinessGateway.Task
                         }
                     }
 
-                    //doc.Save("D:\\document5.xml");
-                    //string oldate = doc.InnerXml.ToString();
-                    //string data = doc.ToString().Replace("<?xml version=\"1.0\" encoding=\"ISO - 8859 - 1\"?>", "");
-
                     byte[] bytes = Encoding.UTF8.GetBytes(doc.InnerXml.ToString());
-                    HttpWebRequest request1 = (HttpWebRequest)WebRequest.Create("https://devproxy.astra.co.id/astravendorinvoicingservice/External.svc/PushGeneralPO");
+                    HttpWebRequest request1 = (HttpWebRequest)WebRequest.Create(ConfigurationManager.AppSettings["B2BAPIUrl"]);
                     request1.Method = "POST";
                     request1.ContentLength = bytes.Length;
                     request1.ContentType = "text/xml";
@@ -149,18 +146,6 @@ namespace TMS.BusinessGateway.Task
 
                     HttpWebResponse response1 = (HttpWebResponse)request1.GetResponse();
 
-                    using (StreamReader rd = new StreamReader(response1.GetResponseStream()))
-                    {
-                        //reading stream 
-                        var ServiceResult = rd.ReadToEnd();
-                        XmlDocument xml = new XmlDocument();
-                        xml.LoadXml(ServiceResult);
-                       // xml.Save("D:\\response2.xml");
-                        XmlNodeList xnList = xml.SelectNodes("ReturnData");
-                        int nodes = xnList.Count;
-                    }
-
-
                     invoiceResponse.StatusCode = (int)response1.StatusCode;
                     invoiceResponse.StatusMessage = "Success";
                     if (response1.StatusCode != HttpStatusCode.OK)
@@ -168,23 +153,17 @@ namespace TMS.BusinessGateway.Task
                         string message = String.Format("POST failed. Received HTTP {0}",
                         response1.StatusCode);
                         invoiceResponse.StatusMessage = message;
-                      //  throw new ApplicationException(message);
-
                     }
-
                 }
                 invoiceResponse.Data = invoiceRequest.Requests;
-                
             }
             catch (Exception ex)
             {
                 string msg = ex.Message;
                 invoiceResponse.StatusMessage = msg;
                 return invoiceResponse;
-
             }
-
-            return invoiceResponse;   //_invoiceRepository.GenerateInvoice(invoiceRequest);
+            return invoiceResponse;
         }
     }
 }

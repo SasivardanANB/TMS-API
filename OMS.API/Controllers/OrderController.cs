@@ -8,13 +8,9 @@ using OMS.DomainGateway.Task.Interfaces;
 using OMS.DomainObjects.Objects;
 using OMS.DomainObjects.Request;
 using OMS.DomainObjects.Response;
-using RestSharp;
-using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.ModelBinding;
 
@@ -24,8 +20,6 @@ namespace OMS.API.Controllers
     [RoutePrefix("api/v1/order")]
     public class OrderController : ApiController
     {
-        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
-
         [Route("getorders")]
         [HttpPost]
         public IHttpActionResult GetOrders(DownloadOrderRequest order)

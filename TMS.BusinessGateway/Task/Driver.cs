@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TMS.DataGateway.Repositories.Interfaces;
+﻿using TMS.DataGateway.Repositories.Interfaces;
 using TMS.DomainGateway.Task;
 using TMS.DomainObjects.Request;
 using TMS.DomainObjects.Response;

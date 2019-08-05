@@ -1,15 +1,8 @@
 ﻿using AutoMapper;
 using NLog;
 using TMS.DataGateway.DataModels;
-using TMS.DomainObjects.Objects;
-using TMS.DomainObjects.Request;
-using TMS.DomainObjects.Response;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using DataModel = TMS.DataGateway.DataModels;
 using Domain = TMS.DomainObjects.Objects;
 using TMS.DataGateway.Encryption;
@@ -67,9 +60,7 @@ namespace TMS.DataGateway.Repositories
                    string.Join(":", new string[]
                {   Convert.ToString(user.ID),
                 EncryptionLibrary.KeyGenerator.GetUniqueKey(),
-                //Convert.ToString(ClientKeys.CompanyID),
                 Convert.ToString(IssuedOn.Ticks)
-                //ClientKeys.ClientID
                    });
 
                 return EncryptionLibrary.EncryptText(randomnumber);
@@ -84,39 +75,30 @@ namespace TMS.DataGateway.Repositories
         public bool ValidateToken(string token)
         {
             bool validFlag = false;
-            try {
-
-
+            try
+            {
                 var key = EncryptionLibrary.DecryptText(token);
                 string[] parts = key.Split(new char[] { ':' });
                 var userId = Convert.ToInt32(parts[0]);       // UserID
                 using (var context = new TMSDBContext())
                 {
                     // Validating Time
-                    var ExpiresOn = context.Tokens.Where(t => t.TokenKey == token && t.UserID == userId).Select(t=>t.ExpiresOn).FirstOrDefault();
-                    if (ExpiresOn != null)
-                    {
-                        if ((DateTime.Now > ExpiresOn))
-                        {
-                            validFlag = false;
-                        }
-                        else
-                        {
-                            validFlag = true;
-                        }
-                    }
-                    else
+                    var ExpiresOn = context.Tokens.Where(t => t.TokenKey == token && t.UserID == userId).Select(t => t.ExpiresOn).FirstOrDefault();
+                    if ((DateTime.Now > ExpiresOn))
                     {
                         validFlag = false;
                     }
+                    else
+                    {
+                        validFlag = true;
+                    }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.Log(LogLevel.Error, ex);
             }
             return validFlag;
         }
-
     }
 }
