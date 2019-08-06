@@ -7,6 +7,7 @@ using OMS.DomainObjects.Request;
 using OMS.DomainObjects.Response;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 using System.Net;
 using System.Configuration;
 using Newtonsoft.Json;
@@ -61,6 +62,15 @@ namespace OMS.BusinessGateway.Task
 
                 foreach (var omsOrder in request.Requests)
                 {
+                    #region check driverdetails availability and if exist set status as assigned(3) else Created (1)  
+                    int OrderShipmentStatus = omsOrder.OrderShipmentStatus;
+                    if (!String.IsNullOrEmpty(omsOrder.DriverNo) && !String.IsNullOrEmpty(omsOrder.DriverName))
+                    {
+                        OrderShipmentStatus = 3;
+                    }
+
+                    #endregion
+
                     Domain.Order tmsOrder = new Domain.Order()
                     {
                         BusinessArea = omsOrder.BusinessArea,
@@ -89,7 +99,7 @@ namespace OMS.BusinessGateway.Task
                         ActualShipmentTime = omsOrder.ActualShipmentTime,
                         Sender = omsOrder.Sender,
                         Receiver = omsOrder.Receiver,
-                        OrderShipmentStatus = omsOrder.OrderShipmentStatus,
+                        OrderShipmentStatus = OrderShipmentStatus,
                         Dimension = omsOrder.Dimension,
                         TotalPallet = omsOrder.TotalPallet,
                         Instructions = omsOrder.Instructions,

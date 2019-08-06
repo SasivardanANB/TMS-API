@@ -248,6 +248,12 @@ namespace OMS.DataGateway.Repositories
             {
                 foreach (var order in request.Requests)
                 {
+                    #region check driverdetails availability and if exist set status as assigned(3) else Created (1)  
+                    if (!String.IsNullOrEmpty(order.DriverNo) && !String.IsNullOrEmpty(order.DriverName))
+                    {
+                        order.OrderShipmentStatus = 3;
+                    }
+                    #endregion
                     using (DbContextTransaction transaction = context.Database.BeginTransaction())
                     {
                         try

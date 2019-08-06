@@ -235,6 +235,8 @@ namespace TMS.DataGateway.Repositories
                     string globalSearch = partnerRequest.GlobalSearch.ToLower();
                     partnerList = partnerList.Where(s => !s.IsDeleted && (s.PartnerName != null && s.PartnerName.ToLower().Contains(globalSearch))
                     || (s.PartnerAddress != null && s.PartnerAddress.ToLower().Contains(globalSearch))
+                    || (s.PICPhone != null && s.PICPhone.Contains(globalSearch))
+                    || (s.CityCode != null && s.CityCode.ToLower().Contains(globalSearch))
                     || (s.PartnerInitial != null && s.PartnerInitial.ToLower().Contains(globalSearch))
                     || (s.PICName != null && s.PICName.ToLower().Contains(globalSearch))
                     ).ToList();

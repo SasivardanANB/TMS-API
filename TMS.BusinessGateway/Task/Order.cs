@@ -64,6 +64,14 @@ namespace TMS.BusinessGateway.Task
                         Partner partner1Data = GetPartnerDetail(tmsOrder.PartnerNo1, order.UploadType);
                         Partner partner2Data = GetPartnerDetail(tmsOrder.PartnerNo2, order.UploadType);
                         Partner partner3Data = GetPartnerDetail(tmsOrder.PartnerNo3, order.UploadType);
+                        #region check driverdetails availability and if exist set status as assigned(3) else Created (1)  
+                        int OrderShipmentStatus = tmsOrder.OrderShipmentStatus;
+                        if (!String.IsNullOrEmpty(tmsOrder.DriverNo)  && !String.IsNullOrEmpty(tmsOrder.DriverName))
+                        {
+                            OrderShipmentStatus = 3;
+                        }
+
+                        #endregion
 
                         Order omsOrder = new Order()
                         {
@@ -93,7 +101,7 @@ namespace TMS.BusinessGateway.Task
                             ActualShipmentTime = tmsOrder.ActualShipmentTime,
                             Sender = tmsOrder.Sender,
                             Receiver = tmsOrder.Receiver,
-                            OrderShipmentStatus = tmsOrder.OrderShipmentStatus,
+                            OrderShipmentStatus = OrderShipmentStatus,
                             Dimension = tmsOrder.Dimension,
                             TotalPallet = tmsOrder.TotalPallet,
                             Instructions = tmsOrder.Instructions,
@@ -416,6 +424,13 @@ namespace TMS.BusinessGateway.Task
                     {
                         ord.OrderNo = omsOrderResponse.Data[0].OrderNo;
                         ord.LegecyOrderNo = omsOrderResponse.Data[0].OrderNo;
+                        int OrderShipmentStatus = ord.OrderShipmentStatus;
+                        if (ord.DriverNo != null && ord.DriverName != null && ord.DriverNo != string.Empty && ord.DriverName != string.Empty)
+                        {
+                            OrderShipmentStatus = 3;
+                        }
+                        ord.OrderShipmentStatus = OrderShipmentStatus;
+
                     }
 
                     // Create Order in TMS
