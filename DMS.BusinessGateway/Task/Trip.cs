@@ -1,5 +1,4 @@
 ﻿using DMS.BusinessGateway.Classes;
-using DMS.DataGateway.Repositories;
 using DMS.DataGateway.Repositories.Iterfaces;
 using DMS.DomainGateway.Task;
 using DMS.DomainObjects.Objects;
@@ -13,8 +12,6 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DMS.BusinessGateway.Task
 {
@@ -187,13 +184,13 @@ namespace DMS.BusinessGateway.Task
                     string deviceId = GetDeviceId(reqObj.DriverNo);
                     if (!string.IsNullOrEmpty(deviceId))
                     {
-                        var client = new RestClient("https://fcm.googleapis.com/");
+                        var client = new RestClient(ConfigurationManager.AppSettings["FCMURL"]);
                         client.AddDefaultHeader("Content-Type", "application/json");
                         client.AddDefaultHeader("Authorization", ConfigurationManager.AppSettings["FCM_Authorization"]);
                         var req = new RestRequest("fcm/send", Method.POST) { RequestFormat = DataFormat.Json };
                         req.Timeout = 500000;
                         NotificationRequest notificationRequest = new NotificationRequest();
-                        notificationRequest.to = deviceId;   //"cFaYBS5Rn_w:APA91bEcu9Q_wqSASgXZ1nAUUvpelCTOw6eF5g0RmdNIrIi7GlJl-mTezk9Tb7lVkzzBH3wabznQ6GMkws2Br9XV8OvpilwSmMjcE3MKe9LrEtYZ8eAodgbx12-Az0NU6_IKbIfB0POu";
+                        notificationRequest.to = deviceId;   
 
                         string tripNumber = string.Empty;
                         if (tripData.Data != null)
@@ -255,13 +252,13 @@ namespace DMS.BusinessGateway.Task
                     string deviceId = GetDeviceId(reqObj.DriverNo);
                     if (!string.IsNullOrEmpty(deviceId))
                     {
-                        var client = new RestClient("https://fcm.googleapis.com/");
+                        var client = new RestClient(ConfigurationManager.AppSettings["FCMURL"]);
                         client.AddDefaultHeader("Content-Type", "application/json");
                         client.AddDefaultHeader("Authorization", ConfigurationManager.AppSettings["FCM_Authorization"]);
                         var req = new RestRequest("fcm/send", Method.POST) { RequestFormat = DataFormat.Json };
                         req.Timeout = 500000;
                         NotificationRequest notificationRequest = new NotificationRequest();
-                        notificationRequest.to = deviceId;   //"cFaYBS5Rn_w:APA91bEcu9Q_wqSASgXZ1nAUUvpelCTOw6eF5g0RmdNIrIi7GlJl-mTezk9Tb7lVkzzBH3wabznQ6GMkws2Br9XV8OvpilwSmMjcE3MKe9LrEtYZ8eAodgbx12-Az0NU6_IKbIfB0POu";
+                        notificationRequest.to = deviceId;   
 
                         string tripNumber = "";
                         if (tripData.Data != null)

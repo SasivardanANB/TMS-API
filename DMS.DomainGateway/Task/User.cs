@@ -4,6 +4,7 @@ using DMS.DomainObjects.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,5 +17,6 @@ namespace DMS.DomainGateway.Task
         public abstract UserResponse CreateUpdateUser(UserRequest user);
         public abstract UserResponse GetProfileDetails(int userID);
         public abstract UserResponse ChangePassword(ChangePasswordRequest changepassword, string type);
+        public abstract HttpResponseMessage ForgotPassword(ForgotPasswordRequest forgotPasswordRequest);
     }
 }

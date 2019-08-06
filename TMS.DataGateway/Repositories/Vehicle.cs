@@ -4,15 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using TMS.DataGateway.DataModels;
 using TMS.DataGateway.Repositories.Interfaces;
 using TMS.DomainObjects.Request;
 using TMS.DomainObjects.Response;
 using Domain = TMS.DomainObjects.Objects;
 using DataModel = TMS.DataGateway.DataModels;
-
 
 namespace TMS.DataGateway.Repositories
 {
@@ -205,11 +202,6 @@ namespace TMS.DataGateway.Repositories
                     {
                         vehiclesList = vehiclesList.Where(s => s.IsDedicated == vehicleFilter.IsDedicated).ToList();
                     }
-
-                    //if (vehicleFilter.IsActive)
-                    //{
-                    //    vehiclesList = vehiclesList.Where(s => s.IsActive == vehicleFilter.IsActive).ToList();
-                    //}
 
                     if (vehicleFilter.IsDelete)
                     {

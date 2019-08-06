@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace TMS.DomainObjects.Objects
 {
@@ -16,7 +11,6 @@ namespace TMS.DomainObjects.Objects
         public string Destination { get; set; }
         public string VehicleType { get; set; }
         public string ExpeditionName { get; set; }
-
         public string PoliceNumber { get; set; }
         public string OrderStatus { get; set; }
         [MaxLength(20)]
