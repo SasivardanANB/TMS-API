@@ -1,15 +1,8 @@
 ﻿using AutoMapper;
 using NLog;
 using DMS.DataGateway.DataModels;
-using DMS.DomainObjects.Objects;
-using DMS.DomainObjects.Request;
-using DMS.DomainObjects.Response;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using DataModel = DMS.DataGateway.DataModels;
 using Domain = DMS.DomainObjects.Objects;
 using DMS.DataGateway.Encryption;
@@ -52,9 +45,7 @@ namespace DMS.DataGateway.Repositories
                    string.Join(":", new string[]
                {   Convert.ToString(user.ID),
                 EncryptionLibrary.KeyGenerator.GetUniqueKey(),
-                //Convert.ToString(ClientKeys.CompanyID),
                 Convert.ToString(IssuedOn.Ticks)
-                //ClientKeys.ClientID
                    });
 
                 return EncryptionLibrary.EncryptText(randomnumber);
@@ -69,39 +60,30 @@ namespace DMS.DataGateway.Repositories
         public bool ValidateToken(string token)
         {
             bool validFlag = false;
-            try {
-
-
+            try
+            {
                 var key = EncryptionLibrary.DecryptText(token);
                 string[] parts = key.Split(new char[] { ':' });
                 var userId = Convert.ToInt32(parts[0]);       // UserID
                 using (var context = new DMSDBContext())
                 {
                     // Validating Time
-                    var ExpiresOn = context.TokenManagers.Where(t => t.TokenKey == token && t.DriverId == userId).Select(t=>t.ExpiresOn).FirstOrDefault();
-                    if (ExpiresOn != null)
-                    {
-                        if ((DateTime.Now > ExpiresOn))
-                        {
-                            validFlag = false;
-                        }
-                        else
-                        {
-                            validFlag = true;
-                        }
-                    }
-                    else
+                    var ExpiresOn = context.TokenManagers.Where(t => t.TokenKey == token && t.DriverId == userId).Select(t => t.ExpiresOn).FirstOrDefault();
+                    if ((DateTime.Now > ExpiresOn))
                     {
                         validFlag = false;
                     }
+                    else
+                    {
+                        validFlag = true;
+                    }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.Log(LogLevel.Error, ex);
             }
             return validFlag;
         }
-
     }
 }

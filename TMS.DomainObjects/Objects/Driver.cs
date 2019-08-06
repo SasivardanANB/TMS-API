@@ -10,11 +10,8 @@ namespace TMS.DomainObjects.Objects
     public class Driver
     {
         public int ID { get; set; }
-        //[Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidTransporterId")]
-        //[Range(minimum: 1, maximum: int.MaxValue, ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidTransporterId")]
         public Nullable<int> TransporterId { get; set; }
         public string TransporterName { get; set; }
-        //[Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidDriverNo")]
         [MaxLength(12)]
         public string DriverNo { get; set; }
         [MaxLength(30)]
@@ -41,10 +38,6 @@ namespace TMS.DomainObjects.Objects
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "PasswordInvalid")]
         [RegularExpression("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$", ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "PasswordInvalid")]
         public string Password { get; set; }
-        //[DataType(DataType.Password)]
-        //[Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidConfirmPassword")]
-        //[Compare("Password", ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "PasswordMismatch")]
-        //public string ConfirmPassword { get; set; }
         [MaxLength(20)]
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidIdentityNo")]
         public string IdentityNo { get; set; }

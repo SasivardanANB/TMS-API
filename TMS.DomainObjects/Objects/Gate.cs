@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace TMS.DomainObjects.Objects
 {
@@ -11,10 +6,7 @@ namespace TMS.DomainObjects.Objects
     {
         public int ID { get; set; }
         public int OrderId { get; set; }
-        //[Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "")]
         public string GateTypeDescription { get; set; }
-        //[Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "")]
-        //[Range(minimum: 1, maximum: 2, ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "")]
         public int GateTypeId { get; set; }
         [MaxLength(12)]
         public string VehicleNumber { get; set; }
