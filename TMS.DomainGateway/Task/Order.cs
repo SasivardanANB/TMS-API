@@ -29,5 +29,11 @@ namespace TMS.DomainGateway.Task
         public abstract ShipmentScheduleOcrResponse CreateOrderFromShipmentScheduleOcr(ShipmentScheduleOcrRequest request);
         public abstract OrderResponse OcrOrderResponse(ShipmentScheduleOcrRequest shipmentScheduleOcrRequest);
         public abstract OrderResponse CreateOrdersFromShipmentListOCR(OrderRequest request);
+        public abstract InvoiceResponse GetInvoiceRequest(OrderStatusRequest request);
+        public abstract OrderStatusResponse SwapeStopPoints(OrderStatusRequest orderStatusRequest);
+        public abstract ImageGuidsResponse GetShippingListGuids(string orderNumber);
+        public abstract ImageGuidsResponse GetPodGuids(string orderNumber);
+        public abstract ImageGuidsResponse GetPhotoWithCustomerGuids(string orderNumber);
+        public abstract OrderResponse GetShipmentSchedulesFromEmail(string token);
     }
 }

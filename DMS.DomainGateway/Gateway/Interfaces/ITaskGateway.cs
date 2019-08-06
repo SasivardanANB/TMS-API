@@ -13,5 +13,6 @@ namespace DMS.DomainGateway.Gateway.Interfaces
         IUserTask UserTask { get; }
         IAuthenticateTask AuthenticateTask { get; }
         ITripTask TripTask { get; }
+        IMediaTask MediaTask { get; }
     }
 }

@@ -1,20 +1,11 @@
-﻿using DMS.DomainGateway.Gateway;
-using DMS.DomainGateway.Task;
-using DMS.DomainObjects.Request;
+﻿using DMS.DomainObjects.Request;
 using DMS.DomainObjects.Response;
-using DMS.DomainObjects.Objects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using Helper.Model.DependencyResolver;
 using DMS.DomainGateway.Task.Interfaces;
 using DMS.DomainGateway.Gateway.Interfaces;
 using DMS.API.Classes;
-using System.Net.Mail;
-using System.Configuration;
 
 namespace DMS.API.Controllers
 {
@@ -51,12 +42,9 @@ namespace DMS.API.Controllers
         [AllowAnonymous, HttpPost]
         public IHttpActionResult CreateUpdateUser(UserRequest user)
         {
-            if (user.Requests != null && user.Requests.Count > 0)
+            if (user.Requests != null && user.Requests.Count > 0 && user.Requests[0].ID > 0)
             {
-                if (user.Requests[0].ID > 0)
-                {
-                    ModelState.Remove("user.Requests[0].Password");
-                }
+                ModelState.Remove("user.Requests[0].Password");
             }
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -81,40 +69,13 @@ namespace DMS.API.Controllers
         [AllowAnonymous, HttpPost]
         public HttpResponseMessage ForgotPassword(ForgotPasswordRequest forgotPasswordRequest)
         {
-            HttpResponseMessage responseMessage = new HttpResponseMessage();
             if (!ModelState.IsValid)
             {
-                 responseMessage = Request.CreateResponse(HttpStatusCode.BadRequest);
-                return responseMessage;
+                return Request.CreateResponse(HttpStatusCode.BadRequest);
             }
-            try
-            {
-                MailMessage mail = new MailMessage();
-                mail.To.Add(forgotPasswordRequest.Email);
-                string emailFrom = ConfigurationManager.AppSettings["EmailFrom"];
-                mail.From = new MailAddress(emailFrom);
-                mail.Subject = ConfigurationManager.AppSettings["EmailSubject"]; // "Test-case";
-                string Body = "To reset your password click the link : " + forgotPasswordRequest.URLLink;
-                mail.Body = Body;
-                mail.IsBodyHtml = true;
-                string smtpHost = ConfigurationManager.AppSettings["SmtpHost"];
-                string loginEmailId = ConfigurationManager.AppSettings["SmtpUserName"];
-                string emailPassword = ConfigurationManager.AppSettings["SmtpPassword"];
-                SmtpClient smtp = new SmtpClient(smtpHost);
-                smtp.Port = 587;
-                smtp.UseDefaultCredentials = false;
-                smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
-                smtp.Credentials = new System.Net.NetworkCredential(loginEmailId, emailPassword); // Enter senders User name and password  
-                smtp.EnableSsl = true;
-                smtp.Send(mail);
-                 responseMessage = Request.CreateResponse(HttpStatusCode.OK, "Email sent successfully");
-               return responseMessage;
-            }
-            catch (Exception ex )
-            {
-                 responseMessage = Request.CreateResponse(HttpStatusCode.ExpectationFailed, "Some issues occured while sending email",ex.Message);
-                return responseMessage;
-            }
+
+            IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
+            return userTask.ForgotPassword(forgotPasswordRequest);
         }
 
         [Route("resetpassword")]

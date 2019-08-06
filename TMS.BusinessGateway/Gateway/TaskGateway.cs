@@ -10,7 +10,7 @@ using TMS.DomainGateway.Task.Interfaces;
 
 namespace TMS.BusinessGateway.Gateway
 {
-    public class TaskGateway: ITaskGateway
+    public class TaskGateway : ITaskGateway
     {
         public IDriverTask DriverTask
         {
@@ -65,6 +65,15 @@ namespace TMS.BusinessGateway.Gateway
         public IReportTask ReportTask
         {
             get { return new BusinessReportTask(new Report()); }
+        }
+        public IInvoiceTask InvoiceTask
+        {
+            get { return new BusinessInvoiceTask(new Invoice()); }
+        }
+
+        public IMediaTask MediaTask
+        {
+            get { return new BusinessMediaTask(); }
         }
     }
 }

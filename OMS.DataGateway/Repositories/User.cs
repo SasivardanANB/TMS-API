@@ -2,15 +2,12 @@
 using NLog;
 using OMS.DataGateway.Repositories.Iterfaces;
 using OMS.DataGateway.DataModels;
-using OMS.DomainObjects.Objects;
 using OMS.DomainObjects.Request;
 using OMS.DomainObjects.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using DataModel = OMS.DataGateway.DataModels;
 using Domain = OMS.DomainObjects.Objects;
 using System.Configuration;
@@ -315,7 +312,6 @@ namespace OMS.DataGateway.Repositories
         {
             UserResponse userResponse = new UserResponse();
             List<Domain.User> usersList = new List<Domain.User>();
-            List<DataModels.User> users = new List<DataModels.User>();
             try
             {
                 using (var context = new OMSDBContext())

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using OMS.BusinessGateway.Classes;
 using OMS.DataGateway.Repositories;
 using OMS.DataGateway.Repositories.Iterfaces;
 using OMS.DomainGateway.Task;
@@ -16,24 +17,6 @@ namespace OMS.BusinessGateway.Task
     {
         private readonly IUser _userRepository;
 
-        #region Private Methods
-        private static string GetApiResponse(string apiRoute, Method method, object requestQueryParameter, string token)
-        {
-            var client = new RestClient(ConfigurationManager.AppSettings["ApiGatewayBaseURL"]);
-            client.AddDefaultHeader("Content-Type", "application/json");
-            if (token != null)
-                client.AddDefaultHeader("Token", token);
-            var request = new RestRequest(apiRoute, method) { RequestFormat = DataFormat.Json };
-            request.Timeout = 500000;
-            if (requestQueryParameter != null)
-            {
-                request.AddJsonBody(requestQueryParameter);
-            }
-            var result = client.Execute(request);
-            return result.Content;
-        }
-        #endregion
-
         public BusinessUserTask(IUser userRepository)
         {
             _userRepository = userRepository;
@@ -41,11 +24,7 @@ namespace OMS.BusinessGateway.Task
 
         public override UserResponse LoginUser(LoginRequest login)
         {
-            //If needed write business logic here for request.
-
             UserResponse userData = _userRepository.LoginUser(login);
-
-            //If needed write business logic here for response.
             return userData;
         }
 
@@ -102,14 +81,14 @@ namespace OMS.BusinessGateway.Task
                     string token = string.Empty;
                     loginRequest.UserName = ConfigurationManager.AppSettings["TMSLogin"];
                     loginRequest.UserPassword = ConfigurationManager.AppSettings["TMSPassword"];
-                    var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                    var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
                         + "/v1/user/login", Method.POST, loginRequest, null));
                     if (tmsLoginResponse != null && tmsLoginResponse.Data.Count > 0)
                     {
                         token = tmsLoginResponse.TokenKey;
                     }
 
-                    UserResponse tmsUserResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                    UserResponse tmsUserResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
                          + "/v1/user/createupdateuser", Method.POST, tmsRequest, token));
 
                     if (!userDetails.Applications.Contains(1))

@@ -28,5 +28,10 @@ namespace DMS.BusinessGateway.Gateway
         {
             get { return new BusinessTripTask(new Trip()); }
         }
+
+        public IMediaTask MediaTask
+        {
+            get { return new BusinessMediaTask(); }
+        }
     }
 }

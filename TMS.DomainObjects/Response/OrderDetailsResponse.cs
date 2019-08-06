@@ -45,5 +45,6 @@ namespace TMS.DomainObjects.Response
         public string ShipmentScheduleImageGUID { get; set; }
         public StopPoints Transporter { get; set; }
         public List<StopPoints> SourceOrDestinations { get; set; }
+        public bool IsPackingSheetAvailable { get; set; }
     }
 }

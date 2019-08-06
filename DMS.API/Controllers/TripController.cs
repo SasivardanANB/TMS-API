@@ -5,11 +5,7 @@ using DMS.DomainObjects.Objects;
 using DMS.DomainObjects.Request;
 using DMS.DomainObjects.Response;
 using Newtonsoft.Json;
-using RestSharp;
-using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -184,6 +180,16 @@ namespace DMS.API.Controllers
             ShipmentListResponse shipmentListResponse = tripTask.CreateUpdateShipmentList(stopPointId, shippingList);
 
             return Ok(shipmentListResponse);
+        }
+
+        [Route("swapestoppoints")]
+        [HttpPost]
+        public IHttpActionResult SwapeStopPoints(UpdateTripStatusRequest updateTripStatusRequest)
+        {
+            ITripTask tripTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().TripTask;
+            StopPointsResponse stopPointsResponse = tripTask.SwapeStopPoints(updateTripStatusRequest);
+
+            return Ok(stopPointsResponse);
         }
     }
 }

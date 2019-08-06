@@ -19,40 +19,6 @@ namespace TMS.DataGateway.Repositories
     {
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-        private void SwapeOrderSequence(int tripDetailId, int sequenceNumber, int newSequenceNumber)
-        {
-            using (var context = new Data.TMSDBContext())
-            {
-                using (var beginDBTransaction = context.Database.BeginTransaction())
-                {
-                    try
-                    {
-                        DataModels.OrderDetail orderDetailData = context.OrderDetails.Where(t => t.ID == tripDetailId).FirstOrDefault();
-
-                        if (orderDetailData.SequenceNo != newSequenceNumber && orderDetailData.SequenceNo > 0)
-                        {
-                            int originalSequenceNo = sequenceNumber;
-
-                            orderDetailData.SequenceNo = newSequenceNumber;
-                            context.Entry(orderDetailData).State = System.Data.Entity.EntityState.Modified;
-
-                            DataModels.OrderDetail swappingDetailData = context.OrderDetails.Where(t => t.OrderHeaderID == orderDetailData.OrderHeaderID && t.SequenceNo == newSequenceNumber).FirstOrDefault();
-                            swappingDetailData.SequenceNo = originalSequenceNo;
-                            context.Entry(swappingDetailData).State = System.Data.Entity.EntityState.Modified;
-                            context.SaveChanges();
-                            beginDBTransaction.Commit();
-                        }
-
-                    }
-                    catch (Exception ex)
-                    {
-                        beginDBTransaction.Rollback();
-                        _logger.Log(LogLevel.Error, ex);
-                    }
-                }
-            }
-        }
-
         public OrderResponse CreateUpdateOrder(OrderRequest request)
         {
             OrderResponse response = new OrderResponse()
@@ -894,8 +860,8 @@ namespace TMS.DataGateway.Repositories
                                      OrderNumber = oh.OrderNo,
                                      VehicleType = context.VehicleTypes.Where(v => v.ID.ToString() == oh.VehicleShipment).Select(vt => vt.VehicleTypeDescription).FirstOrDefault(),
                                      PoliceNumber = oh.VehicleNo,
-                                     OrderStatus = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusValue,
-                                     PackingSheetNumber = pksh.PackingSheetNo == null ? "" : pksh.PackingSheetNo
+                                     OrderStatus = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusValue
+                                    // PackingSheetNumber = pksh.PackingSheetNo == null ? "" : pksh.PackingSheetNo
                                  }).Distinct().ToList();
 
                     if (orderList != null && orderList.Count > 0)
@@ -1528,7 +1494,7 @@ namespace TMS.DataGateway.Repositories
                                             {
                                                 foreach (var partner in partners)
                                                 {
-                                                    var loadStatusData = statusData.Where(t => t.IsLoad == false).ToList();
+                                                    var loadStatusData = statusData.Where(t => t.IsLoad == false && t.OrderDetailId == orderDetail.OrderDetailId).ToList();
                                                     if (loadStatusData != null && loadStatusData.Count > 0)
                                                     {
                                                         TrackStepLoadUnload unLoadData = new TrackStepLoadUnload()
@@ -1762,11 +1728,7 @@ namespace TMS.DataGateway.Repositories
                         packingSheetResponse.StatusCode = (int)HttpStatusCode.NotFound;
                         packingSheetResponse.NumberOfRecords = 0;
                     }
-
-
-
                 }
-
             }
             catch (Exception ex)
             {
@@ -1787,7 +1749,7 @@ namespace TMS.DataGateway.Repositories
                 {
                     var userDetails = context.Tokens.Where(t => t.TokenKey == tokenValue).FirstOrDefault();
                     var businessAreas = (from ur in context.UserRoles
-                                         where ur.UserID == userDetails.UserID && ur.IsDelete == false
+                                         where ur.UserID == userDetails.UserID && !ur.IsDelete
                                          select ur.BusinessAreaID).ToList();
 
                     var orderData = (from orderHeader in context.OrderHeaders
@@ -1932,13 +1894,26 @@ namespace TMS.DataGateway.Repositories
                                          OrderWeightUM = oH.OrderWeightUM,
                                          ShipmentScheduleImageGUID = context.ImageGuids.FirstOrDefault(t => t.ID == oH.ShipmentScheduleImageID).ImageGuIdValue,
                                          ShipmentScheduleImageID = oH.ShipmentScheduleImageID
-
                                      }).FirstOrDefault();
 
 
                     if (orderData != null)
                     {
+                        var orderPackingSheetData = (from od in context.OrderDetails
+                                               join ps in context.PackingSheets on od.ShippingListNo equals ps.ShippingListNo
+                                               where od.OrderHeaderID == orderData.ID
+                                               select ps
+                                               ).FirstOrDefault();
 
+                        if(orderPackingSheetData != null){
+                            orderData.PackingSheetNo = orderPackingSheetData.PackingSheetNo;
+                            orderData.IsPackingSheetAvailable = true;
+                        }
+                        else
+                        {
+                            orderData.PackingSheetNo = "";
+                            orderData.IsPackingSheetAvailable = false;
+                        }
 
                         var orderPartnerData = (from orderPartnerDetails in context.OrderPartnerDetails
                                                 join orderDetailsData in context.OrderDetails on orderPartnerDetails.OrderDetailID equals orderDetailsData.ID
@@ -2039,10 +2014,7 @@ namespace TMS.DataGateway.Repositories
                         orderDetailsResponse.StatusCode = (int)HttpStatusCode.NotFound;
                         orderDetailsResponse.StatusMessage = DomainObjects.Resource.ResourceData.Success;
                     }
-
-
                 }
-
             }
             catch (Exception ex)
             {
@@ -2148,14 +2120,6 @@ namespace TMS.DataGateway.Repositories
                         if (statusRequest.SequenceNumber > 0)
                         {
                             orderDetailId = context.OrderDetails.FirstOrDefault(t => t.SequenceNo == statusRequest.SequenceNumber && t.OrderHeaderID == orderId).ID;
-
-                            if (statusRequest.OrderStatusCode == "4" && statusRequest.SequenceNumber != statusRequest.NewSequenceNumber) // StartTrip
-                            {
-                                SwapeOrderSequence(orderDetailId, statusRequest.SequenceNumber, statusRequest.NewSequenceNumber);
-
-                                //Get new OrderDetailsID for min sequence number
-                                orderDetailId = context.OrderDetails.FirstOrDefault(t => t.SequenceNo == statusRequest.NewSequenceNumber && t.OrderHeaderID == orderId).ID;
-                            }
                         }
                         else
                         {
@@ -2307,8 +2271,6 @@ namespace TMS.DataGateway.Repositories
 
         public ShipmentScheduleOcrResponse CreateOrderFromShipmentScheduleOcr(ShipmentScheduleOcrRequest request)
         {
-
-
             ShipmentScheduleOcrResponse response = new ShipmentScheduleOcrResponse()
             {
                 Data = new List<Domain.ShipmentScheduleOcr>()
@@ -2322,21 +2284,13 @@ namespace TMS.DataGateway.Repositories
                     {
                         try
                         {
-
-
                             response.StatusCode = (int)HttpStatusCode.OK;
                             response.StatusMessage = DomainObjects.Resource.ResourceData.OrderCreated;
 
                             string soPoNumber = String.Empty;
-                            //string y = x.Split('-')[4];
-                            //string z = x.Split('-')[1] + "-" + x.Split('-')[2] + "-" + x.Split('-')[3];
                             if (shipment.Data.ShipmentScheduleNo.Split('-').Length > 0)
                             {
                                 soPoNumber = shipment.Data.ShipmentScheduleNo.Split('-')[4];
-
-                                //DateTime estimationShipmentDate = DateTime.ParseExact(order.EstimationShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(order.EstimationShipmentTime);
-                                //DateTime actualShipmentDate = DateTime.ParseExact(order.ActualShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(order.ActualShipmentTime);
-
                             }
 
                             #region Step 1: Check if We have Business Area master data
@@ -2383,318 +2337,6 @@ namespace TMS.DataGateway.Repositories
                                 return response;
                             }
                             #endregion
-                            //#region Step 4: Check if Order already existing then update/create accordingly
-
-                            //int orderDetailId = 0;
-                            //#region Create New Order Header
-                            //int? shipmentScheduleImageID = null;
-
-                            //if (!String.IsNullOrEmpty(shipment.ImageGUID))
-                            //{
-                            //    //Inserting new record with IsActive true
-                            //    Data.ImageGuid imageGuid = new Data.ImageGuid()
-                            //    {
-                            //        ImageGuIdValue = shipment.ImageGUID,
-                            //        IsActive = true,
-                            //        CreatedBy = "System",
-                            //        CreatedTime = DateTime.Now
-                            //    };
-
-                            //    context.ImageGuids.Add(imageGuid);
-                            //    context.SaveChanges();
-                            //    shipmentScheduleImageID = imageGuid.ID;
-                            //}
-
-                            //Data.OrderHeader orderHeader = new Data.OrderHeader()
-                            //{
-                            //    LegecyOrderNo = order.OrderNo,
-                            //    OrderNo = order.OrderNo,
-                            //    OrderType = order.OrderType,
-                            //    FleetTypeID = order.FleetType,
-                            //    VehicleShipment = order.VehicleShipmentType,
-                            //    DriverNo = order.DriverNo,
-                            //    DriverName = order.DriverName,
-                            //    VehicleNo = order.VehicleNo,
-                            //    OrderWeight = order.OrderWeight,
-                            //    OrderWeightUM = order.OrderWeightUM,
-                            //    BusinessAreaId = businessAreaId,
-                            //    IsActive = true,
-                            //    OrderDate = DateTime.Now,
-                            //    OrderStatusID = orderStatusId,
-                            //    Harga = order.Harga,
-                            //    ShipmentScheduleImageID = shipmentScheduleImageID,
-                            //    CreatedBy = request.CreatedBy,
-                            //    CreatedTime = DateTime.Now,
-                            //    LastModifiedBy = "",
-                            //    LastModifiedTime = null,
-                            //    SOPONumber = soPoNumber,
-                            //    UploadType = request.UploadType
-                            //};
-                            //context.OrderHeaders.Add(orderHeader);
-                            //context.SaveChanges();
-                            //order.ID = orderHeader.ID;
-
-                            //#region Step 3 : Create Order Detail
-
-                            //Data.OrderDetail orderDetail = new Data.OrderDetail()
-                            //{
-                            //    OrderHeaderID = order.ID,
-                            //    SequenceNo = order.SequenceNo,
-                            //    Sender = order.Sender,
-                            //    Receiver = order.Receiver,
-                            //    Dimension = order.Dimension,
-                            //    TotalPallet = order.TotalPallet,
-                            //    Instruction = order.Instructions,
-                            //    ShippingListNo = order.ShippingListNo,
-                            //    TotalCollie = order.TotalCollie,
-                            //    EstimationShipmentDate = estimationShipmentDate,
-                            //    ActualShipmentDate = actualShipmentDate,
-                            //    CreatedBy = request.CreatedBy,
-                            //    CreatedTime = DateTime.Now,
-                            //    LastModifiedBy = "",
-                            //    LastModifiedTime = null
-                            //};
-                            //context.OrderDetails.Add(orderDetail);
-                            //context.SaveChanges();
-                            //orderDetailId = orderDetail.ID;
-                            //#endregion
-
-                            //string partner1TypeId = order.PartnerType1.ToString();
-                            //string partner2TypeId = order.PartnerType2.ToString();
-                            //string partner3TypeId = order.PartnerType3.ToString();
-
-                            //#region Check if Partner Type Exists or not
-                            //var partnerType1 = context.PartnerTypes.FirstOrDefault(t => t.PartnerTypeCode == partner1TypeId);
-                            //var partnerType2 = context.PartnerTypes.FirstOrDefault(t => t.PartnerTypeCode == partner2TypeId);
-                            //var partnerType3 = context.PartnerTypes.FirstOrDefault(t => t.PartnerTypeCode == partner3TypeId);
-
-                            //if (partnerType1 == null || partnerType2 == null || partnerType3 == null)
-                            //{
-                            //    //Return with Partner Type not found.
-                            //    transaction.Rollback();
-                            //    response.Status = DomainObjects.Resource.ResourceData.Failure;
-                            //    response.StatusCode = (int)HttpStatusCode.BadRequest;
-                            //}
-                            //if (partnerType1 == null)
-                            //{
-                            //    //Return with Partner Type not found.
-                            //    response.StatusMessage = order.PartnerType1.ToString() + " Partner Type not found in TMS.";
-                            //    return response;
-                            //}
-                            //if (partnerType2 == null)
-                            //{
-                            //    //Return with Partner Type not found.
-                            //    response.StatusMessage = order.PartnerType2.ToString() + " Partner Type not found in TMS.";
-                            //    return response;
-                            //}
-                            //if (partnerType3 == null)
-                            //{
-                            //    //Return with Partner Type not found.
-                            //    response.StatusMessage = order.PartnerType3.ToString() + " Partner Type not found in TMS.";
-                            //    return response;
-                            //}
-
-                            //#endregion
-
-                            //int partner1Id;
-                            //int partner2Id;
-                            //int partner3Id;
-
-                            //#region Check if Partner Exists or not
-                            //if (request.UploadType == 2)
-                            //{
-                            //    partner1Id = Convert.ToInt32(order.PartnerNo1);
-                            //    partner2Id = Convert.ToInt32(order.PartnerNo2);
-                            //    partner3Id = Convert.ToInt32(order.PartnerNo3);
-                            //}
-                            //else
-                            //{
-                            //    var partner1 = (from p in context.Partners
-                            //                    join ppt in context.PartnerPartnerTypes on p.ID equals ppt.PartnerId
-                            //                    where p.PartnerNo == order.PartnerNo1 && ppt.PartnerTypeId == partnerType1.ID
-                            //                    select new Domain.Partner()
-                            //                    {
-                            //                        ID = p.ID
-                            //                    }).FirstOrDefault();
-                            //    var partner2 = (from p in context.Partners
-                            //                    join ppt in context.PartnerPartnerTypes on p.ID equals ppt.PartnerId
-                            //                    where p.PartnerNo == order.PartnerNo2 && ppt.PartnerTypeId == partnerType2.ID
-                            //                    select new Domain.Partner()
-                            //                    {
-                            //                        ID = p.ID
-                            //                    }).FirstOrDefault();
-
-                            //    var partner3 = (from p in context.Partners
-                            //                    join ppt in context.PartnerPartnerTypes on p.ID equals ppt.PartnerId
-                            //                    where p.PartnerNo == order.PartnerNo3 && ppt.PartnerTypeId == partnerType3.ID
-                            //                    select new Domain.Partner()
-                            //                    {
-                            //                        ID = p.ID
-                            //                    }).FirstOrDefault();
-
-                            //    if (partnerType1 == null || partnerType2 == null || partnerType3 == null)
-                            //    {
-                            //        //Return with Partner not found.
-                            //        transaction.Rollback();
-                            //        response.Status = DomainObjects.Resource.ResourceData.Failure;
-                            //        response.StatusCode = (int)HttpStatusCode.BadRequest;
-                            //    }
-
-                            //    if (partner1 == null)
-                            //    {
-
-                            //        response.StatusMessage = order.PartnerNo1 + " Partner not found in TMS.";
-                            //        return response;
-                            //    }
-                            //    else
-                            //    {
-                            //        partner1Id = partner1.ID;
-
-                            //    }
-                            //    if (partner2 == null)
-                            //    {
-                            //        //Return with Partner not found.
-                            //        response.StatusMessage = order.PartnerNo2 + " Partner not found in TMS.";
-                            //        return response;
-                            //    }
-                            //    else
-                            //    {
-                            //        partner2Id = partner2.ID;
-                            //    }
-                            //    if (partner3 == null)
-                            //    {
-                            //        //Return with Partner not found.
-                            //        response.StatusMessage = order.PartnerNo3 + " Partner not found in TMS.";
-                            //        return response;
-                            //    }
-                            //    else
-                            //    {
-                            //        partner3Id = partner3.ID;
-                            //    }
-                            //}
-
-                            //#endregion
-
-                            //#region Step 5: Insert Expedetor Partner Detail
-                            //Data.OrderPartnerDetail orderPartner1Detail = new Data.OrderPartnerDetail()
-                            //{
-                            //    OrderDetailID = orderDetail.ID,
-                            //    PartnerID = partner1Id,
-                            //    PartnerTypeId = partnerType1.ID,
-                            //    IsOriginal = true,
-                            //    IsParent = true,
-                            //    CreatedBy = "SYSTEM",
-                            //    CreatedTime = DateTime.Now,
-                            //    LastModifiedBy = "",
-                            //    LastModifiedTime = null
-                            //};
-                            //context.OrderPartnerDetails.Add(orderPartner1Detail);
-                            //context.SaveChanges();
-
-                            //#endregion
-
-                            //#region Insert Source Partner Detail
-                            //Data.OrderPartnerDetail orderPartner2Detail = new Data.OrderPartnerDetail()
-                            //{
-                            //    OrderDetailID = orderDetail.ID,
-                            //    PartnerID = partner2Id,
-                            //    PartnerTypeId = partnerType2.ID,
-                            //    IsOriginal = true,
-                            //    IsParent = true,
-                            //    CreatedBy = "SYSTEM",
-                            //    CreatedTime = DateTime.Now,
-                            //    LastModifiedBy = "",
-                            //    LastModifiedTime = null
-                            //};
-                            //context.OrderPartnerDetails.Add(orderPartner2Detail);
-                            //context.SaveChanges();
-                            //#endregion
-
-                            //#region Insert Destination Partner Detail
-                            //Data.OrderPartnerDetail orderPartner3Detail = new Data.OrderPartnerDetail()
-                            //{
-                            //    OrderDetailID = orderDetail.ID,
-                            //    PartnerID = partner3Id,
-                            //    PartnerTypeId = partnerType3.ID,
-                            //    IsOriginal = true,
-                            //    IsParent = true,
-                            //    CreatedBy = "SYSTEM",
-                            //    CreatedTime = DateTime.Now,
-                            //    LastModifiedBy = "",
-                            //    LastModifiedTime = null
-                            //};
-                            //context.OrderPartnerDetails.Add(orderPartner3Detail);
-                            //context.SaveChanges();
-                            //#endregion
-
-                            //#region Step 6: Insert Packing Sheet
-                            //if (!string.IsNullOrEmpty(order.PackingSheetNo))
-                            //{
-                            //    string[] packingSheets = order.PackingSheetNo.Split(',');
-                            //    foreach (string packinSheet in packingSheets)
-                            //    {
-                            //        var existingPackingSheet = context.PackingSheets.FirstOrDefault(t => t.ShippingListNo == order.ShippingListNo && t.PackingSheetNo == packinSheet);
-                            //        if (existingPackingSheet == null)
-                            //        {
-                            //            Data.PackingSheet packingSheetRequest = new Data.PackingSheet()
-                            //            {
-                            //                ShippingListNo = order.ShippingListNo,
-                            //                PackingSheetNo = packinSheet,
-                            //                CreatedBy = request.CreatedBy,
-                            //                CreatedTime = DateTime.Now,
-                            //                LastModifiedBy = "",
-                            //                LastModifiedTime = null
-                            //            };
-
-                            //            context.PackingSheets.Add(packingSheetRequest);
-                            //            context.SaveChanges();
-                            //        }
-
-                            //    }
-                            //}
-                            //#endregion
-
-                            //#region Step 7: Insert Shipment SAP
-
-                            //if (!string.IsNullOrEmpty(order.ShipmentSAPNo))
-                            //{
-                            //    string[] shipmentSAPs = order.ShipmentSAPNo.Split(',');
-                            //    foreach (string shipmentSAP in shipmentSAPs)
-                            //    {
-                            //        Data.ShipmentSAP shipmentSAPRequest = new Data.ShipmentSAP()
-                            //        {
-                            //            OrderDetailID = orderDetailId,
-                            //            ShipmentSAPNo = shipmentSAP,
-                            //            CreatedBy = request.CreatedBy,
-                            //            CreatedTime = DateTime.Now,
-                            //            LastModifiedBy = "",
-                            //            LastModifiedTime = null
-                            //        };
-
-                            //        context.ShipmentSAPs.Add(shipmentSAPRequest);
-                            //        context.SaveChanges();
-                            //    }
-                            //}
-
-                            //#endregion
-
-                            //#region Step 8: Update Order Status
-                            //string orderStatusCode = order.OrderShipmentStatus.ToString();
-                            //Data.OrderStatusHistory orderStatusHistory = new Data.OrderStatusHistory()
-                            //{
-                            //    OrderDetailID = orderDetailId,
-                            //    OrderStatusID = context.OrderStatuses.Where(t => t.OrderStatusCode == orderStatusCode).FirstOrDefault().ID,
-                            //    StatusDate = DateTime.Now,
-                            //    Remarks = "Order Creted"
-                            //};
-
-                            //context.OrderStatusHistories.Add(orderStatusHistory);
-                            //context.SaveChanges();
-
-                            //#endregion
-                            //#endregion
-
-                            //#endregion
 
                             transaction.Commit();
                             response.Status = DomainObjects.Resource.ResourceData.Success;
@@ -2911,8 +2553,8 @@ namespace TMS.DataGateway.Repositories
                         try
                         {
                             string soPoNumber = String.Empty;
-                            DateTime estimationShipmentDate = order.ActualShipment;// DateTime.ParseExact(order.EstimationShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(order.EstimationShipmentTime);
-                            DateTime actualShipmentDate = order.EstimationShipment; // DateTime.ParseExact(order.ActualShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(order.ActualShipmentTime);
+                            DateTime estimationShipmentDate = order.ActualShipment;
+                            DateTime actualShipmentDate = order.EstimationShipment; 
 
                             #region Step 1: Check if We have Business Area master data
                             int businessAreaId;
@@ -2969,12 +2611,6 @@ namespace TMS.DataGateway.Repositories
                                                         where o.OrderNo == order.OrderNo
                                                         select o.ID
                                                       ).FirstOrDefault();
-                            //if (request.UploadType == 2)
-                            //{
-                            //    order.DriverNo = order.DriverNo;
-                            //    order.DriverName = context.Drivers.FirstOrDefault(t => t.DriverNo == order.DriverNo).UserName;
-                            //    soPoNumber = order.SOPONumber;
-                            //}
 
                             int orderDetailId = 0;
                             if (persistedOrderDataID > 0)
@@ -3668,6 +3304,157 @@ namespace TMS.DataGateway.Repositories
                     }
                 }
             }
+            return response;
+        }
+
+        public InvoiceResponse GetInvoiceRequest(OrderStatusRequest request)
+
+        {
+            InvoiceResponse invoiceResponse = new InvoiceResponse()
+            {
+                Data = new List<Domain.Invoice>()
+            };
+
+            using (var context = new Data.TMSDBContext())
+            {
+                foreach (var reqData in request.Requests)
+                {
+                    using (DbContextTransaction transaction = context.Database.BeginTransaction())
+                    {
+                        try
+                        {
+                            var orderHeader = (from oh in context.OrderHeaders
+                                               where oh.OrderNo == reqData.OrderNumber
+                                               select oh).FirstOrDefault();
+
+                            var orderDetails = (from od in context.OrderDetails
+                                                where od.OrderHeaderID == orderHeader.ID
+                                                select od).FirstOrDefault();
+
+                            Domain.Invoice invoice = new Domain.Invoice
+                            {
+                                GeneralPOHeader = new GeneralPOHeader
+                                {
+                                    GeneralPOHeaderId = "",
+                                    DepartementId = "",
+                                    OrderDate = orderHeader.OrderDate.ToShortDateString(),
+                                    OrderNo = orderHeader.OrderNo,
+                                    LocationId = "",
+                                    VendorCode = "",
+                                    ReviewerDepartementId = "",
+                                    TotalPrice = orderHeader.Harga.ToString(),
+                                    Currency = "",
+                                    Reference = "",
+                                    Status = context.OrderStatuses.Where(s => s.OrderStatusCode == reqData.OrderStatusCode).Select(x => x.OrderStatusValue).FirstOrDefault(),
+                                    StatusSAP = "",
+                                    IsDeleted = "",
+                                    CreatedDate = DateTime.Now.ToShortDateString(),
+                                    CreatedBy = "SYSTEM",
+                                    ModifiedDate = "",
+                                    ModifiedBy = "",
+                                    Note = "",
+                                    IsFromSAP = "",
+                                    BusinessArea = context.BusinessAreas.Where(ba => ba.ID == orderHeader.BusinessAreaId).Select(x => x.BusinessAreaCode).FirstOrDefault(),
+                                    CompanyCode = "",
+                                    GRNumber = "",
+                                    GRDate = "",
+                                    GRTime = ""
+
+                                },
+                                GeneralPODetails = new GeneralPODetails()
+                                {
+                                    GRNumber = "",
+                                    MaterialNumber = orderDetails.ShippingListNo,
+                                    GeneralPODetailId = "",
+                                    GeneralPOHeaderId = "",
+                                    OrderDescription = "",
+                                    Qty = orderDetails.TotalCollie.ToString(),
+                                    DeliveryDate = orderDetails.ActualShipmentDate.ToShortDateString(),
+                                    UnitPrice = "",
+                                    PPN = "",
+                                    TotalPrice = orderHeader.Harga.ToString(),
+                                    Jenis = "",
+                                    DepartementId = "",
+                                    Currency = "",
+                                    ItemNo = "",
+                                    IsDeleted = "",
+                                    CreatedDate = "",
+                                    CreatedBy = "",
+                                    ModifiedDate = "",
+                                    ModifiedBy = "",
+                                    MaterialDesc = ""
+                                }
+
+                            };
+
+                            invoiceResponse.Data.Add(invoice);
+                        }
+                        catch (Exception ex)
+                        {
+                            transaction.Rollback();
+                            _logger.Log(LogLevel.Error, ex);
+                            invoiceResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                            invoiceResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                            invoiceResponse.StatusMessage = ex.Message;
+                        }
+                    }
+                }
+            }
+            return invoiceResponse;
+        }
+
+        public OrderStatusResponse SwapeStopPoints(OrderStatusRequest orderStatusRequest)
+        {
+            _logger.Log(LogLevel.Error, orderStatusRequest);
+            OrderStatusResponse response = new OrderStatusResponse()
+            {
+                Data = new List<OrderStatus>()
+            };
+
+            using (var context = new DataModel.TMSDBContext())
+            {
+                try
+                {
+                    foreach (var statusRequest in orderStatusRequest.Requests)
+                    {
+                        int orderId = 0;
+                        orderId = context.OrderHeaders.FirstOrDefault(t => t.OrderNo == statusRequest.OrderNumber).ID;
+
+                        if (statusRequest.SequenceNumber > 0)
+                        {
+                            DataModels.OrderDetail orderDetailData = context.OrderDetails.Where(t => t.SequenceNo == statusRequest.SequenceNumber && t.OrderHeaderID == orderId).FirstOrDefault();
+
+                            if (orderDetailData.SequenceNo != statusRequest.NewSequenceNumber && orderDetailData.SequenceNo > 0)
+                            {
+                                int originalSequenceNo = orderDetailData.SequenceNo;
+
+                                orderDetailData.SequenceNo = statusRequest.NewSequenceNumber;
+                                context.Entry(orderDetailData).State = System.Data.Entity.EntityState.Modified;
+
+                                DataModels.OrderDetail swappingDetailData = context.OrderDetails.Where(t => t.OrderHeaderID == orderDetailData.OrderHeaderID && t.SequenceNo == statusRequest.NewSequenceNumber).FirstOrDefault();
+                                swappingDetailData.SequenceNo = originalSequenceNo;
+                                context.Entry(swappingDetailData).State = System.Data.Entity.EntityState.Modified;
+                                context.SaveChanges();
+                            }
+
+
+                        }
+
+                        response.Data = orderStatusRequest.Requests;
+                        response.Status = DomainObjects.Resource.ResourceData.Success;
+                        response.StatusCode = (int)HttpStatusCode.OK;
+                        response.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log(LogLevel.Error, ex);
+                    response.Status = DomainObjects.Resource.ResourceData.Failure;
+                    response.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                    response.StatusMessage = ex.Message;
+                }
+            }
+
             return response;
         }
 

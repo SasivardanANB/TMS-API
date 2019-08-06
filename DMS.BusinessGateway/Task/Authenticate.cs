@@ -36,25 +36,5 @@ namespace DMS.BusinessGateway.Task
             bool res = _userRepository.ValidateToken(token);
             return res;
         }
-
-        //public override UserResponse LoginUser(LoginRequest login)
-        //{
-        //    //If needed write business logic here for request.
-
-        //    UserResponse userData = _userRepository.LoginUser(login);
-
-        //    //If needed write business logic here for response.
-        //    return userData;
-        //}
-
-        //public override UserResponse CreateUser(UserRequest user)
-        //{
-        //    //If needed write business logic here for request.
-
-        //    UserResponse userData = _userRepository.CreateUser(user);
-
-        //    //If needed write business logic here for response.
-        //    return userData;
-        //}
     }
 }

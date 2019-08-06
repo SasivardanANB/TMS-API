@@ -53,10 +53,10 @@ namespace TMS.API.Controllers
         
         [Route("getvehiclesplatenumbers")]
         [HttpGet]
-        public IHttpActionResult GetVehiclesPlateNumbers(string searchText=null)
+        public IHttpActionResult GetVehiclesPlateNumbers(string searchText=null,int transporterId=0)
         {
             IVehicleTask vehicleTask = DependencyResolver.GetImplementationOf<ITaskGateway>().VehicleTask;
-            CommonCodeResponse vehicleResponse = vehicleTask.GetVehiclesPlateNumbers(searchText);
+            CommonCodeResponse vehicleResponse = vehicleTask.GetVehiclesPlateNumbers(searchText,transporterId);
             return Ok(vehicleResponse);
         }
     }

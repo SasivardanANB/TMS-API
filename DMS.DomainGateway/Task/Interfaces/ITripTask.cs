@@ -24,5 +24,6 @@ namespace DMS.DomainGateway.Task.Interfaces
         StopPointsResponse GetPendingStopPoints(int tripId);
         OrderStatusResponse CancelOrder(OrderStatusRequest request);
         ShipmentListResponse CreateUpdateShipmentList(int stopPointId, ShippingList request);
+        StopPointsResponse SwapeStopPoints(UpdateTripStatusRequest updateTripStatusRequest);
     }
 }

@@ -321,7 +321,6 @@ namespace DMS.DataGateway.Repositories
             return userResponse;
         }
     }
-
 }
 
 

@@ -154,23 +154,21 @@ namespace TMS.DataGateway.Repositories
                                                        OrderId = ord.Select(p => p.oh.ID).FirstOrDefault(),
                                                        OrderNo = ord.Select(p => p.oh.OrderNo).FirstOrDefault(),
                                                        Transporter = tMSDBContext.Partners.Where(pa => pa.ID == tMSDBContext.OrderPartnerDetails.Where(i => i.OrderDetailID == tMSDBContext.OrderDetails.Where(o => o.OrderHeaderID == ord.Select(id => id.oh.ID).FirstOrDefault()).Select(od => od.ID).Take(1).FirstOrDefault() && i.PartnerTypeId == 1).Select(pt => pt.PartnerID).FirstOrDefault()).Select(pn => pn.PartnerName).FirstOrDefault(),
-                                                       //Source = tMSDBContext.Partners.Where(pa => pa.ID == tMSDBContext.OrderPartnerDetails.Where(i => i.OrderDetailID == tMSDBContext.OrderDetails.Where(o => o.OrderHeaderID == ord.Select(id => id.oh.ID).FirstOrDefault()).Select(od => od.ID).Take(1).FirstOrDefault() && i.PartnerTypeId == 2).Select(pt => pt.PartnerID).FirstOrDefault()).Select(pn => pn.PartnerName).FirstOrDefault(),
-                                                       //Destination = tMSDBContext.Partners.Where(pa => pa.ID == tMSDBContext.OrderPartnerDetails.Where(i => i.OrderDetailID == tMSDBContext.OrderDetails.Where(o => o.OrderHeaderID == ord.Select(id => id.oh.ID).FirstOrDefault()).Select(od => od.ID).Take(1).FirstOrDefault() && i.PartnerTypeId == 3).Select(pt => pt.PartnerID).FirstOrDefault()).Select(pn => pn.PartnerName).FirstOrDefault(),
                                                        Drivername = ord.Select(p => p.oh.DriverName).FirstOrDefault(),
                                                        OrderCreatedDate = ord.Select(p => p.oh.OrderDate).FirstOrDefault().ToString(),
-                                                       //Vehicle = tMSDBContext.VehicleTypes.Where(v => v.ID.ToString() == ord.Select(p => p.oh.VehicleShipment).FirstOrDefault()).Select(d => d.VehicleTypeDescription).FirstOrDefault(),
-
-                                                       //ShippingTime = DbFunctions.DiffHours(ord.Where(i => i.osh.ID == 12).Select(o => o.osh.StatusDate).FirstOrDefault(), ord.Where(i => i.osh.ID == 4 && i.osh.IsLoad == false).Select(o => o.osh.StatusDate).FirstOrDefault()).ToString(),
                                                        ETA = ord.OrderByDescending(i => i.od.ID).Select(o => o.od.EstimationShipmentDate).FirstOrDefault().ToString(),
                                                        FinishDelivery = ord.Where(od => od.osh.OrderStatusID == 12).Select(o => o.osh.StatusDate).FirstOrDefault().ToString(),
-                                                       //ServiceRate = oh.Harga.ToString(),                                                       
                                                    }).ToList();
 
                     foreach (var item in comletedOrderprogresses)
                     {
-                        int loadingTime = 0;
-                        int unLoadingTime = 0;
-                        int travellingTime = 0;
+                        item.ETA = Convert.ToDateTime(item.ETA).ToString("MMM dd yyyy hh:mmtt");
+                        item.FinishDelivery = Convert.ToDateTime(item.FinishDelivery).ToString("MMM dd yyyy hh:mmtt");
+                        item.ServiceRate = Math.Round((Convert.ToDateTime(item.FinishDelivery) - Convert.ToDateTime(item.ETA)).TotalHours, 2).ToString();
+
+                        decimal loadingTime = 0;
+                        decimal unLoadingTime = 0;
+                        decimal travellingTime = 0;
                         var orderDetails = tMSDBContext.OrderDetails.Where(i => i.OrderHeaderID == item.OrderId).ToList();
                         foreach (var orderItem in orderDetails)
                         {
@@ -263,31 +261,31 @@ namespace TMS.DataGateway.Repositories
 
                             if (orderDetailEndLoaingTime != null && orderDetailStartLoadingTime != null)
                             {
-                                loadingTime += Convert.ToInt32((orderDetailEndLoaingTime.Date - orderDetailStartLoadingTime.Date).TotalHours);
+                                loadingTime += Convert.ToDecimal((orderDetailEndLoaingTime.Date - orderDetailStartLoadingTime.Date).TotalHours);
                             }
                             if (orderDetailEndUnLoaingTime != null && orderDetailStartUnLoadingTime != null)
                             {
-                                unLoadingTime += Convert.ToInt32((orderDetailEndUnLoaingTime.Date - orderDetailStartUnLoadingTime.Date).TotalHours);
+                                unLoadingTime += Convert.ToDecimal((orderDetailEndUnLoaingTime.Date - orderDetailStartUnLoadingTime.Date).TotalHours);
                             }
                             if (orderCompletedTime != null && orderDetailLoadStartTripTime != null)
                             {
-                                item.ShippingTime = Convert.ToInt32((orderCompletedTime.Date - orderDetailLoadStartTripTime.Date).TotalHours).ToString();
+                                item.ShippingTime = Math.Round(Convert.ToDecimal((orderCompletedTime.Date - orderDetailLoadStartTripTime.Date).TotalHours), 2).ToString();
                             }
-                            int travelLoadTime = 0;
-                            int travelUnLoadTime = 0;
+                            decimal travelLoadTime = 0;
+                            decimal travelUnLoadTime = 0;
                             if (orderDetailLoadConfirmArriveTime != null && orderDetailLoadStartTripTime != null)
                             {
-                                travelLoadTime = Convert.ToInt32((orderDetailLoadConfirmArriveTime.Date - orderDetailLoadStartTripTime.Date).TotalHours);
+                                travelLoadTime = Convert.ToDecimal((orderDetailLoadConfirmArriveTime.Date - orderDetailLoadStartTripTime.Date).TotalHours);
                             }
                             if (orderDetailUnLoadConfirmArriveTime != null && orderDetailUnLoadStartTripTime != null)
                             {
-                                travelUnLoadTime = Convert.ToInt32((orderDetailUnLoadConfirmArriveTime.Date - orderDetailUnLoadStartTripTime.Date).TotalHours);
+                                travelUnLoadTime = Convert.ToDecimal((orderDetailUnLoadConfirmArriveTime.Date - orderDetailUnLoadStartTripTime.Date).TotalHours);
                             }
                             travellingTime += travelLoadTime + travelUnLoadTime;
                         }
-                        item.LoadingTime = loadingTime.ToString();
-                        item.UnloadingTime = unLoadingTime.ToString();
-                        item.TravellingTime = travellingTime.ToString();
+                        item.LoadingTime = Math.Round(loadingTime, 2).ToString();
+                        item.UnloadingTime = Math.Round(unLoadingTime, 2).ToString();
+                        item.TravellingTime = Math.Round(travellingTime, 2).ToString();
                     }
 
                     orderReportResponse.Data = new Domain.OrderReport()
@@ -450,11 +448,11 @@ namespace TMS.DataGateway.Repositories
                                                                 DbFunctions.TruncateTime(opd.OrderDetail.OrderHeader.OrderDate) <= DbFunctions.TruncateTime(goodsReceiveOrIssueRequest.Request.EndDate)
                                                               group new { opd.OrderDetail.OrderHeader, opd.OrderDetail } by new
                                                               {
-                                                                  Column1 = (DateTime?)DbFunctions.TruncateTime(opd.OrderDetail.OrderHeader.OrderDate)
+                                                                  Column1 = DbFunctions.TruncateTime(opd.OrderDetail.OrderHeader.OrderDate)
                                                               } into g
                                                               select new
                                                               {
-                                                                  Order_Qty = (int?)g.Sum(p => p.OrderDetail.TotalCollie),
+                                                                  Order_Qty = g.Sum(p => p.OrderDetail.TotalCollie),
                                                                   CreatedDate = g.Key.Column1
                                                               })
                                                    join B in (from opd in tMSDBContext.OrderPartnerDetails
@@ -466,23 +464,27 @@ namespace TMS.DataGateway.Repositories
                                                                 DbFunctions.TruncateTime(osh.StatusDate) <= DbFunctions.TruncateTime(goodsReceiveOrIssueRequest.Request.EndDate)
                                                               group new { osh, opd.OrderDetail } by new
                                                               {
-                                                                  Column1 = (DateTime?)DbFunctions.TruncateTime(osh.StatusDate)
+                                                                  Column1 = DbFunctions.TruncateTime(osh.StatusDate)
                                                               } into g
                                                               select new
                                                               {
-                                                                  Order_Qty = (int?)g.Sum(p => p.OrderDetail.TotalCollie),
+                                                                  Order_Qty = g.Sum(p => p.OrderDetail.TotalCollie),
                                                                   CreatedDate = g.Key.Column1
                                                               })
                                                                on new { CreatedDate = DbFunctions.TruncateTime(A.CreatedDate).Value } equals new { CreatedDate = DbFunctions.TruncateTime(B.CreatedDate).Value } into B_join
+                                                   where A.Order_Qty > 0
                                                    from B in B_join.DefaultIfEmpty()
                                                    select new Domain.GoodsReceiveOrIssue
                                                    {
                                                        OrderQty = A.Order_Qty.ToString(),
-                                                       GRQty = goodsReceiveOrIssueRequest.Request.OrderTypeId == 1 ? (string.IsNullOrEmpty(B.Order_Qty.ToString()) ? "0" : B.Order_Qty.ToString()) : "0",
-                                                       GIQty = goodsReceiveOrIssueRequest.Request.OrderTypeId == 2 ? (string.IsNullOrEmpty(B.Order_Qty.ToString()) ? "0" : B.Order_Qty.ToString()) : "0",
-                                                       Percentage = string.IsNullOrEmpty(((A.Order_Qty / B.Order_Qty) * 100).ToString()) ? "0" : ((A.Order_Qty / B.Order_Qty) * 100).ToString(),
-                                                       Date = A.CreatedDate.Value != null ? A.CreatedDate.Value : B.CreatedDate.Value
+                                                       GRQty = goodsReceiveOrIssueRequest.Request.OrderTypeId == 1 ? B.Order_Qty.ToString() : "0",
+                                                       GIQty = goodsReceiveOrIssueRequest.Request.OrderTypeId == 2 ? B.Order_Qty.ToString() : "0",
+                                                       Percentage = Math.Round(((B.Order_Qty * 100.00) / A.Order_Qty), 2).ToString(),
+                                                       Date = (A.CreatedDate ?? B.CreatedDate.Value).ToString()
                                                    }).ToList();
+
+                    foreach (Domain.GoodsReceiveOrIssue g in goodsReceiveOrIssueData)
+                        g.Date = Convert.ToDateTime(g.Date).ToString("dd.MM.yyyy");
 
                     goodsReceiveOrIssueResponse.NumberOfRecords = goodsReceiveOrIssueData.Count;
                     goodsReceiveOrIssueResponse.Data = new Domain.GoodsReceiveOrIssueReport()

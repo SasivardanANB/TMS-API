@@ -66,7 +66,7 @@ namespace TMS.DataGateway.Repositories
                             context.SaveChanges();
                             DataModel.PartnerPartnerType partnerPartnerType = new PartnerPartnerType();
                             partnerPartnerType.PartnerId = partnerData.ID;
-                            partnerPartnerType.PartnerTypeId = context.PartnerTypes.FirstOrDefault(t=>t.PartnerTypeCode == "1").ID;
+                            partnerPartnerType.PartnerTypeId = context.PartnerTypes.FirstOrDefault(t => t.PartnerTypeCode == "1").ID;
                             context.PartnerPartnerTypes.Add(partnerPartnerType);
                             context.SaveChanges();
                             partnerResponse.StatusMessage = DomainObjects.Resource.ResourceData.PartnerCreated;
@@ -142,7 +142,38 @@ namespace TMS.DataGateway.Repositories
             {
                 using (var context = new TMSDBContext())
                 {
-                    partnerList =
+                    var userTokenDetails = context.Tokens.Where(t => t.TokenKey == partnerRequest.Token).FirstOrDefault();
+                    var userDetails = context.Users.Where(t => t.ID == userTokenDetails.UserID).FirstOrDefault();
+                    var picDetails = context.Pics.Where(p => p.PICEmail == userDetails.Email && p.IsActive == true && p.IsDeleted == false).Select(x => x.ID).ToList();
+                    if (picDetails.Count > 0)
+                    {
+                        partnerList =
+                        (from partner in context.Partners
+                         join ppt in context.PartnerPartnerTypes on partner.ID equals ppt.PartnerId
+                         join subdistrict in context.SubDistricts on partner.SubDistrictID equals subdistrict.ID
+                         join city in context.Cities on subdistrict.CityID equals city.ID
+                         where !partner.IsDeleted && picDetails.Contains(partner.PICID.Value)
+                         select new Domain.Partner
+                         {
+                             ID = partner.ID,
+                             PartnerInitial = partner.PartnerInitial,
+                             PartnerName = partner.PartnerName,
+                             PartnerEmail = partner.PartnerEmail,
+                             PartnerAddress = partner.PartnerAddress,
+                             OrderPointCode = partner.OrderPointCode,
+                             OrderPointTypeID = partner.OrderPointTypeID,
+                             SubDistrictID = subdistrict.ID,
+                             PartnerNo = partner.PartnerNo,
+                             PartnerTypeID = ppt.PartnerTypeId,
+                             PICID = partner.PICID,
+                             PICName = partner.PIC.PICName,
+                             PICPhone = partner.PIC.PICPhone,
+                             CityCode = city.CityDescription
+                         }).ToList();
+                    }
+                    else
+                    {
+                        partnerList =
                         (from partner in context.Partners
                          join ppt in context.PartnerPartnerTypes on partner.ID equals ppt.PartnerId
                          join subdistrict in context.SubDistricts on partner.SubDistrictID equals subdistrict.ID
@@ -162,9 +193,10 @@ namespace TMS.DataGateway.Repositories
                              PartnerTypeID = ppt.PartnerTypeId,
                              PICID = partner.PICID,
                              PICName = partner.PIC.PICName,
-                             PICPhone=partner.PIC.PICPhone,
+                             PICPhone = partner.PIC.PICPhone,
                              CityCode = city.CityDescription
                          }).ToList();
+                    }
                 }
                 // Filter
                 if (partnerRequest.Requests.Count > 0)

@@ -57,6 +57,9 @@
     <Compile Include="Objects\CommonCode.cs" />
     <Compile Include="Objects\Common.cs" />
     <Compile Include="Objects\AdminBoardReport.cs" />
+    <Compile Include="Objects\GeneralPODetails.cs" />
+    <Compile Include="Objects\GeneralPOHeader.cs" />
+    <Compile Include="Objects\Invoice.cs" />
     <Compile Include="Objects\Driver.cs" />
     <Compile Include="Objects\Error.cs" />
     <Compile Include="Objects\Harga.cs" />
@@ -68,6 +71,7 @@
     <Compile Include="Objects\Order.cs" />
     <Compile Include="Objects\DealerDetails.cs" />
     <Compile Include="Objects\OrderStatus.cs" />
+    <Compile Include="Objects\ResponseDataForFileUpload.cs" />
     <Compile Include="Objects\SAMAUser.cs" />
     <Compile Include="Objects\ShipmentScheduleOcr.cs" />
     <Compile Include="Objects\TrackStep.cs" />
@@ -101,6 +105,7 @@
     <Compile Include="Request\ForgotPasswordRequest.cs" />
     <Compile Include="Request\GoodsReceiveOrIssueRequest.cs" />
     <Compile Include="Request\HargaRequest.cs" />
+    <Compile Include="Request\InvoiceRequest.cs" />
     <Compile Include="Request\ShipmentScheduleOcrRequest.cs" />
     <Compile Include="Request\OrderStatusRequest.cs" />
     <Compile Include="Request\PackingSheetRequest.cs" />
@@ -138,6 +143,7 @@
     <Compile Include="Response\HargaResponse.cs" />
     <Compile Include="Response\OrderDetailsResponse.cs" />
     <Compile Include="Response\GoodsReceiveOrIssueResponse.cs" />
+    <Compile Include="Response\InvoiceResponse.cs" />
     <Compile Include="Response\ShipmentScheduleOcrResponse.cs" />
     <Compile Include="Response\OrderSearchResponse.cs" />
     <Compile Include="Response\OrderResponse.cs" />

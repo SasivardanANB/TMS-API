@@ -14,5 +14,6 @@ namespace DMS.DomainGateway.Gateway
         public abstract IUserTask UserTask { get; set; }
         public abstract IAuthenticateTask AuthenticateTask {get;set;}
         public abstract ITripTask TripTask { get; set; }
+        public abstract IMediaTask MediaTask { get; set; }
     }
 }

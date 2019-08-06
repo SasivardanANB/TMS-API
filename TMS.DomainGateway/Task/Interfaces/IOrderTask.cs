@@ -27,5 +27,11 @@ namespace TMS.DomainGateway.Task.Interfaces
         HargaResponse GetHarga(HargaRequest request);
         ShipmentScheduleOcrResponse CreateOrderFromShipmentScheduleOcr(ShipmentScheduleOcrRequest request);
         OrderResponse OcrOrderResponse(ShipmentScheduleOcrRequest shipmentScheduleOcrRequest);
+        InvoiceResponse GetInvoiceRequest(OrderStatusRequest request);
+        OrderStatusResponse SwapeStopPoints(OrderStatusRequest orderStatusRequest);
+        ImageGuidsResponse GetShippingListGuids(string orderNumber);
+        ImageGuidsResponse GetPodGuids(string orderNumber);
+        ImageGuidsResponse GetPhotoWithCustomerGuids(string orderNumber);
+        OrderResponse GetShipmentSchedulesFromEmail(string token);
     }
 }

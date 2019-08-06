@@ -1,18 +1,13 @@
-﻿using AutoMapper;
-using NLog;
+﻿using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using TMS.DataGateway.DataModels;
 using TMS.DataGateway.Repositories.Interfaces;
 using TMS.DomainObjects.Request;
 using TMS.DomainObjects.Response;
 using Domain = TMS.DomainObjects.Objects;
-using DataModel = TMS.DataGateway.DataModels;
-
 
 namespace TMS.DataGateway.Repositories
 {
@@ -73,10 +68,9 @@ namespace TMS.DataGateway.Repositories
             {
                 using (var tMSDBContext = new TMSDBContext())
                 {
-                    //TODO: Need to filter to get orders, by user business area after SAMA integration
                     var userDetails = tMSDBContext.Tokens.Where(t => t.TokenKey == gateRequest.Token).FirstOrDefault();
                     var businessAreas = (from ur in tMSDBContext.UserRoles
-                                         where ur.UserID == userDetails.UserID && ur.IsDelete == false
+                                         where ur.UserID == userDetails.UserID && !ur.IsDelete
                                          select ur.BusinessAreaID).ToList();
 
                     gateList = (from orderHeader in tMSDBContext.OrderHeaders
@@ -93,21 +87,6 @@ namespace TMS.DataGateway.Repositories
                                     BusinessAreaId = orderHeader.BusinessAreaId,
                                     GateName = tMSDBContext.GateInGateOuts.Any(g => g.OrderId == orderHeader.ID) ? (tMSDBContext.G2Gs.Where(g => g.ID == (tMSDBContext.GateInGateOuts.Where(ga => ga.OrderId == orderHeader.ID).OrderByDescending(id => id.ID).Select(i => i.G2GId).FirstOrDefault())).Select(i => i.G2GName).FirstOrDefault()) : "",
                                 }).ToList();
-
-                    // Old Code Start
-                    //gateList = tMSDBContext.OrderHeaders.Select(orderHeader => new Domain.Gate
-                    //{
-                    //    OrderId = orderHeader.ID,
-                    //    VehicleNumber = orderHeader.VehicleNo,
-                    //    OrderType = orderHeader.OrderType == 1 ? "Bongkar" : "Muat",
-                    //    BusinessArea = orderHeader.BusinessArea.BusinessAreaDescription,
-                    //    VehicleTypeName = tMSDBContext.VehicleTypes.Where(v => v.ID.ToString() == orderHeader.VehicleShipment).Select(i => i.VehicleTypeDescription).FirstOrDefault(),
-                    //    ID = tMSDBContext.GateInGateOuts.Any(g => g.OrderId == orderHeader.ID) ? tMSDBContext.GateInGateOuts.Where(g => g.OrderId == orderHeader.ID).Select(i => i.ID).FirstOrDefault() : 0,
-                    //    Status = tMSDBContext.GateInGateOuts.Any(g => g.OrderId == orderHeader.ID) ? tMSDBContext.GateTypes.Where(g => g.ID == tMSDBContext.GateInGateOuts.Where(ga => ga.OrderId == orderHeader.ID).OrderByDescending(id => id.ID).Select(i => i.GateTypeId).FirstOrDefault()).Select(i => i.GateTypeDescription).FirstOrDefault() : "NOT ARRIVED",
-                    //    BusinessAreaId = orderHeader.BusinessAreaId,
-                    //    GateName = tMSDBContext.GateInGateOuts.Any(g => g.OrderId == orderHeader.ID) ? (tMSDBContext.G2Gs.Where(g => g.ID == (tMSDBContext.GateInGateOuts.Where(ga => ga.OrderId == orderHeader.ID).OrderByDescending(id => id.ID).Select(i => i.G2GId).FirstOrDefault())).Select(i => i.G2GName).FirstOrDefault()) : "",
-                    //}).ToList();
-                    // Old Code End
 
                     //For filtering Gate Out records from list
                     if (gateList != null && gateList.Count > 0)
@@ -146,7 +125,10 @@ namespace TMS.DataGateway.Repositories
                 }
 
                 // Total NumberOfRecords
-                gateResponse.NumberOfRecords = gateList.Count;
+                if (gateList != null)
+                {
+                    gateResponse.NumberOfRecords = gateList.Count;
+                }
 
                 // Paging
                 int pageSize = Convert.ToInt32(gateRequest.PageSize);
@@ -156,7 +138,7 @@ namespace TMS.DataGateway.Repositories
                     gateList = gateList.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
                 }
 
-                if (gateList.Count > 0)
+                if (gateList != null && gateList.Count > 0)
                 {
                     gateResponse.Data = gateList;
                     gateResponse.Status = DomainObjects.Resource.ResourceData.Success;

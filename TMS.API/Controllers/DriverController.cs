@@ -14,6 +14,7 @@ using RestSharp;
 using System.Configuration;
 using Newtonsoft.Json;
 using TMS.DomainObjects.Objects;
+using TMS.BusinessGateway.Classes;
 
 namespace TMS.API.Controllers
 {
@@ -21,29 +22,6 @@ namespace TMS.API.Controllers
     [RoutePrefix("api/v1/driver")]
     public class DriverController : ApiController
     {
-        #region Private Methods
-        private static string GetApiResponse(string apiRoute, Method method, object requestQueryParameter, string token, Parameter item = null)
-        {
-            var client = new RestClient(ConfigurationManager.AppSettings["ApiGatewayBaseURL"]);
-            client.AddDefaultHeader("Content-Type", "application/json");
-            if (token != null)
-                client.AddDefaultHeader("Token", token);
-            var request = new RestRequest(apiRoute, method) { RequestFormat = DataFormat.Json };
-            request.Timeout = 500000;
-            if (requestQueryParameter != null)
-            {
-                request.AddJsonBody(requestQueryParameter);
-            }
-
-            if (item != null)
-            {
-                request.Parameters.Add(item);
-            }
-            var result = client.Execute(request);
-            return result.Content;
-        }
-        #endregion
-
         [Route("createupdatedriver")]
         [HttpPost]
         public IHttpActionResult CreateUpdateDriver(DriverRequest driverRequest)
@@ -67,7 +45,7 @@ namespace TMS.API.Controllers
 
             Parameter partnerId = new Parameter("partnerId", driverRequest.Requests[0].TransporterId.Value, ParameterType.QueryString);
 
-            PartnerDetilasResponse partnerDetails = JsonConvert.DeserializeObject<PartnerDetilasResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+            PartnerDetilasResponse partnerDetails = JsonConvert.DeserializeObject<PartnerDetilasResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
                          + "v1/master/getpartnerdetails", Method.GET, null, Request.Headers.GetValues("Token").First(), partnerId));
 
             // Get PIC Details
@@ -82,7 +60,7 @@ namespace TMS.API.Controllers
                 }
             };
 
-            PICResponse picDetails = JsonConvert.DeserializeObject<PICResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+            PICResponse picDetails = JsonConvert.DeserializeObject<PICResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
                          + "v1/pic/getpics", Method.POST, request, Request.Headers.GetValues("Token").First()));
 
             UserRequest dmsRequest = new UserRequest()
@@ -125,14 +103,14 @@ namespace TMS.API.Controllers
                 //Login to DMS and get Token
                 loginRequest.UserName = ConfigurationManager.AppSettings["DMSLogin"];
                 loginRequest.UserPassword = ConfigurationManager.AppSettings["DMSPassword"];
-                var dmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
+                var dmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
                     + "/v1/user/login", Method.POST, loginRequest, null));
                 if (dmsLoginResponse != null && dmsLoginResponse.Data.Count > 0)
                 {
                     token = dmsLoginResponse.TokenKey;
                 }
 
-                var userResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
+                var userResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
                     + "/v1/user/createupdateuser", Method.POST, dmsRequest, token));
                 if (userResponse != null)
                 {
@@ -161,6 +139,8 @@ namespace TMS.API.Controllers
         [HttpPost]
         public IHttpActionResult GetDrivers(DriverRequest driverRequest)
         {
+            string Token = Request.Headers.GetValues("Token").FirstOrDefault();
+            driverRequest.Token = Token;
             IDriverTask driverTask = DependencyResolver.GetImplementationOf<ITaskGateway>().DriverTask;
             DriverResponse driverResponse = driverTask.GetDrivers(driverRequest);
             return Ok(driverResponse);

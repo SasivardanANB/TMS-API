@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using NLog;
+﻿using NLog;
 using TMS.DataGateway.Repositories.Iterfaces;
 using TMS.DataGateway.DataModels;
 using TMS.DomainObjects.Objects;
@@ -9,12 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using DataModel = TMS.DataGateway.DataModels;
 using Domain = TMS.DomainObjects.Objects;
-using System.Configuration;
-using System.Data.Common;
 
 namespace TMS.DataGateway.Repositories
 {
@@ -26,7 +20,7 @@ namespace TMS.DataGateway.Repositories
         {
             PartnerSearchResponse partnerSearchResponse = new PartnerSearchResponse();
 
-            List<Domain.Common> partnerList = new List<Domain.Common>();
+            List<Domain.Common> partnerList = new List<Common>();
             try
             {
                 PartnerSearch partnerSearch = partnerSearchRequest.Requests[0];

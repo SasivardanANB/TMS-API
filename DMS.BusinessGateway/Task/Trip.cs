@@ -1,4 +1,4 @@
-﻿using DMS.DataGateway.Repositories;
+﻿using DMS.BusinessGateway.Classes;
 using DMS.DataGateway.Repositories.Iterfaces;
 using DMS.DomainGateway.Task;
 using DMS.DomainObjects.Objects;
@@ -12,30 +12,12 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DMS.BusinessGateway.Task
 {
     public partial class BusinessTripTask : TripTask
     {
         private readonly ITrip _tripRepository;
-
-        private static string GetApiResponse(string apiRoute, Method method, object requestQueryParameter, string token)
-        {
-            var client = new RestClient(ConfigurationManager.AppSettings["ApiGatewayBaseURL"]);
-            client.AddDefaultHeader("Content-Type", "application/json");
-            if (token != null)
-                client.AddDefaultHeader("Token", token);
-            var request = new RestRequest(apiRoute, method) { RequestFormat = DataFormat.Json };
-            request.Timeout = 500000;
-            if (requestQueryParameter != null)
-            {
-                request.AddJsonBody(requestQueryParameter);
-            }
-            var result = client.Execute(request);
-            return result.Content;
-        }
 
         public BusinessTripTask(ITrip tripRepository)
         {
@@ -106,7 +88,7 @@ namespace DMS.BusinessGateway.Task
 
                 loginRequest.UserName = ConfigurationManager.AppSettings["TMSLogin"];
                 loginRequest.UserPassword = ConfigurationManager.AppSettings["TMSPassword"];
-                var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
                     + "/v1/user/login", Method.POST, loginRequest, null));
                 if (tmsLoginResponse != null && tmsLoginResponse.Data.Count > 0)
                 {
@@ -114,7 +96,7 @@ namespace DMS.BusinessGateway.Task
                 }
                 #endregion
 
-                var response = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                var response = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
                     + "/v1/order/updateorderstatus", Method.POST, tmsRequest, token));
                 if (response != null)
                 {
@@ -154,7 +136,7 @@ namespace DMS.BusinessGateway.Task
                     OrderNumber = orderNumber,
                     OrderStatusCode = orderStatusCode,
                     Remarks = "",
-                    SequenceNumber = 0
+                    SequenceNumber = 0,
                 };
 
                 tmsRequest.Requests.Add(requestData);
@@ -169,7 +151,7 @@ namespace DMS.BusinessGateway.Task
 
                 loginRequest.UserName = ConfigurationManager.AppSettings["TMSLogin"];
                 loginRequest.UserPassword = ConfigurationManager.AppSettings["TMSPassword"];
-                var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
                     + "/v1/user/login", Method.POST, loginRequest, null));
                 if (tmsLoginResponse != null && tmsLoginResponse.Data.Count > 0)
                 {
@@ -177,7 +159,7 @@ namespace DMS.BusinessGateway.Task
                 }
                 #endregion
 
-                var response = JsonConvert.DeserializeObject<UserResponse>(GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                var response = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
                     + "/v1/order/updateorderstatus", Method.POST, tmsRequest, token));
                 if (response != null)
                 {
@@ -202,13 +184,13 @@ namespace DMS.BusinessGateway.Task
                     string deviceId = GetDeviceId(reqObj.DriverNo);
                     if (!string.IsNullOrEmpty(deviceId))
                     {
-                        var client = new RestClient("https://fcm.googleapis.com/");
+                        var client = new RestClient(ConfigurationManager.AppSettings["FCMURL"]);
                         client.AddDefaultHeader("Content-Type", "application/json");
                         client.AddDefaultHeader("Authorization", ConfigurationManager.AppSettings["FCM_Authorization"]);
                         var req = new RestRequest("fcm/send", Method.POST) { RequestFormat = DataFormat.Json };
                         req.Timeout = 500000;
                         NotificationRequest notificationRequest = new NotificationRequest();
-                        notificationRequest.to = deviceId;   //"cFaYBS5Rn_w:APA91bEcu9Q_wqSASgXZ1nAUUvpelCTOw6eF5g0RmdNIrIi7GlJl-mTezk9Tb7lVkzzBH3wabznQ6GMkws2Br9XV8OvpilwSmMjcE3MKe9LrEtYZ8eAodgbx12-Az0NU6_IKbIfB0POu";
+                        notificationRequest.to = deviceId;   
 
                         string tripNumber = string.Empty;
                         if (tripData.Data != null)
@@ -270,13 +252,13 @@ namespace DMS.BusinessGateway.Task
                     string deviceId = GetDeviceId(reqObj.DriverNo);
                     if (!string.IsNullOrEmpty(deviceId))
                     {
-                        var client = new RestClient("https://fcm.googleapis.com/");
+                        var client = new RestClient(ConfigurationManager.AppSettings["FCMURL"]);
                         client.AddDefaultHeader("Content-Type", "application/json");
                         client.AddDefaultHeader("Authorization", ConfigurationManager.AppSettings["FCM_Authorization"]);
                         var req = new RestRequest("fcm/send", Method.POST) { RequestFormat = DataFormat.Json };
                         req.Timeout = 500000;
                         NotificationRequest notificationRequest = new NotificationRequest();
-                        notificationRequest.to = deviceId;   //"cFaYBS5Rn_w:APA91bEcu9Q_wqSASgXZ1nAUUvpelCTOw6eF5g0RmdNIrIi7GlJl-mTezk9Tb7lVkzzBH3wabznQ6GMkws2Br9XV8OvpilwSmMjcE3MKe9LrEtYZ8eAodgbx12-Az0NU6_IKbIfB0POu";
+                        notificationRequest.to = deviceId;   
 
                         string tripNumber = "";
                         if (tripData.Data != null)
@@ -351,6 +333,75 @@ namespace DMS.BusinessGateway.Task
             }
 
             return _tripRepository.CreateUpdateShipmentList(shipmentListRequest);
+        }
+
+        public override StopPointsResponse SwapeStopPoints(UpdateTripStatusRequest updateTripStatusRequest)
+        {
+            StopPointsResponse stopPointsResponse = _tripRepository.SwapeStopPoints(updateTripStatusRequest);
+
+            #region Swape Stop Points in TMS 
+            OrderStatusRequest tmsRequest = new OrderStatusRequest()
+            {
+                Requests = new List<OrderStatus>()
+            };
+
+            foreach (var item in updateTripStatusRequest.Requests)
+            {
+                #region Get Order Number by Stop Point
+                string orderNumber = GetOrderNumber(item.StopPointId);
+                #endregion
+
+                #region Get Trip Status Code by Status ID
+                string orderStatusCode = GetOrderStatusCode(item.TripStatusId);
+                #endregion
+
+                #region Get Trip Sequnce Number
+                int orderSequenceNumber = GetOrderSequnceNumber(item.StopPointId);
+                #endregion
+
+                OrderStatus requestData = new OrderStatus()
+                {
+                    IsLoad = item.IsLoad,
+                    OrderNumber = orderNumber,
+                    OrderStatusCode = orderStatusCode,
+                    Remarks = item.Remarks,
+                    SequenceNumber = item.SequenceNumber,
+                    NewSequenceNumber = orderSequenceNumber
+                };
+                if (requestData.SequenceNumber != requestData.NewSequenceNumber)
+                {
+                    tmsRequest.Requests.Add(requestData);
+                }
+
+            }
+
+            if (tmsRequest.Requests.Count > 0)
+            {
+                #region Call TMS API to Swape Stop Points in TMS 
+                #region Login to TMS and get Token
+                LoginRequest loginRequest = new LoginRequest();
+                string token = "";
+
+                loginRequest.UserName = ConfigurationManager.AppSettings["TMSLogin"];
+                loginRequest.UserPassword = ConfigurationManager.AppSettings["TMSPassword"];
+                var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                    + "/v1/user/login", Method.POST, loginRequest, null));
+                if (tmsLoginResponse != null && tmsLoginResponse.Data.Count > 0)
+                {
+                    token = tmsLoginResponse.TokenKey;
+                }
+                #endregion
+
+                var response = JsonConvert.DeserializeObject<OrderStatusResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                    + "/v1/order/swapestoppoints", Method.POST, tmsRequest, token));
+                if (response != null)
+                {
+                    stopPointsResponse.StatusMessage += ". " + response.StatusMessage;
+                }
+                #endregion
+            }
+            #endregion
+            return stopPointsResponse;
         }
     }
 }

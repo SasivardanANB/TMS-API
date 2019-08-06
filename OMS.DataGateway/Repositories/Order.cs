@@ -18,40 +18,6 @@ namespace OMS.DataGateway.Repositories
     {
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-        private void SwapeOrderSequence(int tripDetailId, int sequenceNumber, int newSequenceNumber)
-        {
-            using (var context = new Data.OMSDBContext())
-            {
-                using (var beginDBTransaction = context.Database.BeginTransaction())
-                {
-                    try
-                    {
-                        DataModels.OrderDetail orderDetailData = context.OrderDetails.Where(t => t.ID == tripDetailId).FirstOrDefault();
-
-                        if (orderDetailData.SequenceNo != newSequenceNumber && orderDetailData.SequenceNo > 0)
-                        {
-                            int originalSequenceNo = sequenceNumber;
-
-                            orderDetailData.SequenceNo = newSequenceNumber;
-                            context.Entry(orderDetailData).State = System.Data.Entity.EntityState.Modified;
-
-                            DataModels.OrderDetail swappingDetailData = context.OrderDetails.Where(t => t.OrderHeaderID == orderDetailData.OrderHeaderID && t.SequenceNo == newSequenceNumber).FirstOrDefault();
-                            swappingDetailData.SequenceNo = originalSequenceNo;
-                            context.Entry(swappingDetailData).State = System.Data.Entity.EntityState.Modified;
-                            context.SaveChanges();
-                            beginDBTransaction.Commit();
-                        }
-
-                    }
-                    catch (Exception ex)
-                    {
-                        beginDBTransaction.Rollback();
-                        _logger.Log(LogLevel.Error, ex);
-                    }
-                }
-            }
-        }
-
         public OrderResponse GetOrders(DownloadOrderRequest orderRequest)
         {
             OrderResponse response = new OrderResponse()
@@ -269,17 +235,6 @@ namespace OMS.DataGateway.Repositories
                 response.StatusMessage = ex.Message;
             }
             return response;
-        }
-
-        private Data.Partner GetPartner(int orderDetailId, string partnerType)
-        {
-            Data.Partner partner = new Data.Partner();
-            using (var context = new Data.OMSDBContext())
-            {
-                int partnerId = context.OrderPartnerDetails.FirstOrDefault(t => t.OrderDetailID == orderDetailId && t.PartnerTypeId == context.PartnerTypes.FirstOrDefault(x => x.PartnerTypeCode == partnerType).ID).PartnerID;
-                partner = context.Partners.FirstOrDefault(t => t.ID == partnerId);
-            }
-            return partner;
         }
 
         public OrderResponse CreateUpdateOrders(OrderRequest request)
@@ -942,8 +897,8 @@ namespace OMS.DataGateway.Repositories
                     {
                         try
                         {
-                            DateTime estimationShipmentDate = order.ActualShipment; //  DateTime.ParseExact(order.EstimationShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(order.EstimationShipmentTime);
-                            DateTime actualShipmentDate = order.EstimationShipment;// DateTime.ParseExact(order.ActualShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(order.ActualShipmentTime);
+                            DateTime estimationShipmentDate = order.ActualShipment; 
+                            DateTime actualShipmentDate = order.EstimationShipment;
 
                             #region Step 1: Check if We have Business Area master data
                             int businessAreaId;
@@ -2429,20 +2384,6 @@ namespace OMS.DataGateway.Repositories
                             context.Entry(orderHeader).State = System.Data.Entity.EntityState.Modified;
                             context.SaveChanges();
                             context.Entry(orderHeader).State = System.Data.Entity.EntityState.Detached;
-                            //int orderDetailId = 0;
-
-
-                            //if (statusRequest.OrderStatusCode == "4" && statusRequest.SequenceNumber > 0)
-                            //{
-                            //    orderDetailId = context.OrderDetails.FirstOrDefault(t => t.SequenceNo == statusRequest.SequenceNumber && t.OrderHeaderID == orderHeader.ID).ID;
-
-                            //    // Swapping trip sequence 
-                            //    if (statusRequest.SequenceNumber != statusRequest.NewSequenceNumber)
-                            //    {
-                            //        SwapeOrderSequence(orderDetailId, statusRequest.SequenceNumber, statusRequest.NewSequenceNumber);
-                            //    }
-                            //}
-
                             #endregion
                         }
                         else
@@ -2579,6 +2520,61 @@ namespace OMS.DataGateway.Repositories
                     response.StatusMessage = ex.Message;
                 }
             }
+            return response;
+        }
+
+        public OrderStatusResponse SwapeStopPoints(OrderStatusRequest orderStatusRequest)
+        {
+            _logger.Log(LogLevel.Error, orderStatusRequest);
+            OrderStatusResponse response = new OrderStatusResponse()
+            {
+                Data = new List<OrderStatus>()
+            };
+
+            using (var context = new Data.OMSDBContext())
+            {
+                try
+                {
+                    foreach (var statusRequest in orderStatusRequest.Requests)
+                    {
+                        int orderId = 0;
+                        orderId = context.OrderHeaders.FirstOrDefault(t => t.OrderNo == statusRequest.OrderNumber).ID;
+
+                        if (statusRequest.SequenceNumber > 0)
+                        {
+                            DataModels.OrderDetail orderDetailData = context.OrderDetails.Where(t => t.SequenceNo == statusRequest.SequenceNumber && t.OrderHeaderID == orderId).FirstOrDefault();
+
+                            if (orderDetailData.SequenceNo != statusRequest.NewSequenceNumber && orderDetailData.SequenceNo > 0)
+                            {
+                                int originalSequenceNo = orderDetailData.SequenceNo;
+
+                                orderDetailData.SequenceNo = statusRequest.NewSequenceNumber;
+                                context.Entry(orderDetailData).State = System.Data.Entity.EntityState.Modified;
+
+                                DataModels.OrderDetail swappingDetailData = context.OrderDetails.Where(t => t.OrderHeaderID == orderDetailData.OrderHeaderID && t.SequenceNo == statusRequest.NewSequenceNumber).FirstOrDefault();
+                                swappingDetailData.SequenceNo = originalSequenceNo;
+                                context.Entry(swappingDetailData).State = System.Data.Entity.EntityState.Modified;
+                                context.SaveChanges();
+                            }
+
+
+                        }
+
+                        response.Data = orderStatusRequest.Requests;
+                        response.Status = DomainObjects.Resource.ResourceData.Success;
+                        response.StatusCode = (int)HttpStatusCode.OK;
+                        response.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log(LogLevel.Error, ex);
+                    response.Status = DomainObjects.Resource.ResourceData.Failure;
+                    response.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                    response.StatusMessage = ex.Message;
+                }
+            }
+
             return response;
         }
     }
