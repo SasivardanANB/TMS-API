@@ -1692,7 +1692,7 @@ namespace TMS.DataGateway.Repositories
             {
                 using (var context = new Data.TMSDBContext())
                 {
-                    var orderDetailsData = context.OrderDetails.Where(x => x.ID == orderId).ToList();
+                    var orderDetailsData = context.OrderDetails.Where(x => x.OrderHeaderID == orderId).ToList();
                     if (orderDetailsData != null)
                     {
                         foreach (var item in orderDetailsData)
