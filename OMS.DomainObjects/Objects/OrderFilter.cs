@@ -13,6 +13,8 @@ namespace OMS.DomainObjects.Objects
         public string OrderNumber { get; set; }
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }
+        public int StatusID { get; set; }
         public List<int> StatusIds { get; set; }
+        
     }
 }
