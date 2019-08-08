@@ -16,5 +16,6 @@ namespace TMS.DomainObjects.Objects
         [MaxLength(20)]
         public string PackingSheetNumber { get; set; }
         public int OrderType { get; set; }
+        public bool IsOrderEditable { get; set; }
     }
 }
