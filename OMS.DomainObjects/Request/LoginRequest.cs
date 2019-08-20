@@ -16,5 +16,6 @@ namespace OMS.DomainObjects.Request
         [MaxLength(30)]
         public string UserPassword { get; set; }
         public bool IsSAMALogin { get; set; }
+        public string FirebaseToken { get; set; }
     }
 }
