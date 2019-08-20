@@ -37,5 +37,6 @@ namespace OMS.DataGateway.Repositories.Iterfaces
         CommonResponse GetUserNames();
         CommonResponse GetRoleCodes();
         CommonResponse GetRegionCodes();
+        string GetUserNameFromToken(string token);
     }
 }

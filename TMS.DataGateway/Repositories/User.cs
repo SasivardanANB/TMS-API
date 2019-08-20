@@ -1621,6 +1621,26 @@ namespace TMS.DataGateway.Repositories
             return commonResponse;
         }
 
+        public string GetUserNameFromToken(string token)
+        {
+            string userName = string.Empty;
+            try
+            {
+                using (var context = new TMSDBContext())
+                {
+                    userName = (from tm in context.Tokens
+                                join usr in context.Users on tm.UserID equals usr.ID
+                                where tm.TokenKey == token
+                                select usr.UserName).FirstOrDefault();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+            }
+            return userName;
+        }
+
         #endregion
 
         public DashboardResponse GetUserDashboard(UserRequest user)

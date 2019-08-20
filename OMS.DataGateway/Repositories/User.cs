@@ -1477,7 +1477,7 @@ namespace OMS.DataGateway.Repositories
                          {
                              Id = role.ID,
                              Value = role.RoleCode,
-                             Description =role.RoleDescription
+                             Description = role.RoleDescription
                          }).ToList();
                 }
 
@@ -1553,6 +1553,26 @@ namespace OMS.DataGateway.Repositories
                 commonResponse.StatusMessage = ex.Message;
             }
             return commonResponse;
+        }
+
+        public string GetUserNameFromToken(string token)
+        {
+            string userName = string.Empty;
+            try
+            {
+                using (var context = new OMSDBContext())
+                {
+                    userName = (from tm in context.TokensManagers
+                                  join usr in context.Users on tm.UserID equals usr.ID
+                                  where tm.TokenKey == token
+                                  select usr.UserName).FirstOrDefault();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+            }
+            return userName;
         }
 
         #endregion

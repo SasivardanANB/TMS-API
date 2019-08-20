@@ -11,6 +11,7 @@ namespace OMS.DomainGateway.Task.Interfaces
     public interface IUserTask
     {
         UserResponse LoginUser(LoginRequest login);
+        UserResponse LoginUser(string key);
 
         // User Application
         UserResponse CreateUpdateUser(UserRequest user);
@@ -37,5 +38,7 @@ namespace OMS.DomainGateway.Task.Interfaces
         CommonResponse GetUserNames();
         CommonResponse GetRoleCodes();
         CommonResponse GetRegionCodes();
+        string GetUserNameFromToken(string token);
+        string AuthenticateUser(SAMATokenRequest request);
     }
 }

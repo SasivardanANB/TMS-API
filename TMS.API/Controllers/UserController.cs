@@ -38,6 +38,14 @@ namespace TMS.API.Controllers
             return Ok(userData);
         }
 
+        [AllowAnonymous, HttpGet]
+        public IHttpActionResult Login(string key)
+        {
+            IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
+            UserResponse userData = userTask.LoginUser(key);
+            return Ok(userData);
+        }
+
         #region "User Application"
 
         [Route("createupdateuser")]

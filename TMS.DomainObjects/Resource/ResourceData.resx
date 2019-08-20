@@ -486,4 +486,7 @@
   <data name="DriverUserNameExisted" xml:space="preserve">
     <value>Driver user name already exists</value>
   </data>
+  <data name="UnAuthorized" xml:space="preserve">
+    <value>No Authorization.</value>
+  </data>
 </root>

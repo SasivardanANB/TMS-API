@@ -6,9 +6,12 @@ using OMS.DomainGateway.Task;
 using OMS.DomainObjects.Request;
 using OMS.DomainObjects.Response;
 using RestSharp;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using Domain = OMS.DomainObjects.Objects;
 
 namespace OMS.BusinessGateway.Task
@@ -26,6 +29,36 @@ namespace OMS.BusinessGateway.Task
         {
             UserResponse userData = _userRepository.LoginUser(login);
             return userData;
+        }
+
+        public override UserResponse LoginUser(string key)
+        {
+            var userName = GetUserNameFromToken(key);
+
+            if (String.IsNullOrEmpty(userName))
+            {
+                UserResponse userResponse = new UserResponse
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Status = DomainObjects.Resource.ResourceData.Failure,
+                    StatusMessage = DomainObjects.Resource.ResourceData.UnAuthorized
+                };
+                return userResponse;
+            }
+            else
+            {
+                LoginRequest loginRequest = new LoginRequest
+                {
+                    UserName = userName,
+                    UserPassword = string.Empty,
+                    IsSAMALogin = true
+                };
+
+                var OmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                       + "/v1/user/login", Method.POST, loginRequest, null));
+
+                return OmsLoginResponse;
+            }
         }
 
         #region "User Application"
@@ -174,7 +207,7 @@ namespace OMS.BusinessGateway.Task
             UserRoleResponse userRoleResponse = _userRepository.GetUserRoles(userRoleRequest);
             return userRoleResponse;
         }
-       
+
 
         #endregion
 
@@ -214,6 +247,55 @@ namespace OMS.BusinessGateway.Task
         {
             CommonResponse commonResponse = _userRepository.GetRegionCodes();
             return commonResponse;
+        }
+
+        public override string GetUserNameFromToken(string token)
+        {
+            return _userRepository.GetUserNameFromToken(token);
+        }
+
+        public override string AuthenticateUser(SAMATokenRequest request)
+        {
+            var access_token = request.Key;
+            if (string.IsNullOrEmpty(access_token))
+            {
+                return string.Empty;
+            }
+
+            string result = string.Empty;
+
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("Authorization", string.Format("Bearer {0}", access_token));
+            var response = client.GetAsync(new Uri(ConfigurationManager.AppSettings["SAMA_ACCOUNT_URL"])).Result;
+            if (response.StatusCode.Equals(HttpStatusCode.OK))
+            {
+                var samaResult = response.Content.ReadAsStringAsync().Result;
+                var samaResponse = JsonConvert.DeserializeObject<SAMATokenResponse>(samaResult);
+                if (samaResponse != null)
+                {
+                    //Login to OMS and get Token
+
+                    LoginRequest loginRequest = new LoginRequest
+                    {
+                        UserName = samaResponse.UserName,
+                        UserPassword = string.Empty,
+                        IsSAMALogin = true
+                    };
+
+                    var OmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                        + "/v1/user/login", Method.POST, loginRequest, null));
+
+                    string token = string.Empty;
+                    if (OmsLoginResponse != null && OmsLoginResponse.Data.Count > 0)
+                    {
+                        token = OmsLoginResponse.TokenKey;
+                    }
+
+                    var LandingLoginURL = ConfigurationManager.AppSettings["OMS_UI_URL"];
+                    result = LandingLoginURL + token;
+                }
+            }
+            return result;
         }
 
         #endregion

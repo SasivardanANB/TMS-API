@@ -12,6 +12,7 @@ namespace TMS.DomainGateway.Task
     public abstract class UserTask : IUserTask
     {
         public abstract UserResponse LoginUser(LoginRequest login);
+        public abstract UserResponse LoginUser(string key);
 
         // User Application
         public abstract UserResponse CreateUpdateUser(UserRequest user);
@@ -38,8 +39,9 @@ namespace TMS.DomainGateway.Task
         public abstract CommonResponse GetUserNames();
         public abstract CommonCodeAndDecsriptionResponse GetRoleCodes();
         public abstract CommonResponse GetRegionCodes();
+        public abstract string GetUserNameFromToken(string token);
+        public abstract string AuthenticateUser(SAMATokenRequest request);
         public abstract DashboardResponse GetUserDashboard(UserRequest user);
         public abstract RoleResponse GetUserMenus(int userId);
-      
     }
 }

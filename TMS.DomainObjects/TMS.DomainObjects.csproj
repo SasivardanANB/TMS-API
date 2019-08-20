@@ -106,6 +106,7 @@
     <Compile Include="Request\GoodsReceiveOrIssueRequest.cs" />
     <Compile Include="Request\HargaRequest.cs" />
     <Compile Include="Request\InvoiceRequest.cs" />
+    <Compile Include="Request\SAMATokenRequest.cs" />
     <Compile Include="Request\ShipmentScheduleOcrRequest.cs" />
     <Compile Include="Request\OrderStatusRequest.cs" />
     <Compile Include="Request\PackingSheetRequest.cs" />
@@ -144,6 +145,7 @@
     <Compile Include="Response\OrderDetailsResponse.cs" />
     <Compile Include="Response\GoodsReceiveOrIssueResponse.cs" />
     <Compile Include="Response\InvoiceResponse.cs" />
+    <Compile Include="Response\SAMATokenResponse.cs" />
     <Compile Include="Response\ShipmentScheduleOcrResponse.cs" />
     <Compile Include="Response\OrderSearchResponse.cs" />
     <Compile Include="Response\OrderResponse.cs" />

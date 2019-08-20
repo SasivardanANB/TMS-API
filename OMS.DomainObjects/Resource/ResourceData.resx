@@ -267,4 +267,7 @@
   <data name="OrderCanceled" xml:space="preserve">
     <value>Order(s) cancelled successfully in OMS</value>
   </data>
+  <data name="UnAuthorized" xml:space="preserve">
+    <value>No Authorization.</value>
+  </data>
 </root>

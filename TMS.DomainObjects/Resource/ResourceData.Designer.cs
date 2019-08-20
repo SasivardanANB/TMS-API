@@ -1024,6 +1024,15 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No Authorization..
+        /// </summary>
+        public static string UnAuthorized {
+            get {
+                return ResourceManager.GetString("UnAuthorized", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to User details not found.
         /// </summary>
         public static string UserDetailsNotFound {

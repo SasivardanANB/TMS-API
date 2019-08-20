@@ -11,6 +11,7 @@ namespace TMS.DomainGateway.Task.Interfaces
     public interface IUserTask
     {
         UserResponse LoginUser(LoginRequest login);
+        UserResponse LoginUser(string key);
 
         // User Application
         UserResponse CreateUpdateUser(UserRequest user);
@@ -37,8 +38,9 @@ namespace TMS.DomainGateway.Task.Interfaces
         CommonResponse GetUserNames();
         CommonCodeAndDecsriptionResponse GetRoleCodes();
         CommonResponse GetRegionCodes();
+        string GetUserNameFromToken(string token);
+        string AuthenticateUser(SAMATokenRequest request);
         DashboardResponse GetUserDashboard(UserRequest user);
-        RoleResponse GetUserMenus(int userId);
-        
+        RoleResponse GetUserMenus(int userId);        
     }
 }
