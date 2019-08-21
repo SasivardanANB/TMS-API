@@ -6,8 +6,10 @@ using TMS.DomainObjects.Request;
 namespace TMS.API.Controllers
 {
     [AllowAnonymous]
+    [RoutePrefix("api/v1/sama")]
     public class SAMAAuthenticationController : ApiController
     {
+        [Route("authenticateuser")]
         [HttpPost]
         public string AuthenticateUser(SAMATokenRequest request)
         {

@@ -54,10 +54,10 @@ namespace TMS.BusinessGateway.Task
                     IsSAMALogin = true
                 };
 
-                var OmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                var TmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
                        + "/v1/user/login", Method.POST, loginRequest, null));
 
-                return OmsLoginResponse;
+                return TmsLoginResponse;
             }
         }
 
@@ -286,16 +286,16 @@ namespace TMS.BusinessGateway.Task
                         IsSAMALogin = true
                     };
 
-                    var OmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                    var TmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
                         + "/v1/user/login", Method.POST, loginRequest, null));
 
                     string token = string.Empty;
-                    if (OmsLoginResponse != null && OmsLoginResponse.Data.Count > 0)
+                    if (TmsLoginResponse != null && TmsLoginResponse.Data.Count > 0)
                     {
-                        token = OmsLoginResponse.TokenKey;
+                        token = TmsLoginResponse.TokenKey;
                     }
 
-                    var LandingLoginURL = ConfigurationManager.AppSettings["OMS_UI_URL"];
+                    var LandingLoginURL = ConfigurationManager.AppSettings["TMS_UI_URL"];
                     result = LandingLoginURL + token;
                 }
             }

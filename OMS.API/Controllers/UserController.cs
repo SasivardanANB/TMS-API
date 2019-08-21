@@ -29,6 +29,7 @@ namespace OMS.API.Controllers
             return Ok(userData);
         }
 
+        [Route("samalogin")]
         [AllowAnonymous, HttpGet]
         public IHttpActionResult Login(string key)
         {

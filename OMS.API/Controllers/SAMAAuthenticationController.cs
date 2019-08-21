@@ -6,9 +6,11 @@ using System.Web.Http;
 namespace OMS.API.Controllers
 {
     [AllowAnonymous]
+    [RoutePrefix("api/v1/sama")]
     public class SAMAAuthenticationController : ApiController
     {
-        [HttpPost]
+        [Route("authenticateuser")]
+        [HttpPost]       
         public string AuthenticateUser(SAMATokenRequest request)
         {
             IUserTask userTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().UserTask;
