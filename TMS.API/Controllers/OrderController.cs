@@ -379,5 +379,14 @@ namespace TMS.API.Controllers
 
             return Ok(orderStatusResponse);
         }
+
+        [Route("ocrorderresponse")]
+        [HttpPost,AllowAnonymous]
+        public IHttpActionResult OcrOrderResponse(ShipmentScheduleOcrRequest shipmentScheduleOcrRequest)
+        {
+            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            OrderResponse orderResponse = orderTask.OcrOrderResponse(shipmentScheduleOcrRequest);
+            return Ok(orderResponse);
+        }
     }
 }
