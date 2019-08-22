@@ -189,6 +189,10 @@
     <Compile Include="Migrations\201907240914544_PoolPhotoId.Designer.cs">
       <DependentUpon>201907240914544_PoolPhotoId.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201908220211065_FirebaseTokenAddedinTokenTable.cs" />
+    <Compile Include="Migrations\201908220211065_FirebaseTokenAddedinTokenTable.Designer.cs">
+      <DependentUpon>201908220211065_FirebaseTokenAddedinTokenTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\Authenticate.cs" />
@@ -256,6 +260,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201907240914544_PoolPhotoId.resx">
       <DependentUpon>201907240914544_PoolPhotoId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908220211065_FirebaseTokenAddedinTokenTable.resx">
+      <DependentUpon>201908220211065_FirebaseTokenAddedinTokenTable.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SeedData\Activities.csv" />
     <EmbeddedResource Include="SeedData\applications.csv" />
