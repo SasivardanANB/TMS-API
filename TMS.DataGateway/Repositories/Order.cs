@@ -2075,8 +2075,8 @@ namespace TMS.DataGateway.Repositories
                                         CityCode = subDistrict.City.CityCode,
                                         ProvinceCode = subDistrict.City.Province.ProvinceCode,
                                         PartnerName = partner.PartnerName,
-                                        PartnerNo = partner.PartnerNo
-
+                                        PartnerNo = partner.PartnerNo,
+                                        PartnerEmail = partner.PartnerEmail
                                     }).FirstOrDefault();
                     }
                     else

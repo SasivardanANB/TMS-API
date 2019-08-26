@@ -49,7 +49,7 @@ namespace DMS.BusinessGateway.Task
                 mail.To.Add(forgotPasswordRequest.Email);
                 string emailFrom = ConfigurationManager.AppSettings["EmailFrom"];
                 mail.From = new MailAddress(emailFrom);
-                mail.Subject = ConfigurationManager.AppSettings["EmailSubject"];
+                mail.Subject = "Forgot Password";
                 string Body = "To reset your password click the link : " + forgotPasswordRequest.URLLink;
                 mail.Body = Body;
                 mail.IsBodyHtml = true;
@@ -58,7 +58,7 @@ namespace DMS.BusinessGateway.Task
                 string emailPassword = ConfigurationManager.AppSettings["SmtpPassword"];
                 SmtpClient smtp = new SmtpClient(smtpHost)
                 {
-                    Port = 587,
+                    Port = Convert.ToInt32(ConfigurationManager.AppSettings["smtpPort"]),
                     UseDefaultCredentials = false,
                     DeliveryMethod = SmtpDeliveryMethod.Network,
                     Credentials = new System.Net.NetworkCredential(loginEmailId, emailPassword),

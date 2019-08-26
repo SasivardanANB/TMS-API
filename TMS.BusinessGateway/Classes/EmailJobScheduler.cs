@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web;
 using Quartz;
@@ -19,7 +20,7 @@ namespace TMS.BusinessGateway.Classes
             ITrigger trigger = TriggerBuilder.Create()
                 .WithDailyTimeIntervalSchedule
                   (s =>
-                     s.WithIntervalInMinutes(2)
+                     s.WithIntervalInMinutes(Convert.ToInt32(ConfigurationManager.AppSettings["ReadEmailsIntervel"]))
                     .OnEveryDay()
                     .StartingDailyAt(TimeOfDay.HourAndMinuteOfDay(0, 0))
                   )
