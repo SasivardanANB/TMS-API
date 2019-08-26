@@ -877,6 +877,33 @@ namespace TMS.DataGateway.Repositories
                                                  SequenceNo = gp.Max(t => t.SequenceNo),
                                              }).FirstOrDefault();
 
+                            #region Check Order is editable or not
+                            // Get all source orderdetailids - iist of int - orderdetail to orderpartnerdetail where partnertypeid = 2
+                            List<int> sourceOrderIds = (from orderDetails in context.OrderDetails
+                                                        join ordPartnerDetails in context.OrderPartnerDetails on orderDetails.ID equals ordPartnerDetails.OrderDetailID
+                                                        where ordPartnerDetails.PartnerTypeId == 2 && orderDetails.OrderHeaderID== order.OrderId
+                                                        select orderDetails.ID
+                                                      ).ToList();
+                            // For each orderdetailid in orderdetailids
+                            bool isNotLoaded = true;
+                            foreach(int ordDetailId in sourceOrderIds)
+                            {
+                                var orderStatusHistory = (from osh in context.OrderStatusHistories
+                                                         where osh.OrderDetailID == ordDetailId && osh.OrderStatusID == 7
+                                                         select osh).FirstOrDefault();
+                                if(orderStatusHistory != null)
+                                {
+                                    isNotLoaded = false;
+                                }
+                                else
+                                {
+                                    isNotLoaded = true;
+                                    break;
+                                }
+                            }
+                            order.IsOrderEditable = isNotLoaded;
+                            #endregion
+
                             if (orderData != null)
                             {
                                 var partnerData = (from op in context.OrderPartnerDetails
@@ -1692,7 +1719,7 @@ namespace TMS.DataGateway.Repositories
             {
                 using (var context = new Data.TMSDBContext())
                 {
-                    var orderDetailsData = context.OrderDetails.Where(x => x.ID == orderId).ToList();
+                    var orderDetailsData = context.OrderDetails.Where(x => x.OrderHeaderID == orderId).ToList();
                     if (orderDetailsData != null)
                     {
                         foreach (var item in orderDetailsData)
@@ -2048,8 +2075,8 @@ namespace TMS.DataGateway.Repositories
                                         CityCode = subDistrict.City.CityCode,
                                         ProvinceCode = subDistrict.City.Province.ProvinceCode,
                                         PartnerName = partner.PartnerName,
-                                        PartnerNo = partner.PartnerNo
-
+                                        PartnerNo = partner.PartnerNo,
+                                        PartnerEmail = partner.PartnerEmail
                                     }).FirstOrDefault();
                     }
                     else

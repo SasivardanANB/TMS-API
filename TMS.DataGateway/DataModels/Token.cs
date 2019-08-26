@@ -21,6 +21,6 @@ namespace TMS.DataGateway.DataModels
         [ForeignKey("User")]
         public int UserID { get; set; }
         public User User { get; set; }
-       
+        public string FirebaseToken { get; set; }
     }
 }

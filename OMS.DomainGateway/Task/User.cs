@@ -13,6 +13,7 @@ namespace OMS.DomainGateway.Task
     public abstract class UserTask : IUserTask
     {
         public abstract UserResponse LoginUser(LoginRequest login);
+        public abstract UserResponse LoginUser(string key);
 
         // User Application
         public abstract UserResponse CreateUpdateUser(UserRequest user);
@@ -38,5 +39,7 @@ namespace OMS.DomainGateway.Task
         public abstract CommonResponse GetUserNames();
         public abstract CommonResponse GetRoleCodes();
         public abstract CommonResponse GetRegionCodes();
+        public abstract string GetUserNameFromToken(string token);
+        public abstract string AuthenticateUser(SAMATokenRequest request);
     }
 }

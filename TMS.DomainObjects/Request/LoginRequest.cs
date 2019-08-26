@@ -16,5 +16,6 @@ namespace TMS.DomainObjects.Request
         [Required(ErrorMessageResourceType = typeof(Resource.ResourceData), ErrorMessageResourceName = "InvalidUserPassword")]
         public string UserPassword { get; set; }
         public bool IsSAMALogin { get; set; }
+        public string FirebaseToken { get; set; }
     }
 }

@@ -41,7 +41,10 @@ namespace DMS.DataGateway.Repositories
                                     {
                                         ID = user.ID,
                                         IsActive = user.IsActive,
-                                        UserName = user.UserName
+                                        UserName = user.UserName,
+                                        PICEmail = user.PICEmail,
+                                        PICPhone = user.PICPhone,
+                                        PICName = user.PICName                                        
                                     }).FirstOrDefault();
 
                     if (userData != null)

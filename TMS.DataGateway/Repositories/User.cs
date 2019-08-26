@@ -85,7 +85,8 @@ namespace TMS.DataGateway.Repositories
                                 CreatedOn = DateTime.Now,
                                 IssuedOn = DateTime.Now,
                                 ExpiresOn = DateTime.Now.AddMinutes(Convert.ToDouble(ConfigurationManager.AppSettings["TokenExpiry"])),
-                                UserID = userData.ID
+                                UserID = userData.ID,
+                                FirebaseToken=login.FirebaseToken
                             });
 
                             //Get Token and add to response
@@ -99,6 +100,7 @@ namespace TMS.DataGateway.Repositories
                                                  CreatedOn = tokens.CreatedOn,
                                                  IssuedOn = tokens.IssuedOn,
                                                  ExpiresOn = tokens.ExpiresOn,
+                                                 FirebaseToken=tokens.FirebaseToken
                                              }).FirstOrDefault();
 
                             //Sending Role details
@@ -109,6 +111,7 @@ namespace TMS.DataGateway.Repositories
                             userResponse.TokenIssuedOn = tokenData.IssuedOn;
                             userResponse.TokenExpiresOn = tokenData.ExpiresOn;
                             userResponse.ServerDateTime = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+                            userResponse.FirebaseToken = tokenData.FirebaseToken;
 
                             userResponse.Status = DomainObjects.Resource.ResourceData.Success;
                             userResponse.StatusCode = (int)HttpStatusCode.OK;
@@ -1619,6 +1622,26 @@ namespace TMS.DataGateway.Repositories
                 commonResponse.StatusMessage = ex.Message;
             }
             return commonResponse;
+        }
+
+        public string GetUserNameFromToken(string token)
+        {
+            string userName = string.Empty;
+            try
+            {
+                using (var context = new TMSDBContext())
+                {
+                    userName = (from tm in context.Tokens
+                                join usr in context.Users on tm.UserID equals usr.ID
+                                where tm.TokenKey == token
+                                select usr.UserName).FirstOrDefault();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex);
+            }
+            return userName;
         }
 
         #endregion

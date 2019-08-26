@@ -10,12 +10,18 @@ using System.Configuration;
 using Newtonsoft.Json;
 using RestSharp;
 using TMS.BusinessGateway.Classes;
+using System;
+using System.Net;
+using System.Net.Http;
 
 namespace TMS.BusinessGateway.Task
 {
     public partial class BusinessUserTask : UserTask
     {
         private readonly IUser _userRepository;
+
+        public const int OMS = 1;
+        public const int TMS = 2;
 
         public BusinessUserTask(IUser userRepository)
         {
@@ -24,12 +30,38 @@ namespace TMS.BusinessGateway.Task
 
         public override UserResponse LoginUser(LoginRequest login)
         {
-            //If needed write business logic here for request.
-
             UserResponse userData = _userRepository.LoginUser(login);
-
-            //If needed write business logic here for response.
             return userData;
+        }
+
+        public override UserResponse LoginUser(string key)
+        {
+            var userName = GetUserNameFromToken(key);
+
+            if (String.IsNullOrEmpty(userName))
+            {
+                UserResponse userResponse = new UserResponse
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Status = DomainObjects.Resource.ResourceData.Failure,
+                    StatusMessage = DomainObjects.Resource.ResourceData.UnAuthorized
+                };
+                return userResponse;
+            }
+            else
+            {
+                LoginRequest loginRequest = new LoginRequest
+                {
+                    UserName = userName,
+                    UserPassword = string.Empty,
+                    IsSAMALogin = true
+                };
+
+                var TmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                       + "/v1/user/login", Method.POST, loginRequest, null));
+
+                return TmsLoginResponse;
+            }
         }
 
         #region "User Application"
@@ -224,6 +256,55 @@ namespace TMS.BusinessGateway.Task
             return commonResponse;
         }
 
+        public override string GetUserNameFromToken(string token)
+        {
+            return _userRepository.GetUserNameFromToken(token);
+        }
+
+        public override string AuthenticateUser(SAMATokenRequest request)
+        {
+            var access_token = request.Key;
+            if (string.IsNullOrEmpty(access_token))
+            {
+                return string.Empty;
+            }
+
+            string result = string.Empty;
+
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("Authorization", string.Format("Bearer {0}", access_token));
+            var response = client.GetAsync(new Uri(ConfigurationManager.AppSettings["SAMA_ACCOUNT_URL"])).Result;
+            if (response.StatusCode.Equals(HttpStatusCode.OK))
+            {
+                var samaResult = response.Content.ReadAsStringAsync().Result;
+                var samaResponse = JsonConvert.DeserializeObject<SAMATokenResponse>(samaResult);
+                if (samaResponse != null)
+                {
+                    //Login to OMS and get Token
+
+                    LoginRequest loginRequest = new LoginRequest
+                    {
+                        UserName = samaResponse.UserName,
+                        UserPassword = string.Empty,
+                        IsSAMALogin = true
+                    };
+
+                    var TmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                        + "/v1/user/login", Method.POST, loginRequest, null));
+
+                    string token = string.Empty;
+                    if (TmsLoginResponse != null && TmsLoginResponse.Data.Count > 0)
+                    {
+                        token = TmsLoginResponse.TokenKey;
+                    }
+
+                    var LandingLoginURL = ConfigurationManager.AppSettings["TMS_UI_URL"];
+                    result = LandingLoginURL + token;
+                }
+            }
+            return result;
+        }
+
         #endregion
 
         public override DashboardResponse GetUserDashboard(UserRequest user)
@@ -231,12 +312,11 @@ namespace TMS.BusinessGateway.Task
             DashboardResponse userDashboard = _userRepository.GetUserDashboard(user);
             return userDashboard;
         }
+
         public override RoleResponse GetUserMenus(int userId)
         {
             RoleResponse roleResponse = _userRepository.GetUserMenus(userId);
             return roleResponse;
-        }
-
-       
+        }       
     }
 }

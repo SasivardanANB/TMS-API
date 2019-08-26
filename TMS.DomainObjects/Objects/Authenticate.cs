@@ -14,5 +14,6 @@ namespace TMS.DomainObjects.Objects
         public DateTime ExpiresOn { get; set; }
         public DateTime CreatedOn { get; set; }
         public int UserID { get; set; }
+        public string FirebaseToken { get; set; }
     }
 }

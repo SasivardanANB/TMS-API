@@ -8,6 +8,8 @@ using System.Configuration;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.Net.Mail;
+using System.Text;
 using TMS.BusinessGateway.Classes;
 using TMS.DataGateway.Repositories.Interfaces;
 using TMS.DomainGateway.Task;
@@ -65,6 +67,17 @@ namespace TMS.BusinessGateway.Task
                         Partner partner2Data = GetPartnerDetail(tmsOrder.PartnerNo2, order.UploadType);
                         Partner partner3Data = GetPartnerDetail(tmsOrder.PartnerNo3, order.UploadType);
 
+
+
+                        #region check driverdetails availability and if exist set status as assigned(3) else Created (1)  
+                        int OrderShipmentStatus = tmsOrder.OrderShipmentStatus;
+                        if (!String.IsNullOrEmpty(tmsOrder.DriverNo) && !String.IsNullOrEmpty(tmsOrder.DriverName))
+                        {
+                            OrderShipmentStatus = 3;
+                        }
+
+                        #endregion
+
                         Order omsOrder = new Order()
                         {
                             BusinessArea = tmsOrder.BusinessArea,
@@ -93,7 +106,7 @@ namespace TMS.BusinessGateway.Task
                             ActualShipmentTime = tmsOrder.ActualShipmentTime,
                             Sender = tmsOrder.Sender,
                             Receiver = tmsOrder.Receiver,
-                            OrderShipmentStatus = tmsOrder.OrderShipmentStatus,
+                            OrderShipmentStatus = OrderShipmentStatus,
                             Dimension = tmsOrder.Dimension,
                             TotalPallet = tmsOrder.TotalPallet,
                             Instructions = tmsOrder.Instructions,
@@ -127,8 +140,54 @@ namespace TMS.BusinessGateway.Task
                             Requests = new List<TripDMS>()
                         };
 
+                        Dictionary<string, List<string>> destPartnerEmails = new Dictionary<string, List<string>>();
+
                         foreach (var request in order.Requests)
                         {
+                            Partner destinationPartnerDetail = GetPartnerDetail(request.PartnerNo3, order.UploadType);
+
+                            if (destPartnerEmails.ContainsKey(request.OrderNo) && request.OrderType == 2)
+                            {
+                                destPartnerEmails.TryGetValue(request.OrderNo, out List<string> lstEmails);
+                                if (lstEmails != null && !lstEmails.Contains(destinationPartnerDetail.PartnerEmail))
+                                {
+                                    lstEmails.Add(destinationPartnerDetail.PartnerEmail);
+                                }
+                                destPartnerEmails[request.OrderNo] = lstEmails;
+                            }
+                            else
+                            {
+                                List<string> lstEmails = new List<string>
+                                {
+                                    destinationPartnerDetail.PartnerEmail
+                                };
+                                destPartnerEmails.Add(request.OrderNo, lstEmails);
+                            }
+
+                            foreach(string ord in destPartnerEmails.Keys)
+                            {
+                                MailMessage mail = new MailMessage();
+                                mail.To.Add(string.Join(",", destPartnerEmails[ord]));
+                                string emailFrom = ConfigurationManager.AppSettings["EmailFrom"];
+                                mail.From = new MailAddress(emailFrom);
+                                mail.Subject = "Your Order Delivery Status";
+                                string Body = "Dear Customer, <br /> This is your order deliver status. Your order delivery No is " + ord + ". You can track order by clicking this link " + ConfigurationManager.AppSettings["TMS_APP_URL"];
+                                mail.Body = Body;
+                                mail.IsBodyHtml = true;
+                                string smtpHost = ConfigurationManager.AppSettings["SmtpHost"];
+                                string loginEmailId = ConfigurationManager.AppSettings["SmtpUserName"];
+                                string emailPassword = ConfigurationManager.AppSettings["SmtpPassword"];
+                                System.Net.Mail.SmtpClient smtp = new System.Net.Mail.SmtpClient(smtpHost)
+                                {
+                                    Port = Convert.ToInt32(ConfigurationManager.AppSettings["smtpPort"]),
+                                    UseDefaultCredentials = false,
+                                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                                    Credentials = new System.Net.NetworkCredential(loginEmailId, emailPassword),
+                                    EnableSsl = true
+                                };
+                                smtp.Send(mail);
+                            }
+
                             if (!string.IsNullOrEmpty(request.DriverName))
                             {
                                 DateTime estimationShipmentDate = DateTime.ParseExact(request.EstimationShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(request.EstimationShipmentTime);
@@ -160,8 +219,6 @@ namespace TMS.BusinessGateway.Task
                                         else if (request.OrderType == 2)
                                         {
                                             #region Add Destination Location
-
-                                            Partner destinationPartnerDetail = GetPartnerDetail(request.PartnerNo3, order.UploadType);
 
                                             TripLocation destinationLocation = new TripLocation()
                                             {
@@ -220,7 +277,6 @@ namespace TMS.BusinessGateway.Task
                                         #endregion
 
                                         #region Add Destination Location
-                                        Partner destinationPartnerDetail = GetPartnerDetail(request.PartnerNo3, order.UploadType);
                                         TripLocation destinationLocation = new TripLocation()
                                         {
                                             PartnerType = request.PartnerType3,
@@ -278,7 +334,6 @@ namespace TMS.BusinessGateway.Task
                                     #endregion
 
                                     #region Add Destination Location
-                                    Partner destinationPartnerDetail = GetPartnerDetail(request.PartnerNo3, order.UploadType);
                                     TripLocation destinationLocation = new TripLocation()
                                     {
                                         PartnerType = request.PartnerType3,
@@ -337,6 +392,8 @@ namespace TMS.BusinessGateway.Task
             else
             {
                 omsRequest.UploadType = 2;
+                List<string> destPartnerEmails = new List<string>();
+                string orderNumber = string.Empty;
 
                 DriverRequest driverRequest = new DriverRequest();
                 driverRequest.Requests = new List<Driver>();
@@ -354,7 +411,6 @@ namespace TMS.BusinessGateway.Task
                     driverNumber = driverData.Data[0].DriverNo;
                 }
 
-
                 foreach (var tmsOrder in order.Requests)
                 {
                     string businessArea = "";
@@ -365,6 +421,11 @@ namespace TMS.BusinessGateway.Task
                     Partner partner1Data = GetPartnerDetail(tmsOrder.PartnerNo1, order.UploadType);
                     Partner partner2Data = GetPartnerDetail(tmsOrder.PartnerNo2, order.UploadType);
                     Partner partner3Data = GetPartnerDetail(tmsOrder.PartnerNo3, order.UploadType);
+
+                    if (!destPartnerEmails.Contains(partner2Data.PartnerEmail))
+                    {
+                        destPartnerEmails.Add(partner3Data.PartnerEmail);
+                    }
 
                     Order omsOrder = new Order()
                     {
@@ -415,7 +476,15 @@ namespace TMS.BusinessGateway.Task
                     foreach (var ord in order.Requests)
                     {
                         ord.OrderNo = omsOrderResponse.Data[0].OrderNo;
+                        orderNumber = omsOrderResponse.Data[0].OrderNo;
                         ord.LegecyOrderNo = omsOrderResponse.Data[0].OrderNo;
+                        int OrderShipmentStatus = ord.OrderShipmentStatus;
+                        if (ord.DriverNo != null && ord.DriverName != null && ord.DriverNo != string.Empty && ord.DriverName != string.Empty)
+                        {
+                            OrderShipmentStatus = 3;
+                        }
+                        ord.OrderShipmentStatus = OrderShipmentStatus;
+
                     }
 
                     // Create Order in TMS
@@ -425,6 +494,32 @@ namespace TMS.BusinessGateway.Task
 
                     if (tmsOrderResponse.StatusCode == 200 && tmsOrderResponse.Status == "Success")
                     {
+                        #region send email to destination partners
+                        if (destPartnerEmails.Count > 0 && !String.IsNullOrEmpty(orderNumber))
+                        {
+                            MailMessage mail = new MailMessage();
+                            mail.To.Add(string.Join(",", destPartnerEmails));
+                            string emailFrom = ConfigurationManager.AppSettings["EmailFrom"];
+                            mail.From = new MailAddress(emailFrom);
+                            mail.Subject = "Your Order Delivery Status";
+                            string Body = "Dear Customer, <br /> This is your order deliver status. Your order delivery No is " + orderNumber + ". You can track order by clicking this link " + ConfigurationManager.AppSettings["TMS_APP_URL"];
+                            mail.Body = Body;
+                            mail.IsBodyHtml = true;
+                            string smtpHost = ConfigurationManager.AppSettings["SmtpHost"];
+                            string loginEmailId = ConfigurationManager.AppSettings["SmtpUserName"];
+                            string emailPassword = ConfigurationManager.AppSettings["SmtpPassword"];
+                            System.Net.Mail.SmtpClient smtp = new System.Net.Mail.SmtpClient(smtpHost)
+                            {
+                                Port = Convert.ToInt32(ConfigurationManager.AppSettings["smtpPort"]),
+                                UseDefaultCredentials = false,
+                                DeliveryMethod = SmtpDeliveryMethod.Network,
+                                Credentials = new System.Net.NetworkCredential(loginEmailId, emailPassword),
+                                EnableSsl = true
+                            };
+                            smtp.Send(mail);
+                        }
+                        #endregion
+
                         #region Call DMS API to send Order as Trip if Driver assignment exists
                         TripRequestDMS requestDMS = new TripRequestDMS()
                         {
@@ -1066,11 +1161,11 @@ namespace TMS.BusinessGateway.Task
 
             // Loin into Gamil and Get all Mails
             var mailRepository = new MailRepository(
-                                    ConfigurationManager.AppSettings["GmailURL"],
-                                    Convert.ToInt32(ConfigurationManager.AppSettings["GmailURLPort"].ToString()),
+                                    ConfigurationManager.AppSettings["ImapHost"],
+                                    Convert.ToInt32(ConfigurationManager.AppSettings["ImapPort"].ToString()),
                                     true,
-                                    ConfigurationManager.AppSettings["UserEmailID"],
-                                    ConfigurationManager.AppSettings["UserPassword"]
+                                    ConfigurationManager.AppSettings["ImapUserName"],
+                                    ConfigurationManager.AppSettings["ImapUserPassword"]
                                 );
 
             //Get all Unread Mails

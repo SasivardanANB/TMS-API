@@ -235,6 +235,7 @@
     <Compile Include="Classes\CustomAuthorize.cs" />
     <Compile Include="Controllers\AuthenticateController.cs" />
     <Compile Include="Controllers\OrderController.cs" />
+    <Compile Include="Controllers\SAMAAuthenticationController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

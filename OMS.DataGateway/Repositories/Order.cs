@@ -130,10 +130,11 @@ namespace OMS.DataGateway.Repositories
                             }
                             )
                         .Where(p => p.IsActive)
-                        .Where(p => filter.StatusIds.Count == 0 || (filter.StatusIds.Count > 0 && filter.StatusIds.Contains(p.OrderShipmentStatus)))
+                        .Where(p => filter.StatusID == 0 || (filter.StatusID > 0 && p.OrderShipmentStatus== filter.StatusID))
                         .Where(p => String.IsNullOrEmpty(filter.OrderNumber) || p.OrderNo.Contains(filter.OrderNumber))
                         .Where(p => filter.FromDate == DateTime.MinValue || (DbFunctions.TruncateTime(p.OrderDate) >= filter.FromDate.Date))
-                        .Where(p => filter.ToDate == DateTime.MinValue || (DbFunctions.TruncateTime(p.OrderDate) <= filter.ToDate.Date)).ToList();
+                        .Where(p => filter.ToDate == DateTime.MinValue || (DbFunctions.TruncateTime(p.OrderDate) <= filter.ToDate.Date)
+                        ).ToList();
                     }
 
 
@@ -248,6 +249,12 @@ namespace OMS.DataGateway.Repositories
             {
                 foreach (var order in request.Requests)
                 {
+                    #region check driverdetails availability and if exist set status as assigned(3) else Created (1)  
+                    if (!String.IsNullOrEmpty(order.DriverNo) && !String.IsNullOrEmpty(order.DriverName))
+                    {
+                        order.OrderShipmentStatus = 3;
+                    }
+                    #endregion
                     using (DbContextTransaction transaction = context.Database.BeginTransaction())
                     {
                         try

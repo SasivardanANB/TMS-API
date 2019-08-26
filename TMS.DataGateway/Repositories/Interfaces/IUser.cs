@@ -12,6 +12,7 @@ namespace TMS.DataGateway.Repositories.Iterfaces
     public interface IUser
     {
         UserResponse LoginUser(LoginRequest login);
+
         // User Application
         UserResponse CreateUpdateUser(UserRequest user);
         UserResponse DeleteUser(int userId);
@@ -37,8 +38,8 @@ namespace TMS.DataGateway.Repositories.Iterfaces
         CommonResponse GetUserNames();
         CommonCodeAndDecsriptionResponse  GetRoleCodes();
         CommonResponse GetRegionCodes();
+        string GetUserNameFromToken(string token);
         DashboardResponse GetUserDashboard(UserRequest user);
-        RoleResponse GetUserMenus(int userId);
-       
+        RoleResponse GetUserMenus(int userId);       
     }
 }

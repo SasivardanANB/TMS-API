@@ -83,6 +83,7 @@
     <Compile Include="Request\OrderStatusRequest.cs" />
     <Compile Include="Request\RegionRequest.cs" />
     <Compile Include="Request\OrderRequest.cs" />
+    <Compile Include="Request\SAMATokenRequest.cs" />
     <Compile Include="Request\TripRequest.cs" />
     <Compile Include="Request\RoleRequest.cs" />
     <Compile Include="Request\AssignUserRoleRequest.cs" />
@@ -106,6 +107,7 @@
     <Compile Include="Response\OrderStatusResponse.cs" />
     <Compile Include="Response\RegionResponse.cs" />
     <Compile Include="Response\CommonResponse.cs" />
+    <Compile Include="Response\SAMATokenResponse.cs" />
     <Compile Include="Response\TripResponse.cs" />
     <Compile Include="Response\RoleResponse.cs" />
     <Compile Include="Response\RoleMenuResponse.cs" />
