@@ -21,7 +21,7 @@ namespace TMS.BusinessGateway.Task
         private readonly IUser _userRepository;
 
         public const int OMS = 1;
-        public const int TMS = 1;
+        public const int TMS = 2;
 
         public BusinessUserTask(IUser userRepository)
         {

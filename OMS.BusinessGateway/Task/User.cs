@@ -20,6 +20,9 @@ namespace OMS.BusinessGateway.Task
     {
         private readonly IUser _userRepository;
 
+        public const int OMS = 1;
+        public const int TMS = 2;
+
         public BusinessUserTask(IUser userRepository)
         {
             _userRepository = userRepository;
@@ -71,7 +74,7 @@ namespace OMS.BusinessGateway.Task
             {
                 #region Create TMSUserRequest
                 UserRequest tmsRequest = null;
-                if (userDetails.Applications.Contains(2))
+                if (userDetails.Applications.Contains(TMS))
                 {
                     tmsRequest = new UserRequest()
                     {
@@ -80,7 +83,7 @@ namespace OMS.BusinessGateway.Task
                             new Domain.User()
                             {
                                 Applications = new List<int>(){
-                                    2
+                                    TMS
                                 },
                                 FirstName = userDetails.FirstName,
                                 LastName = userDetails.LastName,
@@ -100,7 +103,7 @@ namespace OMS.BusinessGateway.Task
                 #endregion
 
                 #region CreateUpdateUser in OMS
-                if (userDetails.Applications.Contains(1))
+                if (userDetails.Applications.Contains(OMS))
                 {
                     userResponse = _userRepository.CreateUpdateUser(user);
                 }
@@ -124,7 +127,7 @@ namespace OMS.BusinessGateway.Task
                     UserResponse tmsUserResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
                          + "/v1/user/createupdateuser", Method.POST, tmsRequest, token));
 
-                    if (!userDetails.Applications.Contains(1))
+                    if (!userDetails.Applications.Contains(OMS))
                     {
                         userResponse = tmsUserResponse;
                     }
