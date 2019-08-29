@@ -21,7 +21,6 @@ namespace TMS.BusinessGateway.Task
 {
     public partial class BusinessOrderTask : OrderTask
     {
-
         private readonly IOrder _orderRepository;
 
         public BusinessOrderTask(IOrder orderRepository)
@@ -146,14 +145,17 @@ namespace TMS.BusinessGateway.Task
                         {
                             Partner destinationPartnerDetail = GetPartnerDetail(request.PartnerNo3, order.UploadType);
 
-                            if (destPartnerEmails.ContainsKey(request.OrderNo) && request.OrderType == 2)
+                            if (destPartnerEmails.ContainsKey(request.OrderNo) )
                             {
-                                destPartnerEmails.TryGetValue(request.OrderNo, out List<string> lstEmails);
-                                if (lstEmails != null && !lstEmails.Contains(destinationPartnerDetail.PartnerEmail))
+                                if (request.OrderType == 2) // outbound
                                 {
-                                    lstEmails.Add(destinationPartnerDetail.PartnerEmail);
+                                    destPartnerEmails.TryGetValue(request.OrderNo, out List<string> lstEmails);
+                                    if (lstEmails != null && !lstEmails.Contains(destinationPartnerDetail.PartnerEmail))
+                                    {
+                                        lstEmails.Add(destinationPartnerDetail.PartnerEmail);
+                                    }
+                                    destPartnerEmails[request.OrderNo] = lstEmails;
                                 }
-                                destPartnerEmails[request.OrderNo] = lstEmails;
                             }
                             else
                             {
@@ -162,30 +164,6 @@ namespace TMS.BusinessGateway.Task
                                     destinationPartnerDetail.PartnerEmail
                                 };
                                 destPartnerEmails.Add(request.OrderNo, lstEmails);
-                            }
-
-                            foreach(string ord in destPartnerEmails.Keys)
-                            {
-                                MailMessage mail = new MailMessage();
-                                mail.To.Add(string.Join(",", destPartnerEmails[ord]));
-                                string emailFrom = ConfigurationManager.AppSettings["EmailFrom"];
-                                mail.From = new MailAddress(emailFrom);
-                                mail.Subject = "Your Order Delivery Status";
-                                string Body = "Dear Customer, <br /> This is your order deliver status. Your order delivery No is " + ord + ". You can track order by clicking this link " + ConfigurationManager.AppSettings["TMS_APP_URL"];
-                                mail.Body = Body;
-                                mail.IsBodyHtml = true;
-                                string smtpHost = ConfigurationManager.AppSettings["SmtpHost"];
-                                string loginEmailId = ConfigurationManager.AppSettings["SmtpUserName"];
-                                string emailPassword = ConfigurationManager.AppSettings["SmtpPassword"];
-                                System.Net.Mail.SmtpClient smtp = new System.Net.Mail.SmtpClient(smtpHost)
-                                {
-                                    Port = Convert.ToInt32(ConfigurationManager.AppSettings["smtpPort"]),
-                                    UseDefaultCredentials = false,
-                                    DeliveryMethod = SmtpDeliveryMethod.Network,
-                                    Credentials = new System.Net.NetworkCredential(loginEmailId, emailPassword),
-                                    EnableSsl = true
-                                };
-                                smtp.Send(mail);
                             }
 
                             if (!string.IsNullOrEmpty(request.DriverName))
@@ -349,6 +327,37 @@ namespace TMS.BusinessGateway.Task
                                     requestDMS.Requests.Add(tripDMS);
                                 }
                             }
+                        }
+
+                        try
+                        {
+                            foreach (string ord in destPartnerEmails.Keys)
+                            {
+                                MailMessage mail = new MailMessage();
+                                mail.To.Add(string.Join(",", destPartnerEmails[ord]));
+                                string emailFrom = ConfigurationManager.AppSettings["EmailFrom"];
+                                mail.From = new MailAddress(emailFrom);
+                                mail.Subject = "Your Order Delivery Status";
+                                string Body = "Dear Customer, <br /> This is your order deliver status. Your order delivery No is " + ord + ". You can track order by clicking this link " + ConfigurationManager.AppSettings["TMS_APP_URL"];
+                                mail.Body = Body;
+                                mail.IsBodyHtml = true;
+                                string smtpHost = ConfigurationManager.AppSettings["SmtpHost"];
+                                string loginEmailId = ConfigurationManager.AppSettings["SmtpUserName"];
+                                string emailPassword = ConfigurationManager.AppSettings["SmtpPassword"];
+                                System.Net.Mail.SmtpClient smtp = new System.Net.Mail.SmtpClient(smtpHost)
+                                {
+                                    Port = Convert.ToInt32(ConfigurationManager.AppSettings["smtpPort"]),
+                                    UseDefaultCredentials = false,
+                                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                                    Credentials = new System.Net.NetworkCredential(loginEmailId, emailPassword),
+                                    EnableSsl = true
+                                };
+                                smtp.Send(mail);
+                            }
+                        }
+                        catch(Exception ex)
+                        {
+                            // Continue execution
                         }
 
                         #endregion
