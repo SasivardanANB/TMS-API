@@ -152,8 +152,7 @@ namespace TMS.DataGateway.Repositories
                          join ppt in context.PartnerPartnerTypes on partner.ID equals ppt.PartnerId
                          join subdistrict in context.SubDistricts on partner.SubDistrictID equals subdistrict.ID
                          join city in context.Cities on subdistrict.CityID equals city.ID
-                         join p in context.Pics on partner.PICID equals p.ID 
-                         where !partner.IsDeleted && picDetails.Contains(partner.PICID.Value) && p.IsActive && !p.IsDeleted
+                         where !partner.IsDeleted && picDetails.Contains(partner.PICID.Value)
                          select new Domain.Partner
                          {
                              ID = partner.ID,
@@ -179,8 +178,7 @@ namespace TMS.DataGateway.Repositories
                          join ppt in context.PartnerPartnerTypes on partner.ID equals ppt.PartnerId
                          join subdistrict in context.SubDistricts on partner.SubDistrictID equals subdistrict.ID
                          join city in context.Cities on subdistrict.CityID equals city.ID
-                         join p in context.Pics on partner.PICID equals p.ID
-                         where !partner.IsDeleted && p.IsActive && !p.IsDeleted
+                         where !partner.IsDeleted
                          select new Domain.Partner
                          {
                              ID = partner.ID,
