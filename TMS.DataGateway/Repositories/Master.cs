@@ -26,9 +26,13 @@ namespace TMS.DataGateway.Repositories
                 PartnerSearch partnerSearch = partnerSearchRequest.Requests[0];
                 using (var context = new TMSDBContext())
                 {
-                    var userTokenDetails = context.Tokens.Where(t => t.TokenKey == partnerSearchRequest.Token).FirstOrDefault();
-                    var userDetails = context.Users.Where(t => t.ID == userTokenDetails.UserID).FirstOrDefault();
-                    var picDetails = context.Pics.Where(p => p.PICEmail == userDetails.Email && p.IsActive && !p.IsDeleted).Select(x => x.ID).ToList();
+                    List<int> picDetails = new List<int>();
+                    if (partnerSearchRequest.Requests[0].PartnerTypeId == 1)
+                    {
+                        var userTokenDetails = context.Tokens.Where(t => t.TokenKey == partnerSearchRequest.Token).FirstOrDefault();
+                        var userDetails = context.Users.Where(t => t.ID == userTokenDetails.UserID).FirstOrDefault();
+                        picDetails = context.Pics.Where(p => p.PICEmail == userDetails.Email && p.IsActive && !p.IsDeleted).Select(x => x.ID).ToList();
+                    }
 
                     if (string.IsNullOrEmpty(partnerSearch.SearchText))
                     {
