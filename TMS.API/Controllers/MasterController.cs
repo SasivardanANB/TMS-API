@@ -1,4 +1,5 @@
-﻿using System.Web.Http;
+﻿using System.Linq;
+using System.Web.Http;
 using TMS.API.Classes;
 using TMS.DomainGateway.Gateway.Interfaces;
 using TMS.DomainGateway.Task.Interfaces;
@@ -15,6 +16,8 @@ namespace TMS.API.Controllers
         [HttpPost]
         public IHttpActionResult GetPartners(PartnerSearchRequest partnerSearchRequest)
         {
+            var tmsToken = Request.Headers.GetValues("Token").FirstOrDefault();
+            partnerSearchRequest.Token = tmsToken;
             IMasterTask masterTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().MasterTask;
             PartnerSearchResponse partnerSearchResponse = masterTask.GetPartners(partnerSearchRequest);
             return Ok(partnerSearchResponse);
