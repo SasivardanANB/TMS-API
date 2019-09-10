@@ -834,12 +834,13 @@ namespace TMS.DataGateway.Repositories
                 {
                     var userDetails = context.Tokens.Where(t => t.TokenKey == orderSearchRequest.Token).FirstOrDefault();
                     var businessAreas = (from ur in context.UserRoles
-                                         where ur.UserID == userDetails.UserID && ur.IsDelete == false
+                                         where ur.UserID == userDetails.UserID && !ur.IsDelete
                                          select ur.BusinessAreaID).ToList();
 
                     orderList = (from oh in context.OrderHeaders
                                  join od in context.OrderDetails on oh.ID equals od.OrderHeaderID
                                  join ps in context.PackingSheets on od.ShippingListNo equals ps.ShippingListNo into pks
+                                 join os in context.OrderStatuses on oh.OrderStatusID equals os.ID
                                  from pksh in pks.DefaultIfEmpty()
                                  where businessAreas.Contains(oh.BusinessAreaId) &&
                                  (
@@ -851,6 +852,9 @@ namespace TMS.DataGateway.Repositories
                                  ||
                                          ((orderSearchRequest.GlobalSearch != string.Empty && pksh.PackingSheetNo == orderSearchRequest.GlobalSearch)
                                          || (orderSearchRequest.GlobalSearch == string.Empty && pksh.PackingSheetNo == pksh.PackingSheetNo))
+                                 ||
+                                         ((!String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && os.OrderStatusValue == orderSearchRequest.GlobalSearch)
+                                         || (String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && os.OrderStatusValue == os.OrderStatusValue))
                                  )
 
                                  select new Domain.OrderSearch
