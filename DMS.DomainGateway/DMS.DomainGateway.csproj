@@ -50,9 +50,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Task\Authenticate.cs" />
     <Compile Include="Task\Interfaces\IAuthenticateTask.cs" />
+    <Compile Include="Task\Interfaces\IMasterTask.cs" />
     <Compile Include="Task\Interfaces\IMediaTask.cs" />
     <Compile Include="Task\Interfaces\ITripTask.cs" />
     <Compile Include="Task\Interfaces\IUserTask.cs" />
+    <Compile Include="Task\Master.cs" />
     <Compile Include="Task\Media.cs" />
     <Compile Include="Task\Trip.cs" />
     <Compile Include="Task\User.cs" />
