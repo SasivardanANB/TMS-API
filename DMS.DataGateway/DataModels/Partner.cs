@@ -14,9 +14,6 @@ namespace DMS.DataGateway.DataModels
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
-        [ForeignKey("PostalCode")]
-        public int PostalCodeId { get; set; }
-        public PostalCode PostalCode { get; set; }
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         [MaxLength(10)]
         [Index("Partner_PartnerNo", IsUnique = true)]

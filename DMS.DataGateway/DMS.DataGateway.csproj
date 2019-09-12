@@ -102,6 +102,10 @@
     <Compile Include="Migrations\201907160929467_ShippingListNo.Designer.cs">
       <DependentUpon>201907160929467_ShippingListNo.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201909121137198_RemovePartnerPostalCode.cs" />
+    <Compile Include="Migrations\201909121137198_RemovePartnerPostalCode.Designer.cs">
+      <DependentUpon>201909121137198_RemovePartnerPostalCode.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\Authenticate.cs" />
@@ -124,6 +128,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201907160929467_ShippingListNo.resx">
       <DependentUpon>201907160929467_ShippingListNo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909121137198_RemovePartnerPostalCode.resx">
+      <DependentUpon>201909121137198_RemovePartnerPostalCode.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SeedData\Cities.csv" />
     <EmbeddedResource Include="SeedData\PostalCodes.csv" />
