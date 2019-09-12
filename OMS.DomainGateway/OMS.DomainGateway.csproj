@@ -49,8 +49,10 @@
     <Compile Include="Gateway\TaskGateway.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Task\Interfaces\IAuthenticateTask.cs" />
+    <Compile Include="Task\Interfaces\IMasterTask.cs" />
     <Compile Include="Task\Interfaces\IOrderTask.cs" />
     <Compile Include="Task\Interfaces\IUserTask.cs" />
+    <Compile Include="Task\Master.cs" />
     <Compile Include="Task\Order.cs" />
     <Compile Include="Task\Authenticate.cs" />
     <Compile Include="Task\User.cs" />

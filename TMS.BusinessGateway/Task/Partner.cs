@@ -1,8 +1,12 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using RestSharp;
+using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TMS.BusinessGateway.Classes;
 using TMS.DataGateway.Repositories.Interfaces;
 using TMS.DataGateway.Repositories.Iterfaces;
 using TMS.DomainGateway.Task;
@@ -23,6 +27,44 @@ namespace TMS.BusinessGateway.Task
         public override PartnerResponse CreateUpdatePartner(PartnerRequest partnerRequest)
         {
             PartnerResponse partnerResponse = _partnerRepository.CreateUpdatePartner(partnerRequest);
+
+            #region CreateUpdate Partner in OMS
+
+            LoginRequest loginRequest = new LoginRequest();
+            string token = string.Empty;
+            loginRequest.UserName = ConfigurationManager.AppSettings["OMSLogin"];
+            loginRequest.UserPassword = ConfigurationManager.AppSettings["OMSPassword"];
+            var OmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                + "/v1/user/login", Method.POST, loginRequest, null));
+            if (OmsLoginResponse != null && OmsLoginResponse.Data.Count > 0)
+            {
+                token = OmsLoginResponse.TokenKey;
+            }
+
+            PartnerRequest omsPartnerRequest = new PartnerRequest()
+            {
+                Requests = new List<DomainObjects.Objects.Partner>()
+                {
+                    new DomainObjects.Objects.Partner()
+                    {
+                        PartnerNo = partnerResponse.Data[0].PartnerNo,
+                        PartnerName = partnerResponse.Data[0].PartnerName
+                    }
+                },
+                CreatedBy = partnerRequest.CreatedBy,
+                LastModifiedBy = partnerRequest.LastModifiedBy
+            };
+
+            PartnerResponse omsPartnerResponse = JsonConvert.DeserializeObject<PartnerResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                 + "/v1/master/createupdatpartner", Method.POST, omsPartnerRequest, token));
+
+            partnerResponse.StatusMessage = partnerResponse.StatusMessage + omsPartnerResponse.StatusMessage;
+
+            #endregion
+
+            #region CreateUpdate Partner in DMS
+            #endregion
+
             return partnerResponse;
         }
 

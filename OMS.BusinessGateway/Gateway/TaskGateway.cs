@@ -26,5 +26,9 @@ namespace OMS.BusinessGateway.Gateway
         {
             get { return new BusinessAuthenticateTask(new Authenticate()); }
         }
+        public IMasterTask MasterTask
+        {
+            get { return new BusinessMasterTask(new Master()); }
+        }
     }
 }
