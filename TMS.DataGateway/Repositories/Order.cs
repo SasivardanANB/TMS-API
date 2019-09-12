@@ -833,40 +833,86 @@ namespace TMS.DataGateway.Repositories
                 using (var context = new Data.TMSDBContext())
                 {
                     var userDetails = context.Tokens.Where(t => t.TokenKey == orderSearchRequest.Token).FirstOrDefault();
+                    var userData = context.Users.Where(t => t.ID == userDetails.UserID).FirstOrDefault();
+                    var picDetails = context.Pics.Where(p => p.PICEmail == userData.Email && p.IsActive == true && p.IsDeleted == false).Select(x => x.ID).ToList();
+
                     var businessAreas = (from ur in context.UserRoles
                                          where ur.UserID == userDetails.UserID && !ur.IsDelete
                                          select ur.BusinessAreaID).ToList();
 
-                    orderList = (from oh in context.OrderHeaders
-                                 join od in context.OrderDetails on oh.ID equals od.OrderHeaderID
-                                 join ps in context.PackingSheets on od.ShippingListNo equals ps.ShippingListNo into pks
-                                 join os in context.OrderStatuses on oh.OrderStatusID equals os.ID
-                                 from pksh in pks.DefaultIfEmpty()
-                                 where businessAreas.Contains(oh.BusinessAreaId) &&
-                                 (
-                                        ((!String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.OrderNo == orderSearchRequest.GlobalSearch)
-                                        || (String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.OrderNo == oh.OrderNo))
-                                 ||
-                                        ((!String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.VehicleNo == orderSearchRequest.GlobalSearch)
-                                        || (String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.VehicleNo == oh.VehicleNo))
-                                 ||
-                                         ((orderSearchRequest.GlobalSearch != string.Empty && pksh.PackingSheetNo == orderSearchRequest.GlobalSearch)
-                                         || (orderSearchRequest.GlobalSearch == string.Empty && pksh.PackingSheetNo == pksh.PackingSheetNo))
-                                 ||
-                                         ((!String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && os.OrderStatusValue == orderSearchRequest.GlobalSearch)
-                                         || (String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && os.OrderStatusValue == os.OrderStatusValue))
-                                 )
+                    var partnerDataCk = (from partner in context.Partners
+                                       join ptype in context.PartnerPartnerTypes on partner.ID equals ptype.PartnerId
+                                       where ptype.PartnerTypeId == 1 && picDetails.Contains(partner.PICID.Value) 
+                                       select partner.ID
+                                       ).ToList();
+                    if (picDetails.Count > 0)
+                    {
+                        orderList = (from oh in context.OrderHeaders
+                                     join od in context.OrderDetails on oh.ID equals od.OrderHeaderID
+                                     join opd in context.OrderPartnerDetails on od.ID equals opd.OrderDetailID
+                                     join ps in context.PackingSheets on od.ShippingListNo equals ps.ShippingListNo into pks
+                                     join os in context.OrderStatuses on oh.OrderStatusID equals os.ID
+                                     from pksh in pks.DefaultIfEmpty()
+                                     where businessAreas.Contains(oh.BusinessAreaId) && partnerDataCk.Contains(opd.PartnerID) && opd.PartnerTypeId == 1 &&
+                                     (
+                                            ((!String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.OrderNo == orderSearchRequest.GlobalSearch)
+                                            || (String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.OrderNo == oh.OrderNo))
+                                     ||
+                                            ((!String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.VehicleNo == orderSearchRequest.GlobalSearch)
+                                            || (String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.VehicleNo == oh.VehicleNo))
+                                     ||
+                                             ((orderSearchRequest.GlobalSearch != string.Empty && pksh.PackingSheetNo == orderSearchRequest.GlobalSearch)
+                                             || (orderSearchRequest.GlobalSearch == string.Empty && pksh.PackingSheetNo == pksh.PackingSheetNo))
+                                     ||
+                                             ((!String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && os.OrderStatusValue == orderSearchRequest.GlobalSearch)
+                                             || (String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && os.OrderStatusValue == os.OrderStatusValue))
+                                     )
 
-                                 select new Domain.OrderSearch
-                                 {
-                                     OrderId = oh.ID,
-                                     OrderType = oh.OrderType,
-                                     OrderNumber = oh.OrderNo,
-                                     VehicleType = context.VehicleTypes.Where(v => v.ID.ToString() == oh.VehicleShipment).Select(vt => vt.VehicleTypeDescription).FirstOrDefault(),
-                                     PoliceNumber = oh.VehicleNo,
-                                     OrderStatus = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusValue
-                                    // PackingSheetNumber = pksh.PackingSheetNo == null ? "" : pksh.PackingSheetNo
-                                 }).Distinct().ToList();
+                                     select new Domain.OrderSearch
+                                     {
+                                         OrderId = oh.ID,
+                                         OrderType = oh.OrderType,
+                                         OrderNumber = oh.OrderNo,
+                                         VehicleType = context.VehicleTypes.Where(v => v.ID.ToString() == oh.VehicleShipment).Select(vt => vt.VehicleTypeDescription).FirstOrDefault(),
+                                         PoliceNumber = oh.VehicleNo,
+                                         OrderStatus = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusValue
+                                         // PackingSheetNumber = pksh.PackingSheetNo == null ? "" : pksh.PackingSheetNo
+                                     }).Distinct().ToList();
+                    }
+                    else
+                    {
+                        orderList = (from oh in context.OrderHeaders
+                                     join od in context.OrderDetails on oh.ID equals od.OrderHeaderID
+                                     join ps in context.PackingSheets on od.ShippingListNo equals ps.ShippingListNo into pks
+                                     join os in context.OrderStatuses on oh.OrderStatusID equals os.ID
+                                     from pksh in pks.DefaultIfEmpty()
+                                     where businessAreas.Contains(oh.BusinessAreaId) &&
+                                     (
+                                            ((!String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.OrderNo == orderSearchRequest.GlobalSearch)
+                                            || (String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.OrderNo == oh.OrderNo))
+                                     ||
+                                            ((!String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.VehicleNo == orderSearchRequest.GlobalSearch)
+                                            || (String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.VehicleNo == oh.VehicleNo))
+                                     ||
+                                             ((orderSearchRequest.GlobalSearch != string.Empty && pksh.PackingSheetNo == orderSearchRequest.GlobalSearch)
+                                             || (orderSearchRequest.GlobalSearch == string.Empty && pksh.PackingSheetNo == pksh.PackingSheetNo))
+                                     ||
+                                             ((!String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && os.OrderStatusValue == orderSearchRequest.GlobalSearch)
+                                             || (String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && os.OrderStatusValue == os.OrderStatusValue))
+                                     )
+
+                                     select new Domain.OrderSearch
+                                     {
+                                         OrderId = oh.ID,
+                                         OrderType = oh.OrderType,
+                                         OrderNumber = oh.OrderNo,
+                                         VehicleType = context.VehicleTypes.Where(v => v.ID.ToString() == oh.VehicleShipment).Select(vt => vt.VehicleTypeDescription).FirstOrDefault(),
+                                         PoliceNumber = oh.VehicleNo,
+                                         OrderStatus = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusValue
+                                         // PackingSheetNumber = pksh.PackingSheetNo == null ? "" : pksh.PackingSheetNo
+                                     }).Distinct().ToList();
+                    }
+
 
                     if (orderList != null && orderList.Count > 0)
                     {
@@ -885,17 +931,17 @@ namespace TMS.DataGateway.Repositories
                             // Get all source orderdetailids - iist of int - orderdetail to orderpartnerdetail where partnertypeid = 2
                             List<int> sourceOrderIds = (from orderDetails in context.OrderDetails
                                                         join ordPartnerDetails in context.OrderPartnerDetails on orderDetails.ID equals ordPartnerDetails.OrderDetailID
-                                                        where ordPartnerDetails.PartnerTypeId == 2 && orderDetails.OrderHeaderID== order.OrderId
+                                                        where ordPartnerDetails.PartnerTypeId == 2 && orderDetails.OrderHeaderID == order.OrderId
                                                         select orderDetails.ID
                                                       ).ToList();
                             // For each orderdetailid in orderdetailids
                             bool isNotLoaded = true;
-                            foreach(int ordDetailId in sourceOrderIds)
+                            foreach (int ordDetailId in sourceOrderIds)
                             {
                                 var orderStatusHistory = (from osh in context.OrderStatusHistories
-                                                         where osh.OrderDetailID == ordDetailId && osh.OrderStatusID == 7
-                                                         select osh).FirstOrDefault();
-                                if(orderStatusHistory != null)
+                                                          where osh.OrderDetailID == ordDetailId && osh.OrderStatusID == 7
+                                                          select osh).FirstOrDefault();
+                                if (orderStatusHistory != null)
                                 {
                                     isNotLoaded = false;
                                 }
@@ -1931,12 +1977,13 @@ namespace TMS.DataGateway.Repositories
                     if (orderData != null)
                     {
                         var orderPackingSheetData = (from od in context.OrderDetails
-                                               join ps in context.PackingSheets on od.ShippingListNo equals ps.ShippingListNo
-                                               where od.OrderHeaderID == orderData.ID
-                                               select ps
+                                                     join ps in context.PackingSheets on od.ShippingListNo equals ps.ShippingListNo
+                                                     where od.OrderHeaderID == orderData.ID
+                                                     select ps
                                                ).FirstOrDefault();
 
-                        if(orderPackingSheetData != null){
+                        if (orderPackingSheetData != null)
+                        {
                             orderData.PackingSheetNo = orderPackingSheetData.PackingSheetNo;
                             orderData.IsPackingSheetAvailable = true;
                         }
@@ -2586,7 +2633,7 @@ namespace TMS.DataGateway.Repositories
                         {
                             string soPoNumber = String.Empty;
                             DateTime estimationShipmentDate = order.ActualShipment;
-                            DateTime actualShipmentDate = order.EstimationShipment; 
+                            DateTime actualShipmentDate = order.EstimationShipment;
 
                             #region Step 1: Check if We have Business Area master data
                             int businessAreaId;
