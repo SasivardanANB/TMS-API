@@ -31,6 +31,9 @@ namespace TMS.BusinessGateway.Task
         public override UserResponse LoginUser(LoginRequest login)
         {
             UserResponse userData = _userRepository.LoginUser(login);
+
+            
+
             return userData;
         }
 
@@ -154,9 +157,9 @@ namespace TMS.BusinessGateway.Task
             return usersList;
         }
 
-        public override UserResponse ChangePassword(ChangePasswordRequest changePasswordRequest,string type)
+        public override UserResponse ChangePassword(ChangePasswordRequest changePasswordRequest, string type)
         {
-            UserResponse userResponse = _userRepository.ChangePassword(changePasswordRequest,type);
+            UserResponse userResponse = _userRepository.ChangePassword(changePasswordRequest, type);
             return userResponse;
         }
 
@@ -317,6 +320,6 @@ namespace TMS.BusinessGateway.Task
         {
             RoleResponse roleResponse = _userRepository.GetUserMenus(userId);
             return roleResponse;
-        }       
+        }
     }
 }

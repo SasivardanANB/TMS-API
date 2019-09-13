@@ -841,9 +841,9 @@ namespace TMS.DataGateway.Repositories
                                          select ur.BusinessAreaID).ToList();
 
                     var partnerDataCk = (from partner in context.Partners
-                                       join ptype in context.PartnerPartnerTypes on partner.ID equals ptype.PartnerId
-                                       where ptype.PartnerTypeId == 1 && picDetails.Contains(partner.PICID.Value) 
-                                       select partner.ID
+                                         join ptype in context.PartnerPartnerTypes on partner.ID equals ptype.PartnerId
+                                         where ptype.PartnerTypeId == 1 && picDetails.Contains(partner.PICID.Value)
+                                         select partner.ID
                                        ).ToList();
                     if (picDetails.Count > 0)
                     {
@@ -3537,5 +3537,23 @@ namespace TMS.DataGateway.Repositories
             return response;
         }
 
+        public string GetPICFCMToken(string orderNumber)
+        {
+            string PICFCMToken = string.Empty;
+            using (var context = new Data.TMSDBContext())
+            {
+
+                PICFCMToken = (from t in context.Tokens
+                               join u in context.Users on t.UserID equals u.ID
+                               join a in context.Pics on u.Email equals a.PICEmail
+                               join p in context.Partners on a.ID equals p.PICID
+                               join op in context.OrderPartnerDetails on p.ID equals op.PartnerID
+                               join od in context.OrderDetails on op.OrderDetailID equals od.ID
+                               join oh in context.OrderHeaders on od.OrderHeaderID equals oh.ID
+                               where oh.OrderNo == orderNumber && op.PartnerTypeId == 1
+                               select t.FirebaseToken).FirstOrDefault();
+            }
+            return PICFCMToken;
+        }
     }
 }
