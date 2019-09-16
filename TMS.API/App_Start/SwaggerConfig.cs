@@ -2,6 +2,7 @@ using System.Web.Http;
 using WebActivatorEx;
 using TMS.API;
 using Swashbuckle.Application;
+using System.Configuration;
 
 [assembly: PreApplicationStartMethod(typeof(SwaggerConfig), "Register")]
 
@@ -13,19 +14,18 @@ namespace TMS.API
         {
             var thisAssembly = typeof(SwaggerConfig).Assembly;
 
-            GlobalConfiguration.Configuration 
+            GlobalConfiguration.Configuration
                 .EnableSwagger(c =>
                     {
                         // By default, the service root url is inferred from the request used to access the docs.
                         // However, there may be situations (e.g. proxy and load-balanced environments) where this does not
                         // resolve correctly. You can workaround this by providing your own code to determine the root URL.
                         //
-                        //c.RootUrl(req => GetRootUrlFromAppConfig());
+                        c.RootUrl(req => ConfigurationManager.AppSettings["SwaggerBaseURL"]);
 
                         // If schemes are not explicitly provided in a Swagger 2.0 document, then the scheme used to access
                         // the docs is taken as the default. If your API supports multiple schemes and you want to be explicit
                         // about them, you can use the "Schemes" option as shown below.
-                        //
                         //c.Schemes(new[] { "http", "https" });
 
                         // Use "SingleApiVersion" to describe a single version API. Swagger 2.0 includes an "Info" object to
