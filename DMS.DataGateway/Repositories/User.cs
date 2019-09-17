@@ -33,10 +33,9 @@ namespace DMS.DataGateway.Repositories
             {
                 using (var context = new DMSDBContext())
                 {
-                    string encryptedPassword = Encryption.EncryptionLibrary.EncryptPassword(login.UserPassword);
                     var userData = (from user in context.Drivers
                                     where user.UserName == login.UserName
-                                    && user.Password == encryptedPassword
+                                    && user.Password == login.UserPassword
                                     select new Domain.User()
                                     {
                                         ID = user.ID,
