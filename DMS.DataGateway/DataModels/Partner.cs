@@ -14,7 +14,6 @@ namespace DMS.DataGateway.DataModels
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         [MaxLength(10)]
         [Index("Partner_PartnerNo", IsUnique = true)]
         public string PartnerNo { get; set; }
