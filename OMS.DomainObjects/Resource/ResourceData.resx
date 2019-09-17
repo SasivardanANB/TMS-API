@@ -270,4 +270,10 @@
   <data name="UnAuthorized" xml:space="preserve">
     <value>No Authorization.</value>
   </data>
+  <data name="PartnerCreated" xml:space="preserve">
+    <value>Partner(s) created successfully in OMS.</value>
+  </data>
+  <data name="PartnerUpdated" xml:space="preserve">
+    <value>Partner(s) updated successfully in OMS.</value>
+  </data>
 </root>

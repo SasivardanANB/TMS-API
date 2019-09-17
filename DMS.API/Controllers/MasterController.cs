@@ -8,7 +8,7 @@ using System.Web.Http;
 namespace DMS.API.Controllers
 {
     [CustomAuthorize]
-    [RoutePrefix("api/v1/partner")]
+    [RoutePrefix("api/v1/master")]
     public class MasterController : ApiController
     {
         [Route("createupdatepartner")]

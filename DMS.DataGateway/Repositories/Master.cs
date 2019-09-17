@@ -42,6 +42,7 @@ namespace DMS.DataGateway.Repositories
 
                             partnerResponse.Status = DomainObjects.Resource.ResourceData.Success;
                             partnerResponse.StatusCode = (int)HttpStatusCode.OK;
+                            partnerResponse.StatusMessage = DomainObjects.Resource.ResourceData.PartnerUpdated;
                         }
                         else //Create partner
                         {
@@ -59,6 +60,7 @@ namespace DMS.DataGateway.Repositories
 
                             partnerResponse.Status = DomainObjects.Resource.ResourceData.Success;
                             partnerResponse.StatusCode = (int)HttpStatusCode.OK;
+                            partnerResponse.StatusMessage = DomainObjects.Resource.ResourceData.PartnerCreated;
                         }
                     }
 

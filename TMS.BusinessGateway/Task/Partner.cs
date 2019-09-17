@@ -56,13 +56,44 @@ namespace TMS.BusinessGateway.Task
             };
 
             PartnerResponse omsPartnerResponse = JsonConvert.DeserializeObject<PartnerResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
-                 + "/v1/master/createupdatpartner", Method.POST, omsPartnerRequest, token));
+                 + "v1/master/createupdatepartner", Method.POST, omsPartnerRequest, token));
 
             partnerResponse.StatusMessage = partnerResponse.StatusMessage + omsPartnerResponse.StatusMessage;
 
             #endregion
 
             #region CreateUpdate Partner in DMS
+
+            LoginRequest dmlLoginRequest = new LoginRequest();
+            string dmsToken = string.Empty;
+            dmlLoginRequest.UserName = ConfigurationManager.AppSettings["DMSLogin"];
+            dmlLoginRequest.UserPassword = ConfigurationManager.AppSettings["DMSPassword"];
+            var dmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
+                + "/v1/user/login", Method.POST, dmlLoginRequest, null));
+            if (dmsLoginResponse != null && dmsLoginResponse.Data.Count > 0)
+            {
+                dmsToken = dmsLoginResponse.TokenKey;
+            }
+
+            PartnerRequest dmsPartnerRequest = new PartnerRequest()
+            {
+                Requests = new List<DomainObjects.Objects.Partner>()
+                {
+                    new DomainObjects.Objects.Partner()
+                    {
+                        PartnerNo = partnerResponse.Data[0].PartnerNo,
+                        PartnerName = partnerResponse.Data[0].PartnerName
+                    }
+                },
+                CreatedBy = partnerRequest.CreatedBy,
+                LastModifiedBy = partnerRequest.LastModifiedBy
+            };
+
+            PartnerResponse dmsPartnerResponse = JsonConvert.DeserializeObject<PartnerResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
+                 + "v1/master/createupdatepartner", Method.POST, dmsPartnerRequest, dmsToken));
+
+            partnerResponse.StatusMessage = partnerResponse.StatusMessage + dmsPartnerResponse.StatusMessage;
+
             #endregion
 
             return partnerResponse;
