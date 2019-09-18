@@ -28,22 +28,24 @@ namespace TMS.BusinessGateway.Task
         {
             PartnerResponse partnerResponse = _partnerRepository.CreateUpdatePartner(partnerRequest);
 
-            #region CreateUpdate Partner in OMS
-
-            LoginRequest loginRequest = new LoginRequest();
-            string token = string.Empty;
-            loginRequest.UserName = ConfigurationManager.AppSettings["OMSLogin"];
-            loginRequest.UserPassword = ConfigurationManager.AppSettings["OMSPassword"];
-            var OmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
-                + "/v1/user/login", Method.POST, loginRequest, null));
-            if (OmsLoginResponse != null && OmsLoginResponse.Data.Count > 0)
+            if (partnerRequest.Requests[0].ID == 0)
             {
-                token = OmsLoginResponse.TokenKey;
-            }
+                #region CreateUpdate Partner in OMS
 
-            PartnerRequest omsPartnerRequest = new PartnerRequest()
-            {
-                Requests = new List<DomainObjects.Objects.Partner>()
+                LoginRequest loginRequest = new LoginRequest();
+                string token = string.Empty;
+                loginRequest.UserName = ConfigurationManager.AppSettings["OMSLogin"];
+                loginRequest.UserPassword = ConfigurationManager.AppSettings["OMSPassword"];
+                var OmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                    + "/v1/user/login", Method.POST, loginRequest, null));
+                if (OmsLoginResponse != null && OmsLoginResponse.Data.Count > 0)
+                {
+                    token = OmsLoginResponse.TokenKey;
+                }
+
+                PartnerRequest omsPartnerRequest = new PartnerRequest()
+                {
+                    Requests = new List<DomainObjects.Objects.Partner>()
                 {
                     new DomainObjects.Objects.Partner()
                     {
@@ -51,33 +53,33 @@ namespace TMS.BusinessGateway.Task
                         PartnerName = partnerResponse.Data[0].PartnerName
                     }
                 },
-                CreatedBy = partnerRequest.CreatedBy,
-                LastModifiedBy = partnerRequest.LastModifiedBy
-            };
+                    CreatedBy = partnerRequest.CreatedBy,
+                    LastModifiedBy = partnerRequest.LastModifiedBy
+                };
 
-            PartnerResponse omsPartnerResponse = JsonConvert.DeserializeObject<PartnerResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
-                 + "v1/master/createupdatepartner", Method.POST, omsPartnerRequest, token));
+                PartnerResponse omsPartnerResponse = JsonConvert.DeserializeObject<PartnerResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                     + "v1/master/createupdatepartner", Method.POST, omsPartnerRequest, token));
 
-            partnerResponse.StatusMessage = partnerResponse.StatusMessage + omsPartnerResponse.StatusMessage;
+                partnerResponse.StatusMessage = partnerResponse.StatusMessage + omsPartnerResponse.StatusMessage;
 
-            #endregion
+                #endregion
 
-            #region CreateUpdate Partner in DMS
+                #region CreateUpdate Partner in DMS
 
-            LoginRequest dmlLoginRequest = new LoginRequest();
-            string dmsToken = string.Empty;
-            dmlLoginRequest.UserName = ConfigurationManager.AppSettings["DMSLogin"];
-            dmlLoginRequest.UserPassword = ConfigurationManager.AppSettings["DMSPassword"];
-            var dmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
-                + "/v1/user/login", Method.POST, dmlLoginRequest, null));
-            if (dmsLoginResponse != null && dmsLoginResponse.Data.Count > 0)
-            {
-                dmsToken = dmsLoginResponse.TokenKey;
-            }
+                LoginRequest dmlLoginRequest = new LoginRequest();
+                string dmsToken = string.Empty;
+                dmlLoginRequest.UserName = ConfigurationManager.AppSettings["DMSLogin"];
+                dmlLoginRequest.UserPassword = ConfigurationManager.AppSettings["DMSPassword"];
+                var dmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
+                    + "/v1/user/login", Method.POST, dmlLoginRequest, null));
+                if (dmsLoginResponse != null && dmsLoginResponse.Data.Count > 0)
+                {
+                    dmsToken = dmsLoginResponse.TokenKey;
+                }
 
-            PartnerRequest dmsPartnerRequest = new PartnerRequest()
-            {
-                Requests = new List<DomainObjects.Objects.Partner>()
+                PartnerRequest dmsPartnerRequest = new PartnerRequest()
+                {
+                    Requests = new List<DomainObjects.Objects.Partner>()
                 {
                     new DomainObjects.Objects.Partner()
                     {
@@ -85,16 +87,17 @@ namespace TMS.BusinessGateway.Task
                         PartnerName = partnerResponse.Data[0].PartnerName
                     }
                 },
-                CreatedBy = partnerRequest.CreatedBy,
-                LastModifiedBy = partnerRequest.LastModifiedBy
-            };
+                    CreatedBy = partnerRequest.CreatedBy,
+                    LastModifiedBy = partnerRequest.LastModifiedBy
+                };
 
-            PartnerResponse dmsPartnerResponse = JsonConvert.DeserializeObject<PartnerResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
-                 + "v1/master/createupdatepartner", Method.POST, dmsPartnerRequest, dmsToken));
+                PartnerResponse dmsPartnerResponse = JsonConvert.DeserializeObject<PartnerResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayDMSURL"]
+                     + "v1/master/createupdatepartner", Method.POST, dmsPartnerRequest, dmsToken));
 
-            partnerResponse.StatusMessage = partnerResponse.StatusMessage + dmsPartnerResponse.StatusMessage;
+                partnerResponse.StatusMessage = partnerResponse.StatusMessage + dmsPartnerResponse.StatusMessage;
 
-            #endregion
+                #endregion
+            }
 
             return partnerResponse;
         }
