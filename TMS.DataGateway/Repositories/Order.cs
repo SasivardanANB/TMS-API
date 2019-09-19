@@ -1829,17 +1829,42 @@ namespace TMS.DataGateway.Repositories
                                          where ur.UserID == userDetails.UserID && !ur.IsDelete
                                          select ur.BusinessAreaID).ToList();
 
-                    var orderData = (from orderHeader in context.OrderHeaders
-                                     where businessAreas.Contains(orderHeader.BusinessAreaId) &&
-                                     orderHeader.OrderType == (context.OrderTypes.Where(ot => ot.OrderTypeCode == "INBD").Select(p => p.ID).FirstOrDefault()
+                    var userData = context.Users.Where(t => t.ID == userDetails.UserID).FirstOrDefault();
+                    var picDetails = context.Pics.Where(p => p.PICEmail == userData.Email && p.IsActive && !p.IsDeleted).Select(x => x.ID).ToList();
 
-                                     )
+                    List<Common> orderData = new List<Common>();
+                    if (picDetails.Count > 0)
+                    {
+                        var partnerDataCk = (from partner in context.Partners
+                                             join ptype in context.PartnerPartnerTypes on partner.ID equals ptype.PartnerId
+                                             where ptype.PartnerTypeId == 1 && picDetails.Contains(partner.PICID.Value)
+                                             select partner.ID).ToList();
+
+                        orderData = (from orderHeader in context.OrderHeaders
+                                     join od in context.OrderDetails on orderHeader.ID equals od.OrderHeaderID
+                                     join opd in context.OrderPartnerDetails on od.ID equals opd.OrderDetailID
+                                     where businessAreas.Contains(orderHeader.BusinessAreaId) 
+                                     && partnerDataCk.Contains(opd.PartnerID) 
+                                     && opd.PartnerTypeId == 1
+                                     && orderHeader.OrderType == (context.OrderTypes.Where(ot => ot.OrderTypeCode == "INBD").Select(p => p.ID).FirstOrDefault())
                                      select new Domain.Common
                                      {
                                          Id = orderHeader.ID,
                                          Value = orderHeader.OrderNo
-                                     }
-                                     ).ToList();
+                                     }).ToList();
+                    }
+                    else
+                    {
+                        orderData = (from orderHeader in context.OrderHeaders
+                                     where businessAreas.Contains(orderHeader.BusinessAreaId) &&
+                                     orderHeader.OrderType == (context.OrderTypes.Where(ot => ot.OrderTypeCode == "INBD").Select(p => p.ID).FirstOrDefault())
+                                     select new Domain.Common
+                                     {
+                                         Id = orderHeader.ID,
+                                         Value = orderHeader.OrderNo
+                                     }).ToList();
+                    }
+
                     if (orderData.Count > 0)
                     {
                         commonResponse.NumberOfRecords = orderData.Count;
