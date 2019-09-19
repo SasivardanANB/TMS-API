@@ -2498,10 +2498,7 @@ namespace TMS.DataGateway.Repositories
                             ProcessedDateTime = DateTime.Now,
                             ProcessedBy = "System",
                         };
-                        context.ShipmentScheduleOCRDetails.Add(shipmentScheduleOCRDetails);
-                        context.SaveChanges();
-                        /////
-
+                      
 
                         string soPoNumber = String.Empty;
                         string actualShipmentDate = String.Empty;
@@ -2524,8 +2521,10 @@ namespace TMS.DataGateway.Repositories
                         }
 
                         #region Step 1: Check if We have Business Area master data
-                        int businessAreaId;
+                        int businessAreaId = 0;
                         string businessAreaCode = string.Empty;
+
+                        string processMessage = string.Empty;
 
                         // Source partner: partner with initial "AHM"
                         var sourceDetails = (from partner in context.Partners
@@ -2537,6 +2536,12 @@ namespace TMS.DataGateway.Repositories
                                                  PartnerName = partner.PartnerName,
                                              }
                                            ).FirstOrDefault();
+
+                        if(sourceDetails == null)
+                        {
+                            processMessage = "No source partner found with initial AHM. ";
+                        }
+
                         // Destination Partner: Partner number with initial as maindealer code
                         var destinationDetails = (from partner in context.Partners
                                                   join partnerType in context.PartnerPartnerTypes on partner.ID equals partnerType.PartnerId
@@ -2550,20 +2555,32 @@ namespace TMS.DataGateway.Repositories
                                                   }
                                            ).FirstOrDefault();
 
-                        // Transporter : DestinationPartnerID to TransporterID mapping in MDTransporterMapping table
-                        var transporterDetails = (from partner in context.Partners
-                                                  join partnerType in context.PartnerPartnerTypes on partner.ID equals partnerType.PartnerId
-                                                  join mdTransporter in context.MDTransporterMappings on partner.ID equals mdTransporter.TransporterID
-                                                  where mdTransporter.DestinationPartnerID == destinationDetails.ID && partnerType.PartnerTypeId == (context.PartnerTypes.Where(p => p.PartnerTypeCode == "1").Select(p => p.ID).FirstOrDefault())
-                                                  //&& mdTransporter.Priority == context.MDTransporterMappings.Where(x => x.DestinationPartnerID == destinationDetails.ID).Min(p => p.Priority)
-                                                  select new Domain.Partner
-                                                  {
-                                                      PartnerNo = partner.PartnerNo,
-                                                      PartnerName = partner.PartnerName,
-                                                      ID = partner.ID
-                                                  }
-                                          ).FirstOrDefault();
+                        Domain.Partner transporterDetails = null;
+                        if (destinationDetails == null)
+                        {
+                            processMessage += "No destination partner found with initial same as main dealer code. ";
+                        }
+                        else
+                        {
+                            // Transporter : DestinationPartnerID to TransporterID mapping in MDTransporterMapping table
+                            transporterDetails = (from partner in context.Partners
+                                                      join partnerType in context.PartnerPartnerTypes on partner.ID equals partnerType.PartnerId
+                                                      join mdTransporter in context.MDTransporterMappings on partner.ID equals mdTransporter.TransporterID
+                                                      where mdTransporter.DestinationPartnerID == destinationDetails.ID && partnerType.PartnerTypeId == (context.PartnerTypes.Where(p => p.PartnerTypeCode == "1").Select(p => p.ID).FirstOrDefault())
+                                                      //&& mdTransporter.Priority == context.MDTransporterMappings.Where(x => x.DestinationPartnerID == destinationDetails.ID).Min(p => p.Priority)
+                                                      select new Domain.Partner
+                                                      {
+                                                          PartnerNo = partner.PartnerNo,
+                                                          PartnerName = partner.PartnerName,
+                                                          ID = partner.ID
+                                                      }
+                                              ).FirstOrDefault();
 
+                            if(transporterDetails == null)
+                            {
+                                processMessage += "No MDTransporterMapping found. ";
+                            }
+                        }
 
                         // Business Area:
                         var mdBusinessAreaMappings = (from bam in context.MDBusinessAreaMappings
@@ -2573,7 +2590,11 @@ namespace TMS.DataGateway.Repositories
                                                           BusinessAreaCode = bam.BusinessAreaCode
                                                       }).FirstOrDefault();
 
-                        if (mdBusinessAreaMappings != null)
+                        if(mdBusinessAreaMappings == null)
+                        {
+                            processMessage += "No MDBusinessAreaMappings found. ";
+                        }
+                        else
                         {
                             var businessArea = (from ba in context.BusinessAreas
                                                 where ba.BusinessAreaCode == mdBusinessAreaMappings.BusinessAreaCode
@@ -2582,28 +2603,32 @@ namespace TMS.DataGateway.Repositories
                                                     BusinessAreaCode = ba.BusinessAreaCode,
                                                     ID = ba.ID
                                                 }).FirstOrDefault();
-                            if (businessArea != null)
+
+                            if (businessArea == null)
+                            {
+                                processMessage += "Business Area Code Not Found. ";
+                            }
+                            else
                             {
                                 businessAreaCode = businessArea.BusinessAreaCode;
                                 businessAreaId = businessArea.ID;
                             }
-                            else
-                            {
-                                orderResponse.Status = DomainObjects.Resource.ResourceData.Failure;
-                                orderResponse.StatusCode = (int)HttpStatusCode.BadRequest;
-                                orderResponse.StatusMessage = mdBusinessAreaMappings.BusinessAreaCode + " Business Area Code not found in TMS.";
-                                return orderResponse;
-                            }
-
                         }
-                        else
+
+                        if (processMessage != string.Empty)
                         {
                             //Return with Business Area not found
                             orderResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                             orderResponse.StatusCode = (int)HttpStatusCode.BadRequest;
-                            orderResponse.StatusMessage = shipment.Data.MainDealerCode + " Main Dealer Code found in TMS.";
+                            orderResponse.StatusMessage = processMessage;
+
+                            shipmentScheduleOCRDetails.ProcessMessage = processMessage;
+                            context.ShipmentScheduleOCRDetails.Add(shipmentScheduleOCRDetails);
+                            context.SaveChanges();
+
                             return orderResponse;
                         }
+
                         #endregion
 
                         Domain.Order order = new Domain.Order();
@@ -2631,6 +2656,10 @@ namespace TMS.DataGateway.Repositories
                         order.OrderType = 1;
                         orderResponse.Data.Add(order);
                         orderResponse.StatusCode = (int)HttpStatusCode.OK;
+
+                        shipmentScheduleOCRDetails.ProcessMessage = "Email processed successfully.";
+                        context.ShipmentScheduleOCRDetails.Add(shipmentScheduleOCRDetails);
+                        context.SaveChanges();
                     }
                     catch (Exception ex)
                     {

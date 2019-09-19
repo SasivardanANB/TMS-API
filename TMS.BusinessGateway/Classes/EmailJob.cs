@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using Quartz;
 using System.Net;
-using System.Net.Mail;
-using System.Threading.Tasks;
-using System.Net.Http;
 using System.Configuration;
 using ActiveUp.Net.Mail;
 using Newtonsoft.Json;
@@ -15,7 +10,6 @@ using RestSharp;
 using TMS.DomainObjects.Objects;
 using TMS.DomainObjects.Request;
 using TMS.DomainObjects.Response;
-
 
 namespace TMS.BusinessGateway.Classes
 {
@@ -61,7 +55,7 @@ namespace TMS.BusinessGateway.Classes
                                             var shipmentScheduleOcr = JsonConvert.DeserializeObject<dynamic>(res);
                                             var jsonObject = JObject.Parse(shipmentScheduleOcr);
                                             ShipmentScheduleOcrRequest shipmentScheduleOcrRequest = new ShipmentScheduleOcrRequest();
-                                            if (jsonObject.success)
+                                            if (Convert.ToBoolean(jsonObject.success))
                                             {
                                                 shipmentScheduleOcrRequest.Requests = new List<ShipmentScheduleOcr>();
                                                 ShipmentScheduleOcr shipmentSchedule = new ShipmentScheduleOcr()
@@ -95,9 +89,8 @@ namespace TMS.BusinessGateway.Classes
                                             {
                                                 //OcrOrderResponse
                                                 OrderRequest omsOrderRequest = new OrderRequest();
-                                                OrderResponse ocrOrderResponse = JsonConvert.DeserializeObject<OrderResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                                                OrderResponse ocrOrderResponse = JsonConvert.DeserializeObject<OrderResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
                                                                                                                                       + "/v1/order/ocrorderresponse", Method.POST, shipmentScheduleOcrRequest, null));
-                                                //OcrOrderResponse(shipmentScheduleOcrRequest);
                                                 if (ocrOrderResponse != null && ocrOrderResponse.StatusCode == (int)HttpStatusCode.OK)
                                                 {
                                                     LoginRequest omsLoginRequest = new LoginRequest();
@@ -133,7 +126,16 @@ namespace TMS.BusinessGateway.Classes
                                                             tmsOrderResponse = JsonConvert.DeserializeObject<OrderResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
                                                                                                                                                                    + "v1/order/createordersfromshipmentlistocr", Method.POST, tmsOrderRequest, tmsToken));
                                                         }
-
+                                                        else
+                                                        {
+                                                            // Update shipment schedule ocr details 
+                                                            // orderprocessmessage
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        // Update shipment schedule ocr details 
+                                                        // orderprocessmessage
                                                     }
                                                 }
                                             }
@@ -142,7 +144,6 @@ namespace TMS.BusinessGateway.Classes
                                 }
                             }
                         }
-
                     }
                     catch (Exception ex)
                     {

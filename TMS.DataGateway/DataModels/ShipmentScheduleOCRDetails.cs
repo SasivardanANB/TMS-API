@@ -30,6 +30,7 @@ namespace TMS.DataGateway.DataModels
         public string Weight { get; set; }
 
         public bool IsProcessed { get; set; }
+        public string ProcessMessage { get; set; }
         public bool IsOrderCreated { get; set; }
         public string ImageGuid { get; set; }
         public DateTime ProcessedDateTime { get; set; }
