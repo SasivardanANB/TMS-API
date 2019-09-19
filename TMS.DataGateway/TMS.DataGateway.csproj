@@ -193,6 +193,10 @@
     <Compile Include="Migrations\201908230841470_FirebaseToken.Designer.cs">
       <DependentUpon>201908230841470_FirebaseToken.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201909190833131_ProcessMessage.cs" />
+    <Compile Include="Migrations\201909190833131_ProcessMessage.Designer.cs">
+      <DependentUpon>201909190833131_ProcessMessage.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\Authenticate.cs" />
@@ -263,6 +267,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201908230841470_FirebaseToken.resx">
       <DependentUpon>201908230841470_FirebaseToken.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909190833131_ProcessMessage.resx">
+      <DependentUpon>201909190833131_ProcessMessage.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SeedData\Activities.csv" />
     <EmbeddedResource Include="SeedData\applications.csv" />
