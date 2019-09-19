@@ -2498,7 +2498,7 @@ namespace TMS.DataGateway.Repositories
                             ProcessedDateTime = DateTime.Now,
                             ProcessedBy = "System",
                         };
-                      
+
 
                         string soPoNumber = String.Empty;
                         string actualShipmentDate = String.Empty;
@@ -2537,7 +2537,7 @@ namespace TMS.DataGateway.Repositories
                                              }
                                            ).FirstOrDefault();
 
-                        if(sourceDetails == null)
+                        if (sourceDetails == null)
                         {
                             processMessage = "No source partner found with initial AHM. ";
                         }
@@ -2558,27 +2558,27 @@ namespace TMS.DataGateway.Repositories
                         Domain.Partner transporterDetails = null;
                         if (destinationDetails == null)
                         {
-                            processMessage += "No destination partner found with initial same as main dealer code. ";
+                            processMessage += "No destination partner found with initial same as main dealer code " + shipment.Data.MainDealerCode + ". ";
                         }
                         else
                         {
                             // Transporter : DestinationPartnerID to TransporterID mapping in MDTransporterMapping table
                             transporterDetails = (from partner in context.Partners
-                                                      join partnerType in context.PartnerPartnerTypes on partner.ID equals partnerType.PartnerId
-                                                      join mdTransporter in context.MDTransporterMappings on partner.ID equals mdTransporter.TransporterID
-                                                      where mdTransporter.DestinationPartnerID == destinationDetails.ID && partnerType.PartnerTypeId == (context.PartnerTypes.Where(p => p.PartnerTypeCode == "1").Select(p => p.ID).FirstOrDefault())
-                                                      //&& mdTransporter.Priority == context.MDTransporterMappings.Where(x => x.DestinationPartnerID == destinationDetails.ID).Min(p => p.Priority)
-                                                      select new Domain.Partner
-                                                      {
-                                                          PartnerNo = partner.PartnerNo,
-                                                          PartnerName = partner.PartnerName,
-                                                          ID = partner.ID
-                                                      }
+                                                  join partnerType in context.PartnerPartnerTypes on partner.ID equals partnerType.PartnerId
+                                                  join mdTransporter in context.MDTransporterMappings on partner.ID equals mdTransporter.TransporterID
+                                                  where mdTransporter.DestinationPartnerID == destinationDetails.ID && partnerType.PartnerTypeId == (context.PartnerTypes.Where(p => p.PartnerTypeCode == "1").Select(p => p.ID).FirstOrDefault())
+                                                  //&& mdTransporter.Priority == context.MDTransporterMappings.Where(x => x.DestinationPartnerID == destinationDetails.ID).Min(p => p.Priority)
+                                                  select new Domain.Partner
+                                                  {
+                                                      PartnerNo = partner.PartnerNo,
+                                                      PartnerName = partner.PartnerName,
+                                                      ID = partner.ID
+                                                  }
                                               ).FirstOrDefault();
 
-                            if(transporterDetails == null)
+                            if (transporterDetails == null)
                             {
-                                processMessage += "No MDTransporterMapping found. ";
+                                processMessage += "No MDTransporterMapping found. MainDealerCode " + shipment.Data.MainDealerCode + ". ";
                             }
                         }
 
@@ -2590,9 +2590,9 @@ namespace TMS.DataGateway.Repositories
                                                           BusinessAreaCode = bam.BusinessAreaCode
                                                       }).FirstOrDefault();
 
-                        if(mdBusinessAreaMappings == null)
+                        if (mdBusinessAreaMappings == null)
                         {
-                            processMessage += "No MDBusinessAreaMappings found. ";
+                            processMessage += "No MDBusinessAreaMappings found. MainDealerCode " + shipment.Data.MainDealerCode + ", ";
                         }
                         else
                         {
@@ -2606,7 +2606,7 @@ namespace TMS.DataGateway.Repositories
 
                             if (businessArea == null)
                             {
-                                processMessage += "Business Area Code Not Found. ";
+                                processMessage += "Business Area Code Not Found " + mdBusinessAreaMappings.BusinessAreaCode;
                             }
                             else
                             {
@@ -2648,7 +2648,7 @@ namespace TMS.DataGateway.Repositories
                         order.BusinessArea = businessAreaCode;
                         order.BusinessAreaId = businessAreaId;
                         order.TotalPallet = shipment.Data.EstimatedTotalPallet.Split(' ')[0] == "" ? 0 : Convert.ToInt32(shipment.Data.EstimatedTotalPallet.Split(' ')[0]);
-                        order.Dimension = shipment.Data.EstimatedTotalPallet.Split(' ')[1] == "" ? "" : shipment.Data.EstimatedTotalPallet.Split(' ')[1];
+                        order.Dimension = shipment.Data.EstimatedTotalPallet.Split(' ')[1] == "" ? "" : shipment.Data.EstimatedTotalPallet.Split(' ')[1].Replace("(", "");
                         order.SequenceNo = 10;
                         order.ShipmentScheduleImageGUID = shipment.ImageGUID;
                         order.OrderWeight = 100;

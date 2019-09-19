@@ -108,8 +108,12 @@ namespace TMS.BusinessGateway.Classes
                                                     OrderResponse omsOrderResponse = JsonConvert.DeserializeObject<OrderResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
                                                                                                                          + "v1/order/createordersfromshipmentlistocr", Method.POST, omsOrderRequest, omsToken));
 
+                                                    string processMessage = string.Empty;
+                                                    bool isOrderCreated = false;
                                                     if (omsOrderResponse.Data != null && omsOrderResponse.StatusCode == (int)HttpStatusCode.OK)
                                                     {
+                                                        processMessage = omsOrderResponse.StatusMessage;
+
                                                         LoginRequest tmsLoginRequest = new LoginRequest();
                                                         string tmsToken = "";
                                                         tmsLoginRequest.UserName = ConfigurationManager.AppSettings["TMSLogin"];
@@ -125,18 +129,23 @@ namespace TMS.BusinessGateway.Classes
                                                             tmsOrderRequest.UploadType = 3;
                                                             tmsOrderResponse = JsonConvert.DeserializeObject<OrderResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
                                                                                                                                                                    + "v1/order/createordersfromshipmentlistocr", Method.POST, tmsOrderRequest, tmsToken));
-                                                        }
-                                                        else
-                                                        {
-                                                            // Update shipment schedule ocr details 
-                                                            // orderprocessmessage
-                                                        }
+                                                            if(tmsOrderResponse!=null && tmsOrderResponse.StatusCode == (int)HttpStatusCode.OK)
+                                                            {
+                                                                processMessage += tmsOrderResponse.StatusMessage;
+                                                                isOrderCreated = true;
+                                                            }
+                                                            else
+                                                            {
+                                                                processMessage += tmsOrderResponse.StatusMessage;
+                                                            }
+                                                        }                                                       
                                                     }
                                                     else
                                                     {
-                                                        // Update shipment schedule ocr details 
-                                                        // orderprocessmessage
+                                                        processMessage += omsOrderResponse.StatusMessage;
                                                     }
+                                                    // Update shipment schedule ocr details 
+                                                    // processMessage & IsOrderCreated
                                                 }
                                             }
                                         }
