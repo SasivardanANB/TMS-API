@@ -31,7 +31,7 @@ namespace TMS.DataGateway.Repositories
                 {
                     var userDetails = context.Tokens.Where(t => t.TokenKey == tripRequest.Token).FirstOrDefault();
                     var userData = context.Users.Where(t => t.ID == userDetails.UserID).FirstOrDefault();
-                    var picID = context.Pics.Where(p => p.PICEmail == userData.Email && p.IsActive && !p.IsDeleted).Select(x => x.ID).FirstOrDefault();
+                    var picID = context.Pics.Where(p => p.PICEmail == userData.Email).Select(x => x.ID).FirstOrDefault();
 
                     List<int> partnerDataCk = null;
                     if (picID > 0)

@@ -834,7 +834,7 @@ namespace TMS.DataGateway.Repositories
                 {
                     var userDetails = context.Tokens.Where(t => t.TokenKey == orderSearchRequest.Token).FirstOrDefault();
                     var userData = context.Users.Where(t => t.ID == userDetails.UserID).FirstOrDefault();
-                    var picDetails = context.Pics.Where(p => p.PICEmail == userData.Email && p.IsActive == true && p.IsDeleted == false).Select(x => x.ID).ToList();
+                    var picDetails = context.Pics.Where(p => p.PICEmail == userData.Email).Select(x => x.ID).ToList();
 
                     var businessAreas = (from ur in context.UserRoles
                                          where ur.UserID == userDetails.UserID && !ur.IsDelete
@@ -1833,7 +1833,7 @@ namespace TMS.DataGateway.Repositories
                                          select ur.BusinessAreaID).ToList();
 
                     var userData = context.Users.Where(t => t.ID == userDetails.UserID).FirstOrDefault();
-                    var picDetails = context.Pics.Where(p => p.PICEmail == userData.Email && p.IsActive && !p.IsDeleted).Select(x => x.ID).ToList();
+                    var picDetails = context.Pics.Where(p => p.PICEmail == userData.Email).Select(x => x.ID).ToList();
 
                     List<Common> orderData = new List<Common>();
                     if (picDetails.Count > 0)

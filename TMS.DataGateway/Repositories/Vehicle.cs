@@ -120,7 +120,7 @@ namespace TMS.DataGateway.Repositories
                 {
                     var userDetails = tMSDBContext.Tokens.Where(t => t.TokenKey == vehicleRequest.Token).FirstOrDefault();
                     var userData = tMSDBContext.Users.Where(t => t.ID == userDetails.UserID).FirstOrDefault();
-                    var picDetails = tMSDBContext.Pics.Where(p => p.PICEmail == userData.Email && p.IsActive && !p.IsDeleted).Select(x => x.ID).ToList();
+                    var picDetails = tMSDBContext.Pics.Where(p => p.PICEmail == userData.Email).Select(x => x.ID).ToList();
 
                     if (picDetails.Count > 0)
                     {

@@ -130,7 +130,7 @@ namespace TMS.DataGateway.Repositories
                 {
                     var userTokenDetails = context.Tokens.Where(t => t.TokenKey == partnerRequest.Token).FirstOrDefault();
                     var userDetails = context.Users.Where(t => t.ID == userTokenDetails.UserID).FirstOrDefault();
-                    var picDetails = context.Pics.Where(p => p.PICEmail == userDetails.Email && p.IsActive == true && p.IsDeleted == false).Select(x => x.ID).ToList();
+                    var picDetails = context.Pics.Where(p => p.PICEmail == userDetails.Email).Select(x => x.ID).ToList();
                     if (picDetails.Count > 0)
                     {
                         partnerList =
