@@ -1774,23 +1774,26 @@ namespace TMS.DataGateway.Repositories
                     {
                         foreach (var item in orderDetailsData)
                         {
-                            PackingSheet pack = new PackingSheet();
-                            pack.OrderNumber = context.OrderHeaders.Where(o => o.ID == item.OrderHeaderID).Select(p => p.OrderNo).FirstOrDefault();
-                            pack.Collie = item.TotalCollie;
-                            pack.Katerangan = item.Katerangan;
-                            pack.Notes = item.Instruction;
-                            pack.OrderDetailId = item.ID;
-                            pack.ShippingListNo = item.ShippingListNo;
-                            pack.Katerangan = item.Katerangan;
-                            pack.DealerId = context.OrderPartnerDetails.Where(p => p.OrderDetailID == item.ID && p.PartnerTypeId == 2).Select(p => p.PartnerID).FirstOrDefault();
-                            pack.DealerNumber = context.Partners.Where(p => p.ID == pack.DealerId).Select(p => p.PartnerNo).FirstOrDefault();
-                            pack.DealerName = context.Partners.Where(p => p.ID == pack.DealerId).Select(p => p.PartnerName).FirstOrDefault();
                             var packingSheetNos = context.PackingSheets.Where(ps => ps.ShippingListNo == item.ShippingListNo).Select(i => new Common { Id = i.ID, Value = i.PackingSheetNo }).ToList();
                             if (packingSheetNos.Count > 0)
                             {
-                                pack.PackingSheetNumbers = packingSheetNos;
+                                PackingSheet pack = new PackingSheet
+                                {
+                                    OrderNumber = context.OrderHeaders.Where(o => o.ID == item.OrderHeaderID).Select(p => p.OrderNo).FirstOrDefault(),
+                                    Collie = item.TotalCollie,
+                                    Katerangan = item.Katerangan,
+                                    Notes = item.Instruction,
+                                    OrderDetailId = item.ID,
+                                    ShippingListNo = item.ShippingListNo,
+                                    DealerId = context.OrderPartnerDetails.Where(p => p.OrderDetailID == item.ID && p.PartnerTypeId == 2).Select(p => p.PartnerID).FirstOrDefault(),
+                                    PackingSheetNumbers = packingSheetNos
+                                };
+
+                                pack.DealerNumber = context.Partners.Where(p => p.ID == pack.DealerId).Select(p => p.PartnerNo).FirstOrDefault();
+                                pack.DealerName = context.Partners.Where(p => p.ID == pack.DealerId).Select(p => p.PartnerName).FirstOrDefault();
+
+                                packingSheets.Add(pack);
                             }
-                            packingSheets.Add(pack);
                         }
                         packingSheetResponse.Data = packingSheets;
                         packingSheetResponse.Status = DomainObjects.Resource.ResourceData.Success;
@@ -1843,8 +1846,8 @@ namespace TMS.DataGateway.Repositories
                         orderData = (from orderHeader in context.OrderHeaders
                                      join od in context.OrderDetails on orderHeader.ID equals od.OrderHeaderID
                                      join opd in context.OrderPartnerDetails on od.ID equals opd.OrderDetailID
-                                     where businessAreas.Contains(orderHeader.BusinessAreaId) 
-                                     && partnerDataCk.Contains(opd.PartnerID) 
+                                     where businessAreas.Contains(orderHeader.BusinessAreaId)
+                                     && partnerDataCk.Contains(opd.PartnerID)
                                      && opd.PartnerTypeId == 1
                                      && orderHeader.OrderType == (context.OrderTypes.Where(ot => ot.OrderTypeCode == "INBD").Select(p => p.ID).FirstOrDefault())
                                      select new Domain.Common
