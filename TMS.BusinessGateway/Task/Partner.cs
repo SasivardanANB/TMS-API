@@ -26,9 +26,11 @@ namespace TMS.BusinessGateway.Task
 
         public override PartnerResponse CreateUpdatePartner(PartnerRequest partnerRequest)
         {
+            int partnerID = partnerRequest.Requests[0].ID;
+
             PartnerResponse partnerResponse = _partnerRepository.CreateUpdatePartner(partnerRequest);
 
-            if (partnerRequest.Requests[0].ID == 0)
+            if (partnerID == 0)
             {
                 #region CreateUpdate Partner in OMS
 
