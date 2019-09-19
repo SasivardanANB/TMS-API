@@ -47,73 +47,6 @@ namespace TMS.DataGateway.Repositories
                                          where ur.UserID == userDetails.UserID && !ur.IsDelete
                                          select ur.BusinessAreaID).ToList();
 
-
-                    //var searchRequest = tripRequest.Requests[0];
-                    //if (searchRequest.OrderStatusId > 0)
-                    //{
-                    //    if (partnerDataCk != null && partnerDataCk.Count > 0)
-                    //    {
-                    //        tripList = (from oh in context.OrderHeaders
-                    //                    join od in context.OrderDetails on oh.ID equals od.OrderHeaderID
-                    //                    join opd in context.OrderPartnerDetails on od.ID equals opd.OrderDetailID
-                    //                    join ps in context.PackingSheets on od.ShippingListNo equals ps.ShippingListNo into pks
-                    //                    from pksh in pks.DefaultIfEmpty()
-                    //                    where businessAreas.Contains(oh.BusinessAreaId) && ((((!String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.OrderNo == tripRequest.GlobalSearch)
-                    //                           || (String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.OrderNo == oh.OrderNo))
-                    //                           ||
-                    //                           ((!String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.VehicleNo == tripRequest.GlobalSearch)
-                    //                           || (String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.VehicleNo == oh.VehicleNo))
-                    //                        ||
-                    //                        ((tripRequest.GlobalSearch != string.Empty && pksh.PackingSheetNo == tripRequest.GlobalSearch)
-                    //                        || (tripRequest.GlobalSearch == string.Empty && pksh.PackingSheetNo == pksh.PackingSheetNo))) && (oh.DriverName != null) && (oh.VehicleNo != null) && oh.OrderStatusID == searchRequest.OrderStatusId)
-                    //                        ||
-                    //                        (partnerDataCk.Contains(opd.PartnerID) && opd.PartnerTypeId == 1)
-                    //                    select new Domain.Trip
-                    //                    {
-                    //                        OrderId = oh.ID,
-                    //                        OrderType = oh.OrderType,
-                    //                        OrderNumber = oh.OrderNo,
-                    //                        VehicleType = oh.VehicleShipment,
-                    //                        Vehicle = oh.VehicleNo,
-                    //                        EstimatedArrivalDate = od.ActualShipmentDate,
-                    //                        EstimatedShipmentDate = od.EstimationShipmentDate,
-                    //                        Dimensions = oh.OrderWeight + " " + oh.OrderWeightUM,
-                    //                        OrderStatusId = oh.OrderStatusID,
-                    //                        OrderStatus = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusValue
-                    //                    }).Distinct().ToList();
-                    //    }
-                    //    else
-                    //    {
-                    //        tripList = (from oh in context.OrderHeaders
-                    //                    join od in context.OrderDetails on oh.ID equals od.OrderHeaderID
-                    //                    join ps in context.PackingSheets on od.ShippingListNo equals ps.ShippingListNo into pks
-                    //                    from pksh in pks.DefaultIfEmpty()
-                    //                    where businessAreas.Contains(oh.BusinessAreaId) && ((((!String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.OrderNo == tripRequest.GlobalSearch)
-                    //                           || (String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.OrderNo == oh.OrderNo))
-                    //                           ||
-                    //                           ((!String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.VehicleNo == tripRequest.GlobalSearch)
-                    //                           || (String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.VehicleNo == oh.VehicleNo))
-                    //                        ||
-                    //                        ((tripRequest.GlobalSearch != string.Empty && pksh.PackingSheetNo == tripRequest.GlobalSearch)
-                    //                        || (tripRequest.GlobalSearch == string.Empty && pksh.PackingSheetNo == pksh.PackingSheetNo))) && (oh.DriverName != null) && (oh.VehicleNo != null) && oh.OrderStatusID == searchRequest.OrderStatusId)
-                    //                    select new Domain.Trip
-                    //                    {
-                    //                        OrderId = oh.ID,
-                    //                        OrderType = oh.OrderType,
-                    //                        OrderNumber = oh.OrderNo,
-                    //                        VehicleType = oh.VehicleShipment,
-                    //                        Vehicle = oh.VehicleNo,
-                    //                        EstimatedArrivalDate = od.ActualShipmentDate,
-                    //                        EstimatedShipmentDate = od.EstimationShipmentDate,
-                    //                        Dimensions = oh.OrderWeight + " " + oh.OrderWeightUM,
-                    //                        OrderStatusId = oh.OrderStatusID,
-                    //                        OrderStatus = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusValue
-                    //                    }).Distinct().ToList();
-                    //    }
-
-                    //}
-                    //else
-                    //{
                     if (partnerDataCk != null && partnerDataCk.Count > 0)
                     {
                         tripList = (from oh in context.OrderHeaders
@@ -175,7 +108,6 @@ namespace TMS.DataGateway.Repositories
                                         OrderStatusCode = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusCode
                                     }).Distinct().ToList();
                     }
-                    //}
 
                     if (tripList != null && tripList.Count > 0)
                     {
