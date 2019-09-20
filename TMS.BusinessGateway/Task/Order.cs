@@ -148,7 +148,7 @@ namespace TMS.BusinessGateway.Task
                                         {
                                             title = "Order has been created / Updated",
                                             body = "Order Number : " + statusRequest.OrderNo,
-                                            click_action = "",
+                                            click_action = ConfigurationManager.AppSettings["FCMClickAction"],
                                             icon = ""
                                         },
                                         to = PICFCMToken
@@ -559,7 +559,7 @@ namespace TMS.BusinessGateway.Task
                                         {
                                             title = "Order has been created / Updated",
                                             body = "Order Number : " + orderNumber,
-                                            click_action = "",
+                                            click_action = ConfigurationManager.AppSettings["FCMClickAction"],
                                             icon = ""
                                         },
                                         to = PICFCMToken
@@ -1011,7 +1011,7 @@ namespace TMS.BusinessGateway.Task
                                 {
                                     title = "Order / Trip Completed",
                                     body = "Order / Trip Completed",
-                                    click_action = "",
+                                    click_action = ConfigurationManager.AppSettings["FCMClickAction"],
                                     icon = ""
                                 },
                                 to = PICFCMToken
@@ -1150,7 +1150,7 @@ namespace TMS.BusinessGateway.Task
                                 {
                                     title = "Order / Trip Cancelled",
                                     body = "Order Number: " + statusRequest.OrderNumber,
-                                    click_action = "",
+                                    click_action = ConfigurationManager.AppSettings["FCMClickAction"],
                                     icon = ""
                                 },
                                 to = PICFCMToken

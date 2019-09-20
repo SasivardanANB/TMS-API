@@ -48,7 +48,7 @@ namespace TMS.API.Controllers
                 {
                     title = "test tms dev notification",
                     body = "test tms dev notification",
-                    click_action = "https://astradev-tms.herokuapp.com/dashboard",
+                    click_action = ConfigurationManager.AppSettings["FCMClickAction"],
                     icon = ""
                 },
                 to = "dgIhtTbgqIc:APA91bF3xeuePusRQX5ZhaT_jtvaYjFb-lkhJjL2YMnoZtPQeaBkoe507eYdQ-dZm7kAYJgyD5nLO-WqhzkhKHJbl8NMnBeFBe8CUUetNRzE2bY6P0Z8b4-_91jsPnz1eoqb2P-OhWZl"
