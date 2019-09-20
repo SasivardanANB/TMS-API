@@ -1854,7 +1854,7 @@ namespace TMS.DataGateway.Repositories
                                      {
                                          Id = orderHeader.ID,
                                          Value = orderHeader.OrderNo
-                                     }).ToList();
+                                     }).Distinct().ToList();
                     }
                     else
                     {
@@ -1865,7 +1865,7 @@ namespace TMS.DataGateway.Repositories
                                      {
                                          Id = orderHeader.ID,
                                          Value = orderHeader.OrderNo
-                                     }).ToList();
+                                     }).Distinct().ToList();
                     }
 
                     if (orderData.Count > 0)
