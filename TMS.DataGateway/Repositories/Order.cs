@@ -3443,6 +3443,18 @@ namespace TMS.DataGateway.Repositories
             return response;
         }
 
+        public void UpdateShipmentScheduleOCROrderStatus(string imageGUID,bool status,string message)
+        {
+            using (var context = new Data.TMSDBContext())
+            {
+                var shipmentScheduleOCRRecord = context.ShipmentScheduleOCRDetails.Where(s => s.ImageGuid == imageGUID).FirstOrDefault();
+                shipmentScheduleOCRRecord.IsOrderCreated = status;
+                shipmentScheduleOCRRecord.ProcessMessage = message;
+                context.Entry(shipmentScheduleOCRRecord).State = System.Data.Entity.EntityState.Modified;
+                context.SaveChanges();
+            }
+        }
+
         public InvoiceResponse GetInvoiceRequest(OrderStatusRequest request)
 
         {

@@ -110,12 +110,12 @@ namespace TMS.BusinessGateway.Classes
 
                                                     string processMessage = string.Empty;
                                                     bool isOrderCreated = false;
+                                                    string tmsToken = "";
                                                     if (omsOrderResponse.Data != null && omsOrderResponse.StatusCode == (int)HttpStatusCode.OK)
                                                     {
                                                         processMessage = omsOrderResponse.StatusMessage;
-
                                                         LoginRequest tmsLoginRequest = new LoginRequest();
-                                                        string tmsToken = "";
+                                                        
                                                         tmsLoginRequest.UserName = ConfigurationManager.AppSettings["TMSLogin"];
                                                         tmsLoginRequest.UserPassword = ConfigurationManager.AppSettings["TMSPassword"];
                                                         var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
@@ -145,7 +145,13 @@ namespace TMS.BusinessGateway.Classes
                                                         processMessage += omsOrderResponse.StatusMessage;
                                                     }
                                                     // Update shipment schedule ocr details 
-                                                    // processMessage & IsOrderCreated
+                                                    ShipmentScheduleOCRStatus shipmentScheduleOCRStatus = new ShipmentScheduleOCRStatus()
+                                                    {
+                                                        ImageGUID = fileuploadresponse.Guid,
+                                                        Status = isOrderCreated,
+                                                        Message = processMessage
+                                                    };
+                                                    Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"] + "v1/order/UpdateShipmentScheduleOCROrderStatus", Method.POST, shipmentScheduleOCRStatus, tmsToken);
                                                 }
                                             }
                                         }

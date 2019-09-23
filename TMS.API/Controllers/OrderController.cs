@@ -388,5 +388,13 @@ namespace TMS.API.Controllers
             OrderResponse orderResponse = orderTask.OcrOrderResponse(shipmentScheduleOcrRequest);
             return Ok(orderResponse);
         }
+
+        [Route("UpdateShipmentScheduleOCROrderStatus")]
+        [HttpPost, AllowAnonymous]
+        public void UpdateShipmentScheduleOCROrderStatus(string imageGUID, bool status, string message)
+        {
+            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            orderTask.UpdateShipmentScheduleOCROrderStatus(imageGUID,status,message);
+        }
     }
 }

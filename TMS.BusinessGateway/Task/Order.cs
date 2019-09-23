@@ -1432,5 +1432,10 @@ namespace TMS.BusinessGateway.Task
             }
             return tmsOrderResponse;
         }
+
+        public override void UpdateShipmentScheduleOCROrderStatus(string imageGUID, bool status, string message)
+        {
+            _orderRepository.UpdateShipmentScheduleOCROrderStatus(imageGUID, status, message);
+        }
     }
 }
