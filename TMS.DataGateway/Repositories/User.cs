@@ -1694,7 +1694,7 @@ namespace TMS.DataGateway.Repositories
                     var lastStatus = (from o in orders
                                       join od in context.OrderDetails on o.ID equals od.OrderHeaderID
                                       join h in context.OrderStatusHistories on od.ID equals h.OrderDetailID
-                                      where o.ID == item.ID && h.OrderStatusID == startLoading && h.OrderStatusID == startUnloading
+                                      where o.ID == item.ID && (h.OrderStatusID == startLoading || h.OrderStatusID == startUnloading)
                                       orderby h.StatusDate descending
                                       select new
                                       {
@@ -1726,7 +1726,7 @@ namespace TMS.DataGateway.Repositories
                     var lastStatus = (from o in orders
                                       join od in context.OrderDetails on o.ID equals od.OrderHeaderID
                                       join h in context.OrderStatusHistories on od.ID equals h.OrderDetailID
-                                      where o.ID == item.ID && h.OrderStatusID == startTrip && h.OrderStatusID == confirmArrived
+                                      where o.ID == item.ID && (h.OrderStatusID == startTrip || h.OrderStatusID == confirmArrived)
                                       orderby h.StatusDate descending
                                       select new
                                       {
