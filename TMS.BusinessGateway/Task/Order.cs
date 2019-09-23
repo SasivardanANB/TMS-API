@@ -543,72 +543,6 @@ namespace TMS.BusinessGateway.Task
 
                     if (tmsOrderResponse.StatusCode == 200 && tmsOrderResponse.Status == "Success")
                     {
-                        #region Web notification
-
-                        try
-                        {
-                            foreach (var statusRequest in order.Requests)
-                            {
-                                string PICFCMToken = _orderRepository.GetPICFCMToken(statusRequest.OrderNo);
-
-                                if (!String.IsNullOrEmpty(PICFCMToken))
-                                {
-                                    FCMRequest fCMReq = new FCMRequest()
-                                    {
-                                        notification = new FCMNotification()
-                                        {
-                                            title = "Order has been created / Updated",
-                                            body = "Order Number : " + orderNumber,
-                                            click_action = ConfigurationManager.AppSettings["FCMClickAction"],
-                                            icon = ""
-                                        },
-                                        to = PICFCMToken
-                                    };
-
-                                    var client = new RestClient(ConfigurationManager.AppSettings["FCMBaseURL"]);
-                                    client.AddDefaultHeader("Content-Type", "application/json");
-
-                                    RestRequest req = new RestRequest("/fcm/send", Method.POST) { RequestFormat = DataFormat.Json };
-                                    req.AddParameter("Authorization", ConfigurationManager.AppSettings["FCMKey"], ParameterType.HttpHeader);
-                                    req.AddJsonBody(fCMReq);
-
-                                    client.Execute(req);
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            // Continue execution
-                        }
-
-                        #endregion
-
-                        #region send email to destination partners
-                        if (destPartnerEmails.Count > 0 && !String.IsNullOrEmpty(orderNumber))
-                        {
-                            MailMessage mail = new MailMessage();
-                            mail.To.Add(string.Join(",", destPartnerEmails));
-                            string emailFrom = ConfigurationManager.AppSettings["EmailFrom"];
-                            mail.From = new MailAddress(emailFrom);
-                            mail.Subject = "Your Order Delivery Status";
-                            string Body = "Dear Customer, <br /> This is your order deliver status. Your order delivery No is " + orderNumber + ". You can track order by clicking this link " + ConfigurationManager.AppSettings["TMS_APP_URL"];
-                            mail.Body = Body;
-                            mail.IsBodyHtml = true;
-                            string smtpHost = ConfigurationManager.AppSettings["SmtpHost"];
-                            string loginEmailId = ConfigurationManager.AppSettings["SmtpUserName"];
-                            string emailPassword = ConfigurationManager.AppSettings["SmtpPassword"];
-                            System.Net.Mail.SmtpClient smtp = new System.Net.Mail.SmtpClient(smtpHost)
-                            {
-                                Port = Convert.ToInt32(ConfigurationManager.AppSettings["smtpPort"]),
-                                UseDefaultCredentials = false,
-                                DeliveryMethod = SmtpDeliveryMethod.Network,
-                                Credentials = new System.Net.NetworkCredential(loginEmailId, emailPassword),
-                                EnableSsl = true
-                            };
-                            smtp.Send(mail);
-                        }
-                        #endregion
-
                         #region Call DMS API to send Order as Trip if Driver assignment exists
                         TripRequestDMS requestDMS = new TripRequestDMS()
                         {
@@ -810,6 +744,79 @@ namespace TMS.BusinessGateway.Task
                             }
                             #endregion
                         }
+
+                        #region Web notification
+
+                        try
+                        {
+                            foreach (var statusRequest in order.Requests)
+                            {
+                                string PICFCMToken = _orderRepository.GetPICFCMToken(statusRequest.OrderNo);
+
+                                if (!String.IsNullOrEmpty(PICFCMToken))
+                                {
+                                    FCMRequest fCMReq = new FCMRequest()
+                                    {
+                                        notification = new FCMNotification()
+                                        {
+                                            title = "Order has been created / Updated",
+                                            body = "Order Number : " + orderNumber,
+                                            click_action = ConfigurationManager.AppSettings["FCMClickAction"],
+                                            icon = ""
+                                        },
+                                        to = PICFCMToken
+                                    };
+
+                                    var client = new RestClient(ConfigurationManager.AppSettings["FCMBaseURL"]);
+                                    client.AddDefaultHeader("Content-Type", "application/json");
+
+                                    RestRequest req = new RestRequest("/fcm/send", Method.POST) { RequestFormat = DataFormat.Json };
+                                    req.AddParameter("Authorization", ConfigurationManager.AppSettings["FCMKey"], ParameterType.HttpHeader);
+                                    req.AddJsonBody(fCMReq);
+
+                                    client.Execute(req);
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            // Continue execution
+                        }
+
+                        #endregion
+
+                        #region send email to destination partners
+                        try
+                        {
+                            if (destPartnerEmails.Count > 0 && !String.IsNullOrEmpty(orderNumber))
+                            {
+                                MailMessage mail = new MailMessage();
+                                mail.To.Add(string.Join(",", destPartnerEmails));
+                                string emailFrom = ConfigurationManager.AppSettings["EmailFrom"];
+                                mail.From = new MailAddress(emailFrom);
+                                mail.Subject = "Your Order Delivery Status";
+                                string Body = "Dear Customer, <br /> This is your order deliver status. Your order delivery No is " + orderNumber + ". You can track order by clicking this link " + ConfigurationManager.AppSettings["TMS_APP_URL"];
+                                mail.Body = Body;
+                                mail.IsBodyHtml = true;
+                                string smtpHost = ConfigurationManager.AppSettings["SmtpHost"];
+                                string loginEmailId = ConfigurationManager.AppSettings["SmtpUserName"];
+                                string emailPassword = ConfigurationManager.AppSettings["SmtpPassword"];
+                                System.Net.Mail.SmtpClient smtp = new System.Net.Mail.SmtpClient(smtpHost)
+                                {
+                                    Port = Convert.ToInt32(ConfigurationManager.AppSettings["smtpPort"]),
+                                    UseDefaultCredentials = false,
+                                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                                    Credentials = new System.Net.NetworkCredential(loginEmailId, emailPassword),
+                                    EnableSsl = true
+                                };
+                                smtp.Send(mail);
+                            }
+                        }
+                        catch(Exception ex)
+                        {
+                            // Continue execution
+                        }
+                        #endregion
                     }
                 }
             }
