@@ -1690,10 +1690,11 @@ namespace TMS.DataGateway.Repositories
                 using (var context = new TMSDBContext())
                 {
                     int confirmArraive = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == "5").ID;
+                    int finishUnloading = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == "10").ID;
                     var lastStatus = (from o in orders
                                       join od in context.OrderDetails on o.ID equals od.OrderHeaderID
                                       join h in context.OrderStatusHistories on od.ID equals h.OrderDetailID
-                                      where o.ID == item.ID && h.OrderStatusID != confirmArraive
+                                      where o.ID == item.ID && h.OrderStatusID != confirmArraive && h.OrderStatusID != finishUnloading
                                       orderby h.StatusDate descending
                                       select new
                                       {
@@ -1721,10 +1722,11 @@ namespace TMS.DataGateway.Repositories
                 using (var context = new TMSDBContext())
                 {
                     int confirmArraive = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == "5").ID;
+                    int finishUnloading = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == "10").ID;
                     var lastStatus = (from o in orders
                                       join od in context.OrderDetails on o.ID equals od.OrderHeaderID
                                       join h in context.OrderStatusHistories on od.ID equals h.OrderDetailID
-                                      where o.ID == item.ID && h.OrderStatusID == confirmArraive
+                                      where o.ID == item.ID && h.OrderStatusID == confirmArraive && h.OrderStatusID != finishUnloading
                                       orderby h.StatusDate descending
                                       select new
                                       {
