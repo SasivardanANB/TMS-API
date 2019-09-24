@@ -14,5 +14,6 @@ namespace DMS.DomainGateway.Gateway.Interfaces
         IAuthenticateTask AuthenticateTask { get; }
         ITripTask TripTask { get; }
         IMediaTask MediaTask { get; }
+        IMasterTask MasterTask { get; }
     }
 }

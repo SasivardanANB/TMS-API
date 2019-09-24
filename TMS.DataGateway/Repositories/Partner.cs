@@ -31,16 +31,13 @@ namespace TMS.DataGateway.Repositories
                     {
                         cfg.CreateMap<Domain.Partner, DataModel.Partner>().ReverseMap();
                     });
-                    //    .ForMember(x => x.RoleName, opt => opt.Ignore())
-                    //    .ForMember(x => x.BusinessAreaName, opt => opt.Ignore())
-                    //    .ForMember(x => x.ApplicationNames, opt => opt.Ignore());
-                    //});
 
                     IMapper mapper = config.CreateMapper();
                     var partners = mapper.Map<List<Domain.Partner>, List<DataModel.Partner>>(partnerRequest.Requests);
                     foreach (var partnerData in partners)
                     {
                         partnerData.IsDeleted = false;
+                        partnerData.IsActive = true;
                         if (partnerData.ID > 0) //Update partner
                         {
                             partnerData.LastModifiedBy = partnerRequest.LastModifiedBy;
@@ -54,13 +51,9 @@ namespace TMS.DataGateway.Repositories
                         }
                         else //Create partner
                         {
-                            //var existPartner = context.Partners.Where(p => p.PartnerNo == partnerData.PartnerNo).FirstOrDefault();
-                            //if (existPartner == null)
-                            //{
                             partnerData.CreatedBy = partnerRequest.CreatedBy;
                             partnerData.CreatedTime = DateTime.Now;
                             partnerData.PartnerNo = GetPartnerNumber();
-                            partnerData.IsActive = true;
 
                             context.Partners.Add(partnerData);
                             context.SaveChanges();
@@ -72,13 +65,6 @@ namespace TMS.DataGateway.Repositories
                             partnerResponse.StatusMessage = DomainObjects.Resource.ResourceData.PartnerCreated;
                             partnerResponse.Status = DomainObjects.Resource.ResourceData.Success;
                             partnerResponse.StatusCode = (int)HttpStatusCode.OK;
-                            //}
-                            //else
-                            //{
-                            //    partnerResponse.StatusMessage = DomainObjects.Resource.ResourceData.PartnerNoExisted;
-                            //    partnerResponse.Status = DomainObjects.Resource.ResourceData.Success;
-                            //    partnerResponse.StatusCode = (int)HttpStatusCode.BadRequest;
-                            //}
                         }
                     }
 
@@ -144,7 +130,7 @@ namespace TMS.DataGateway.Repositories
                 {
                     var userTokenDetails = context.Tokens.Where(t => t.TokenKey == partnerRequest.Token).FirstOrDefault();
                     var userDetails = context.Users.Where(t => t.ID == userTokenDetails.UserID).FirstOrDefault();
-                    var picDetails = context.Pics.Where(p => p.PICEmail == userDetails.Email && p.IsActive == true && p.IsDeleted == false).Select(x => x.ID).ToList();
+                    var picDetails = context.Pics.Where(p => p.PICEmail == userDetails.Email).Select(x => x.ID).ToList();
                     if (picDetails.Count > 0)
                     {
                         partnerList =

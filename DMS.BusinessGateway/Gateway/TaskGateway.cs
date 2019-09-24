@@ -33,5 +33,9 @@ namespace DMS.BusinessGateway.Gateway
         {
             get { return new BusinessMediaTask(); }
         }
+        public IMasterTask MasterTask
+        {
+            get { return new BusinessMasterTask(new Master()); }
+        }
     }
 }

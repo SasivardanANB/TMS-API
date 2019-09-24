@@ -35,5 +35,6 @@ namespace TMS.DomainGateway.Task
         public abstract ImageGuidsResponse GetPodGuids(string orderNumber);
         public abstract ImageGuidsResponse GetPhotoWithCustomerGuids(string orderNumber);
         public abstract OrderResponse GetShipmentSchedulesFromEmail(string token);
+        public abstract void UpdateShipmentScheduleOCROrderStatus(string imageGUID, bool status, string message);
     }
 }

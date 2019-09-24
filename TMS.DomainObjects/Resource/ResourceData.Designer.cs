@@ -817,7 +817,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Partner(s) created successfully.
+        ///   Looks up a localized string similar to Partner(s) created successfully in TMS..
         /// </summary>
         public static string PartnerCreated {
             get {
@@ -835,7 +835,7 @@ namespace TMS.DomainObjects.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Partner(s) updated successfully.
+        ///   Looks up a localized string similar to Partner(s) updated successfully in TMS..
         /// </summary>
         public static string PartnerUpdated {
             get {

@@ -1,11 +1,5 @@
 ﻿using DMS.DomainGateway.Gateway.Interfaces;
-using DMS.DomainGateway.Task;
 using DMS.DomainGateway.Task.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DMS.DomainGateway.Gateway
 {
@@ -15,5 +9,6 @@ namespace DMS.DomainGateway.Gateway
         public abstract IAuthenticateTask AuthenticateTask {get;set;}
         public abstract ITripTask TripTask { get; set; }
         public abstract IMediaTask MediaTask { get; set; }
+        public abstract IMasterTask MasterTask { get; set; }
     }
 }

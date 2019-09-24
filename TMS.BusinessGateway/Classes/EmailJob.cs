@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using Quartz;
 using System.Net;
-using System.Net.Mail;
-using System.Threading.Tasks;
-using System.Net.Http;
 using System.Configuration;
 using ActiveUp.Net.Mail;
 using Newtonsoft.Json;
@@ -15,7 +10,6 @@ using RestSharp;
 using TMS.DomainObjects.Objects;
 using TMS.DomainObjects.Request;
 using TMS.DomainObjects.Response;
-
 
 namespace TMS.BusinessGateway.Classes
 {
@@ -61,7 +55,7 @@ namespace TMS.BusinessGateway.Classes
                                             var shipmentScheduleOcr = JsonConvert.DeserializeObject<dynamic>(res);
                                             var jsonObject = JObject.Parse(shipmentScheduleOcr);
                                             ShipmentScheduleOcrRequest shipmentScheduleOcrRequest = new ShipmentScheduleOcrRequest();
-                                            if (jsonObject.success)
+                                            if (Convert.ToBoolean(jsonObject.success))
                                             {
                                                 shipmentScheduleOcrRequest.Requests = new List<ShipmentScheduleOcr>();
                                                 ShipmentScheduleOcr shipmentSchedule = new ShipmentScheduleOcr()
@@ -95,9 +89,8 @@ namespace TMS.BusinessGateway.Classes
                                             {
                                                 //OcrOrderResponse
                                                 OrderRequest omsOrderRequest = new OrderRequest();
-                                                OrderResponse ocrOrderResponse = JsonConvert.DeserializeObject<OrderResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                                                OrderResponse ocrOrderResponse = JsonConvert.DeserializeObject<OrderResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
                                                                                                                                       + "/v1/order/ocrorderresponse", Method.POST, shipmentScheduleOcrRequest, null));
-                                                //OcrOrderResponse(shipmentScheduleOcrRequest);
                                                 if (ocrOrderResponse != null && ocrOrderResponse.StatusCode == (int)HttpStatusCode.OK)
                                                 {
                                                     LoginRequest omsLoginRequest = new LoginRequest();
@@ -115,10 +108,14 @@ namespace TMS.BusinessGateway.Classes
                                                     OrderResponse omsOrderResponse = JsonConvert.DeserializeObject<OrderResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
                                                                                                                          + "v1/order/createordersfromshipmentlistocr", Method.POST, omsOrderRequest, omsToken));
 
+                                                    string processMessage = string.Empty;
+                                                    bool isOrderCreated = false;
+                                                    string tmsToken = "";
                                                     if (omsOrderResponse.Data != null && omsOrderResponse.StatusCode == (int)HttpStatusCode.OK)
                                                     {
+                                                        processMessage = omsOrderResponse.StatusMessage;
                                                         LoginRequest tmsLoginRequest = new LoginRequest();
-                                                        string tmsToken = "";
+                                                        
                                                         tmsLoginRequest.UserName = ConfigurationManager.AppSettings["TMSLogin"];
                                                         tmsLoginRequest.UserPassword = ConfigurationManager.AppSettings["TMSPassword"];
                                                         var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
@@ -132,9 +129,29 @@ namespace TMS.BusinessGateway.Classes
                                                             tmsOrderRequest.UploadType = 3;
                                                             tmsOrderResponse = JsonConvert.DeserializeObject<OrderResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
                                                                                                                                                                    + "v1/order/createordersfromshipmentlistocr", Method.POST, tmsOrderRequest, tmsToken));
-                                                        }
-
+                                                            if(tmsOrderResponse!=null && tmsOrderResponse.StatusCode == (int)HttpStatusCode.OK)
+                                                            {
+                                                                processMessage += tmsOrderResponse.StatusMessage;
+                                                                isOrderCreated = true;
+                                                            }
+                                                            else
+                                                            {
+                                                                processMessage += tmsOrderResponse.StatusMessage;
+                                                            }
+                                                        }                                                       
                                                     }
+                                                    else
+                                                    {
+                                                        processMessage += omsOrderResponse.StatusMessage;
+                                                    }
+                                                    // Update shipment schedule ocr details 
+                                                    ShipmentScheduleOCRStatus shipmentScheduleOCRStatus = new ShipmentScheduleOCRStatus()
+                                                    {
+                                                        ImageGUID = fileuploadresponse.Guid,
+                                                        Status = isOrderCreated,
+                                                        Message = processMessage
+                                                    };
+                                                    Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"] + "v1/order/UpdateShipmentScheduleOCROrderStatus", Method.POST, shipmentScheduleOCRStatus, tmsToken);
                                                 }
                                             }
                                         }
@@ -142,7 +159,6 @@ namespace TMS.BusinessGateway.Classes
                                 }
                             }
                         }
-
                     }
                     catch (Exception ex)
                     {

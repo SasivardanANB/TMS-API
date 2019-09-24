@@ -38,6 +38,34 @@ namespace TMS.API.Controllers
             return Ok(userData);
         }
 
+        [Route("fcmnotification")]
+        [AllowAnonymous, HttpPost]
+        public IHttpActionResult FCMNotification(FCMRequest fCMRequest)
+        {
+            FCMRequest fCMReq = new FCMRequest()
+            {
+                notification = new FCMNotification()
+                {
+                    title = "test tms dev notification",
+                    body = "test tms dev notification",
+                    click_action = ConfigurationManager.AppSettings["FCMClickAction"],
+                    icon = ""
+                },
+                to = "dgIhtTbgqIc:APA91bF3xeuePusRQX5ZhaT_jtvaYjFb-lkhJjL2YMnoZtPQeaBkoe507eYdQ-dZm7kAYJgyD5nLO-WqhzkhKHJbl8NMnBeFBe8CUUetNRzE2bY6P0Z8b4-_91jsPnz1eoqb2P-OhWZl"
+            };
+
+            var client = new RestClient(ConfigurationManager.AppSettings["FCMBaseURL"]);
+            client.AddDefaultHeader("Content-Type", "application/json");
+
+            RestRequest request = new RestRequest("/fcm/send", Method.POST) { RequestFormat = DataFormat.Json };
+            request.AddParameter("Authorization", ConfigurationManager.AppSettings["FCMKey"], ParameterType.HttpHeader);
+            request.AddJsonBody(fCMReq);
+
+            IRestResponse response = client.Execute(request);
+
+            return Ok();
+        }
+
         [Route("samalogin")]
         [AllowAnonymous, HttpGet]
         public IHttpActionResult Login(string key)

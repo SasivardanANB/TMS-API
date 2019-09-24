@@ -1661,7 +1661,7 @@ namespace TMS.DataGateway.Repositories
                     dashboardResponse.BookedCount = orders.Count(o => o.OrderStatusID == 1);   // For status booked
                     dashboardResponse.ConfirmedCount = orders.Count(o => o.OrderStatusID == 2);   // For status confirmed
                     dashboardResponse.Acceptedcount = orders.Count(o => o.OrderStatusID == 15);   // For status accepted
-                    dashboardResponse.PODCount = orders.Count(o => o.OrderStatusID == 11);   // For status pod
+                    dashboardResponse.PODCount = orders.Count(o => o.OrderStatusID == 10);   // For status pod
                     dashboardResponse.CancelledCount = orders.Count(o => o.OrderStatusID == 13);   // For status cancelled
                     dashboardResponse.LoadingCount = GetLoadingUnloadingCount(orders, "Load");
                     dashboardResponse.UnloadingCount = GetLoadingUnloadingCount(orders, "Unload");
@@ -1689,11 +1689,12 @@ namespace TMS.DataGateway.Repositories
             {
                 using (var context = new TMSDBContext())
                 {
-                    int confirmArraive = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == "5").ID;
+                    int startLoading = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == "6").ID;
+                    int startUnloading = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == "9").ID;
                     var lastStatus = (from o in orders
                                       join od in context.OrderDetails on o.ID equals od.OrderHeaderID
                                       join h in context.OrderStatusHistories on od.ID equals h.OrderDetailID
-                                      where o.ID == item.ID && h.OrderStatusID != confirmArraive
+                                      where o.ID == item.ID //&& (h.OrderStatusID == startLoading || h.OrderStatusID == startUnloading)
                                       orderby h.StatusDate descending
                                       select new
                                       {
@@ -1703,9 +1704,9 @@ namespace TMS.DataGateway.Repositories
                                           StatusDate = h.StatusDate
                                       }).FirstOrDefault();
 
-                    if (lastStatus != null && type == "Load" && lastStatus.IsLoad == true)
+                    if (lastStatus != null && type == "Load" && lastStatus.IsLoad == true && (lastStatus.StatusId == startLoading || lastStatus.StatusId == startUnloading))
                         count++;
-                    else if (lastStatus != null && type == "Unload" && lastStatus.IsLoad == false)
+                    else if (lastStatus != null && type == "Unload" && lastStatus.IsLoad == false && (lastStatus.StatusId == startLoading || lastStatus.StatusId == startUnloading))
                         count++;
                 }
             }
@@ -1720,11 +1721,12 @@ namespace TMS.DataGateway.Repositories
             {
                 using (var context = new TMSDBContext())
                 {
-                    int confirmArraive = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == "5").ID;
+                    int startTrip = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == "4").ID;
+                    int confirmArrived = context.OrderStatuses.FirstOrDefault(t => t.OrderStatusCode == "5").ID;
                     var lastStatus = (from o in orders
                                       join od in context.OrderDetails on o.ID equals od.OrderHeaderID
                                       join h in context.OrderStatusHistories on od.ID equals h.OrderDetailID
-                                      where o.ID == item.ID && h.OrderStatusID == confirmArraive
+                                      where o.ID == item.ID 
                                       orderby h.StatusDate descending
                                       select new
                                       {
@@ -1734,9 +1736,9 @@ namespace TMS.DataGateway.Repositories
                                           StatusDate = h.StatusDate
                                       }).FirstOrDefault();
 
-                    if (lastStatus != null && type == "Load" && lastStatus.IsLoad == true)
+                    if (lastStatus != null && type == "Load" && lastStatus.IsLoad == true && (lastStatus.StatusId == startTrip || lastStatus.StatusId == confirmArrived))
                         count++;
-                    else if (lastStatus != null && type == "Unload" && lastStatus.IsLoad == false)
+                    else if (lastStatus != null && type == "Unload" && lastStatus.IsLoad == false && (lastStatus.StatusId == startTrip || lastStatus.StatusId == confirmArrived))
                         count++;
                 }
             }

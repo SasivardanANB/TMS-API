@@ -54,6 +54,7 @@
     <Compile Include="Objects\Notification.cs" />
     <Compile Include="Objects\OrderStatus.cs" />
     <Compile Include="Objects\ImageGuid.cs" />
+    <Compile Include="Objects\Partner.cs" />
     <Compile Include="Objects\ResponseDataForFileUpload.cs" />
     <Compile Include="Objects\ShippingList.cs" />
     <Compile Include="Objects\TripLocation.cs" />
@@ -78,6 +79,7 @@
     <Compile Include="Request\LoginRequest.cs" />
     <Compile Include="Request\NotificationRequest.cs" />
     <Compile Include="Request\OrderStatusRequest.cs" />
+    <Compile Include="Request\PartnerRequest.cs" />
     <Compile Include="Request\ShipmentListRequest.cs" />
     <Compile Include="Request\StopPointsRequest.cs" />
     <Compile Include="Request\TripRequest.cs" />
@@ -89,6 +91,7 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Response\PartnerResponse.cs" />
     <Compile Include="Response\ShipmentListResponse.cs" />
     <Compile Include="Response\StopPointOrderItemsResponse.cs" />
     <Compile Include="Response\StopPointsResponse.cs" />

@@ -1,10 +1,4 @@
-﻿using OMS.DomainGateway.Task;
-using OMS.DomainGateway.Task.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using OMS.DomainGateway.Task.Interfaces;
 
 namespace OMS.DomainGateway.Gateway.Interfaces
 {
@@ -13,5 +7,6 @@ namespace OMS.DomainGateway.Gateway.Interfaces
         IUserTask UserTask { get; }
         IOrderTask OrderTask { get; }
         IAuthenticateTask AuthenticateTask { get; }
+        IMasterTask MasterTask { get; }
     }
 }

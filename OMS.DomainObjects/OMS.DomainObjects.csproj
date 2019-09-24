@@ -81,6 +81,7 @@
     <Compile Include="Request\AuthenticateRequest.cs" />
     <Compile Include="Request\DownloadOrderRequest.cs" />
     <Compile Include="Request\OrderStatusRequest.cs" />
+    <Compile Include="Request\PartnerRequest.cs" />
     <Compile Include="Request\RegionRequest.cs" />
     <Compile Include="Request\OrderRequest.cs" />
     <Compile Include="Request\SAMATokenRequest.cs" />
@@ -105,6 +106,7 @@
     <Compile Include="Response\AuthenticateResponse.cs" />
     <Compile Include="Response\OrderStatusCodesResponse.cs" />
     <Compile Include="Response\OrderStatusResponse.cs" />
+    <Compile Include="Response\PartnerResponse.cs" />
     <Compile Include="Response\RegionResponse.cs" />
     <Compile Include="Response\CommonResponse.cs" />
     <Compile Include="Response\SAMATokenResponse.cs" />

@@ -30,16 +30,28 @@ namespace TMS.DataGateway.Repositories
                 using (var context = new DataModel.TMSDBContext())
                 {
                     var userDetails = context.Tokens.Where(t => t.TokenKey == tripRequest.Token).FirstOrDefault();
+                    var userData = context.Users.Where(t => t.ID == userDetails.UserID).FirstOrDefault();
+                    var picID = context.Pics.Where(p => p.PICEmail == userData.Email).Select(x => x.ID).FirstOrDefault();
+
+                    List<int> partnerDataCk = null;
+                    if (picID > 0)
+                    {
+                        partnerDataCk = (from partner in context.Partners
+                                         join ptype in context.PartnerPartnerTypes on partner.ID equals ptype.PartnerId
+                                         where ptype.PartnerTypeId == 1 && partner.PICID.Value == picID
+                                         select partner.ID
+                                          ).ToList();
+                    }
+
                     var businessAreas = (from ur in context.UserRoles
                                          where ur.UserID == userDetails.UserID && !ur.IsDelete
                                          select ur.BusinessAreaID).ToList();
 
-
-                    var searchRequest = tripRequest.Requests[0];
-                    if (searchRequest.OrderStatusId > 0)
+                    if (partnerDataCk != null && partnerDataCk.Count > 0)
                     {
                         tripList = (from oh in context.OrderHeaders
                                     join od in context.OrderDetails on oh.ID equals od.OrderHeaderID
+                                    join opd in context.OrderPartnerDetails on od.ID equals opd.OrderDetailID
                                     join ps in context.PackingSheets on od.ShippingListNo equals ps.ShippingListNo into pks
                                     from pksh in pks.DefaultIfEmpty()
                                     where businessAreas.Contains(oh.BusinessAreaId) && ((((!String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.OrderNo == tripRequest.GlobalSearch)
@@ -49,8 +61,9 @@ namespace TMS.DataGateway.Repositories
                                            || (String.IsNullOrEmpty(tripRequest.GlobalSearch) && oh.VehicleNo == oh.VehicleNo))
                                     ||
                                     ((tripRequest.GlobalSearch != string.Empty && pksh.PackingSheetNo == tripRequest.GlobalSearch)
-                                    || (tripRequest.GlobalSearch == string.Empty && pksh.PackingSheetNo == pksh.PackingSheetNo))) && (oh.DriverName != null) && (oh.VehicleNo != null) && oh.OrderStatusID == searchRequest.OrderStatusId)
-
+                                    || (tripRequest.GlobalSearch == string.Empty && pksh.PackingSheetNo == pksh.PackingSheetNo))) && (oh.DriverName != null) && (oh.VehicleNo != null))
+                                     &&
+                                    (partnerDataCk.Contains(opd.PartnerID) && opd.PartnerTypeId == 1)
                                     select new Domain.Trip
                                     {
                                         OrderId = oh.ID,
@@ -62,7 +75,8 @@ namespace TMS.DataGateway.Repositories
                                         EstimatedShipmentDate = od.EstimationShipmentDate,
                                         Dimensions = oh.OrderWeight + " " + oh.OrderWeightUM,
                                         OrderStatusId = oh.OrderStatusID,
-                                        OrderStatus = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusValue
+                                        OrderStatus = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusValue,
+                                        OrderStatusCode = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusCode
                                     }).Distinct().ToList();
                     }
                     else
@@ -79,7 +93,6 @@ namespace TMS.DataGateway.Repositories
                                     ||
                                     ((tripRequest.GlobalSearch != string.Empty && pksh.PackingSheetNo == tripRequest.GlobalSearch)
                                     || (tripRequest.GlobalSearch == string.Empty && pksh.PackingSheetNo == pksh.PackingSheetNo))) && (oh.DriverName != null) && (oh.VehicleNo != null))
-
                                     select new Domain.Trip
                                     {
                                         OrderId = oh.ID,
@@ -95,6 +108,7 @@ namespace TMS.DataGateway.Repositories
                                         OrderStatusCode = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusCode
                                     }).Distinct().ToList();
                     }
+
                     if (tripList != null && tripList.Count > 0)
                     {
                         foreach (var order in tripList)
@@ -173,12 +187,17 @@ namespace TMS.DataGateway.Repositories
                         {
                             tripList = tripList.Where(o => o.Vehicle.Contains(orderFilter.Vehicle)).ToList();
                         }
+
+                        if (orderFilter.OrderStatusId > 0)
+                        {
+                            tripList = tripList.Where(o => o.OrderStatusId == orderFilter.OrderStatusId).ToList();
+                        }
                     }
 
                     // Sorting
                     if (tripList != null && tripList.Count > 0)
                     {
-                        if(!string.IsNullOrEmpty(tripRequest.SortOrder))
+                        if (!string.IsNullOrEmpty(tripRequest.SortOrder))
                         {
                             switch (tripRequest.SortOrder.ToLower())
                             {
@@ -240,7 +259,7 @@ namespace TMS.DataGateway.Repositories
                             tripList = tripList.OrderByDescending(o => o.OrderId).ToList();
                         }
                     }
-                    
+
 
                     // Total NumberOfRecords
                     if (tripList != null)
@@ -354,7 +373,7 @@ namespace TMS.DataGateway.Repositories
                                               select data
                                                   ).FirstOrDefault();
                                 var destinations = (from data in orderPartnerData
-                                                    where data.PeartnerType == 3 
+                                                    where data.PeartnerType == 3
                                                     select data
                                                   ).ToList();
 

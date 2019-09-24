@@ -325,10 +325,10 @@
     <value>Vehicle(s) deactivated successfully</value>
   </data>
   <data name="PartnerCreated" xml:space="preserve">
-    <value>Partner(s) created successfully</value>
+    <value>Partner(s) created successfully in TMS.</value>
   </data>
   <data name="PartnerUpdated" xml:space="preserve">
-    <value>Partner(s) updated successfully</value>
+    <value>Partner(s) updated successfully in TMS.</value>
   </data>
   <data name="UserRoleAlreadyAssigned" xml:space="preserve">
     <value>User already assigned with this role and region</value>

@@ -57,6 +57,7 @@
     <Compile Include="Objects\CommonCode.cs" />
     <Compile Include="Objects\Common.cs" />
     <Compile Include="Objects\AdminBoardReport.cs" />
+    <Compile Include="Objects\FCMNotification.cs" />
     <Compile Include="Objects\GeneralPODetails.cs" />
     <Compile Include="Objects\GeneralPOHeader.cs" />
     <Compile Include="Objects\Invoice.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="Objects\ResponseDataForFileUpload.cs" />
     <Compile Include="Objects\SAMAUser.cs" />
     <Compile Include="Objects\ShipmentScheduleOcr.cs" />
+    <Compile Include="Objects\ShipmentScheduleOCRStatus.cs" />
     <Compile Include="Objects\TrackStep.cs" />
     <Compile Include="Objects\TrackStepLoadUnload.cs" />
     <Compile Include="Objects\TripDMS.cs" />
@@ -102,6 +104,7 @@
     <Compile Include="Request\AssignUserRoleRequest.cs" />
     <Compile Include="Request\ChangePasswordRequest.cs" />
     <Compile Include="Request\DriverRequest.cs" />
+    <Compile Include="Request\FCMRequest.cs" />
     <Compile Include="Request\ForgotPasswordRequest.cs" />
     <Compile Include="Request\GoodsReceiveOrIssueRequest.cs" />
     <Compile Include="Request\HargaRequest.cs" />

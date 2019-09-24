@@ -28,5 +28,7 @@ namespace TMS.DataGateway.Repositories.Interfaces
         OrderResponse CreateOrdersFromShipmentListOCR(OrderRequest request);
         InvoiceResponse GetInvoiceRequest(OrderStatusRequest request);
         OrderStatusResponse SwapeStopPoints(OrderStatusRequest orderStatusRequest);
+        string GetPICFCMToken(string orderNumber);
+        void UpdateShipmentScheduleOCROrderStatus(string imageGUID, bool status, string message);
     }
 }

@@ -833,36 +833,86 @@ namespace TMS.DataGateway.Repositories
                 using (var context = new Data.TMSDBContext())
                 {
                     var userDetails = context.Tokens.Where(t => t.TokenKey == orderSearchRequest.Token).FirstOrDefault();
+                    var userData = context.Users.Where(t => t.ID == userDetails.UserID).FirstOrDefault();
+                    var picDetails = context.Pics.Where(p => p.PICEmail == userData.Email).Select(x => x.ID).ToList();
+
                     var businessAreas = (from ur in context.UserRoles
-                                         where ur.UserID == userDetails.UserID && ur.IsDelete == false
+                                         where ur.UserID == userDetails.UserID && !ur.IsDelete
                                          select ur.BusinessAreaID).ToList();
 
-                    orderList = (from oh in context.OrderHeaders
-                                 join od in context.OrderDetails on oh.ID equals od.OrderHeaderID
-                                 join ps in context.PackingSheets on od.ShippingListNo equals ps.ShippingListNo into pks
-                                 from pksh in pks.DefaultIfEmpty()
-                                 where businessAreas.Contains(oh.BusinessAreaId) &&
-                                 (
-                                        ((!String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.OrderNo == orderSearchRequest.GlobalSearch)
-                                        || (String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.OrderNo == oh.OrderNo))
-                                 ||
-                                        ((!String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.VehicleNo == orderSearchRequest.GlobalSearch)
-                                        || (String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.VehicleNo == oh.VehicleNo))
-                                 ||
-                                         ((orderSearchRequest.GlobalSearch != string.Empty && pksh.PackingSheetNo == orderSearchRequest.GlobalSearch)
-                                         || (orderSearchRequest.GlobalSearch == string.Empty && pksh.PackingSheetNo == pksh.PackingSheetNo))
-                                 )
+                    var partnerDataCk = (from partner in context.Partners
+                                         join ptype in context.PartnerPartnerTypes on partner.ID equals ptype.PartnerId
+                                         where ptype.PartnerTypeId == 1 && picDetails.Contains(partner.PICID.Value)
+                                         select partner.ID
+                                       ).ToList();
+                    if (picDetails.Count > 0)
+                    {
+                        orderList = (from oh in context.OrderHeaders
+                                     join od in context.OrderDetails on oh.ID equals od.OrderHeaderID
+                                     join opd in context.OrderPartnerDetails on od.ID equals opd.OrderDetailID
+                                     join ps in context.PackingSheets on od.ShippingListNo equals ps.ShippingListNo into pks
+                                     join os in context.OrderStatuses on oh.OrderStatusID equals os.ID
+                                     from pksh in pks.DefaultIfEmpty()
+                                     where businessAreas.Contains(oh.BusinessAreaId) && partnerDataCk.Contains(opd.PartnerID) && opd.PartnerTypeId == 1 &&
+                                     (
+                                            ((!String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.OrderNo == orderSearchRequest.GlobalSearch)
+                                            || (String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.OrderNo == oh.OrderNo))
+                                     ||
+                                            ((!String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.VehicleNo == orderSearchRequest.GlobalSearch)
+                                            || (String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.VehicleNo == oh.VehicleNo))
+                                     ||
+                                             ((orderSearchRequest.GlobalSearch != string.Empty && pksh.PackingSheetNo == orderSearchRequest.GlobalSearch)
+                                             || (orderSearchRequest.GlobalSearch == string.Empty && pksh.PackingSheetNo == pksh.PackingSheetNo))
+                                     ||
+                                             ((!String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && os.OrderStatusValue == orderSearchRequest.GlobalSearch)
+                                             || (String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && os.OrderStatusValue == os.OrderStatusValue))
+                                     )
 
-                                 select new Domain.OrderSearch
-                                 {
-                                     OrderId = oh.ID,
-                                     OrderType = oh.OrderType,
-                                     OrderNumber = oh.OrderNo,
-                                     VehicleType = context.VehicleTypes.Where(v => v.ID.ToString() == oh.VehicleShipment).Select(vt => vt.VehicleTypeDescription).FirstOrDefault(),
-                                     PoliceNumber = oh.VehicleNo,
-                                     OrderStatus = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusValue
-                                    // PackingSheetNumber = pksh.PackingSheetNo == null ? "" : pksh.PackingSheetNo
-                                 }).Distinct().ToList();
+                                     select new Domain.OrderSearch
+                                     {
+                                         OrderId = oh.ID,
+                                         OrderType = oh.OrderType,
+                                         OrderNumber = oh.OrderNo,
+                                         VehicleType = context.VehicleTypes.Where(v => v.ID.ToString() == oh.VehicleShipment).Select(vt => vt.VehicleTypeDescription).FirstOrDefault(),
+                                         PoliceNumber = oh.VehicleNo,
+                                         OrderStatus = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusValue
+                                         // PackingSheetNumber = pksh.PackingSheetNo == null ? "" : pksh.PackingSheetNo
+                                     }).Distinct().ToList();
+                    }
+                    else
+                    {
+                        orderList = (from oh in context.OrderHeaders
+                                     join od in context.OrderDetails on oh.ID equals od.OrderHeaderID
+                                     join ps in context.PackingSheets on od.ShippingListNo equals ps.ShippingListNo into pks
+                                     join os in context.OrderStatuses on oh.OrderStatusID equals os.ID
+                                     from pksh in pks.DefaultIfEmpty()
+                                     where businessAreas.Contains(oh.BusinessAreaId) &&
+                                     (
+                                            ((!String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.OrderNo == orderSearchRequest.GlobalSearch)
+                                            || (String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.OrderNo == oh.OrderNo))
+                                     ||
+                                            ((!String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.VehicleNo == orderSearchRequest.GlobalSearch)
+                                            || (String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && oh.VehicleNo == oh.VehicleNo))
+                                     ||
+                                             ((orderSearchRequest.GlobalSearch != string.Empty && pksh.PackingSheetNo == orderSearchRequest.GlobalSearch)
+                                             || (orderSearchRequest.GlobalSearch == string.Empty && pksh.PackingSheetNo == pksh.PackingSheetNo))
+                                     ||
+                                             ((!String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && os.OrderStatusValue == orderSearchRequest.GlobalSearch)
+                                             || (String.IsNullOrEmpty(orderSearchRequest.GlobalSearch) && os.OrderStatusValue == os.OrderStatusValue))
+                                     )
+
+                                     select new Domain.OrderSearch
+                                     {
+                                         OrderId = oh.ID,
+                                         OrderType = oh.OrderType,
+                                         OrderNumber = oh.OrderNo,
+                                         VehicleType = context.VehicleTypes.Where(v => v.ID.ToString() == oh.VehicleShipment).Select(vt => vt.VehicleTypeDescription).FirstOrDefault(),
+                                         PoliceNumber = oh.VehicleNo,
+                                         OrderStatus = context.OrderStatuses.Where(t => t.ID == oh.OrderStatusID).FirstOrDefault().OrderStatusValue
+                                         // PackingSheetNumber = pksh.PackingSheetNo == null ? "" : pksh.PackingSheetNo
+                                     }).Distinct().ToList();
+                    }
+
 
                     if (orderList != null && orderList.Count > 0)
                     {
@@ -881,17 +931,17 @@ namespace TMS.DataGateway.Repositories
                             // Get all source orderdetailids - iist of int - orderdetail to orderpartnerdetail where partnertypeid = 2
                             List<int> sourceOrderIds = (from orderDetails in context.OrderDetails
                                                         join ordPartnerDetails in context.OrderPartnerDetails on orderDetails.ID equals ordPartnerDetails.OrderDetailID
-                                                        where ordPartnerDetails.PartnerTypeId == 2 && orderDetails.OrderHeaderID== order.OrderId
+                                                        where ordPartnerDetails.PartnerTypeId == 2 && orderDetails.OrderHeaderID == order.OrderId
                                                         select orderDetails.ID
                                                       ).ToList();
                             // For each orderdetailid in orderdetailids
                             bool isNotLoaded = true;
-                            foreach(int ordDetailId in sourceOrderIds)
+                            foreach (int ordDetailId in sourceOrderIds)
                             {
                                 var orderStatusHistory = (from osh in context.OrderStatusHistories
-                                                         where osh.OrderDetailID == ordDetailId && osh.OrderStatusID == 7
-                                                         select osh).FirstOrDefault();
-                                if(orderStatusHistory != null)
+                                                          where osh.OrderDetailID == ordDetailId && osh.OrderStatusID == 7
+                                                          select osh).FirstOrDefault();
+                                if (orderStatusHistory != null)
                                 {
                                     isNotLoaded = false;
                                 }
@@ -1724,23 +1774,26 @@ namespace TMS.DataGateway.Repositories
                     {
                         foreach (var item in orderDetailsData)
                         {
-                            PackingSheet pack = new PackingSheet();
-                            pack.OrderNumber = context.OrderHeaders.Where(o => o.ID == item.OrderHeaderID).Select(p => p.OrderNo).FirstOrDefault();
-                            pack.Collie = item.TotalCollie;
-                            pack.Katerangan = item.Katerangan;
-                            pack.Notes = item.Instruction;
-                            pack.OrderDetailId = item.ID;
-                            pack.ShippingListNo = item.ShippingListNo;
-                            pack.Katerangan = item.Katerangan;
-                            pack.DealerId = context.OrderPartnerDetails.Where(p => p.OrderDetailID == item.ID).Select(p => p.PartnerID).FirstOrDefault();
-                            pack.DealerNumber = context.Partners.Where(p => p.ID == pack.DealerId).Select(p => p.PartnerNo).FirstOrDefault();
-                            pack.DealerName = context.Partners.Where(p => p.ID == pack.DealerId).Select(p => p.PartnerName).FirstOrDefault();
                             var packingSheetNos = context.PackingSheets.Where(ps => ps.ShippingListNo == item.ShippingListNo).Select(i => new Common { Id = i.ID, Value = i.PackingSheetNo }).ToList();
                             if (packingSheetNos.Count > 0)
                             {
-                                pack.PackingSheetNumbers = packingSheetNos;
+                                PackingSheet pack = new PackingSheet
+                                {
+                                    OrderNumber = context.OrderHeaders.Where(o => o.ID == item.OrderHeaderID).Select(p => p.OrderNo).FirstOrDefault(),
+                                    Collie = item.TotalCollie,
+                                    Katerangan = item.Katerangan,
+                                    Notes = item.Instruction,
+                                    OrderDetailId = item.ID,
+                                    ShippingListNo = item.ShippingListNo,
+                                    DealerId = context.OrderPartnerDetails.Where(p => p.OrderDetailID == item.ID && p.PartnerTypeId == 2).Select(p => p.PartnerID).FirstOrDefault(),
+                                    PackingSheetNumbers = packingSheetNos
+                                };
+
+                                pack.DealerNumber = context.Partners.Where(p => p.ID == pack.DealerId).Select(p => p.PartnerNo).FirstOrDefault();
+                                pack.DealerName = context.Partners.Where(p => p.ID == pack.DealerId).Select(p => p.PartnerName).FirstOrDefault();
+
+                                packingSheets.Add(pack);
                             }
-                            packingSheets.Add(pack);
                         }
                         packingSheetResponse.Data = packingSheets;
                         packingSheetResponse.Status = DomainObjects.Resource.ResourceData.Success;
@@ -1779,17 +1832,42 @@ namespace TMS.DataGateway.Repositories
                                          where ur.UserID == userDetails.UserID && !ur.IsDelete
                                          select ur.BusinessAreaID).ToList();
 
-                    var orderData = (from orderHeader in context.OrderHeaders
-                                     where businessAreas.Contains(orderHeader.BusinessAreaId) &&
-                                     orderHeader.OrderType == (context.OrderTypes.Where(ot => ot.OrderTypeCode == "INBD").Select(p => p.ID).FirstOrDefault()
+                    var userData = context.Users.Where(t => t.ID == userDetails.UserID).FirstOrDefault();
+                    var picDetails = context.Pics.Where(p => p.PICEmail == userData.Email).Select(x => x.ID).ToList();
 
-                                     )
+                    List<Common> orderData = new List<Common>();
+                    if (picDetails.Count > 0)
+                    {
+                        var partnerDataCk = (from partner in context.Partners
+                                             join ptype in context.PartnerPartnerTypes on partner.ID equals ptype.PartnerId
+                                             where ptype.PartnerTypeId == 1 && picDetails.Contains(partner.PICID.Value)
+                                             select partner.ID).ToList();
+
+                        orderData = (from orderHeader in context.OrderHeaders
+                                     join od in context.OrderDetails on orderHeader.ID equals od.OrderHeaderID
+                                     join opd in context.OrderPartnerDetails on od.ID equals opd.OrderDetailID
+                                     where businessAreas.Contains(orderHeader.BusinessAreaId)
+                                     && partnerDataCk.Contains(opd.PartnerID)
+                                     && opd.PartnerTypeId == 1
+                                     && orderHeader.OrderType == (context.OrderTypes.Where(ot => ot.OrderTypeCode == "INBD").Select(p => p.ID).FirstOrDefault())
                                      select new Domain.Common
                                      {
                                          Id = orderHeader.ID,
                                          Value = orderHeader.OrderNo
-                                     }
-                                     ).ToList();
+                                     }).Distinct().ToList();
+                    }
+                    else
+                    {
+                        orderData = (from orderHeader in context.OrderHeaders
+                                     where businessAreas.Contains(orderHeader.BusinessAreaId) &&
+                                     orderHeader.OrderType == (context.OrderTypes.Where(ot => ot.OrderTypeCode == "INBD").Select(p => p.ID).FirstOrDefault())
+                                     select new Domain.Common
+                                     {
+                                         Id = orderHeader.ID,
+                                         Value = orderHeader.OrderNo
+                                     }).Distinct().ToList();
+                    }
+
                     if (orderData.Count > 0)
                     {
                         commonResponse.NumberOfRecords = orderData.Count;
@@ -1927,12 +2005,13 @@ namespace TMS.DataGateway.Repositories
                     if (orderData != null)
                     {
                         var orderPackingSheetData = (from od in context.OrderDetails
-                                               join ps in context.PackingSheets on od.ShippingListNo equals ps.ShippingListNo
-                                               where od.OrderHeaderID == orderData.ID
-                                               select ps
+                                                     join ps in context.PackingSheets on od.ShippingListNo equals ps.ShippingListNo
+                                                     where od.OrderHeaderID == orderData.ID
+                                                     select ps
                                                ).FirstOrDefault();
 
-                        if(orderPackingSheetData != null){
+                        if (orderPackingSheetData != null)
+                        {
                             orderData.PackingSheetNo = orderPackingSheetData.PackingSheetNo;
                             orderData.IsPackingSheetAvailable = true;
                         }
@@ -2419,9 +2498,6 @@ namespace TMS.DataGateway.Repositories
                             ProcessedDateTime = DateTime.Now,
                             ProcessedBy = "System",
                         };
-                        context.ShipmentScheduleOCRDetails.Add(shipmentScheduleOCRDetails);
-                        context.SaveChanges();
-                        /////
 
 
                         string soPoNumber = String.Empty;
@@ -2445,8 +2521,10 @@ namespace TMS.DataGateway.Repositories
                         }
 
                         #region Step 1: Check if We have Business Area master data
-                        int businessAreaId;
+                        int businessAreaId = 0;
                         string businessAreaCode = string.Empty;
+
+                        string processMessage = string.Empty;
 
                         // Source partner: partner with initial "AHM"
                         var sourceDetails = (from partner in context.Partners
@@ -2458,6 +2536,12 @@ namespace TMS.DataGateway.Repositories
                                                  PartnerName = partner.PartnerName,
                                              }
                                            ).FirstOrDefault();
+
+                        if (sourceDetails == null)
+                        {
+                            processMessage = "No source partner found with initial AHM. ";
+                        }
+
                         // Destination Partner: Partner number with initial as maindealer code
                         var destinationDetails = (from partner in context.Partners
                                                   join partnerType in context.PartnerPartnerTypes on partner.ID equals partnerType.PartnerId
@@ -2471,8 +2555,15 @@ namespace TMS.DataGateway.Repositories
                                                   }
                                            ).FirstOrDefault();
 
-                        // Transporter : DestinationPartnerID to TransporterID mapping in MDTransporterMapping table
-                        var transporterDetails = (from partner in context.Partners
+                        Domain.Partner transporterDetails = null;
+                        if (destinationDetails == null)
+                        {
+                            processMessage += "No destination partner found with initial same as main dealer code " + shipment.Data.MainDealerCode + ". ";
+                        }
+                        else
+                        {
+                            // Transporter : DestinationPartnerID to TransporterID mapping in MDTransporterMapping table
+                            transporterDetails = (from partner in context.Partners
                                                   join partnerType in context.PartnerPartnerTypes on partner.ID equals partnerType.PartnerId
                                                   join mdTransporter in context.MDTransporterMappings on partner.ID equals mdTransporter.TransporterID
                                                   where mdTransporter.DestinationPartnerID == destinationDetails.ID && partnerType.PartnerTypeId == (context.PartnerTypes.Where(p => p.PartnerTypeCode == "1").Select(p => p.ID).FirstOrDefault())
@@ -2483,8 +2574,13 @@ namespace TMS.DataGateway.Repositories
                                                       PartnerName = partner.PartnerName,
                                                       ID = partner.ID
                                                   }
-                                          ).FirstOrDefault();
+                                              ).FirstOrDefault();
 
+                            if (transporterDetails == null)
+                            {
+                                processMessage += "No MDTransporterMapping found. MainDealerCode " + shipment.Data.MainDealerCode + ". ";
+                            }
+                        }
 
                         // Business Area:
                         var mdBusinessAreaMappings = (from bam in context.MDBusinessAreaMappings
@@ -2494,7 +2590,11 @@ namespace TMS.DataGateway.Repositories
                                                           BusinessAreaCode = bam.BusinessAreaCode
                                                       }).FirstOrDefault();
 
-                        if (mdBusinessAreaMappings != null)
+                        if (mdBusinessAreaMappings == null)
+                        {
+                            processMessage += "No MDBusinessAreaMappings found. MainDealerCode " + shipment.Data.MainDealerCode + ", ";
+                        }
+                        else
                         {
                             var businessArea = (from ba in context.BusinessAreas
                                                 where ba.BusinessAreaCode == mdBusinessAreaMappings.BusinessAreaCode
@@ -2503,28 +2603,32 @@ namespace TMS.DataGateway.Repositories
                                                     BusinessAreaCode = ba.BusinessAreaCode,
                                                     ID = ba.ID
                                                 }).FirstOrDefault();
-                            if (businessArea != null)
+
+                            if (businessArea == null)
+                            {
+                                processMessage += "Business Area Code Not Found " + mdBusinessAreaMappings.BusinessAreaCode;
+                            }
+                            else
                             {
                                 businessAreaCode = businessArea.BusinessAreaCode;
                                 businessAreaId = businessArea.ID;
                             }
-                            else
-                            {
-                                orderResponse.Status = DomainObjects.Resource.ResourceData.Failure;
-                                orderResponse.StatusCode = (int)HttpStatusCode.BadRequest;
-                                orderResponse.StatusMessage = mdBusinessAreaMappings.BusinessAreaCode + " Business Area Code not found in TMS.";
-                                return orderResponse;
-                            }
-
                         }
-                        else
+
+                        if (processMessage != string.Empty)
                         {
                             //Return with Business Area not found
                             orderResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                             orderResponse.StatusCode = (int)HttpStatusCode.BadRequest;
-                            orderResponse.StatusMessage = shipment.Data.MainDealerCode + " Main Dealer Code found in TMS.";
+                            orderResponse.StatusMessage = processMessage;
+
+                            shipmentScheduleOCRDetails.ProcessMessage = processMessage;
+                            context.ShipmentScheduleOCRDetails.Add(shipmentScheduleOCRDetails);
+                            context.SaveChanges();
+
                             return orderResponse;
                         }
+
                         #endregion
 
                         Domain.Order order = new Domain.Order();
@@ -2544,7 +2648,7 @@ namespace TMS.DataGateway.Repositories
                         order.BusinessArea = businessAreaCode;
                         order.BusinessAreaId = businessAreaId;
                         order.TotalPallet = shipment.Data.EstimatedTotalPallet.Split(' ')[0] == "" ? 0 : Convert.ToInt32(shipment.Data.EstimatedTotalPallet.Split(' ')[0]);
-                        order.Dimension = shipment.Data.EstimatedTotalPallet.Split(' ')[1] == "" ? "" : shipment.Data.EstimatedTotalPallet.Split(' ')[1];
+                        order.Dimension = shipment.Data.EstimatedTotalPallet.Split(' ')[1] == "" ? "" : shipment.Data.EstimatedTotalPallet.Split(' ')[1].Replace("(", "");
                         order.SequenceNo = 10;
                         order.ShipmentScheduleImageGUID = shipment.ImageGUID;
                         order.OrderWeight = 100;
@@ -2552,6 +2656,10 @@ namespace TMS.DataGateway.Repositories
                         order.OrderType = 1;
                         orderResponse.Data.Add(order);
                         orderResponse.StatusCode = (int)HttpStatusCode.OK;
+
+                        shipmentScheduleOCRDetails.ProcessMessage = "Email processed successfully.";
+                        context.ShipmentScheduleOCRDetails.Add(shipmentScheduleOCRDetails);
+                        context.SaveChanges();
                     }
                     catch (Exception ex)
                     {
@@ -2582,7 +2690,7 @@ namespace TMS.DataGateway.Repositories
                         {
                             string soPoNumber = String.Empty;
                             DateTime estimationShipmentDate = order.ActualShipment;
-                            DateTime actualShipmentDate = order.EstimationShipment; 
+                            DateTime actualShipmentDate = order.EstimationShipment;
 
                             #region Step 1: Check if We have Business Area master data
                             int businessAreaId;
@@ -3335,6 +3443,18 @@ namespace TMS.DataGateway.Repositories
             return response;
         }
 
+        public void UpdateShipmentScheduleOCROrderStatus(string imageGUID,bool status,string message)
+        {
+            using (var context = new Data.TMSDBContext())
+            {
+                var shipmentScheduleOCRRecord = context.ShipmentScheduleOCRDetails.Where(s => s.ImageGuid == imageGUID).FirstOrDefault();
+                shipmentScheduleOCRRecord.IsOrderCreated = status;
+                shipmentScheduleOCRRecord.ProcessMessage = message;
+                context.Entry(shipmentScheduleOCRRecord).State = System.Data.Entity.EntityState.Modified;
+                context.SaveChanges();
+            }
+        }
+
         public InvoiceResponse GetInvoiceRequest(OrderStatusRequest request)
 
         {
@@ -3486,5 +3606,23 @@ namespace TMS.DataGateway.Repositories
             return response;
         }
 
+        public string GetPICFCMToken(string orderNumber)
+        {
+            string PICFCMToken = string.Empty;
+            using (var context = new Data.TMSDBContext())
+            {
+
+                PICFCMToken = (from t in context.Tokens
+                               join u in context.Users on t.UserID equals u.ID
+                               join a in context.Pics on u.Email equals a.PICEmail
+                               join p in context.Partners on a.ID equals p.PICID
+                               join op in context.OrderPartnerDetails on p.ID equals op.PartnerID
+                               join od in context.OrderDetails on op.OrderDetailID equals od.ID
+                               join oh in context.OrderHeaders on od.OrderHeaderID equals oh.ID
+                               where oh.OrderNo == orderNumber && op.PartnerTypeId == 1
+                               select t.FirebaseToken).FirstOrDefault();
+            }
+            return PICFCMToken;
+        }
     }
 }

@@ -26,6 +26,14 @@ namespace TMS.DataGateway.Repositories
                 PartnerSearch partnerSearch = partnerSearchRequest.Requests[0];
                 using (var context = new TMSDBContext())
                 {
+                    List<int> picDetails = new List<int>();
+                    if (partnerSearchRequest.Requests[0].PartnerTypeId == 1)
+                    {
+                        var userTokenDetails = context.Tokens.Where(t => t.TokenKey == partnerSearchRequest.Token).FirstOrDefault();
+                        var userDetails = context.Users.Where(t => t.ID == userTokenDetails.UserID).FirstOrDefault();
+                        picDetails = context.Pics.Where(p => p.PICEmail == userDetails.Email && p.IsActive && !p.IsDeleted).Select(x => x.ID).ToList();
+                    }
+
                     if (string.IsNullOrEmpty(partnerSearch.SearchText))
                     {
                         partnerList = (from partner in context.Partners
@@ -33,7 +41,7 @@ namespace TMS.DataGateway.Repositories
                                        where ppt.PartnerTypeId == partnerSearch.PartnerTypeId && partner.IsActive
                                        join subdistrict in context.SubDistricts on partner.SubDistrictID equals subdistrict.ID
                                        join city in context.Cities on subdistrict.CityID equals city.ID
-                                       where !partner.IsDeleted
+                                       where !partner.IsDeleted && ((picDetails.Count > 0 && picDetails.Contains(partner.PICID.Value)) || picDetails.Count == 0)
                                        select new Domain.Common
                                        {
                                            Id = partner.ID,
@@ -46,6 +54,7 @@ namespace TMS.DataGateway.Repositories
                             (from partner in context.Partners
                              join ppt in context.PartnerPartnerTypes on partner.ID equals ppt.PartnerId
                              where partner.PartnerName.Contains(partnerSearch.SearchText) && ppt.PartnerTypeId == partnerSearch.PartnerTypeId && partner.IsActive
+                             && ((picDetails.Count > 0 && picDetails.Contains(partner.PICID.Value)) || picDetails.Count == 0)
                              select new Domain.Common
                              {
                                  Id = partner.ID,

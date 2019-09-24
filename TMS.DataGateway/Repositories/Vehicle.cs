@@ -118,24 +118,58 @@ namespace TMS.DataGateway.Repositories
             {
                 using (var tMSDBContext = new TMSDBContext())
                 {
-                    vehiclesList = tMSDBContext.Vehicles.Where(v => !v.IsDelete).Select(vehicle => new Domain.Vehicle
+                    var userDetails = tMSDBContext.Tokens.Where(t => t.TokenKey == vehicleRequest.Token).FirstOrDefault();
+                    var userData = tMSDBContext.Users.Where(t => t.ID == userDetails.UserID).FirstOrDefault();
+                    var picDetails = tMSDBContext.Pics.Where(p => p.PICEmail == userData.Email).Select(x => x.ID).ToList();
+
+                    if (picDetails.Count > 0)
                     {
-                        ID = vehicle.ID,
-                        VehicleTypeID = vehicle.VehicleTypeID,
-                        VehicleTypeDescription = vehicle.VehicleType.VehicleTypeDescription,
-                        //VehicleTypeName = vehicle.VehicleTypeName,
-                        KIRNo = vehicle.KIRNo,
-                        KIRExpiryDate = vehicle.KIRExpiryDate,
-                        MaxDimension = vehicle.MaxDimension,
-                        PoolID = vehicle.PoolID,
-                        PoolName = vehicle.Pool.PoolName,
-                        ShipperID = vehicle.ShipperID,
-                        ShipperName = vehicle.Partner.PartnerName,
-                        MaxWeight = vehicle.MaxWeight,
-                        IsDedicated = vehicle.IsDedicated,
-                        PlateNumber = vehicle.PlateNumber,
-                        PoliceNo = vehicle.PoliceNo,
-                    }).ToList();
+                        var partnerDataCk = (from partner in tMSDBContext.Partners
+                                             join ptype in tMSDBContext.PartnerPartnerTypes on partner.ID equals ptype.PartnerId
+                                             where ptype.PartnerTypeId == 1 && picDetails.Contains(partner.PICID.Value)
+                                             select partner.ID).ToList();
+
+                        vehiclesList = tMSDBContext.Vehicles.Where(v => !v.IsDelete && partnerDataCk.Contains(v.ShipperID)).Select(vehicle => new Domain.Vehicle
+                        {
+                            ID = vehicle.ID,
+                            VehicleTypeID = vehicle.VehicleTypeID,
+                            VehicleTypeDescription = vehicle.VehicleType.VehicleTypeDescription,
+                            //VehicleTypeName = vehicle.VehicleTypeName,
+                            KIRNo = vehicle.KIRNo,
+                            KIRExpiryDate = vehicle.KIRExpiryDate,
+                            MaxDimension = vehicle.MaxDimension,
+                            PoolID = vehicle.PoolID,
+                            PoolName = vehicle.Pool.PoolName,
+                            ShipperID = vehicle.ShipperID,
+                            ShipperName = vehicle.Partner.PartnerName,
+                            MaxWeight = vehicle.MaxWeight,
+                            IsDedicated = vehicle.IsDedicated,
+                            PlateNumber = vehicle.PlateNumber,
+                            PoliceNo = vehicle.PoliceNo,
+                        }).ToList();
+
+                    }
+                    else
+                    {
+                        vehiclesList = tMSDBContext.Vehicles.Where(v => !v.IsDelete).Select(vehicle => new Domain.Vehicle
+                        {
+                            ID = vehicle.ID,
+                            VehicleTypeID = vehicle.VehicleTypeID,
+                            VehicleTypeDescription = vehicle.VehicleType.VehicleTypeDescription,
+                            //VehicleTypeName = vehicle.VehicleTypeName,
+                            KIRNo = vehicle.KIRNo,
+                            KIRExpiryDate = vehicle.KIRExpiryDate,
+                            MaxDimension = vehicle.MaxDimension,
+                            PoolID = vehicle.PoolID,
+                            PoolName = vehicle.Pool.PoolName,
+                            ShipperID = vehicle.ShipperID,
+                            ShipperName = vehicle.Partner.PartnerName,
+                            MaxWeight = vehicle.MaxWeight,
+                            IsDedicated = vehicle.IsDedicated,
+                            PlateNumber = vehicle.PlateNumber,
+                            PoliceNo = vehicle.PoliceNo,
+                        }).ToList();
+                    }
                 }
 
                 // Filter

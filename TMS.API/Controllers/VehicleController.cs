@@ -45,6 +45,8 @@ namespace TMS.API.Controllers
         [HttpPost]
         public IHttpActionResult GetVehicles(VehicleRequest vehicleRequest)
         {
+            vehicleRequest.Token = Request.Headers.GetValues("Token").FirstOrDefault();
+
             IVehicleTask vehicleTask = DependencyResolver.GetImplementationOf<ITaskGateway>().VehicleTask;
             VehicleResponse vehicleResponse = vehicleTask.GetVehicles(vehicleRequest);
             return Ok(vehicleResponse);

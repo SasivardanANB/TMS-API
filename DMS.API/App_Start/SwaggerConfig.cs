@@ -2,6 +2,7 @@ using System.Web.Http;
 using WebActivatorEx;
 using DMS.API;
 using Swashbuckle.Application;
+using System.Configuration;
 
 [assembly: PreApplicationStartMethod(typeof(SwaggerConfig), "Register")]
 
@@ -21,6 +22,7 @@ namespace DMS.API
                         // resolve correctly. You can workaround this by providing your own code to determine the root URL.
                         //
                         //c.RootUrl(req => GetRootUrlFromAppConfig());
+                        c.RootUrl(req => ConfigurationManager.AppSettings["SwaggerBaseURL"]);
 
                         // If schemes are not explicitly provided in a Swagger 2.0 document, then the scheme used to access
                         // the docs is taken as the default. If your API supports multiple schemes and you want to be explicit

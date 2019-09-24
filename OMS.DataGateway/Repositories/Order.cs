@@ -1300,6 +1300,7 @@ namespace OMS.DataGateway.Repositories
                                 order.ID = orderHeader.ID;
 
                                 #region Step 3 : Create Order Detail
+                                DateTime createdTime = DateTime.Now;
                                 Data.OrderDetail orderDetail = new Data.OrderDetail()
                                 {
                                     OrderHeaderID = order.ID,
@@ -1314,7 +1315,7 @@ namespace OMS.DataGateway.Repositories
                                     EstimationShipmentDate = estimationShipmentDate,
                                     ActualShipmentDate = actualShipmentDate,
                                     CreatedBy = request.CreatedBy,
-                                    CreatedTime = DateTime.Now,
+                                    CreatedTime = createdTime,
                                     LastModifiedBy = "",
                                     LastModifiedTime = null
                                 };

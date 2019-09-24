@@ -331,6 +331,24 @@ namespace OMS.DomainObjects.Resource {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Partner(s) created successfully in OMS..
+        /// </summary>
+        public static string PartnerCreated {
+            get {
+                return ResourceManager.GetString("PartnerCreated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Partner(s) updated successfully in OMS..
+        /// </summary>
+        public static string PartnerUpdated {
+            get {
+                return ResourceManager.GetString("PartnerUpdated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Password must be at least 8 characters and contain one upper case, one lower case, one number and special character.
         /// </summary>
         public static string PasswordInvalid {

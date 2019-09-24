@@ -181,7 +181,7 @@ namespace TMS.DataGateway.Repositories
                 {
                     var userTokenDetails = tMSDBContext.Tokens.Where(t => t.TokenKey == driverRequest.Token).FirstOrDefault();
                     var userDetails = tMSDBContext.Users.Where(t => t.ID == userTokenDetails.UserID).FirstOrDefault();
-                    var picDetails = tMSDBContext.Pics.Where(p => p.PICEmail == userDetails.Email && p.IsActive && !p.IsDeleted).Select(x => x.ID).ToList();
+                    var picDetails = tMSDBContext.Pics.Where(p => p.PICEmail == userDetails.Email).Select(x => x.ID).ToList();
                    var  partnerList =
                         (from partner in tMSDBContext.Partners
                          join ppt in tMSDBContext.PartnerPartnerTypes on partner.ID equals ppt.PartnerId

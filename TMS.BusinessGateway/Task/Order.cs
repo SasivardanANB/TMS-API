@@ -132,6 +132,46 @@ namespace TMS.BusinessGateway.Task
 
                     if (tmsOrderResponse.StatusCode == (int)HttpStatusCode.OK && tmsOrderResponse.Status == "Success")
                     {
+                        #region Web notification
+
+                        try
+                        {
+                            foreach (var statusRequest in order.Requests)
+                            {
+                                string PICFCMToken = _orderRepository.GetPICFCMToken(statusRequest.OrderNo);
+
+                                if (!String.IsNullOrEmpty(PICFCMToken))
+                                {
+                                    FCMRequest fCMReq = new FCMRequest()
+                                    {
+                                        notification = new FCMNotification()
+                                        {
+                                            title = "Order has been created / Updated",
+                                            body = "Order Number : " + statusRequest.OrderNo,
+                                            click_action = ConfigurationManager.AppSettings["FCMClickAction"],
+                                            icon = ""
+                                        },
+                                        to = PICFCMToken
+                                    };
+
+                                    var client = new RestClient(ConfigurationManager.AppSettings["FCMBaseURL"]);
+                                    client.AddDefaultHeader("Content-Type", "application/json");
+
+                                    RestRequest req = new RestRequest("/fcm/send", Method.POST) { RequestFormat = DataFormat.Json };
+                                    req.AddParameter("Authorization", ConfigurationManager.AppSettings["FCMKey"], ParameterType.HttpHeader);
+                                    req.AddJsonBody(fCMReq);
+
+                                    client.Execute(req);
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            // Continue execution
+                        }
+
+                        #endregion
+
                         #region Call DMS API to send Order as Trip if Driver assignment exists
 
                         TripRequestDMS requestDMS = new TripRequestDMS()
@@ -145,7 +185,7 @@ namespace TMS.BusinessGateway.Task
                         {
                             Partner destinationPartnerDetail = GetPartnerDetail(request.PartnerNo3, order.UploadType);
 
-                            if (destPartnerEmails.ContainsKey(request.OrderNo) )
+                            if (destPartnerEmails.ContainsKey(request.OrderNo))
                             {
                                 if (request.OrderType == 2) // outbound
                                 {
@@ -355,7 +395,7 @@ namespace TMS.BusinessGateway.Task
                                 smtp.Send(mail);
                             }
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             // Continue execution
                         }
@@ -503,32 +543,6 @@ namespace TMS.BusinessGateway.Task
 
                     if (tmsOrderResponse.StatusCode == 200 && tmsOrderResponse.Status == "Success")
                     {
-                        #region send email to destination partners
-                        if (destPartnerEmails.Count > 0 && !String.IsNullOrEmpty(orderNumber))
-                        {
-                            MailMessage mail = new MailMessage();
-                            mail.To.Add(string.Join(",", destPartnerEmails));
-                            string emailFrom = ConfigurationManager.AppSettings["EmailFrom"];
-                            mail.From = new MailAddress(emailFrom);
-                            mail.Subject = "Your Order Delivery Status";
-                            string Body = "Dear Customer, <br /> This is your order deliver status. Your order delivery No is " + orderNumber + ". You can track order by clicking this link " + ConfigurationManager.AppSettings["TMS_APP_URL"];
-                            mail.Body = Body;
-                            mail.IsBodyHtml = true;
-                            string smtpHost = ConfigurationManager.AppSettings["SmtpHost"];
-                            string loginEmailId = ConfigurationManager.AppSettings["SmtpUserName"];
-                            string emailPassword = ConfigurationManager.AppSettings["SmtpPassword"];
-                            System.Net.Mail.SmtpClient smtp = new System.Net.Mail.SmtpClient(smtpHost)
-                            {
-                                Port = Convert.ToInt32(ConfigurationManager.AppSettings["smtpPort"]),
-                                UseDefaultCredentials = false,
-                                DeliveryMethod = SmtpDeliveryMethod.Network,
-                                Credentials = new System.Net.NetworkCredential(loginEmailId, emailPassword),
-                                EnableSsl = true
-                            };
-                            smtp.Send(mail);
-                        }
-                        #endregion
-
                         #region Call DMS API to send Order as Trip if Driver assignment exists
                         TripRequestDMS requestDMS = new TripRequestDMS()
                         {
@@ -730,6 +744,79 @@ namespace TMS.BusinessGateway.Task
                             }
                             #endregion
                         }
+
+                        #region Web notification
+
+                        try
+                        {
+                            foreach (var statusRequest in order.Requests)
+                            {
+                                string PICFCMToken = _orderRepository.GetPICFCMToken(statusRequest.OrderNo);
+
+                                if (!String.IsNullOrEmpty(PICFCMToken))
+                                {
+                                    FCMRequest fCMReq = new FCMRequest()
+                                    {
+                                        notification = new FCMNotification()
+                                        {
+                                            title = "Order has been created / Updated",
+                                            body = "Order Number : " + orderNumber,
+                                            click_action = ConfigurationManager.AppSettings["FCMClickAction"],
+                                            icon = ""
+                                        },
+                                        to = PICFCMToken
+                                    };
+
+                                    var client = new RestClient(ConfigurationManager.AppSettings["FCMBaseURL"]);
+                                    client.AddDefaultHeader("Content-Type", "application/json");
+
+                                    RestRequest req = new RestRequest("/fcm/send", Method.POST) { RequestFormat = DataFormat.Json };
+                                    req.AddParameter("Authorization", ConfigurationManager.AppSettings["FCMKey"], ParameterType.HttpHeader);
+                                    req.AddJsonBody(fCMReq);
+
+                                    client.Execute(req);
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            // Continue execution
+                        }
+
+                        #endregion
+
+                        #region send email to destination partners
+                        try
+                        {
+                            if (destPartnerEmails.Count > 0 && !String.IsNullOrEmpty(orderNumber))
+                            {
+                                MailMessage mail = new MailMessage();
+                                mail.To.Add(string.Join(",", destPartnerEmails));
+                                string emailFrom = ConfigurationManager.AppSettings["EmailFrom"];
+                                mail.From = new MailAddress(emailFrom);
+                                mail.Subject = "Your Order Delivery Status";
+                                string Body = "Dear Customer, <br /> This is your order deliver status. Your order delivery No is " + orderNumber + ". You can track order by clicking this link " + ConfigurationManager.AppSettings["TMS_APP_URL"];
+                                mail.Body = Body;
+                                mail.IsBodyHtml = true;
+                                string smtpHost = ConfigurationManager.AppSettings["SmtpHost"];
+                                string loginEmailId = ConfigurationManager.AppSettings["SmtpUserName"];
+                                string emailPassword = ConfigurationManager.AppSettings["SmtpPassword"];
+                                System.Net.Mail.SmtpClient smtp = new System.Net.Mail.SmtpClient(smtpHost)
+                                {
+                                    Port = Convert.ToInt32(ConfigurationManager.AppSettings["smtpPort"]),
+                                    UseDefaultCredentials = false,
+                                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                                    Credentials = new System.Net.NetworkCredential(loginEmailId, emailPassword),
+                                    EnableSsl = true
+                                };
+                                smtp.Send(mail);
+                            }
+                        }
+                        catch(Exception ex)
+                        {
+                            // Continue execution
+                        }
+                        #endregion
                     }
                 }
             }
@@ -899,21 +986,63 @@ namespace TMS.BusinessGateway.Task
                 #endregion
             }
             #endregion
-            #region Invoice Generation
+
             if (request.Requests[0].OrderStatusCode == "12")
             {
-                InvoiceResponse invoiceResponse = GetInvoiceRequest(request);
-                if (invoiceResponse != null && invoiceResponse.Data.Count > 0)
+                #region Invoice Generation
+                //InvoiceResponse invoiceResponse = GetInvoiceRequest(request);
+                //if (invoiceResponse != null && invoiceResponse.Data.Count > 0)
+                //{
+                //    InvoiceRequest invoiceRequest = new InvoiceRequest();
+                //    invoiceRequest.Requests = invoiceResponse.Data;
+                //    if (!String.IsNullOrEmpty(request.Token))
+                //    {
+                //        JsonConvert.DeserializeObject<InvoiceResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"] + "v1/invoice/generateinvoice", Method.POST, invoiceRequest, request.Token));
+                //    }
+                //}
+                #endregion
+
+                #region Web notification
+
+                try
                 {
-                    InvoiceRequest invoiceRequest = new InvoiceRequest();
-                    invoiceRequest.Requests = invoiceResponse.Data;
-                    if (!String.IsNullOrEmpty(request.Token))
+                    foreach (var statusRequest in request.Requests)
                     {
-                        JsonConvert.DeserializeObject<InvoiceResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"] + "v1/invoice/generateinvoice", Method.POST, invoiceRequest, request.Token));
+                        string PICFCMToken = _orderRepository.GetPICFCMToken(statusRequest.OrderNumber);
+
+                        if (!String.IsNullOrEmpty(PICFCMToken))
+                        {
+                            FCMRequest fCMReq = new FCMRequest()
+                            {
+                                notification = new FCMNotification()
+                                {
+                                    title = "Order / Trip Completed",
+                                    body = "Order / Trip Completed",
+                                    click_action = ConfigurationManager.AppSettings["FCMClickAction"],
+                                    icon = ""
+                                },
+                                to = PICFCMToken
+                            };
+
+                            var client = new RestClient(ConfigurationManager.AppSettings["FCMBaseURL"]);
+                            client.AddDefaultHeader("Content-Type", "application/json");
+
+                            RestRequest req = new RestRequest("/fcm/send", Method.POST) { RequestFormat = DataFormat.Json };
+                            req.AddParameter("Authorization", ConfigurationManager.AppSettings["FCMKey"], ParameterType.HttpHeader);
+                            req.AddJsonBody(fCMReq);
+
+                            client.Execute(req);
+                        }
                     }
                 }
+                catch (Exception ex)
+                {
+                    // Continue execution
+                }
+
+                #endregion
             }
-            #endregion
+
 
             return response;
         }
@@ -1010,6 +1139,46 @@ namespace TMS.BusinessGateway.Task
                     response.StatusMessage += ". " + dmsresponse.StatusMessage;
                     #endregion
                 }
+                #endregion
+
+                #region Web notification
+
+                try
+                {
+                    foreach (var statusRequest in request.Requests)
+                    {
+                        string PICFCMToken = _orderRepository.GetPICFCMToken(statusRequest.OrderNumber);
+
+                        if (!String.IsNullOrEmpty(PICFCMToken))
+                        {
+                            FCMRequest fCMReq = new FCMRequest()
+                            {
+                                notification = new FCMNotification()
+                                {
+                                    title = "Order / Trip Cancelled",
+                                    body = "Order Number: " + statusRequest.OrderNumber,
+                                    click_action = ConfigurationManager.AppSettings["FCMClickAction"],
+                                    icon = ""
+                                },
+                                to = PICFCMToken
+                            };
+
+                            var client = new RestClient(ConfigurationManager.AppSettings["FCMBaseURL"]);
+                            client.AddDefaultHeader("Content-Type", "application/json");
+
+                            RestRequest req = new RestRequest("/fcm/send", Method.POST) { RequestFormat = DataFormat.Json };
+                            req.AddParameter("Authorization", ConfigurationManager.AppSettings["FCMKey"], ParameterType.HttpHeader);
+                            req.AddJsonBody(fCMReq);
+
+                            client.Execute(req);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Continue execution
+                }
+
                 #endregion
             }
             return response;
@@ -1269,6 +1438,11 @@ namespace TMS.BusinessGateway.Task
                 }
             }
             return tmsOrderResponse;
+        }
+
+        public override void UpdateShipmentScheduleOCROrderStatus(string imageGUID, bool status, string message)
+        {
+            _orderRepository.UpdateShipmentScheduleOCROrderStatus(imageGUID, status, message);
         }
     }
 }
