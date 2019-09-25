@@ -131,8 +131,6 @@
     <Compile Include="DataModels\TMSDBContext.cs" />
     <Compile Include="DataModels\Token.cs" />
     <Compile Include="DataModels\Partner.cs" />
-    <Compile Include="DataModels\PartnerAddress.cs" />
-    <Compile Include="DataModels\PartnerPIC.cs" />
     <Compile Include="DataModels\PartnerType.cs" />
     <Compile Include="DataModels\User.cs" />
     <Compile Include="DataModels\UserApplication.cs" />
@@ -196,6 +194,10 @@
     <Compile Include="Migrations\201909190833131_ProcessMessage.cs" />
     <Compile Include="Migrations\201909190833131_ProcessMessage.Designer.cs">
       <DependentUpon>201909190833131_ProcessMessage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909250507591_PartnerPICAddress.cs" />
+    <Compile Include="Migrations\201909250507591_PartnerPICAddress.Designer.cs">
+      <DependentUpon>201909250507591_PartnerPICAddress.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -270,6 +272,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201909190833131_ProcessMessage.resx">
       <DependentUpon>201909190833131_ProcessMessage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909250507591_PartnerPICAddress.resx">
+      <DependentUpon>201909250507591_PartnerPICAddress.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SeedData\Activities.csv" />
     <EmbeddedResource Include="SeedData\applications.csv" />
