@@ -21,9 +21,7 @@ namespace TMS.DataGateway.DataModels
         public virtual DbSet<CompanyCode> CompanyCodes { get; set; }
         public virtual DbSet<BusinessArea> BusinessAreas { get; set; }
         public virtual DbSet<Partner> Partners { get; set; }
-        public virtual DbSet<PartnerPIC> PartnerPICs { get; set; }
         public virtual DbSet<PartnerType> PartnerTypes { get; set; }
-        public virtual DbSet<PartnerAddress> PartnerAddresses { get; set; }
         public virtual DbSet<OrderHeader> OrderHeaders { get; set; }
         public virtual DbSet<OrderDetail> OrderDetails { get; set; }
         public virtual DbSet<OrderPartnerDetail> OrderPartnerDetails { get; set; }
