@@ -36,6 +36,7 @@ namespace OMS.BusinessGateway.Task
 
         public override UserResponse LoginUser(string key)
         {
+            key = key.Replace(" ", "+");
             var userName = GetUserNameFromToken(key);
 
             if (String.IsNullOrEmpty(userName))

@@ -32,13 +32,14 @@ namespace TMS.BusinessGateway.Task
         {
             UserResponse userData = _userRepository.LoginUser(login);
 
-            
+
 
             return userData;
         }
 
         public override UserResponse LoginUser(string key)
         {
+            key = key.Replace(" ", "+");
             var userName = GetUserNameFromToken(key);
 
             if (String.IsNullOrEmpty(userName))
