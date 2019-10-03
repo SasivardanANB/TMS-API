@@ -9,7 +9,7 @@ namespace TMS.DomainObjects.Objects
 {
     public class SubDistrictDeatils
     {
-        public int PostalCodeId { get; set; }
+        public int? PostalCodeId { get; set; }
         public string PostalCode { get; set; }
         public int SubDistrictId { get; set; }
         public string SubDistrictName { get; set; }
