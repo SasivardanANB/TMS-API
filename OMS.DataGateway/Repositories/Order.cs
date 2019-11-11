@@ -614,6 +614,7 @@ namespace OMS.DataGateway.Repositories
                             else
                             {
                                 #region Create New Order Header
+                              
                                 Data.OrderHeader orderHeader = new Data.OrderHeader()
                                 {
                                     OrderNo = order.OrderNo,
@@ -1604,12 +1605,20 @@ namespace OMS.DataGateway.Repositories
             {
                 foreach (var order in request.Requests)
                 {
+                    #region check driverdetails availability and if exist set status as assigned(3) else Created (1)  
+                    if (!String.IsNullOrEmpty(order.DriverNo) && !String.IsNullOrEmpty(order.DriverName))
+                    {
+                        order.OrderShipmentStatus = 3;
+                    }
+                    #endregion
                     using (DbContextTransaction transaction = context.Database.BeginTransaction())
                     {
                         try
                         {
                             DateTime estimationShipmentDate = DateTime.ParseExact(order.EstimationShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(order.EstimationShipmentTime);
                             DateTime actualShipmentDate = DateTime.ParseExact(order.ActualShipmentDate, "dd.MM.yyyy", CultureInfo.InvariantCulture) + TimeSpan.Parse(order.ActualShipmentTime);
+
+                           
 
                             #region Step 1: Check if We have Business Area master data
                             Domain.BusinessArea businessArea = new BusinessArea();

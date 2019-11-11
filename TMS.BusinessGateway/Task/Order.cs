@@ -453,13 +453,13 @@ namespace TMS.BusinessGateway.Task
 
                 var driverData = JsonConvert.DeserializeObject<DriverResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
                                                                                                           + "v1/driver/getdrivers", Method.POST, driverRequest, order.Token));
+                
                 string driverName = string.Empty; string driverNumber = string.Empty;
                 if (driverData.StatusCode == (int)HttpStatusCode.OK && driverData.Status == DomainObjects.Resource.ResourceData.Success)
                 {
                     driverName = driverData.Data[0].UserName;
                     driverNumber = driverData.Data[0].DriverNo;
                 }
-
                 foreach (var tmsOrder in order.Requests)
                 {
                     string businessArea = "";
@@ -524,6 +524,8 @@ namespace TMS.BusinessGateway.Task
                     // Get orderNumber from oms response and update tmsRequest
                     foreach (var ord in order.Requests)
                     {
+                        ord.DriverName = driverName;
+                        ord.DriverNo = driverNumber;
                         ord.OrderNo = omsOrderResponse.Data[0].OrderNo;
                         orderNumber = omsOrderResponse.Data[0].OrderNo;
                         ord.LegecyOrderNo = omsOrderResponse.Data[0].OrderNo;
@@ -537,6 +539,7 @@ namespace TMS.BusinessGateway.Task
                     }
 
                     // Create Order in TMS
+                    
                     tmsOrderResponse = _orderRepository.CreateUpdateOrder(order);
 
                     omsOrderResponse.StatusMessage = omsOrderResponse.StatusMessage + ". " + tmsOrderResponse.StatusMessage;
