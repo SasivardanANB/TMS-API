@@ -10,6 +10,7 @@ using TMS.DomainObjects.Request;
 using TMS.DomainObjects.Response;
 using Domain = TMS.DomainObjects.Objects;
 using DataModel = TMS.DataGateway.DataModels;
+using System.Web.UI.WebControls;
 
 namespace TMS.DataGateway.Repositories
 {
@@ -120,7 +121,7 @@ namespace TMS.DataGateway.Repositories
                     }
                     driverRequest.Requests = mapper.Map<List<DataModel.Driver>, List<Domain.Driver>>(drivers);
                     driverResponse.Data = driverRequest.Requests;
-                    
+
                 }
             }
             catch (Exception ex)
@@ -147,6 +148,7 @@ namespace TMS.DataGateway.Repositories
                         //Need to assign lastmodifiedby using session username
                         driverDetails.LastModifiedTime = DateTime.Now;
                         driverDetails.IsDelete = true;
+                        driverDetails.IsActive = false;
                         tMSDBContext.SaveChanges();
                         driverResponse.StatusCode = (int)HttpStatusCode.OK;
                         driverResponse.Status = DomainObjects.Resource.ResourceData.Success;
@@ -158,7 +160,7 @@ namespace TMS.DataGateway.Repositories
                         driverResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                         driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                     }
-                    
+
                 }
             }
             catch (Exception ex)
@@ -182,38 +184,39 @@ namespace TMS.DataGateway.Repositories
                     var userTokenDetails = tMSDBContext.Tokens.Where(t => t.TokenKey == driverRequest.Token).FirstOrDefault();
                     var userDetails = tMSDBContext.Users.Where(t => t.ID == userTokenDetails.UserID).FirstOrDefault();
                     var picDetails = tMSDBContext.Pics.Where(p => p.PICEmail == userDetails.Email).Select(x => x.ID).ToList();
-                   var  partnerList =
-                        (from partner in tMSDBContext.Partners
-                         join ppt in tMSDBContext.PartnerPartnerTypes on partner.ID equals ppt.PartnerId
-                         where !partner.IsDeleted && ppt.PartnerTypeId == 1  && picDetails.Contains(partner.PICID.Value)
-                         select partner.ID).ToList();
+                    var partnerList =
+                         (from partner in tMSDBContext.Partners
+                          join ppt in tMSDBContext.PartnerPartnerTypes on partner.ID equals ppt.PartnerId
+                          where !partner.IsDeleted && ppt.PartnerTypeId == 1 && picDetails.Contains(partner.PICID.Value)
+                          select partner.ID).ToList();
 
-                    if (partnerList.Count > 0) { 
-                    driversList = tMSDBContext.Drivers.Where(d => !d.IsDelete && partnerList.Contains(d.TransporterId.Value)).Select(driver => new Domain.Driver
+                    if (partnerList.Count > 0)
                     {
-                        ID = driver.ID,
-                        TransporterId=driver.TransporterId,
-                        TransporterName=driver.Partner.PartnerName,
-                        DriverAddress = driver.DriverAddress,
-                        FirstName = driver.FirstName,
-                        LastName = driver.LastName,
-                        DriverNo = driver.DriverNo,
-                        DriverPhone = driver.DriverPhone,
-                        Password = driver.Password,
-                        Email = driver.Email,
-                        UserName = driver.UserName,
-                        IsActive = driver.IsActive,
-                        IdentityNo = driver.IdentityNo,
-                        DrivingLicenseExpiredDate = driver.DrivingLicenseExpiredDate,
-                        DrivingLicenseNo = driver.DrivingLicenseNo,
-                        DrivingLicenceImageId = driver.DrivingLicenceImageId,
-                        IdentityImageId = driver.IdentityImageId,
-                        DriverImageId = driver.DriverImageId,
-                        IsDelete = driver.IsDelete,
-                        DriverImageGuId = tMSDBContext.ImageGuids.Where(d => d.ID == driver.DriverImageId).Select(g => g.ImageGuIdValue).FirstOrDefault(),
-                        DrivingLicenceImageGuId = tMSDBContext.ImageGuids.Where(d => d.ID == driver.DrivingLicenceImageId).Select(g => g.ImageGuIdValue).FirstOrDefault(),
-                        IdentityImageGuId = tMSDBContext.ImageGuids.Where(d => d.ID == driver.IdentityImageId).Select(g => g.ImageGuIdValue).FirstOrDefault(),
-                    }).ToList();
+                        driversList = tMSDBContext.Drivers.Where(d => !d.IsDelete && partnerList.Contains(d.TransporterId.Value)).Select(driver => new Domain.Driver
+                        {
+                            ID = driver.ID,
+                            TransporterId = driver.TransporterId,
+                            TransporterName = driver.Partner.PartnerName,
+                            DriverAddress = driver.DriverAddress,
+                            FirstName = driver.FirstName,
+                            LastName = driver.LastName,
+                            DriverNo = driver.DriverNo,
+                            DriverPhone = driver.DriverPhone,
+                            Password = driver.Password,
+                            Email = driver.Email,
+                            UserName = driver.UserName,
+                            IsActive = driver.IsActive,
+                            IdentityNo = driver.IdentityNo,
+                            DrivingLicenseExpiredDate = driver.DrivingLicenseExpiredDate,
+                            DrivingLicenseNo = driver.DrivingLicenseNo,
+                            DrivingLicenceImageId = driver.DrivingLicenceImageId,
+                            IdentityImageId = driver.IdentityImageId,
+                            DriverImageId = driver.DriverImageId,
+                            IsDelete = driver.IsDelete,
+                            DriverImageGuId = tMSDBContext.ImageGuids.Where(d => d.ID == driver.DriverImageId).Select(g => g.ImageGuIdValue).FirstOrDefault(),
+                            DrivingLicenceImageGuId = tMSDBContext.ImageGuids.Where(d => d.ID == driver.DrivingLicenceImageId).Select(g => g.ImageGuIdValue).FirstOrDefault(),
+                            IdentityImageGuId = tMSDBContext.ImageGuids.Where(d => d.ID == driver.IdentityImageId).Select(g => g.ImageGuIdValue).FirstOrDefault(),
+                        }).ToList();
 
                     }
                     else

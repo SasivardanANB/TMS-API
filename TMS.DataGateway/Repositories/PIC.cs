@@ -101,6 +101,26 @@ namespace TMS.DataGateway.Repositories
                     var picData = context.Pics.Where(pic => pic.ID == picId).FirstOrDefault();
                     if (picData != null)
                     {
+                        #region deleting user and user roles
+                        // Check if any user is present with the same pic email id
+                        // if present
+                        // delete user roles
+                        // delete user (isdelete and isactive)
+                        var user = context.Users.Where(x => x.Email == picData.PICEmail).FirstOrDefault();
+                        if (user != null)
+                        {
+                            user.IsActive = false;
+                            user.IsDelete = true;
+                            context.SaveChanges();
+
+                            var userRole = context.UserRoles.Where(x => x.UserID == user.ID).ToList();
+                            if (userRole != null)
+                            {
+                                userRole.ForEach(a => a.IsDelete = true);
+                                context.SaveChanges();
+                            }
+                        }
+                        #endregion
                         //Need to assign lastmodifiedby using session userid
                         picData.LastModifiedTime = DateTime.Now;
                         picData.IsDeleted = true;
