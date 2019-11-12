@@ -1,4 +1,5 @@
-﻿using DMS.DomainObjects.Request;
+﻿using DMS.DomainObjects.Objects;
+using DMS.DomainObjects.Request;
 using DMS.DomainObjects.Response;
 using System;
 using System.Collections.Generic;
@@ -28,7 +29,7 @@ namespace DMS.DataGateway.Repositories.Iterfaces
         ImageGuidsResponse GetPhotoWithCustomerGuids(string orderNumber);
         StopPointsResponse GetPendingStopPoints(int tripId);
         OrderStatusResponse CancelOrder(OrderStatusRequest request);
-        ShipmentListResponse CreateUpdateShipmentList(ShipmentListRequest request);
+        ShippingList CreateUpdateShipmentList(ShipmentListRequest request);
         StopPointsResponse SwapeStopPoints(UpdateTripStatusRequest updateTripStatusRequest);
     }
 }

@@ -1,0 +1,19 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace TMS.DomainObjects.Request
+{
+    public class ShipmentListDetails
+    {
+        public int ID { get; set; }
+        public string ShippingListNo { get; set; }
+        public int NumberOfBoxes { get; set; }
+        public string Note { get; set; }
+        public string PackingSheetNumber { get; set; }
+        public int StopPointId { get; set; }
+      
+    }
+}

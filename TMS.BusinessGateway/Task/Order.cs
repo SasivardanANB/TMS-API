@@ -1447,5 +1447,42 @@ namespace TMS.BusinessGateway.Task
         {
             _orderRepository.UpdateShipmentScheduleOCROrderStatus(imageGUID, status, message);
         }
+
+        public override PackingSheetResponse CreateUpdatePackingSheetDetailsDSM(ShipmentListRequest shipmentListRequest)
+        {
+           
+           
+
+            int i = 1;
+            PackingSheetRequest packingSheetRequest = new PackingSheetRequest();
+            TMS.DataGateway.Repositories.Order order = new DataGateway.Repositories.Order();
+
+            DealerDetails ds = order.GetDealerId(shipmentListRequest.OrderNumber, shipmentListRequest.SequenceNumber);
+            PackingSheet ps = new PackingSheet();
+            ps.PackingSheetNumbers = new List<Common>();
+            packingSheetRequest.Requests = new List<PackingSheet>();
+            ps.OrderNumber = shipmentListRequest.OrderNumber;
+            ps.OrderDetailId = ds.OrderDeatialId;
+            ps.DealerId = ds.DealerId;
+              ps.Collie = shipmentListRequest.Requests[0].NumberOfBoxes; 
+                    
+
+            // ps.Notes = shipmentListRequest.Requests[0].Note;
+            ps.ShippingListNo = shipmentListRequest.Requests[0].ShippingListNo;
+            ps.Katerangan = shipmentListRequest.Requests[0].Note;
+            foreach (var item in shipmentListRequest.Requests)
+            {
+
+                ps.PackingSheetNumbers.Add(new Common { Id = i, Value = item.PackingSheetNumber });
+                i++;
+            }
+
+            packingSheetRequest.CreatedBy = "OCRSystem";
+            packingSheetRequest.Requests.Add(ps);
+            var response = CreateUpdatePackingSheet(packingSheetRequest);
+            
+            return response;
+        }
+        
     }
 }

@@ -14,7 +14,7 @@ namespace TMS.DataGateway.DataModels
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
-        [MaxLength(20)]
+        [MaxLength(40)]
         public string ShippingListNo { get; set; }
         [MaxLength(50)]
         public string PackingSheetNo { get; set; }

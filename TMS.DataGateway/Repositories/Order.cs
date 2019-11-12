@@ -12,6 +12,7 @@ using Data = TMS.DataGateway.DataModels;
 using System.Data.Entity;
 using System.Globalization;
 using TMS.DomainObjects.Objects;
+using System.Data.Entity.Validation;
 
 namespace TMS.DataGateway.Repositories
 {
@@ -1717,7 +1718,7 @@ namespace TMS.DataGateway.Repositories
                             orderDetailsData.ShippingListNo = packingSheet.ShippingListNo;
                             orderDetailsData.TotalCollie = packingSheet.Collie;
                             orderDetailsData.Katerangan = packingSheet.Katerangan;
-
+                            context.SaveChanges();
                             if (packingSheet.PackingSheetNumbers.Count > 0)
                             {
                                 foreach (var item in packingSheet.PackingSheetNumbers)
@@ -1751,8 +1752,12 @@ namespace TMS.DataGateway.Repositories
                     }
                 }
             }
+            
+
+
             catch (Exception ex)
             {
+
                 _logger.Log(LogLevel.Error, ex);
                 packingSheetResponse.Status = DomainObjects.Resource.ResourceData.Failure;
                 packingSheetResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
@@ -3624,5 +3629,19 @@ namespace TMS.DataGateway.Repositories
             }
             return PICFCMToken;
         }
+        public DealerDetails GetDealerId(string OrderNumber,string SequenceNumber)
+        {
+            DealerDetails dealerDetails = new DealerDetails();
+
+            using (var context = new Data.TMSDBContext())
+            {
+                int OrderId = Convert.ToInt32(context.OrderHeaders.Where(o => o.OrderNo == OrderNumber).Select(x => x.ID).FirstOrDefault());
+                int SequenceNo = Convert.ToInt32(SequenceNumber);
+                dealerDetails.OrderDeatialId= context.OrderDetails.Where(o => o.OrderHeaderID == OrderId && o.SequenceNo== SequenceNo).Select(oh => oh.ID).FirstOrDefault();
+                dealerDetails.DealerId = context.OrderPartnerDetails.Where(opd => opd.OrderDetailID == dealerDetails.OrderDeatialId && opd.PartnerTypeId == 2).Select(x => x.PartnerID).FirstOrDefault();
+            }
+            return dealerDetails;
+        }
+      
     }
 }

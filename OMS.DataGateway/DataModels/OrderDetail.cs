@@ -27,7 +27,7 @@ namespace OMS.DataGateway.DataModels
         public int TotalPallet { get; set; }
         [MaxLength(200)]
         public string Instruction { get; set; }
-        [MaxLength(20)]
+        [MaxLength(40)]
         public string ShippingListNo { get; set; }
         public int TotalCollie { get; set; }
         public DateTime EstimationShipmentDate { get; set; }

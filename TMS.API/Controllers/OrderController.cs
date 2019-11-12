@@ -15,7 +15,7 @@ using TMS.DomainObjects.Response;
 
 namespace TMS.API.Controllers
 {
-    [CustomAuthorize]
+     [CustomAuthorize]
     [RoutePrefix("api/v1/order")]
     public class OrderController : ApiController
     {
@@ -244,7 +244,7 @@ namespace TMS.API.Controllers
 
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
             OrderStatusResponse response = orderTask.UpdateOrderStatus(request);
-            
+
             return Ok(response);
         }
 
@@ -366,7 +366,7 @@ namespace TMS.API.Controllers
 
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
             OrderResponse orderData = orderTask.CreateOrdersFromShipmentListOCR(request);
-           
+
             return Ok(orderData);
         }
 
@@ -381,7 +381,7 @@ namespace TMS.API.Controllers
         }
 
         [Route("ocrorderresponse")]
-        [HttpPost,AllowAnonymous]
+        [HttpPost, AllowAnonymous]
         public IHttpActionResult OcrOrderResponse(ShipmentScheduleOcrRequest shipmentScheduleOcrRequest)
         {
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
@@ -394,7 +394,17 @@ namespace TMS.API.Controllers
         public void UpdateShipmentScheduleOCROrderStatus(string imageGUID, bool status, string message)
         {
             IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
-            orderTask.UpdateShipmentScheduleOCROrderStatus(imageGUID,status,message);
+            orderTask.UpdateShipmentScheduleOCROrderStatus(imageGUID, status, message);
+        }
+
+        [Route("createUpdatePackingSheetDetailsDSM")]
+        [HttpPost, AllowAnonymous]
+        public IHttpActionResult CreateUpdatePackingSheetDetailsDSM(ShipmentListRequest shipmentListRequest)
+        {
+            IOrderTask orderTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().OrderTask;
+            PackingSheetResponse packingSheetResponse = orderTask.CreateUpdatePackingSheetDetailsDSM(shipmentListRequest);
+
+            return Ok(packingSheetResponse);
         }
     }
 }
