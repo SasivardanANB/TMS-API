@@ -15,6 +15,7 @@ namespace TMS.DomainGateway.Task.Interfaces
         OrderResponse CreateOrdersFromShipmentListOCR(OrderRequest request);
         OrderSearchResponse GetOrders(OrderSearchRequest orderSearchRequest);
         PackingSheetResponse CreateUpdatePackingSheet(PackingSheetRequest packingSheetRequest);
+        PackingSheetResponse CreateUpdatePackingSheetDetailsDSM(ShipmentListRequest shipmentListRequest);
         PackingSheetResponse GetPackingSheetDetails(int orderId);
         OrderTrackResponse TrackOrder(int orderId);
         CommonResponse GetOrderIds(string tokenValue);

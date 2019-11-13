@@ -309,13 +309,14 @@ namespace DMS.BusinessGateway.Task
             return _tripRepository.CancelOrder(request);
         }
 
-        public override ShipmentListResponse CreateUpdateShipmentList(int stopPointId, ShippingList request)
+        public override ShippingList CreateUpdateShipmentList(int stopPointId, ShippingList request)
         {
             ShipmentListRequest shipmentListRequest = new ShipmentListRequest()
             {
                 Requests = new List<ShipmentListDetails>()
             };
 
+          
             foreach (string packingSheetNo in request.PKG_List)
             {
                 int.TryParse(request.Colie.Trim(), out int numberOfBoxes);
@@ -332,7 +333,29 @@ namespace DMS.BusinessGateway.Task
                 shipmentListRequest.Requests.Add(shipmentListDetails);
             }
 
-            return _tripRepository.CreateUpdateShipmentList(shipmentListRequest);
+            #region Insert PackagingSheet  to TMS 
+            if (shipmentListRequest.Requests.Count > 0)
+            {
+                shipmentListRequest.OrderNumber = GetOrderNumber(stopPointId);
+                shipmentListRequest.SequenceNumber = Convert.ToString(GetOrderSequnceNumber(stopPointId));
+                LoginRequest loginRequest = new LoginRequest();
+                string token = "";
+
+                loginRequest.UserName = ConfigurationManager.AppSettings["TMSLogin"];
+                loginRequest.UserPassword = ConfigurationManager.AppSettings["TMSPassword"];
+                var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                    + "/v1/user/login", Method.POST, loginRequest, null));
+                if (tmsLoginResponse != null && tmsLoginResponse.Data.Count > 0)
+                {
+                    token = tmsLoginResponse.TokenKey;
+                }
+                #endregion
+
+                var response = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"] + "/v1/Order/createUpdatePackingSheetDetailsDSM", Method.POST, shipmentListRequest,token));
+
+            }
+            return request;
+           // return _tripRepository.CreateUpdateShipmentList(shipmentListRequest);
         }
 
         public override StopPointsResponse SwapeStopPoints(UpdateTripStatusRequest updateTripStatusRequest)

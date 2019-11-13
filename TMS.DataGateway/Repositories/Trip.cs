@@ -10,6 +10,7 @@ using Domain = TMS.DomainObjects.Objects;
 using DataModel = TMS.DataGateway.DataModels;
 using TMS.DataGateway.Repositories.Iterfaces;
 
+
 namespace TMS.DataGateway.Repositories
 {
     public class Trip : ITrip
@@ -113,13 +114,20 @@ namespace TMS.DataGateway.Repositories
                     {
                         foreach (var order in tripList)
                         {
-                            if (order.OrderStatusCode == "3" || order.OrderStatusCode == "13" || order.OrderStatusCode == "15" || order.OrderStatusCode == "16")
+                            int orderDetailId = context.OrderDetails.Where(x => x.OrderHeaderID == order.OrderId ).Select(y=> new { y.ID, y.SequenceNo }).OrderBy(od=>od.SequenceNo).FirstOrDefault().ID;
+                            
+                            var orderResponse = context.OrderStatusHistories.Where(x => x.OrderDetailID == orderDetailId).Select(osh =>  osh.OrderStatusID ).ToList();
+                   //         var omsresponse = JsonConvert.DeserializeObject<OrderStatusResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                   //+ "/v1/trip/getlasttripstatus", Method.POST, omsRequest, token));
+
+                            // if (order.OrderStatusCode == "3" || order.OrderStatusCode == "13" || order.OrderStatusCode == "15" || order.OrderStatusCode == "16")
+                            if (orderResponse.Contains(7))
                             {
-                                order.IsChangeAllowed = true;
+                                order.IsChangeAllowed = false;
                             }
                             else
                             {
-                                order.IsChangeAllowed = false;
+                                order.IsChangeAllowed = true;
                             }
                             var orderData = (from od in context.OrderDetails
                                              where od.OrderHeaderID == order.OrderId

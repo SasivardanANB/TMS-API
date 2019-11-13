@@ -541,7 +541,7 @@ namespace TMS.DataGateway.Repositories
                     if (!string.IsNullOrEmpty(requestType))
                     {
                         tripstatusData = context.OrderStatuses.Where(c => c.OrderStatusCode == "1" || c.OrderStatusCode == "2" ||
-                        c.OrderStatusCode == "3" || c.OrderStatusCode == "13" || c.OrderStatusCode == "15" || c.OrderStatusCode == "16").Select(data => new Domain.Common
+                        c.OrderStatusCode == "3" || c.OrderStatusCode == "12"|| c.OrderStatusCode == "13" || c.OrderStatusCode == "15" || c.OrderStatusCode == "16").Select(data => new Domain.Common
                         {
                             Id = data.ID,
                             Value = data.OrderStatusValue

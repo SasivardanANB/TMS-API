@@ -27,7 +27,7 @@ namespace DMS.DomainGateway.Task
 
         public abstract OrderStatusResponse CancelOrder(OrderStatusRequest request);
 
-        public abstract ShipmentListResponse CreateUpdateShipmentList(int stopPointId, ShippingList request);
+        public abstract ShippingList CreateUpdateShipmentList(int stopPointId, ShippingList request);
         public abstract StopPointsResponse SwapeStopPoints(UpdateTripStatusRequest updateTripStatusRequest);
     }
 }

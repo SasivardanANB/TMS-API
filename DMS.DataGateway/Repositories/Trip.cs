@@ -1282,65 +1282,65 @@ namespace DMS.DataGateway.Repositories
             return response;
         }
 
-        public ShipmentListResponse CreateUpdateShipmentList(ShipmentListRequest request)
-        {
-            int stopPointId = request.Requests[0].StopPointId;
+        //public  CreateUpdateShipmentList(ShipmentListRequest request)
+        //{
+        //    int stopPointId = request.Requests[0].StopPointId;
 
-            ShipmentListResponse response = new ShipmentListResponse()
-            {
-                Data = new List<Domain.ShipmentListDetails>()
-            };
+        //    ShipmentListResponse response = new ShipmentListResponse()
+        //    {
+        //        Data = new List<Domain.ShipmentListDetails>()
+        //    };
 
-            using (var context = new DMSDBContext())
-            {
-                foreach (Domain.ShipmentListDetails shipmentList in request.Requests)
-                {
-                    using (DbContextTransaction transaction = context.Database.BeginTransaction())
-                    {
-                        try
-                        {
-                            DataModel.ShipmentListDetails shipmentListDetails = new DataModel.ShipmentListDetails()
-                            {
-                                ShippingListNo = shipmentList.ShippingListNo,
-                                NumberOfBoxes = shipmentList.NumberOfBoxes,
-                                Note = shipmentList.Note,
-                                PackingSheetNumber = shipmentList.PackingSheetNumber,
-                                StopPointId = shipmentList.StopPointId
-                            };
-                            context.ShipmentListDetails.Add(shipmentListDetails);
-                            context.SaveChanges();
-                            transaction.Commit();
-                        }
-                        catch (Exception ex)
-                        {
-                            transaction.Rollback();
-                            _logger.Log(LogLevel.Error, ex);
-                            response.Status = DomainObjects.Resource.ResourceData.Failure;
-                            response.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                            response.StatusMessage = ex.Message;
-                        }
-                    }
-                }
+        //    using (var context = new DMSDBContext())
+        //    {
+        //        foreach (Domain.ShipmentListDetails shipmentList in request.Requests)
+        //        {
+        //            using (DbContextTransaction transaction = context.Database.BeginTransaction())
+        //            {
+        //                try
+        //                {
+        //                    DataModel.ShipmentListDetails shipmentListDetails = new DataModel.ShipmentListDetails()
+        //                    {
+        //                        ShippingListNo = shipmentList.ShippingListNo,
+        //                        NumberOfBoxes = shipmentList.NumberOfBoxes,
+        //                        Note = shipmentList.Note,
+        //                        PackingSheetNumber = shipmentList.PackingSheetNumber,
+        //                        StopPointId = shipmentList.StopPointId
+        //                    };
+        //                    context.ShipmentListDetails.Add(shipmentListDetails);
+        //                    context.SaveChanges();
+        //                    transaction.Commit();
+        //                }
+        //                catch (Exception ex)
+        //                {
+        //                    transaction.Rollback();
+        //                    _logger.Log(LogLevel.Error, ex);
+        //                    response.Status = DomainObjects.Resource.ResourceData.Failure;
+        //                    response.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+        //                    response.StatusMessage = ex.Message;
+        //                }
+        //            }
+        //        }
 
-                response.Data = (from sl in context.ShipmentListDetails
-                                 where sl.StopPointId == stopPointId
-                                 select new DomainObjects.Objects.ShipmentListDetails
-                                 {
-                                     ID = sl.ID,
-                                     ShippingListNo = sl.ShippingListNo,
-                                     NumberOfBoxes = sl.NumberOfBoxes,
-                                     Note = sl.Note,
-                                     PackingSheetNumber = sl.PackingSheetNumber,
-                                     StopPointId = sl.StopPointId
-                                 }).ToList();
-            }
+        //        response.Data = (from sl in context.ShipmentListDetails
+        //                         where sl.StopPointId == stopPointId
+        //                         select new DomainObjects.Objects.ShipmentListDetails
+        //                         {
+        //                             ID = sl.ID,
+        //                             ShippingListNo = sl.ShippingListNo,
+        //                             NumberOfBoxes = sl.NumberOfBoxes,
+        //                             Note = sl.Note,
+        //                             PackingSheetNumber = sl.PackingSheetNumber,
+        //                             StopPointId = sl.StopPointId
+        //                         }).ToList();
+        //    }
 
-            response.Status = DomainObjects.Resource.ResourceData.Success;
-            response.StatusCode = (int)HttpStatusCode.OK;
-            response.StatusMessage = DomainObjects.Resource.ResourceData.Success;
+        //    response.Status = DomainObjects.Resource.ResourceData.Success;
+        //    response.StatusCode = (int)HttpStatusCode.OK;
+        //    response.StatusMessage = DomainObjects.Resource.ResourceData.Success;
 
-            return response;
-        }
+        //    return response;
+        //}
 
         public StopPointsResponse SwapeStopPoints(UpdateTripStatusRequest updateTripStatusRequest)
         {
@@ -1426,6 +1426,11 @@ namespace DMS.DataGateway.Repositories
             }
 
             return tripResponse;
+        }
+
+        public ShippingList CreateUpdateShipmentList(ShipmentListRequest request)
+        {
+            throw new NotImplementedException();
         }
     }
 }

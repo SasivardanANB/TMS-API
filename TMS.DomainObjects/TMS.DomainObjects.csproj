@@ -110,6 +110,8 @@
     <Compile Include="Request\HargaRequest.cs" />
     <Compile Include="Request\InvoiceRequest.cs" />
     <Compile Include="Request\SAMATokenRequest.cs" />
+    <Compile Include="Request\ShipmentListDetails.cs" />
+    <Compile Include="Request\ShipmentListRequest.cs" />
     <Compile Include="Request\ShipmentScheduleOcrRequest.cs" />
     <Compile Include="Request\OrderStatusRequest.cs" />
     <Compile Include="Request\PackingSheetRequest.cs" />

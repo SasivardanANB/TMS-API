@@ -23,7 +23,7 @@ namespace DMS.DomainGateway.Task.Interfaces
         ImageGuidsResponse GetPhotoWithCustomerGuids(string orderNumber);
         StopPointsResponse GetPendingStopPoints(int tripId);
         OrderStatusResponse CancelOrder(OrderStatusRequest request);
-        ShipmentListResponse CreateUpdateShipmentList(int stopPointId, ShippingList request);
+        ShippingList CreateUpdateShipmentList(int stopPointId, ShippingList request);
         StopPointsResponse SwapeStopPoints(UpdateTripStatusRequest updateTripStatusRequest);
     }
 }

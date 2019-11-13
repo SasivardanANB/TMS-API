@@ -5,9 +5,11 @@ using DMS.DomainObjects.Objects;
 using DMS.DomainObjects.Request;
 using DMS.DomainObjects.Response;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Configuration;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
 
@@ -169,17 +171,30 @@ namespace DMS.API.Controllers
             {
                 throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
             }
-
+            #region To fetch access token for OCR service login
             var client = new HttpClient();
-            var response = await client.PostAsync(ConfigurationManager.AppSettings["ShipmentListOCRURL"], Request.Content);
+            client.DefaultRequestHeaders.Authorization
+                         = new AuthenticationHeaderValue("Basic", ConfigurationManager.AppSettings["OCRAuthorizationToken"]);
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            var accessResponse = await client.PostAsync(ConfigurationManager.AppSettings["OCRAccessTokenURL"], null);
+            var accessTokenJson = accessResponse.Content.ReadAsStringAsync().Result;
+            var AccessToken =JObject.Parse(accessTokenJson).SelectToken("access_token").Value<string>();
+            #endregion
+          
+            #region To get the data from the uploaded shipping list file 
+            var httpClient = new HttpClient();
+             httpClient.DefaultRequestHeaders.Authorization
+                         = new AuthenticationHeaderValue("Bearer", AccessToken);
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("multipart/form-data"));
+            var response = await httpClient.PostAsync(ConfigurationManager.AppSettings["ShipmentListOCRURL"], Request.Content);
             var json = response.Content.ReadAsStringAsync().Result;
 
             ShippingList shippingList = JsonConvert.DeserializeObject<ShippingList>(json);
-
+            #endregion
             ITripTask tripTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().TripTask;
-            ShipmentListResponse shipmentListResponse = tripTask.CreateUpdateShipmentList(stopPointId, shippingList);
+            ShippingList shipmentList = tripTask.CreateUpdateShipmentList(stopPointId, shippingList);
 
-            return Ok(shipmentListResponse);
+            return Ok(shipmentList);
         }
 
         [Route("swapestoppoints")]
