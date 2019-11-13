@@ -25,7 +25,7 @@ namespace TMS.DataGateway.Repositories
             };
 
             List<Domain.Trip> tripList;
-
+            List<Domain.Trip> tripListGrouped = new List<Domain.Trip>();
             try
             {
                 using (var context = new DataModel.TMSDBContext())
@@ -110,14 +110,16 @@ namespace TMS.DataGateway.Repositories
                                     }).Distinct().ToList();
                     }
 
-                    List<int> distinctOrderIds = tripList.Select(t => t.OrderId).ToList();
+                  
 
                     if (tripList != null && tripList.Count > 0)
                     {
-
+                        List<int> distinctOrderIds = tripList.Select(t => t.OrderId).Distinct().ToList();
+                      
                         foreach (int orderId in distinctOrderIds)
                         {
-                            var order = tripList.Where(t => t.OrderId == orderId).FirstOrDefault();
+                            Domain.Trip order = new Domain.Trip();
+                            order = tripList.Where(t => t.OrderId == orderId).FirstOrDefault();
                             //}
                             //tripList = (from element in tripList
                             //          group element by element.ID
@@ -210,12 +212,16 @@ namespace TMS.DataGateway.Repositories
                                     }
                                 }
                             }
+                            tripListGrouped.Add(order);
+                            order = null;
                         }
                     }
 
                     // Filter
                     if (tripList != null && tripList.Count > 0 && tripRequest.Requests.Count > 0)
                     {
+                        tripList.Clear();
+                        tripList = tripListGrouped;
                         var orderFilter = tripRequest.Requests[0];
 
                         if (!string.IsNullOrEmpty(orderFilter.OrderNumber))
