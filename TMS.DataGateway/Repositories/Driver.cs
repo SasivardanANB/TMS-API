@@ -10,7 +10,6 @@ using TMS.DomainObjects.Request;
 using TMS.DomainObjects.Response;
 using Domain = TMS.DomainObjects.Objects;
 using DataModel = TMS.DataGateway.DataModels;
-using System.Web.UI.WebControls;
 
 namespace TMS.DataGateway.Repositories
 {
@@ -150,6 +149,12 @@ namespace TMS.DataGateway.Repositories
                         driverDetails.IsDelete = true;
                         driverDetails.IsActive = false;
                         tMSDBContext.SaveChanges();
+                        driverResponse.Data = new List<Domain.Driver>();
+                        Domain.Driver driver = new Domain.Driver()
+                        {
+                            UserName = driverDetails.UserName
+                        };
+                        driverResponse.Data.Add(driver);
                         driverResponse.StatusCode = (int)HttpStatusCode.OK;
                         driverResponse.Status = DomainObjects.Resource.ResourceData.Success;
                         driverResponse.StatusMessage = DomainObjects.Resource.ResourceData.DriverDeleted;
