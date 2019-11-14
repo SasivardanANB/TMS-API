@@ -165,7 +165,7 @@ namespace DMS.API.Controllers
         }
 
         [HttpPost, Route("shippinglistocr")]
-        public async Task<IHttpActionResult> ShippingListOCR(int stopPointId)
+        public async Task<IHttpActionResult> ShippingListOCR(int stopPointId,string ImageGuid)
         {
             if (!Request.Content.IsMimeMultipartContent("form-data"))
             {
@@ -192,7 +192,7 @@ namespace DMS.API.Controllers
             ShippingList shippingList = JsonConvert.DeserializeObject<ShippingList>(json);
             #endregion
             ITripTask tripTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().TripTask;
-            ShippingList shipmentList = tripTask.CreateUpdateShipmentList(stopPointId, shippingList);
+            ShippingList shipmentList = tripTask.CreateUpdateShipmentList(stopPointId, shippingList,ImageGuid);
            
                 return Ok(JsonConvert.DeserializeObject(json));
             

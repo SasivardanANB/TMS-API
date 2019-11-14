@@ -2,6 +2,7 @@
 using DMS.DomainObjects.Objects;
 using DMS.DomainObjects.Request;
 using DMS.DomainObjects.Response;
+using System;
 
 namespace DMS.DomainGateway.Task
 {
@@ -27,7 +28,7 @@ namespace DMS.DomainGateway.Task
 
         public abstract OrderStatusResponse CancelOrder(OrderStatusRequest request);
 
-        public abstract ShippingList CreateUpdateShipmentList(int stopPointId, ShippingList request);
+        public abstract ShippingList CreateUpdateShipmentList(int stopPointId, ShippingList request,string imageGuid);
         public abstract StopPointsResponse SwapeStopPoints(UpdateTripStatusRequest updateTripStatusRequest);
     }
 }

@@ -309,7 +309,7 @@ namespace DMS.BusinessGateway.Task
             return _tripRepository.CancelOrder(request);
         }
 
-        public override ShippingList CreateUpdateShipmentList(int stopPointId, ShippingList request)
+        public override ShippingList CreateUpdateShipmentList(int stopPointId, ShippingList request ,string imageGuid)
         {
             ShipmentListRequest shipmentListRequest = new ShipmentListRequest()
             {
@@ -336,6 +336,7 @@ namespace DMS.BusinessGateway.Task
             #region Insert PackagingSheet  to TMS 
             if (shipmentListRequest.Requests.Count > 0)
             {
+                shipmentListRequest.ImageGuid = imageGuid;
                 shipmentListRequest.OrderNumber = GetOrderNumber(stopPointId);
                 shipmentListRequest.SequenceNumber = Convert.ToString(GetOrderSequnceNumber(stopPointId));
                 LoginRequest loginRequest = new LoginRequest();
@@ -352,11 +353,13 @@ namespace DMS.BusinessGateway.Task
                 #endregion
 
                 var response = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"] + "/v1/Order/createUpdatePackingSheetDetailsDSM", Method.POST, shipmentListRequest,token));
-
+                _tripRepository.CreateStopPointImage(imageGuid,stopPointId);
             }
             return request;
            // return _tripRepository.CreateUpdateShipmentList(shipmentListRequest);
         }
+
+
 
         public override StopPointsResponse SwapeStopPoints(UpdateTripStatusRequest updateTripStatusRequest)
         {

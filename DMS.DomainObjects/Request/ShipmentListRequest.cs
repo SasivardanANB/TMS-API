@@ -12,5 +12,6 @@ namespace DMS.DomainObjects.Request
         public List<ShipmentListDetails> Requests { get; set; }
         public string OrderNumber { get; set; }
         public string SequenceNumber { get; set; }
+        public string ImageGuid { get; set; }
     }
 }

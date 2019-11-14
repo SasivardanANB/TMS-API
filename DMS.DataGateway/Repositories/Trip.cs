@@ -1432,5 +1432,38 @@ namespace DMS.DataGateway.Repositories
         {
             throw new NotImplementedException();
         }
+
+        public StopPointsResponse CreateStopPointImage(string imageGuid,int stopPointId)
+        {
+            StopPointsResponse stopPointsResponse = new StopPointsResponse();
+            using (var context = new DMSDBContext())
+            {
+                try
+                {
+                    DataModel.StopPointImages stopPointImages = new DataModel.StopPointImages()
+                    {
+                        StopPointId = stopPointId,
+                        ImageId = InsertImageGuid(imageGuid, "DMSSystem"),
+                        ImageTypeId = 1
+                    };
+                    context.StopPointImages.Add(stopPointImages);
+                    context.SaveChanges();
+
+                    stopPointsResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                    stopPointsResponse.StatusCode = (int)HttpStatusCode.OK;
+                    stopPointsResponse.StatusMessage = "Image Inserted successfully";
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log(LogLevel.Error, ex);
+                    
+                    stopPointsResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                    stopPointsResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                    stopPointsResponse.StatusMessage = ex.Message;
+                }
+                return stopPointsResponse;
+               
+            }
+        }
     }
 }

@@ -31,5 +31,6 @@ namespace DMS.DataGateway.Repositories.Iterfaces
         OrderStatusResponse CancelOrder(OrderStatusRequest request);
         ShippingList CreateUpdateShipmentList(ShipmentListRequest request);
         StopPointsResponse SwapeStopPoints(UpdateTripStatusRequest updateTripStatusRequest);
+        StopPointsResponse CreateStopPointImage(string imageGuid, int stopPointId);
     }
 }

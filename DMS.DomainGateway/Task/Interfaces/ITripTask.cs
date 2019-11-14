@@ -1,6 +1,7 @@
 ﻿using DMS.DomainObjects.Objects;
 using DMS.DomainObjects.Request;
 using DMS.DomainObjects.Response;
+using System;
 
 namespace DMS.DomainGateway.Task.Interfaces
 {
@@ -23,7 +24,7 @@ namespace DMS.DomainGateway.Task.Interfaces
         ImageGuidsResponse GetPhotoWithCustomerGuids(string orderNumber);
         StopPointsResponse GetPendingStopPoints(int tripId);
         OrderStatusResponse CancelOrder(OrderStatusRequest request);
-        ShippingList CreateUpdateShipmentList(int stopPointId, ShippingList request);
+        ShippingList CreateUpdateShipmentList(int stopPointId, ShippingList request,string guid);
         StopPointsResponse SwapeStopPoints(UpdateTripStatusRequest updateTripStatusRequest);
     }
 }
