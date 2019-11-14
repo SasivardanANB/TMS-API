@@ -193,8 +193,11 @@ namespace DMS.API.Controllers
             #endregion
             ITripTask tripTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().TripTask;
             ShippingList shipmentList = tripTask.CreateUpdateShipmentList(stopPointId, shippingList);
-
-            return Ok(shipmentList);
+           
+                return Ok(JsonConvert.DeserializeObject(json));
+            
+            
+            
         }
 
         [Route("swapestoppoints")]

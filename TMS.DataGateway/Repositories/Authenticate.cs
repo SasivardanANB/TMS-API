@@ -22,11 +22,16 @@ namespace TMS.DataGateway.Repositories
                     var tokenData = context.Tokens.Where(x => x.UserID == token.UserID).FirstOrDefault();
                     if (tokenData != null)
                     {
-                        if (tokenData.ExpiresOn < DateTime.Now || tokenData.FirebaseToken != token.FirebaseToken)
+                        if (tokenData.ExpiresOn < DateTime.Now )
                         {
                             tokenData.TokenKey = token.TokenKey;
                             tokenData.CreatedOn = token.CreatedOn;
                             tokenData.ExpiresOn = token.ExpiresOn;
+                            tokenData.LastModifiedTime = DateTime.Now;
+                            tokenData.FirebaseToken = token.FirebaseToken;
+                        }
+                        if(tokenData.FirebaseToken != token.FirebaseToken)
+                        {
                             tokenData.LastModifiedTime = DateTime.Now;
                             tokenData.FirebaseToken = token.FirebaseToken;
                         }

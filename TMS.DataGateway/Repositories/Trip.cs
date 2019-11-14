@@ -25,7 +25,7 @@ namespace TMS.DataGateway.Repositories
             };
 
             List<Domain.Trip> tripList;
-
+            List<Domain.Trip> tripListGrouped = new List<Domain.Trip>();
             try
             {
                 using (var context = new DataModel.TMSDBContext())
@@ -110,15 +110,28 @@ namespace TMS.DataGateway.Repositories
                                     }).Distinct().ToList();
                     }
 
+                  
+
                     if (tripList != null && tripList.Count > 0)
                     {
-                        foreach (var order in tripList)
+                        List<int> distinctOrderIds = tripList.Select(t => t.OrderId).Distinct().ToList();
+                      
+                        foreach (int orderId in distinctOrderIds)
                         {
-                            int orderDetailId = context.OrderDetails.Where(x => x.OrderHeaderID == order.OrderId ).Select(y=> new { y.ID, y.SequenceNo }).OrderBy(od=>od.SequenceNo).FirstOrDefault().ID;
-                            
-                            var orderResponse = context.OrderStatusHistories.Where(x => x.OrderDetailID == orderDetailId).Select(osh =>  osh.OrderStatusID ).ToList();
-                   //         var omsresponse = JsonConvert.DeserializeObject<OrderStatusResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
-                   //+ "/v1/trip/getlasttripstatus", Method.POST, omsRequest, token));
+                            Domain.Trip order = new Domain.Trip();
+                            order = tripList.Where(t => t.OrderId == orderId).FirstOrDefault();
+                            //}
+                            //tripList = (from element in tripList
+                            //          group element by element.ID
+                            //          into groups
+                            //          select groups.OrderBy(p => p.EstimatedArrivalDate).First()).ToList();
+                            //foreach (var order in tripList)
+                            //{
+                            int orderDetailId = context.OrderDetails.Where(x => x.OrderHeaderID == order.OrderId).Select(y => new { y.ID, y.SequenceNo }).OrderBy(od => od.SequenceNo).FirstOrDefault().ID;
+
+                            var orderResponse = context.OrderStatusHistories.Where(x => x.OrderDetailID == orderDetailId).Select(osh => osh.OrderStatusID).ToList();
+                            //         var omsresponse = JsonConvert.DeserializeObject<OrderStatusResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayOMSURL"]
+                            //+ "/v1/trip/getlasttripstatus", Method.POST, omsRequest, token));
 
                             // if (order.OrderStatusCode == "3" || order.OrderStatusCode == "13" || order.OrderStatusCode == "15" || order.OrderStatusCode == "16")
                             if (orderResponse.Contains(7))
@@ -129,25 +142,41 @@ namespace TMS.DataGateway.Repositories
                             {
                                 order.IsChangeAllowed = true;
                             }
+                            //var orderData = context.OrderDetails.Where(x => x.OrderHeaderID == order.OrderId).Select(od => new { OrderDetailId = od.ID, SequenceNo = od.SequenceNo }).OrderByDescending(s=>s.SequenceNo).FirstOrDefault();
                             var orderData = (from od in context.OrderDetails
                                              where od.OrderHeaderID == order.OrderId
                                              group od by new { od.ID, od.SequenceNo } into gp
                                              select new
                                              {
                                                  OrderDetailId = gp.Key.ID,
-                                                 SequenceNo = gp.Max(t => t.SequenceNo),
-                                             }).FirstOrDefault();
+                                                 SequenceNo = (from t2 in gp select t2.SequenceNo).Max(),
+                                             }).ToList();
 
                             if (orderData != null)
                             {
-                                var partnerData = (from op in context.OrderPartnerDetails
-                                                   where op.OrderDetailID == orderData.OrderDetailId
-                                                   select new
-                                                   {
-                                                       PrtnerID = op.PartnerID,
-                                                       PartnerName = context.Partners.Where(t => t.ID == op.PartnerID).FirstOrDefault().PartnerName,
-                                                       partnerTypeID = op.PartnerTypeId
-                                                   }).ToList();
+                                var OrderDetailList = orderData.Select(x => x.OrderDetailId).ToList();
+                                var partnerData = context.OrderPartnerDetails.
+                                                          Where(op => OrderDetailList.Contains(op.OrderDetailID)).
+
+                                                           Select(p => new
+                                                           {
+                                                               PrtnerID = p.PartnerID,
+                                                               PartnerName = context.Partners.Where(t => t.ID == p.PartnerID).FirstOrDefault().PartnerName,
+                                                               partnerTypeID = p.PartnerTypeId
+                                                            
+                                                              
+                                                           }).ToList();
+                                //var partnerData = (from op in context.OrderPartnerDetails
+                                //                       where (op => OrderDetailList.Contains(op.OrderDetailID) )
+                                //                       select new
+                                //                       {
+                                //                           PrtnerID = op.PartnerID,
+                                //                           PartnerName = context.Partners.Where(t => t.ID == op.PartnerID).FirstOrDefault().PartnerName,
+                                //                           partnerTypeID = op.PartnerTypeId
+                                //                       }).ToList();
+
+
+
 
                                 if (partnerData != null && partnerData.Count > 0)
                                 {
@@ -159,26 +188,40 @@ namespace TMS.DataGateway.Repositories
                                                         PartnerName = pd.PartnerName,
                                                         partnerTypeID = pd.partnerTypeID,
                                                         PartnerTypeCode = pt.PartnerTypeCode
-                                                    }).ToList();
+                                                    }).Distinct().ToList();
 
                                     if (partners != null && partners.Count > 0)
                                     {
                                         foreach (var partner in partners)
                                         {
                                             if (partner.PartnerTypeCode == "2")
-                                                order.Source = partner.PartnerName;
+                                            {
+                                                if (order.Source == null)
+                                                {
+                                                    order.Source = partner.PartnerName;
+                                                    order.EstimatedArrivalDate = context.OrderDetails.Where(x => x.OrderHeaderID == order.OrderId && x.SequenceNo == 10).Select(od => od.ActualShipmentDate).First();
+
+                                                }
+                                            }
                                             if (partner.PartnerTypeCode == "3")
+                                            {
                                                 order.Destination = partner.PartnerName;
+                                                order.EstimatedShipmentDate = context.OrderDetails.Where(x => x.OrderHeaderID == order.OrderId).Select(od => new { od.EstimationShipmentDate, od.SequenceNo }).OrderByDescending(x=>x.SequenceNo).FirstOrDefault().EstimationShipmentDate;
+                                            }
                                         }
                                     }
                                 }
                             }
+                            tripListGrouped.Add(order);
+                            order = null;
                         }
                     }
 
                     // Filter
                     if (tripList != null && tripList.Count > 0 && tripRequest.Requests.Count > 0)
                     {
+                        tripList.Clear();
+                        tripList = tripListGrouped;
                         var orderFilter = tripRequest.Requests[0];
 
                         if (!string.IsNullOrEmpty(orderFilter.OrderNumber))

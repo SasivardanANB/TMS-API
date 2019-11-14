@@ -1849,7 +1849,7 @@ namespace TMS.DataGateway.Repositories
                 {
                     var roles = (from role in context.Roles
                                  join user in context.UserRoles on role.ID equals user.RoleID
-                                 where user.UserID == userId
+                                 where user.UserID == userId && user.IsDelete==false
                                  select new Domain.Role()
                                  {
                                      ID = role.ID,

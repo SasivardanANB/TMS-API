@@ -122,6 +122,13 @@ namespace TMS.BusinessGateway.Task
 
                 if ((order.orderGeneratedSystem != "OMS" && omsOrderResponse.StatusCode == (int)HttpStatusCode.OK) || order.orderGeneratedSystem == "OMS")
                 {
+                    foreach (var request in order.Requests)
+                    {
+                        if(!string.IsNullOrEmpty(request.DriverName) && !string.IsNullOrEmpty(request.DriverNo))
+                        {
+                            request.OrderShipmentStatus = 3;
+                        }
+                    }
                     // Create Order in TMS
                     tmsOrderResponse = _orderRepository.CreateUpdateOrder(order);
 
