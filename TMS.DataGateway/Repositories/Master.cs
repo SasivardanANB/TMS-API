@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Domain = TMS.DomainObjects.Objects;
+using System.Data.Entity.Validation;
 
 namespace TMS.DataGateway.Repositories
 {
@@ -207,8 +208,8 @@ namespace TMS.DataGateway.Repositories
                                               SubDistrictId = subDistrict.ID,
                                               ProvinceId = subDistrict.City.Province.ID,
                                               ProvinceName = subDistrict.City.Province.ProvinceDescription,
-                                              PostalCode = lp.PostalCodeNo,
-                                              PostalCodeId = lp.ID,
+                                              //PostalCode = lp.PostalCodeNo,
+                                              //PostalCodeId = lp.ID,
                                               PICID = partner.PICID.Value
                                           }).ToList();
 
@@ -228,6 +229,23 @@ namespace TMS.DataGateway.Repositories
                         partnerResponse.StatusMessage = DomainObjects.Resource.ResourceData.NoRecords;
                     }
                 }
+            }
+            catch (DbEntityValidationException dbEx)
+            {
+                Exception raise = dbEx;
+                foreach (var validationErrors in dbEx.EntityValidationErrors)
+                {
+                    foreach (var validationError in validationErrors.ValidationErrors)
+                    {
+                        string message = string.Format("{0}:{1}",
+                            validationErrors.Entry.Entity.ToString(),
+                            validationError.ErrorMessage);
+                        // raise a new exception nesting
+                        // the current instance as InnerException
+                        raise = new InvalidOperationException(message, raise);
+                    }
+                }
+                throw raise;
             }
             catch (Exception ex)
             {
