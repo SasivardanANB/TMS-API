@@ -309,54 +309,83 @@ namespace DMS.BusinessGateway.Task
             return _tripRepository.CancelOrder(request);
         }
 
-        public override ShippingList CreateUpdateShipmentList(int stopPointId, ShippingList request ,string imageGuid)
+        public override ShipmentListResponse CreateUpdateShipmentList(int stopPointId, ShippingList request ,string imageGuid)
         {
-            ShipmentListRequest shipmentListRequest = new ShipmentListRequest()
+            ShipmentListResponse shipmentListResponse = new ShipmentListResponse();
+            try
             {
-                Requests = new List<ShipmentListDetails>()
-            };
-
-          
-            foreach (string packingSheetNo in request.PKG_List)
-            {
-                int.TryParse(request.Colie.Trim(), out int numberOfBoxes);
-
-                ShipmentListDetails shipmentListDetails = new ShipmentListDetails
+                if (!string.IsNullOrEmpty(request.SL_No))
                 {
-                    ShippingListNo = request.SL_No,
-                    Note = "Pack",
-                    PackingSheetNumber = packingSheetNo,
-                    StopPointId = stopPointId,
-                    NumberOfBoxes = numberOfBoxes
-                };
+                    ShipmentListRequest shipmentListRequest = new ShipmentListRequest()
+                    {
+                        Requests = new List<ShipmentListDetails>()
+                    };
 
-                shipmentListRequest.Requests.Add(shipmentListDetails);
-            }
 
-            #region Insert PackagingSheet  to TMS 
-            if (shipmentListRequest.Requests.Count > 0)
-            {
-                shipmentListRequest.ImageGuid = imageGuid;
-                shipmentListRequest.OrderNumber = GetOrderNumber(stopPointId);
-                shipmentListRequest.SequenceNumber = Convert.ToString(GetOrderSequnceNumber(stopPointId));
-                LoginRequest loginRequest = new LoginRequest();
-                string token = "";
+                    foreach (string packingSheetNo in request.PKG_List)
+                    {
+                        int.TryParse(request.Colie.Trim(), out int numberOfBoxes);
 
-                loginRequest.UserName = ConfigurationManager.AppSettings["TMSLogin"];
-                loginRequest.UserPassword = ConfigurationManager.AppSettings["TMSPassword"];
-                var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
-                    + "/v1/user/login", Method.POST, loginRequest, null));
-                if (tmsLoginResponse != null && tmsLoginResponse.Data.Count > 0)
-                {
-                    token = tmsLoginResponse.TokenKey;
+                        ShipmentListDetails shipmentListDetails = new ShipmentListDetails
+                        {
+                            ShippingListNo = request.SL_No,
+                            Note = "Pack",
+                            PackingSheetNumber = packingSheetNo,
+                            StopPointId = stopPointId,
+                            NumberOfBoxes = numberOfBoxes
+                        };
+
+                        shipmentListRequest.Requests.Add(shipmentListDetails);
+                    }
+
+                    #region Insert PackagingSheet  to TMS 
+                    if (shipmentListRequest.Requests.Count > 0)
+                    {
+                        shipmentListRequest.ImageGuid = imageGuid;
+                        shipmentListRequest.OrderNumber = GetOrderNumber(stopPointId);
+                        shipmentListRequest.SequenceNumber = Convert.ToString(GetOrderSequnceNumber(stopPointId));
+                        LoginRequest loginRequest = new LoginRequest();
+                        string token = "";
+
+                        loginRequest.UserName = ConfigurationManager.AppSettings["TMSLogin"];
+                        loginRequest.UserPassword = ConfigurationManager.AppSettings["TMSPassword"];
+                        var tmsLoginResponse = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"]
+                            + "/v1/user/login", Method.POST, loginRequest, null));
+                        if (tmsLoginResponse != null && tmsLoginResponse.Data.Count > 0)
+                        {
+                            token = tmsLoginResponse.TokenKey;
+                        }
+                        #endregion
+
+                        var response = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"] + "/v1/Order/createUpdatePackingSheetDetailsDSM", Method.POST, shipmentListRequest, token));
+                        if (response.Status == DomainObjects.Resource.ResourceData.Success && response.StatusCode == (int)HttpStatusCode.OK && response.Data.Count > 0)
+                        {
+                           // _tripRepository.CreateStopPointImage(imageGuid, stopPointId);
+
+                            shipmentListResponse.StatusCode = (int)HttpStatusCode.OK;
+                            shipmentListResponse.Status = DomainObjects.Resource.ResourceData.Success;
+                            shipmentListResponse.Data = shipmentListRequest.Requests;
+                        }
+                    }
                 }
-                #endregion
-
-                var response = JsonConvert.DeserializeObject<UserResponse>(Utility.GetApiResponse(ConfigurationManager.AppSettings["ApiGatewayTMSURL"] + "/v1/Order/createUpdatePackingSheetDetailsDSM", Method.POST, shipmentListRequest,token));
-                _tripRepository.CreateStopPointImage(imageGuid,stopPointId);
+                
+                else
+                {
+                    shipmentListResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                    shipmentListResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                    shipmentListResponse.StatusMessage = "Shipping List number not found in OCR response";
+                }
             }
-            return request;
-           // return _tripRepository.CreateUpdateShipmentList(shipmentListRequest);
+            catch (Exception ex)
+            {
+                
+
+                shipmentListResponse.Status = DomainObjects.Resource.ResourceData.Failure;
+                shipmentListResponse.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                shipmentListResponse.StatusMessage = ex.Message;
+            }
+            return shipmentListResponse;
+           
         }
 
 

@@ -182,6 +182,7 @@ namespace DMS.API.Controllers
             #endregion
           
             #region To get the data from the uploaded shipping list file 
+
             var httpClient = new HttpClient();
              httpClient.DefaultRequestHeaders.Authorization
                          = new AuthenticationHeaderValue("Bearer", AccessToken);
@@ -191,10 +192,17 @@ namespace DMS.API.Controllers
 
             ShippingList shippingList = JsonConvert.DeserializeObject<ShippingList>(json);
             #endregion
-            ITripTask tripTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().TripTask;
-            ShippingList shipmentList = tripTask.CreateUpdateShipmentList(stopPointId, shippingList,ImageGuid);
            
+                ITripTask tripTask = Helper.Model.DependencyResolver.DependencyResolver.GetImplementationOf<ITaskGateway>().TripTask;
+            ShipmentListResponse shipmentList = tripTask.CreateUpdateShipmentList(stopPointId, shippingList, ImageGuid);
+
+            if (shipmentList.Status == DomainObjects.Resource.ResourceData.Success && shipmentList.StatusCode == (int)HttpStatusCode.OK && shipmentList.Data.Count > 0)
                 return Ok(JsonConvert.DeserializeObject(json));
+            else
+            {
+
+                return Ok(JsonConvert.DeserializeObject(json));
+            }
             
             
             
